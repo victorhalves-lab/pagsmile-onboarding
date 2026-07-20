@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 const CATEGORIES = [
   {
     name: 'Core do Onboarding KYC/KYB',
-    color: 'border-l-[#2bc196]',
+    color: 'border-l-[#1356E2]',
     items: [
       ['Merchant', 'PJ/PF, type, cpfCnpj, parentMerchantId (subseller), onboardingStatus.'],
       ['OnboardingCase', 'merchantId, questionnaireTemplateId, status, riskScoreV4, subfaixa, rollingReservePercent, monitoramentoNivel, escalationSource, escalationReason, docLinkToken, cafRecaptureRequested.'],
@@ -129,9 +129,9 @@ const CATEGORIES = [
 export default function EntidadesAtualizadasSection() {
   return (
     <div className="space-y-5">
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-4 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-4 text-white">
         <p className="text-white/80 text-sm leading-relaxed">
-          <strong className="text-[#5cf7cf]">50+ entidades</strong> agrupadas por domínio funcional.
+          <strong className="text-[#E84B1C]">50+ entidades</strong> agrupadas por domínio funcional.
           Cada entidade tem RLS (Row-Level Security) aplicada por papel — admin, parceiro externo, introducer e
           público (rotas /Public*) operam em conjuntos de permissões disjuntos.
         </p>
@@ -139,16 +139,16 @@ export default function EntidadesAtualizadasSection() {
 
       {CATEGORIES.map((cat, i) => (
         <div key={i}>
-          <h4 className="font-bold text-[#002443] text-sm mb-2 flex items-center gap-2">
+          <h4 className="font-bold text-[#0A0A0A] text-sm mb-2 flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full ${cat.color.replace('border-l-', 'bg-')}`} />
             {cat.name}
-            <span className="text-[10px] font-normal text-[#002443]/40">({cat.items.length})</span>
+            <span className="text-[10px] font-normal text-[#0A0A0A]/40">({cat.items.length})</span>
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-3">
             {cat.items.map(([name, desc], j) => (
               <div key={j} className={`p-3 border-l-4 ${cat.color} bg-slate-50/70 rounded-r-lg`}>
-                <Badge className="bg-[#002443] text-white font-mono text-[10px] border-0 mb-1.5">{name}</Badge>
-                <p className="text-[11px] text-[#002443]/70 leading-relaxed">{desc}</p>
+                <Badge className="bg-[#0A0A0A] text-white font-mono text-[10px] border-0 mb-1.5">{name}</Badge>
+                <p className="text-[11px] text-[#0A0A0A]/70 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>

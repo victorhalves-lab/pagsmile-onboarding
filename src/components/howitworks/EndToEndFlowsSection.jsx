@@ -18,25 +18,25 @@ function FlowJourney({ title, subtitle, color, badge, steps, entitiesCreated, no
           {steps.map((step, i) => (
             <div key={i} className="flex gap-3 items-start relative">
               <div className="flex flex-col items-center">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 ${step.actor === 'Cliente' ? 'bg-[#2bc196]' : step.actor === 'IA' ? 'bg-purple-500' : step.actor === 'Sistema' ? 'bg-slate-500' : 'bg-[#002443]'}`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 ${step.actor === 'Cliente' ? 'bg-[#1356E2]' : step.actor === 'IA' ? 'bg-purple-500' : step.actor === 'Sistema' ? 'bg-slate-500' : 'bg-[#0A0A0A]'}`}>
                   {i + 1}
                 </div>
                 {i < steps.length - 1 && <div className="w-px h-full bg-slate-200 min-h-[20px]" />}
               </div>
               <div className="pb-4 flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-xs font-bold text-[#002443]">{step.title}</span>
-                  <Badge className={`text-[8px] border-0 ${step.actor === 'Cliente' ? 'bg-[#2bc196]/10 text-[#2bc196]' : step.actor === 'IA' ? 'bg-purple-50 text-purple-600' : step.actor === 'Sistema' ? 'bg-slate-100 text-slate-600' : 'bg-blue-50 text-blue-600'}`}>
+                  <span className="text-xs font-bold text-[#0A0A0A]">{step.title}</span>
+                  <Badge className={`text-[8px] border-0 ${step.actor === 'Cliente' ? 'bg-[#1356E2]/10 text-[#1356E2]' : step.actor === 'IA' ? 'bg-purple-50 text-purple-600' : step.actor === 'Sistema' ? 'bg-slate-100 text-slate-600' : 'bg-blue-50 text-blue-600'}`}>
                     {step.actor}
                   </Badge>
-                  {step.page && <span className="text-[8px] text-[#002443]/30 font-mono">{step.page}</span>}
+                  {step.page && <span className="text-[8px] text-[#0A0A0A]/30 font-mono">{step.page}</span>}
                 </div>
-                <p className="text-[10px] text-[#002443]/60 leading-relaxed">{step.desc}</p>
+                <p className="text-[10px] text-[#0A0A0A]/60 leading-relaxed">{step.desc}</p>
                 {step.details && (
                   <div className="mt-1 space-y-0.5">
                     {step.details.map((d, j) => (
-                      <p key={j} className="text-[9px] text-[#002443]/40 flex items-start gap-1">
-                        <CircleDot className="w-2.5 h-2.5 mt-0.5 shrink-0 text-[#2bc196]/50" />{d}
+                      <p key={j} className="text-[9px] text-[#0A0A0A]/40 flex items-start gap-1">
+                        <CircleDot className="w-2.5 h-2.5 mt-0.5 shrink-0 text-[#1356E2]/50" />{d}
                       </p>
                     ))}
                   </div>
@@ -77,13 +77,13 @@ function FlowJourney({ title, subtitle, color, badge, steps, entitiesCreated, no
 export default function EndToEndFlowsSection() {
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-6 text-white">
         <h3 className="text-xl font-bold mb-2">Jornadas Completas de Ponta a Ponta</h3>
         <p className="text-white/80 text-sm leading-relaxed">
           Cada tipo de entrada de cliente gera uma jornada diferente. Abaixo, os 7 caminhos possíveis — do primeiro contato até a conclusão do onboarding — mostrando cada passo, quem faz, onde faz, e o que acontece automaticamente.
         </p>
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] border-0">Jornada 1: Via Introducer (Landing Page)</Badge>
+          <Badge className="bg-[#1356E2]/20 text-[#E84B1C] border-0">Jornada 1: Via Introducer (Landing Page)</Badge>
           <Badge className="bg-blue-500/20 text-blue-300 border-0">Jornada 2: Via Link de Lead (Comercial)</Badge>
           <Badge className="bg-purple-500/20 text-purple-300 border-0">Jornada 3: Via Reunião Manual</Badge>
           <Badge className="bg-pink-500/20 text-pink-300 border-0">Jornada 4: Via Robô IA (Notas)</Badge>
@@ -101,7 +101,7 @@ export default function EndToEndFlowsSection() {
         badge="Introducer → Contrato"
         steps={[
           { title: 'Introducer compartilha link da Landing Page', actor: 'Introducer', page: '/parceiro/:slug', desc: 'O parceiro envia o link /parceiro/meu-parceiro para o potencial cliente via WhatsApp, e-mail ou redes sociais.' },
-          { title: 'Cliente acessa Landing Page co-branded', actor: 'Cliente', page: 'IntroducerLandingPage', desc: 'Vê logo do parceiro + Pagsmile, tabela de taxas por segmento, calculadora de taxas interativa e disclaimer de compliance.', details: ['Componentes: LandingHeader, SegmentRatesTable, RateCalculator, ComplianceDisclaimer', 'Taxas configuradas pelo admin em Introducer.standardRates[]'] },
+          { title: 'Cliente acessa Landing Page co-branded', actor: 'Cliente', page: 'IntroducerLandingPage', desc: 'Vê logo do parceiro + Pin Bank, tabela de taxas por segmento, calculadora de taxas interativa e disclaimer de compliance.', details: ['Componentes: LandingHeader, SegmentRatesTable, RateCalculator, ComplianceDisclaimer', 'Taxas configuradas pelo admin em Introducer.standardRates[]'] },
           { title: 'Cliente preenche questionário na landing page', actor: 'Cliente', page: 'LeadQuestionnaire (embutido)', desc: 'Formulário multi-step com autocomplete CNPJ, dados da empresa, volume, tipo de negócio, taxas atuais. O referralCode do Introducer é capturado automaticamente da URL.' },
           { title: 'Sistema cria Lead + dispara IA', actor: 'Sistema', desc: 'Cria entidade Lead com introducerId, introducerReferralCode, introducerName preenchidos. Dispara análise PRISCILA automaticamente. Notifica Slack.', details: ['Lead.status = "questionario_preenchido"', 'Lead.origemLead = referralCode do Introducer', 'Backend: analyzePriscila() → priscilaQualityScore, priscilaRiskLevel, priscilaDecisionPath'] },
           { title: 'PRISCILA + Lead Qualifier analisam', actor: 'IA', desc: 'PRISCILA gera score 0-100 e classifica risco (BAIXO/MEDIO/ALTO/CRITICO). Lead Qualifier classifica maturidade (EXCELENTE→INSUFICIENTE). Análise de Risco Avançada gera iaRiskScore e iaDecision.' },
@@ -151,13 +151,13 @@ export default function EndToEndFlowsSection() {
       <FlowJourney
         title="Jornada 2 — Comercial envia link de questionário"
         subtitle="Gera link → Envia ao cliente → Lead → Pipeline → Proposta → Compliance → Risk Scoring → SENTINEL → Contrato → Assinatura"
-        color="bg-gradient-to-r from-[#002443] to-[#003366]"
+        color="bg-gradient-to-r from-[#0A0A0A] to-[#003366]"
         badge="Link → Contrato"
         steps={[
-          { title: 'Comercial gera link rastreável', actor: 'Comercial', page: 'LinksQuestionariosLeads', desc: 'Escolhe tipo de questionário (Pagsmile v5, Completo v2.0, Simplificado, PIX). Gera link com uniqueCode, nome do vendedor e UTMs. Copia e envia ao cliente via WhatsApp/e-mail.', details: ['OnboardingLink criado com uniqueCode, commercialAgentId, UTMs', 'Link: /QuestionarioLeadsPagsmile?ref=xxx ou /LeadQuestionnaire?ref=xxx'] },
-          { title: 'Cliente preenche questionário público', actor: 'Cliente', page: 'QuestionarioLeadsPagsmile / LeadQuestionnaire', desc: 'Questionário multi-step. Pagsmile v5: 11 etapas, 10 segmentos, autocomplete CNPJ (14+ campos), slider distribuição TPV, taxas do concorrente, compliance/risco. V2.0: 10 etapas com autocomplete. Simplificado: dados mínimos.', details: ['Autocomplete CNPJ via BrasilAPI (3 APIs cascata)', 'Validação e-mail (MX check), telefone (DDD), site (HTTP check)', '16 flags silenciosas calculadas (v5) ou 11 flags (PIX v4)'] },
+          { title: 'Comercial gera link rastreável', actor: 'Comercial', page: 'LinksQuestionariosLeads', desc: 'Escolhe tipo de questionário (Pin Bank v5, Completo v2.0, Simplificado, PIX). Gera link com uniqueCode, nome do vendedor e UTMs. Copia e envia ao cliente via WhatsApp/e-mail.', details: ['OnboardingLink criado com uniqueCode, commercialAgentId, UTMs', 'Link: /QuestionarioLeadsPagsmile?ref=xxx ou /LeadQuestionnaire?ref=xxx'] },
+          { title: 'Cliente preenche questionário público', actor: 'Cliente', page: 'QuestionarioLeadsPagsmile / LeadQuestionnaire', desc: 'Questionário multi-step. Pin Bank v5: 11 etapas, 10 segmentos, autocomplete CNPJ (14+ campos), slider distribuição TPV, taxas do concorrente, compliance/risco. V2.0: 10 etapas com autocomplete. Simplificado: dados mínimos.', details: ['Autocomplete CNPJ via BrasilAPI (3 APIs cascata)', 'Validação e-mail (MX check), telefone (DDD), site (HTTP check)', '16 flags silenciosas calculadas (v5) ou 11 flags (PIX v4)'] },
           { title: 'Sistema cria Lead + 3 IAs analisam em paralelo', actor: 'Sistema', desc: 'Lead criado com protocolo LEAD-YYYY-NNNNN, status="questionario_preenchido", questionnaireData completo. PRISCILA, Lead Qualifier e Análise de Risco Avançada executam simultaneamente.', details: ['PRISCILA: priscilaQualityScore (0-100), priscilaRiskLevel, priscilaDecisionPath', 'Lead Qualifier: leadQualifierLevel (EXCELENTE→INSUFICIENTE)', 'Risco Avançado: iaRiskScore, iaDecision, iaSuggestions[]', 'OnboardingLink.submissionCount incrementado', 'Slack notificado (notifyNewLead)'] },
-          { title: 'Lead aparece na aba Questionários Recebidos', actor: 'Comercial', page: 'QuestionariosLeads', desc: 'Na sub-aba correta (Pagsmile v5, Completo, Simplificado ou PIX). Mostra protocolo, empresa, score PRISCILA com badge colorido, risco, TPV, SLA com indicador visual. Comercial clica "Iniciar Contato" → Lead.status = "em_contato_comercial".', details: ['LeadSLAIndicator: verde/amarelo/vermelho conforme tempo sem contato', 'LeadQualifierBadge: EXCELENTE (verde) → INSUFICIENTE (vermelho)', 'LeadQuickActions: Iniciar Contato, Gerar Proposta, Ver Detalhes'] },
+          { title: 'Lead aparece na aba Questionários Recebidos', actor: 'Comercial', page: 'QuestionariosLeads', desc: 'Na sub-aba correta (Pin Bank v5, Completo, Simplificado ou PIX). Mostra protocolo, empresa, score PRISCILA com badge colorido, risco, TPV, SLA com indicador visual. Comercial clica "Iniciar Contato" → Lead.status = "em_contato_comercial".', details: ['LeadSLAIndicator: verde/amarelo/vermelho conforme tempo sem contato', 'LeadQualifierBadge: EXCELENTE (verde) → INSUFICIENTE (vermelho)', 'LeadQuickActions: Iniciar Contato, Gerar Proposta, Ver Detalhes'] },
           { title: 'Comercial gerencia no Pipeline Kanban', actor: 'Comercial', page: 'PipelineComercial', desc: 'Lead aparece na coluna correspondente ao status. Board Kanban com 7 colunas: Leads Quest. Completo, Em Contato + Simplificado, Proposta Enviada, Proposta Aceita, Compliance KYC, Contrato Gerado, Perdido.', details: ['Drag-and-drop: cada movimento atualiza Lead.status + cria LeadActivity', 'Métricas por coluna: TPV/mês, TPV/ano, Receita estimada/mês', 'PipelineAgingAlerts: alertas para leads parados acima do limite', 'PipelineConversionChart: gráfico de conversão entre estágios'] },
           { title: 'Comercial cria Proposta (1 de 3 tipos)', actor: 'Comercial', page: 'CriarProposta / CriarPropostaPadrao / CriarPropostaPix', desc: 'Escolhe tipo de proposta: Personalizada (taxas editáveis por bandeira × 4 faixas, antecipação, PIX, boleto, fees, setup), Padrão por Segmento (taxas fixas do SegmentDefaultRates) ou PIX (taxa % ou fixo + TPV mínimo 3 meses).', details: ['PartnerSelector: seleciona parceiro adquirente para validação de limites', 'CardTaxasCartao: Visa, Master, Elo, Amex, Outras × 1x/2-6x/7-12x/13-21x', 'ProfitabilityPanel: simulação receita MDR + antecipação + fees - custos = margem', 'Código gerado: PROP-YYYY-NNNNN + tokenPublico (64 chars)', 'Validação obrigatória: nome, CNPJ 14 dígitos, MCC, contato, ≥1 taxa'] },
           { title: 'Comercial envia link público da proposta ao cliente', actor: 'Comercial', desc: 'Copia link /PropostaPublica?token=xxx (ou PropostaPadraoPublica ou PropostaPixPublica) e envia ao cliente via WhatsApp, e-mail ou qualquer canal. Lead.status → "proposta_enviada". LeadActivity registrada.', details: ['AuditLog criado: código proposta, responsável, data', 'Lead.currentProposalId atualizado'] },
@@ -240,12 +240,12 @@ export default function EndToEndFlowsSection() {
       <FlowJourney
         title="Jornada 5 — Cliente recebe link de Proposta Padrão"
         subtitle="Link rápido por segmento → Visualiza taxas → CTA → Questionário → Lead → IAs → Pipeline → Proposta Personalizada → Aceite → Compliance → Risk Scoring → SENTINEL → Contrato → Assinatura"
-        color="bg-gradient-to-r from-[#2bc196] to-[#36706c]"
+        color="bg-gradient-to-r from-[#1356E2] to-[#E84B1C]"
         badge="Link Rápido → Contrato"
         steps={[
           { title: 'Comercial copia link rápido por segmento', actor: 'Comercial', page: 'GestaoPropostasPadrao', desc: 'Na seção "Links Rápidos por Segmento" no topo da página, clica "Copiar Link" no card do segmento desejado (E-commerce, Educação, Infoprodutos, SaaS, Gateway, Marketplace, MPE, Dropshipping, Plataformas Verticais, Link de Pagamento).', details: ['Cada card identifica a StandardProposal com isDefaultForSegment=true para aquele segmento', 'URL gerada: /PropostaPadraoPublica?token=xxx', 'Admin pode criar/editar StandardProposal em CriarPropostaPadrao'] },
           { title: 'Comercial envia link ao cliente', actor: 'Comercial', desc: 'Envia o link via WhatsApp, e-mail ou qualquer canal. O cliente não precisa preencher nada para visualizar as taxas — é um catálogo público por segmento.' },
-          { title: 'Cliente visualiza Proposta Padrão Pública', actor: 'Cliente', page: 'PropostaPadraoPublica', desc: 'Vê taxas completas por bandeira (Visa, Master, Elo, Amex, Outras) × 4 faixas (1x, 2-6x, 7-12x, 13-21x), taxa PIX (% ou fixo), boleto, antifraude, fee transação, 3DS, setup, antecipação (RAV), TPV mínimo garantido (3 meses). Design premium com logo Pagsmile.', details: ['TaxasPorBandeiraPublic: tabela completa por bandeira e faixa', 'ParcelasTableDetalhada: simulação valor líquido por bandeira de 1x até 21x', 'ExportButtons: gerar PDF ou imprimir proposta', 'Proposta apenas informativa — não gera lead automaticamente'] },
+          { title: 'Cliente visualiza Proposta Padrão Pública', actor: 'Cliente', page: 'PropostaPadraoPublica', desc: 'Vê taxas completas por bandeira (Visa, Master, Elo, Amex, Outras) × 4 faixas (1x, 2-6x, 7-12x, 13-21x), taxa PIX (% ou fixo), boleto, antifraude, fee transação, 3DS, setup, antecipação (RAV), TPV mínimo garantido (3 meses). Design premium com logo Pin Bank.', details: ['TaxasPorBandeiraPublic: tabela completa por bandeira e faixa', 'ParcelasTableDetalhada: simulação valor líquido por bandeira de 1x até 21x', 'ExportButtons: gerar PDF ou imprimir proposta', 'Proposta apenas informativa — não gera lead automaticamente'] },
           { title: 'Cliente clica CTA "Quero Contratar"', actor: 'Cliente', desc: 'Botão CTA na proposta redireciona para o formulário de fechamento (FechamentoLandingPage) ou questionário de lead. O cliente preenche seus dados para receber uma proposta personalizada com taxas potencialmente melhores.' },
           { title: 'Cliente preenche formulário/questionário', actor: 'Cliente', page: 'FechamentoLandingPage / LeadQuestionnaire', desc: 'Formulário multi-step: dados da empresa (CNPJ autocomplete BrasilAPI), contato, volumetria (TPV, distribuição cartão/PIX/boleto), modelo de negócio. Submete dados completos.', details: ['CNPJ autocomplete preenche 14+ campos automaticamente', 'StandardProposalLead criado com referência à StandardProposal'] },
           { title: 'Sistema cria Lead + Proposal + dispara IAs', actor: 'Sistema', desc: 'Lead criado com protocolo LEAD-YYYY-NNNNN, sourceFlow="standard_proposal_link", businessSubCategory do segmento. Proposal criada automaticamente com taxas do SegmentDefaultRates. PRISCILA + Lead Qualifier + Risco Avançado executam em paralelo.', details: ['Lead.status = "proposta_enviada" (proposta já vinculada)', 'Lead.currentProposalId preenchido', 'Slack notificado (notifyNewLead + notifyStdProposalLead)', 'Redirect para ComplianceDinamico com model do segmento'] },
@@ -313,7 +313,7 @@ export default function EndToEndFlowsSection() {
         color="bg-gradient-to-r from-pink-700 to-rose-600"
         badge="Subseller PF → Onboarding"
         steps={[
-          { title: 'Admin gera link de subconta para merchant aprovado', actor: 'Admin', page: 'GerenciarSubsellerLinks', desc: 'Seleciona merchant principal, configura branding (PagSmile ou white-label: logo, cores, nome), gera OnboardingLink tipo SUBSELLER_COMPLIANCE com parentMerchantId.', details: ['Slug curto opcional para URL amigável /s/{slug}', 'Métricas rastreadas: clicks, submissions, completions'] },
+          { title: 'Admin gera link de subconta para merchant aprovado', actor: 'Admin', page: 'GerenciarSubsellerLinks', desc: 'Seleciona merchant principal, configura branding (Pin Bank ou white-label: logo, cores, nome), gera OnboardingLink tipo SUBSELLER_COMPLIANCE com parentMerchantId.', details: ['Slug curto opcional para URL amigável /s/{slug}', 'Métricas rastreadas: clicks, submissions, completions'] },
           { title: 'Merchant distribui link aos seus subsellers PF', actor: 'Merchant', desc: 'Envia link /SubsellerQuestionnaire?ref=xxx ou /s/{slug} via WhatsApp, e-mail ou sistema interno.' },
           { title: 'Subseller PF acessa link e vê MerchantTypeSelector', actor: 'Subseller PF', page: 'SubsellerQuestionnaire', desc: 'Página carrega branding do merchant. MerchantTypeSelector exibe 2 cards: "Pessoa Física (CPF)" e "Pessoa Jurídica (CNPJ)". Subseller seleciona PF.', details: ['Branding: logo, cores primária/secundária, nome do merchant', 'Se link inválido/expirado/inativo → mensagem de erro'] },
           { title: 'Sistema carrega template subseller_pf (33 perguntas)', actor: 'Sistema', desc: 'DynamicQuestionnaire renderiza com template PF (merchantType=PF). Perguntas agrupadas em steps de 4. Branding white-label aplicado em progress bar, botões, steps, badges.', details: ['Template subseller_pf: 33 perguntas obrigatórias', 'Campo "Complemento" configurado como opcional (isRequired=false)', 'Auto-save ativo: localStorage + ComplianceSession no backend'] },
@@ -342,17 +342,17 @@ export default function EndToEndFlowsSection() {
 
       {/* Tabela Comparativa */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-        <h4 className="font-bold text-[#002443] text-sm mb-4">Comparativo: Etapas por Tipo de Entrada</h4>
+        <h4 className="font-bold text-[#0A0A0A] text-sm mb-4">Comparativo: Etapas por Tipo de Entrada</h4>
         <div className="overflow-x-auto">
           <table className="w-full text-[10px]">
             <thead>
               <tr className="border-b border-slate-200">
-                <th className="text-left py-2 text-[#002443]/50 font-bold uppercase tracking-wider">Etapa</th>
+                <th className="text-left py-2 text-[#0A0A0A]/50 font-bold uppercase tracking-wider">Etapa</th>
                 <th className="text-center py-2 text-purple-600 font-bold">Introducer</th>
-                <th className="text-center py-2 text-[#002443] font-bold">Link Lead</th>
+                <th className="text-center py-2 text-[#0A0A0A] font-bold">Link Lead</th>
                 <th className="text-center py-2 text-amber-600 font-bold">Reunião</th>
                 <th className="text-center py-2 text-pink-600 font-bold">Robô IA</th>
-                <th className="text-center py-2 text-[#2bc196] font-bold">Link Padrão</th>
+                <th className="text-center py-2 text-[#1356E2] font-bold">Link Padrão</th>
                 <th className="text-center py-2 text-emerald-600 font-bold">Lead PIX v4</th>
                 <th className="text-center py-2 text-rose-600 font-bold">Subseller PF</th>
               </tr>
@@ -374,9 +374,9 @@ export default function EndToEndFlowsSection() {
                 { etapa: 'Contrato', vals: ['✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA + RR v4', 'N/A (subseller)'] },
               ].map((row, i) => (
                 <tr key={i} className="border-b border-slate-100">
-                  <td className="py-2 font-semibold text-[#002443]">{row.etapa}</td>
+                  <td className="py-2 font-semibold text-[#0A0A0A]">{row.etapa}</td>
                   {row.vals.map((v, j) => (
-                    <td key={j} className="text-center py-2 text-[#002443]/60">{v}</td>
+                    <td key={j} className="text-center py-2 text-[#0A0A0A]/60">{v}</td>
                   ))}
                 </tr>
               ))}

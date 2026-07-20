@@ -44,7 +44,7 @@ export default function CardReservaFinanceira({ rates, onUpdateRates, readOnly =
       disabled={readOnly}
       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
         active
-          ? 'bg-[#2bc196] text-[#002443] shadow-md shadow-[#2bc196]/20'
+          ? 'bg-[#1356E2] text-[#0A0A0A] shadow-md shadow-[#1356E2]/20'
           : 'bg-white/5 text-white/40 hover:text-white/70 border border-white/5'
       } ${readOnly ? 'opacity-60 cursor-not-allowed' : ''}`}
     >
@@ -65,7 +65,7 @@ export default function CardReservaFinanceira({ rates, onUpdateRates, readOnly =
             type="button"
             onClick={() => !readOnly && update(`${kind}.ativa`, !data.ativa)}
             disabled={readOnly}
-            className={`relative w-10 h-5 rounded-full transition-colors ${data.ativa ? 'bg-[#2bc196]' : 'bg-white/15'} ${readOnly ? 'cursor-not-allowed' : ''}`}
+            className={`relative w-10 h-5 rounded-full transition-colors ${data.ativa ? 'bg-[#1356E2]' : 'bg-white/15'} ${readOnly ? 'cursor-not-allowed' : ''}`}
           >
             <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${data.ativa ? 'translate-x-5' : 'translate-x-0.5'}`} />
           </button>
@@ -85,8 +85,8 @@ export default function CardReservaFinanceira({ rates, onUpdateRates, readOnly =
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#2bc196]" />
+          <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#1356E2]" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-white">Reserva Financeira</h2>
@@ -97,9 +97,9 @@ export default function CardReservaFinanceira({ rates, onUpdateRates, readOnly =
           <button
             type="button"
             onClick={restoreDefault}
-            className="flex items-center gap-1.5 text-[10px] text-[#2bc196]/70 hover:text-[#2bc196] font-semibold uppercase tracking-wider"
+            className="flex items-center gap-1.5 text-[10px] text-[#1356E2]/70 hover:text-[#1356E2] font-semibold uppercase tracking-wider"
           >
-            <RotateCcw className="w-3 h-3" /> Padrão Pagsmile
+            <RotateCcw className="w-3 h-3" /> Padrão Pin Bank
           </button>
         )}
       </div>
@@ -121,7 +121,7 @@ export default function CardReservaFinanceira({ rates, onUpdateRates, readOnly =
         </p>
         <div className="flex items-start gap-1.5 text-[10px] text-white/30 pt-1">
           <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
-          <span>Texto padrão Pagsmile — não editável. Aparece na proposta pública abaixo dos percentuais.</span>
+          <span>Texto padrão Pin Bank — não editável. Aparece na proposta pública abaixo dos percentuais.</span>
         </div>
       </div>
     </div>

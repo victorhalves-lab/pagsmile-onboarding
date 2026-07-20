@@ -25,7 +25,7 @@ export default function Step10cPLDMonitoramento({ formData, handleChange }) {
       subtitle="Monitoramento de transações e alertas."
       icon={ShieldCheck}
     >
-      <h3 className="font-semibold text-[var(--pagsmile-blue)] mb-2">8C. Monitoramento de Transações</h3>
+      <h3 className="font-semibold text-[var(--pinbank-blue)] mb-2">8C. Monitoramento de Transações</h3>
       
       <YesNoQuestion
         question="Possui sistema de monitoramento de transações?"
@@ -41,8 +41,8 @@ export default function Step10cPLDMonitoramento({ formData, handleChange }) {
                onChange={(v) => handleChange('pld_mon_auto', v)}
             />
             
-            <div className="p-3 bg-[var(--pagsmile-blue)]/5 border border-[var(--pagsmile-blue)]/10 rounded-lg">
-               <Label className="text-sm font-medium text-[var(--pagsmile-blue)] mb-2 block">Quais alertas são monitorados?</Label>
+            <div className="p-3 bg-[var(--pinbank-blue)]/5 border border-[var(--pinbank-blue)]/10 rounded-lg">
+               <Label className="text-sm font-medium text-[var(--pinbank-blue)] mb-2 block">Quais alertas são monitorados?</Label>
                <div className="grid grid-cols-2 gap-2">
                   {alertasMonitoradosOptions.map(opt => (
                      <div key={opt} className="flex items-center space-x-2">
@@ -50,16 +50,16 @@ export default function Step10cPLDMonitoramento({ formData, handleChange }) {
                            id={`mon_${opt}`} 
                            checked={(formData.pld_mon_alertas || []).includes(opt)}
                            onCheckedChange={(c) => handleMultiSelect('pld_mon_alertas', opt, c)}
-                           className="border-[var(--pagsmile-blue)]/30 text-[var(--pagsmile-green)] data-[state=checked]:bg-[var(--pagsmile-green)] data-[state=checked]:border-[var(--pagsmile-green)]"
+                           className="border-[var(--pinbank-blue)]/30 text-[var(--pinbank-blue)] data-[state=checked]:bg-[var(--pinbank-blue)] data-[state=checked]:border-[var(--pinbank-blue)]"
                         />
-                        <Label htmlFor={`mon_${opt}`} className="text-sm font-normal text-[var(--pagsmile-blue)] cursor-pointer">{opt}</Label>
+                        <Label htmlFor={`mon_${opt}`} className="text-sm font-normal text-[var(--pinbank-blue)] cursor-pointer">{opt}</Label>
                      </div>
                   ))}
                </div>
             </div>
 
             <div className="space-y-2">
-               <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Prazo médio para análise de alertas</Label>
+               <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Prazo médio para análise de alertas</Label>
                <SelectionButton
                   options={[
                      {value: 'real', label: 'Tempo real'},

@@ -55,13 +55,13 @@ export default function GlobalProposalCenter() {
   return (
     <div className="space-y-4">
       {/* Filtros */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4 flex flex-wrap items-center gap-3">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4 flex flex-wrap items-center gap-3">
         <div className="flex-1 min-w-[200px] relative">
-          <Search className="w-4 h-4 text-[#002443]/40 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#0A0A0A]/40 absolute left-3 top-1/2 -translate-y-1/2" />
           <Input placeholder="Buscar por cliente ou email..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10" />
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-[#002443]/40" />
+          <Filter className="w-4 h-4 text-[#0A0A0A]/40" />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-48 h-10"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -76,9 +76,9 @@ export default function GlobalProposalCenter() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-[#f4f4f4] text-[#002443]/70 text-xs uppercase">
+          <thead className="bg-[#f4f4f4] text-[#0A0A0A]/70 text-xs uppercase">
             <tr>
               <th className="text-left px-4 py-3">Cliente</th>
               <th className="text-left px-4 py-3">Idioma</th>
@@ -90,21 +90,21 @@ export default function GlobalProposalCenter() {
               <th className="text-right px-4 py-3">Ações</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#002443]/5">
+          <tbody className="divide-y divide-[#0A0A0A]/5">
             {filtered.map(p => (
               <tr key={p.id} className="hover:bg-[#f4f4f4]/40">
                 <td className="px-4 py-3">
-                  <div className="font-medium text-[#002443]">{p.client_name}</div>
-                  <div className="text-xs text-[#002443]/50">{p.contact_email}</div>
+                  <div className="font-medium text-[#0A0A0A]">{p.client_name}</div>
+                  <div className="text-xs text-[#0A0A0A]/50">{p.contact_email}</div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-xs uppercase font-mono text-[#002443]/70">{p.language || 'en'}</span>
+                  <span className="text-xs uppercase font-mono text-[#0A0A0A]/70">{p.language || 'en'}</span>
                 </td>
                 <td className="px-4 py-3 text-right font-mono">{Number(p.final_rate_percentage || 0).toFixed(3)}%</td>
                 <td className="px-4 py-3 text-right font-mono">${Number(p.final_fixed_fee || 0).toFixed(2)}</td>
                 <td className="px-4 py-3 text-center"><StatusBadge status={p.status} /></td>
-                <td className="px-4 py-3 text-right text-xs text-[#002443]/60">V{p.version || 1}</td>
-                <td className="px-4 py-3 text-right text-xs text-[#002443]/60">
+                <td className="px-4 py-3 text-right text-xs text-[#0A0A0A]/60">V{p.version || 1}</td>
+                <td className="px-4 py-3 text-right text-xs text-[#0A0A0A]/60">
                   {p.created_date ? format(new Date(p.created_date), 'dd/MM/yy') : '—'}
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -126,13 +126,13 @@ export default function GlobalProposalCenter() {
               </tr>
             ))}
             {!isLoading && filtered.length === 0 && (
-              <tr><td colSpan={8} className="px-4 py-10 text-center text-[#002443]/50">
-                <FileText className="w-8 h-8 mx-auto mb-2 text-[#002443]/30" />
+              <tr><td colSpan={8} className="px-4 py-10 text-center text-[#0A0A0A]/50">
+                <FileText className="w-8 h-8 mx-auto mb-2 text-[#0A0A0A]/30" />
                 Nenhuma proposta encontrada.
               </td></tr>
             )}
             {isLoading && (
-              <tr><td colSpan={8} className="px-4 py-10 text-center text-[#002443]/50">Carregando...</td></tr>
+              <tr><td colSpan={8} className="px-4 py-10 text-center text-[#0A0A0A]/50">Carregando...</td></tr>
             )}
           </tbody>
         </table>

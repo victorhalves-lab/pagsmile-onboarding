@@ -13,7 +13,7 @@ function ContrapropostaRow({ label, original, value, onChange }) {
     <div className="grid grid-cols-3 gap-3 items-center">
       <Label className="text-xs font-medium">{label}</Label>
       <div className="text-center">
-        <span className="text-xs text-[#002443]/50">de: </span>
+        <span className="text-xs text-[#0A0A0A]/50">de: </span>
         <span className="text-xs font-semibold">{original || '-'}%</span>
       </div>
       <Input
@@ -72,13 +72,13 @@ export default function ContrapropostaModal({ open, onClose, proposta, onSubmit,
               placeholder="Explique o motivo da contraproposta (mínimo 20 caracteres)"
               rows={3}
             />
-            <p className="text-[10px] text-[#002443]/40">{justificativa.length}/20 caracteres mínimos</p>
+            <p className="text-[10px] text-[#0A0A0A]/40">{justificativa.length}/20 caracteres mínimos</p>
           </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleSubmit} disabled={!canSubmit || isPending} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+          <Button onClick={handleSubmit} disabled={!canSubmit || isPending} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
             {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Enviar
           </Button>

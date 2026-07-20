@@ -122,7 +122,7 @@ export default function InsightsCommercialPerfSection({ leads, proposals, pixPro
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {origemData.length > 0 && <DonutChart title="Origem das Propostas" data={origemData} colorMap={{ Manual: '#002443', 'IA Automática': '#2bc196', 'IA Assistida': '#5cf7cf' }} />}
+        {origemData.length > 0 && <DonutChart title="Origem das Propostas" data={origemData} colorMap={{ Manual: '#0A0A0A', 'IA Automática': '#1356E2', 'IA Assistida': '#E84B1C' }} />}
         {recusaData.length > 0 && <HorizontalBarList title="Motivos de Recusa" data={recusaData} color="#ef4444" />}
       </div>
 
@@ -132,10 +132,10 @@ export default function InsightsCommercialPerfSection({ leads, proposals, pixPro
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={winByOrigemData} barCategoryGap="25%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#002443' }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} unit="%" axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={TT} />
-                <Bar dataKey="Win Rate (%)" fill="#2bc196" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="Win Rate (%)" fill="#1356E2" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -150,16 +150,16 @@ export default function InsightsCommercialPerfSection({ leads, proposals, pixPro
             <AreaChart data={cohortData}>
               <defs>
                 <linearGradient id="cohortFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#002443" stopOpacity={0.15} />
-                  <stop offset="100%" stopColor="#002443" stopOpacity={0.02} />
+                  <stop offset="0%" stopColor="#0A0A0A" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#0A0A0A" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} />
-              <Area type="monotone" dataKey="Leads" stroke="#002443" fill="url(#cohortFill)" strokeWidth={2} dot={{ r: 3, fill: '#002443', stroke: '#fff', strokeWidth: 2 }} />
-              <Area type="monotone" dataKey="Convertidos" stroke="#2bc196" fill="transparent" strokeWidth={2} dot={{ r: 3, fill: '#2bc196', stroke: '#fff', strokeWidth: 2 }} />
+              <Area type="monotone" dataKey="Leads" stroke="#0A0A0A" fill="url(#cohortFill)" strokeWidth={2} dot={{ r: 3, fill: '#0A0A0A', stroke: '#fff', strokeWidth: 2 }} />
+              <Area type="monotone" dataKey="Convertidos" stroke="#1356E2" fill="transparent" strokeWidth={2} dot={{ r: 3, fill: '#1356E2', stroke: '#fff', strokeWidth: 2 }} />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>

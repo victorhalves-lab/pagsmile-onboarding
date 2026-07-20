@@ -1,5 +1,5 @@
 // ============================================================
-// VALIDADORES CENTRAIS — Questionário Leads Pagsmile V5
+// VALIDADORES CENTRAIS — Questionário Leads Pin Bank V5
 // Fonte única de verdade. Cada validador retorna:
 //   - errors: { [fieldName]: 'mensagem' }
 //   - summary: string[] (mensagens para exibir no topo)

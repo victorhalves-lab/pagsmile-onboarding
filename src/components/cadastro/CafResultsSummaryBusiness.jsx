@@ -199,15 +199,15 @@ export default function CafResultsSummaryBusiness({ integrationLogs = [], valida
   }).length;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50/40 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-purple-100">
             <Fingerprint className="w-5 h-5 text-purple-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Resultados CAF — Linguagem de Negócio</h3>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40">Cada verificação traduzida: o que verificou, o que encontrou, o que significa</p>
+            <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Resultados CAF — Linguagem de Negócio</h3>
+            <p className="text-xs text-[var(--pinbank-blue)]/40">Cada verificação traduzida: o que verificou, o que encontrou, o que significa</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Badge className="bg-green-100 text-green-700 text-[10px]">{okCount} ok</Badge>
@@ -232,9 +232,9 @@ export default function CafResultsSummaryBusiness({ integrationLogs = [], valida
                 <StatusIcon className={`w-5 h-5 ${vis.color} flex-shrink-0 mt-0.5`} />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{label}</span>
+                    <span className="text-sm font-bold text-[var(--pinbank-blue)]">{label}</span>
                   </div>
-                  <p className="text-[10px] font-semibold text-[var(--pagsmile-blue)]/50 mb-1">{question}</p>
+                  <p className="text-[10px] font-semibold text-[var(--pinbank-blue)]/50 mb-1">{question}</p>
                   <p className={`text-xs leading-relaxed ${vis.color}`}>{verdict.text}</p>
                 </div>
               </div>

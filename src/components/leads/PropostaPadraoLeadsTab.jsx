@@ -82,15 +82,15 @@ export default function PropostaPadraoLeadsTab() {
   React.useEffect(() => { setPage(1); }, [search, statusFilter]);
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>;
   }
 
   if (spLeads.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-        <Rocket className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-[#002443]/50 font-medium">Nenhum fechamento via Proposta Padrão ainda</p>
-        <p className="text-xs text-[#002443]/30 mt-1">Quando um cliente aceitar uma proposta padrão e preencher os dados, aparecerá aqui.</p>
+        <Rocket className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-3" />
+        <p className="text-[#0A0A0A]/50 font-medium">Nenhum fechamento via Proposta Padrão ainda</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">Quando um cliente aceitar uma proposta padrão e preencher os dados, aparecerá aqui.</p>
       </div>
     );
   }
@@ -99,7 +99,7 @@ export default function PropostaPadraoLeadsTab() {
     <div className="space-y-4">
       {/* Stats */}
       <div className="flex gap-3 flex-wrap">
-        <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-[#2bc196]/20 px-3 py-1">
+        <Badge className="bg-[#1356E2]/10 text-[#1356E2] border-[#1356E2]/20 px-3 py-1">
           {spLeads.length} fechamentos
         </Badge>
         <Badge className="bg-green-50 text-green-700 border-green-200 px-3 py-1">
@@ -110,7 +110,7 @@ export default function PropostaPadraoLeadsTab() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por empresa, CNPJ, e-mail..." className="pl-10 h-10" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -130,7 +130,7 @@ export default function PropostaPadraoLeadsTab() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -149,7 +149,7 @@ export default function PropostaPadraoLeadsTab() {
               {paginated.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-12">
-                    <p className="text-[#002443]/40">Nenhum resultado encontrado</p>
+                    <p className="text-[#0A0A0A]/40">Nenhum resultado encontrado</p>
                   </TableCell>
                 </TableRow>
               ) : paginated.map(record => {
@@ -161,10 +161,10 @@ export default function PropostaPadraoLeadsTab() {
                   <TableRow key={record.id} className="hover:bg-[#f4f4f4] transition-colors">
                     <TableCell>
                       <p className="font-medium text-sm">{record.razaoSocial || record.email}</p>
-                      <p className="text-[10px] text-[#002443]/50">{record.cnpj || ''}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50">{record.cnpj || ''}</p>
                     </TableCell>
                     <TableCell>
-                      <Badge className="bg-[#002443]/5 text-[#002443] text-xs border-0">
+                      <Badge className="bg-[#0A0A0A]/5 text-[#0A0A0A] text-xs border-0">
                         {record.segment || '-'}
                       </Badge>
                     </TableCell>
@@ -176,7 +176,7 @@ export default function PropostaPadraoLeadsTab() {
                     </TableCell>
                     <TableCell>
                       <p className="text-xs">{record.contactName || '-'}</p>
-                      <p className="text-[10px] text-[#002443]/50">{record.email}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50">{record.email}</p>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm font-mono">
@@ -184,7 +184,7 @@ export default function PropostaPadraoLeadsTab() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-xs text-[#002443]/60">
+                      <span className="text-xs text-[#0A0A0A]/60">
                         {record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}
                       </span>
                     </TableCell>
@@ -215,9 +215,9 @@ export default function PropostaPadraoLeadsTab() {
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#0A0A0A]/5">
             <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
-            <span className="text-xs text-[#002443]/60">Página {page} de {totalPages}</span>
+            <span className="text-xs text-[#0A0A0A]/60">Página {page} de {totalPages}</span>
             <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
           </div>
         )}

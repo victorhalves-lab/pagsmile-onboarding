@@ -43,8 +43,8 @@ export default function BdcLookup() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443] flex items-center gap-2">
-            <SearchIcon className="w-6 h-6 text-[#2bc196]" />
+          <h1 className="text-2xl font-bold text-[#0A0A0A] flex items-center gap-2">
+            <SearchIcon className="w-6 h-6 text-[#1356E2]" />
             BDC Lookup
           </h1>
           <p className="text-sm text-slate-500 mt-1">

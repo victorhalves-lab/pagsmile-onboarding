@@ -42,7 +42,7 @@ export default function CurrencyNumberInput({ value, onChange, placeholder, pref
   return (
     <div className="relative">
       {prefix && (
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#002443]/40 font-medium">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#0A0A0A]/40 font-medium">
           {prefix}
         </span>
       )}
@@ -56,7 +56,7 @@ export default function CurrencyNumberInput({ value, onChange, placeholder, pref
         className={`h-12 rounded-xl ${prefix ? 'pl-10' : ''} ${suffix ? 'pr-10' : ''} ${hasError ? 'border-red-400 ring-1 ring-red-300' : ''}`}
       />
       {suffix && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#002443]/40 font-medium">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#0A0A0A]/40 font-medium">
           {suffix}
         </span>
       )}

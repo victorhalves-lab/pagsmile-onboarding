@@ -27,8 +27,8 @@ export default function ModuleDDisputas({ formData, handleChange }) {
           <AlertTriangle className="w-5 h-5 text-red-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Módulo Disputas/Chargeback</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Gestão de contestações (ativado por taxa &gt;1%)</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Módulo Disputas/Chargeback</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Gestão de contestações (ativado por taxa &gt;1%)</p>
         </div>
       </div>
 

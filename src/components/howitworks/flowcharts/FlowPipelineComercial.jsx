@@ -31,8 +31,8 @@ export default function FlowPipelineComercial() {
               { col: '7. Perdido', desc: 'Lead descartado', color: 'bg-red-100' },
             ].map((c, i) => (
               <div key={i} className={`${c.color} rounded-lg p-1.5 text-center`}>
-                <p className="text-[8px] font-bold text-[#002443]">{c.col}</p>
-                <p className="text-[7px] text-[#002443]/50">{c.desc}</p>
+                <p className="text-[8px] font-bold text-[#0A0A0A]">{c.col}</p>
+                <p className="text-[7px] text-[#0A0A0A]/50">{c.desc}</p>
               </div>
             ))}
           </div>

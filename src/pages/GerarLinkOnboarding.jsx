@@ -89,24 +89,24 @@ export default function GerarLinkOnboarding() {
   const base = window.location.origin;
   const quickLinks = {
     leads: [
-      { key: 'LEAD', label: 'Questionário Comercial', desc: 'Formulário completo para captação de leads', icon: ClipboardList, color: '#2bc196', url: `${base}/LeadQuestionnaire?templateId=69a5ccbeafab70a7ca2184ad` },
-      { key: 'LEAD_SIMP', label: 'Questionário Simplificado', desc: 'Versão rápida pós-reunião com taxas', icon: Zap, color: '#36706c', url: `${base}/QuestionarioSimplificadoPublico` },
+      { key: 'LEAD', label: 'Questionário Comercial', desc: 'Formulário completo para captação de leads', icon: ClipboardList, color: '#1356E2', url: `${base}/LeadQuestionnaire?templateId=69a5ccbeafab70a7ca2184ad` },
+      { key: 'LEAD_SIMP', label: 'Questionário Simplificado', desc: 'Versão rápida pós-reunião com taxas', icon: Zap, color: '#E84B1C', url: `${base}/QuestionarioSimplificadoPublico` },
     ],
     compliance_by_type: [
-      { key: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe o perfil', icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
-      { key: 'PIX', label: 'Pix', desc: 'Compliance simplificado Pix', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
-      { key: 'FULL', label: 'Full KYC', desc: 'Compliance completo', icon: Shield, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
-      { key: 'LITE', label: 'Lite', desc: 'PMEs simplificado', icon: Zap, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
-      { key: 'ECOMMERCE', label: 'E-commerce', desc: 'Lojas virtuais', icon: ShoppingCart, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
-      { key: 'SAAS', label: 'SaaS', desc: 'Recorrência / fast track', icon: Cloud, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
+      { key: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe o perfil', icon: Globe, color: '#0A0A0A', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'PIX', label: 'Pix', desc: 'Compliance simplificado Pix', icon: CreditCard, color: '#1356E2', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
+      { key: 'FULL', label: 'Full KYC', desc: 'Compliance completo', icon: Shield, color: '#0A0A0A', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'LITE', label: 'Lite', desc: 'PMEs simplificado', icon: Zap, color: '#E84B1C', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
+      { key: 'ECOMMERCE', label: 'E-commerce', desc: 'Lojas virtuais', icon: ShoppingCart, color: '#0A0A0A', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'SAAS', label: 'SaaS', desc: 'Recorrência / fast track', icon: Cloud, color: '#E84B1C', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
     ],
     compliance_by_business: [
-      { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
-      { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceGatewayV4` },
-      { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceMarketplaceV4` },
+      { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#1356E2', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#0A0A0A', url: `${base}/ComplianceDinamico?model=ComplianceGatewayV4` },
+      { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#E84B1C', url: `${base}/ComplianceDinamico?model=ComplianceMarketplaceV4` },
     ],
     compliance_v5_2: [
-      { key: 'V5_2_DYNAMIC', label: 'V5.2 Dinâmico (BETA)', desc: 'Tier-aware + dynamic questionnaire (escala automaticamente)', icon: Rocket, color: '#2bc196', url: `${base}/ComplianceDinamico?v=5.2` },
+      { key: 'V5_2_DYNAMIC', label: 'V5.2 Dinâmico (BETA)', desc: 'Tier-aware + dynamic questionnaire (escala automaticamente)', icon: Rocket, color: '#1356E2', url: `${base}/ComplianceDinamico?v=5.2` },
     ]
   };
 
@@ -156,32 +156,32 @@ export default function GerarLinkOnboarding() {
   };
 
   const getLinkBadgeStyle = (link) => {
-    if (link.linkType === 'LEAD_QUESTIONNAIRE') return 'bg-[#2bc196]/10 text-[#2bc196]';
-    if (link.linkType === 'LEAD_SIMPLIFICADO') return 'bg-[#36706c]/10 text-[#36706c]';
-    return 'bg-[#002443]/10 text-[#002443]';
+    if (link.linkType === 'LEAD_QUESTIONNAIRE') return 'bg-[#1356E2]/10 text-[#1356E2]';
+    if (link.linkType === 'LEAD_SIMPLIFICADO') return 'bg-[#E84B1C]/10 text-[#E84B1C]';
+    return 'bg-[#0A0A0A]/10 text-[#0A0A0A]';
   };
 
   const QuickLinkCard = ({ item }) => (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 p-4 hover:shadow-md transition-all group">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4 hover:shadow-md transition-all group">
       <div className="flex items-start gap-3 mb-3">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${item.color}10` }}>
           <item.icon className="w-4 h-4" style={{ color: item.color }} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-bold text-[#002443]">{item.label}</h3>
-          <p className="text-[10px] text-[#002443]/40">{item.desc}</p>
+          <h3 className="text-sm font-bold text-[#0A0A0A]">{item.label}</h3>
+          <p className="text-[10px] text-[#0A0A0A]/40">{item.desc}</p>
         </div>
       </div>
       <div className="flex gap-1.5">
         <button onClick={() => handleCopy(item.url, item.key)}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all ${
-            copiedKey === item.key ? 'bg-[#2bc196] text-white' : 'bg-[#f4f4f4] text-[#002443]/60 hover:bg-[#2bc196]/10 hover:text-[#2bc196]'
+            copiedKey === item.key ? 'bg-[#1356E2] text-white' : 'bg-[#f4f4f4] text-[#0A0A0A]/60 hover:bg-[#1356E2]/10 hover:text-[#1356E2]'
           }`}>
           {copiedKey === item.key ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           {copiedKey === item.key ? t('gl.copied') : t('gl.copy')}
         </button>
         <button onClick={() => window.open(item.url, '_blank')}
-          className="px-3 py-2 rounded-xl bg-[#f4f4f4] text-[#002443]/40 hover:bg-[#002443]/5 hover:text-[#002443] transition-all">
+          className="px-3 py-2 rounded-xl bg-[#f4f4f4] text-[#0A0A0A]/40 hover:bg-[#0A0A0A]/5 hover:text-[#0A0A0A] transition-all">
           <ExternalLink className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -193,37 +193,37 @@ export default function GerarLinkOnboarding() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-            <LinkIcon className="w-5 h-5 text-[#2bc196]" />
+          <div className="w-10 h-10 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+            <LinkIcon className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">{t('gl.title')}</h1>
-            <p className="text-sm text-[#002443]/60">{t('gl.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('gl.title')}</h1>
+            <p className="text-sm text-[#0A0A0A]/60">{t('gl.subtitle')}</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('gl.refresh')}</span>
+        <Button variant="outline" onClick={() => refetch()} className="border-[#0A0A0A]/10 hover:bg-[#f4f4f4] rounded-xl">
+          <RefreshCw className="w-4 h-4 mr-2 text-[#0A0A0A]/50" /> <span className="text-[#0A0A0A]/70">{t('gl.refresh')}</span>
         </Button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { label: 'Links', value: stats.totalLinks, icon: LinkIcon, color: '#002443' },
-          { label: 'Cliques', value: stats.totalClicks, icon: MousePointer, color: '#36706c' },
-          { label: 'Submissões', value: stats.totalSubmissions, icon: FileCheck, color: '#2bc196' },
-          { label: 'Completados', value: stats.totalCompleted, icon: Check, color: '#2bc196' },
-          { label: 'Conversão', value: `${stats.convRate}%`, icon: TrendingUp, color: '#36706c' },
+          { label: 'Links', value: stats.totalLinks, icon: LinkIcon, color: '#0A0A0A' },
+          { label: 'Cliques', value: stats.totalClicks, icon: MousePointer, color: '#E84B1C' },
+          { label: 'Submissões', value: stats.totalSubmissions, icon: FileCheck, color: '#1356E2' },
+          { label: 'Completados', value: stats.totalCompleted, icon: Check, color: '#1356E2' },
+          { label: 'Conversão', value: `${stats.convRate}%`, icon: TrendingUp, color: '#E84B1C' },
         ].map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+          <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
             <div className="flex items-center gap-2 mb-1"><s.icon className="w-4 h-4" style={{ color: s.color }} /><p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p></div>
-            <p className="text-[10px] text-[#002443]/40">{s.label}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Section Tabs */}
-      <div className="flex gap-2 bg-[#f4f4f4] rounded-2xl p-1.5 border border-[#002443]/5">
+      <div className="flex gap-2 bg-[#f4f4f4] rounded-2xl p-1.5 border border-[#0A0A0A]/5">
         {[
           { id: 'leads', label: t('gl.leads_links'), icon: ClipboardList },
           { id: 'compliance', label: t('gl.compliance_links'), icon: Shield },
@@ -233,8 +233,8 @@ export default function GerarLinkOnboarding() {
           <button key={tab.id} onClick={() => setActiveSection(tab.id)}
             className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
               activeSection === tab.id
-                ? 'bg-white text-[#002443] shadow-sm'
-                : 'text-[#002443]/40 hover:text-[#002443]/60'
+                ? 'bg-white text-[#0A0A0A] shadow-sm'
+                : 'text-[#0A0A0A]/40 hover:text-[#0A0A0A]/60'
             }`}>{tab.label}</button>
         ))}
       </div>
@@ -243,18 +243,18 @@ export default function GerarLinkOnboarding() {
       {activeSection === 'leads' && (
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><ClipboardList className="w-4 h-4 text-[#2bc196]" /></div>
+            <div className="w-8 h-8 rounded-xl bg-[#1356E2]/10 flex items-center justify-center"><ClipboardList className="w-4 h-4 text-[#1356E2]" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">{t('gl.leads_title')}</h2>
-              <p className="text-xs text-[#002443]/40">{t('gl.leads_desc')}</p>
+              <h2 className="text-base font-bold text-[#0A0A0A]">{t('gl.leads_title')}</h2>
+              <p className="text-xs text-[#0A0A0A]/40">{t('gl.leads_desc')}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {quickLinks.leads.map(item => <QuickLinkCard key={item.key} item={item} />)}
           </div>
-          <div className="bg-[#2bc196]/5 border border-[#2bc196]/10 rounded-2xl p-3 flex items-start gap-2">
-            <Info className="w-4 h-4 text-[#2bc196] mt-0.5 shrink-0" />
-            <p className="text-[10px] text-[#002443]/50">{t('gl.no_tracking_hint')}</p>
+          <div className="bg-[#1356E2]/5 border border-[#1356E2]/10 rounded-2xl p-3 flex items-start gap-2">
+            <Info className="w-4 h-4 text-[#1356E2] mt-0.5 shrink-0" />
+            <p className="text-[10px] text-[#0A0A0A]/50">{t('gl.no_tracking_hint')}</p>
           </div>
         </div>
       )}
@@ -265,10 +265,10 @@ export default function GerarLinkOnboarding() {
           {/* Por Sub-Categoria de Negócio */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#2bc196]" /></div>
+              <div className="w-8 h-8 rounded-xl bg-[#1356E2]/10 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#1356E2]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">{t('gl.by_business')}</h2>
-                <p className="text-xs text-[#002443]/40">{t('gl.by_business_desc')}</p>
+                <h2 className="text-base font-bold text-[#0A0A0A]">{t('gl.by_business')}</h2>
+                <p className="text-xs text-[#0A0A0A]/40">{t('gl.by_business_desc')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -279,10 +279,10 @@ export default function GerarLinkOnboarding() {
           {/* Por Tipo de Compliance */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Shield className="w-4 h-4 text-[#002443]" /></div>
+              <div className="w-8 h-8 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center"><Shield className="w-4 h-4 text-[#0A0A0A]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">{t('gl.by_compliance')}</h2>
-                <p className="text-xs text-[#002443]/40">{t('gl.by_compliance_desc')}</p>
+                <h2 className="text-base font-bold text-[#0A0A0A]">{t('gl.by_compliance')}</h2>
+                <p className="text-xs text-[#0A0A0A]/40">{t('gl.by_compliance_desc')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -293,13 +293,13 @@ export default function GerarLinkOnboarding() {
           {/* V5.2 Dinâmico (BETA) */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Rocket className="w-4 h-4 text-[#2bc196]" /></div>
+              <div className="w-8 h-8 rounded-xl bg-[#1356E2]/10 flex items-center justify-center"><Rocket className="w-4 h-4 text-[#1356E2]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443] flex items-center gap-2">
+                <h2 className="text-base font-bold text-[#0A0A0A] flex items-center gap-2">
                   Framework V5.2
-                  <Badge className="bg-[#2bc196]/15 text-[#36706c] border-0 text-[10px] font-bold">BETA</Badge>
+                  <Badge className="bg-[#1356E2]/15 text-[#E84B1C] border-0 text-[10px] font-bold">BETA</Badge>
                 </h2>
-                <p className="text-xs text-[#002443]/40">Questionário dinâmico tier-aware (Tier 1/2/3/Subseller resolvido em tempo real)</p>
+                <p className="text-xs text-[#0A0A0A]/40">Questionário dinâmico tier-aware (Tier 1/2/3/Subseller resolvido em tempo real)</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -311,31 +311,31 @@ export default function GerarLinkOnboarding() {
 
       {/* === SECTION: Link Personalizado === */}
       {activeSection === 'personalizado' && (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-6">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Plus className="w-5 h-5 text-[#002443]" /></div>
+            <div className="w-10 h-10 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center"><Plus className="w-5 h-5 text-[#0A0A0A]" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">{t('gl.custom_title')}</h2>
-              <p className="text-xs text-[#002443]/40">{t('gl.custom_desc')}</p>
+              <h2 className="text-base font-bold text-[#0A0A0A]">{t('gl.custom_title')}</h2>
+              <p className="text-xs text-[#0A0A0A]/40">{t('gl.custom_desc')}</p>
             </div>
           </div>
 
           {/* Tipo de Link */}
           <div className="space-y-2">
-            <Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Tipo de Link</Label>
+            <Label className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-[0.15em]">Tipo de Link</Label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { value: 'LEAD_QUESTIONNAIRE', label: '📋 Lead', desc: 'Questionário comercial', color: '#2bc196' },
-                { value: 'LEAD_SIMPLIFICADO', label: '⚡ Simplificado', desc: 'Pós-reunião', color: '#36706c' },
-                { value: 'KYC_AVULSO', label: '🔒 Compliance', desc: 'KYC/KYB avulso', color: '#002443' },
-                { value: 'PROPOSAL', label: '📄 Proposta', desc: 'Link de proposta', color: '#36706c' },
+                { value: 'LEAD_QUESTIONNAIRE', label: '📋 Lead', desc: 'Questionário comercial', color: '#1356E2' },
+                { value: 'LEAD_SIMPLIFICADO', label: '⚡ Simplificado', desc: 'Pós-reunião', color: '#E84B1C' },
+                { value: 'KYC_AVULSO', label: '🔒 Compliance', desc: 'KYC/KYB avulso', color: '#0A0A0A' },
+                { value: 'PROPOSAL', label: '📄 Proposta', desc: 'Link de proposta', color: '#E84B1C' },
               ].map(opt => (
                 <button key={opt.value} onClick={() => setPForm(prev => ({ ...prev, linkType: opt.value }))}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${
-                    pForm.linkType === opt.value ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-sm' : 'border-[#002443]/5 hover:border-[#002443]/15'
+                    pForm.linkType === opt.value ? 'border-[#1356E2] bg-[#1356E2]/5 shadow-sm' : 'border-[#0A0A0A]/5 hover:border-[#0A0A0A]/15'
                   }`}>
                   <p className="font-bold text-sm" style={{ color: opt.color }}>{opt.label}</p>
-                  <p className="text-[10px] text-[#002443]/40 mt-0.5">{opt.desc}</p>
+                  <p className="text-[10px] text-[#0A0A0A]/40 mt-0.5">{opt.desc}</p>
                 </button>
               ))}
             </div>
@@ -344,7 +344,7 @@ export default function GerarLinkOnboarding() {
           {/* Compliance sub-type */}
           {pForm.linkType === 'KYC_AVULSO' && (
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Perfil de Compliance</Label>
+              <Label className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-[0.15em]">Perfil de Compliance</Label>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                 {[
                   { v: 'GENERIC', l: '🌐 Genérico' }, { v: 'PIX', l: '💳 Pix' }, { v: 'FULL', l: '🔒 Full' },
@@ -352,7 +352,7 @@ export default function GerarLinkOnboarding() {
                 ].map(opt => (
                   <button key={opt.v} onClick={() => setPForm(prev => ({ ...prev, complianceType: opt.v }))}
                     className={`py-2.5 px-3 rounded-xl border-2 text-xs font-bold transition-all ${
-                      pForm.complianceType === opt.v ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#002443]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
+                      pForm.complianceType === opt.v ? 'border-[#1356E2] bg-[#1356E2]/5 text-[#0A0A0A]' : 'border-[#0A0A0A]/5 text-[#0A0A0A]/40 hover:border-[#0A0A0A]/15'
                     }`}>{opt.l}</button>
                 ))}
               </div>
@@ -362,16 +362,16 @@ export default function GerarLinkOnboarding() {
           {/* Questionário selector as buttons */}
           {(pForm.linkType === 'LEAD_QUESTIONNAIRE' || pForm.linkType === 'KYC_AVULSO') && templates.length > 0 && (
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Questionário (opcional)</Label>
+              <Label className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-[0.15em]">Questionário (opcional)</Label>
               <div className="flex gap-2 flex-wrap">
                 <button onClick={() => setPForm(prev => ({ ...prev, questionnaireTemplateId: '' }))}
                   className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
-                    !pForm.questionnaireTemplateId ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#2bc196]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
+                    !pForm.questionnaireTemplateId ? 'border-[#1356E2] bg-[#1356E2]/5 text-[#1356E2]' : 'border-[#0A0A0A]/5 text-[#0A0A0A]/40 hover:border-[#0A0A0A]/15'
                   }`}>Padrão</button>
                 {templates.map(t => (
                   <button key={t.id} onClick={() => setPForm(prev => ({ ...prev, questionnaireTemplateId: t.id }))}
                     className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
-                      pForm.questionnaireTemplateId === t.id ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#2bc196]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
+                      pForm.questionnaireTemplateId === t.id ? 'border-[#1356E2] bg-[#1356E2]/5 text-[#1356E2]' : 'border-[#0A0A0A]/5 text-[#0A0A0A]/40 hover:border-[#0A0A0A]/15'
                     }`}>{t.name}</button>
                 ))}
               </div>
@@ -381,16 +381,16 @@ export default function GerarLinkOnboarding() {
           {/* Introducer */}
           {introducers.length > 0 && (
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Introducer (Parceiro de Indicação)</Label>
+              <Label className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-[0.15em]">Introducer (Parceiro de Indicação)</Label>
               <div className="flex gap-2 flex-wrap">
                 <button onClick={() => setPForm(prev => ({ ...prev, introducerId: '', utmSource: prev.utmSource }))}
                   className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
-                    !pForm.introducerId ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#2bc196]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
+                    !pForm.introducerId ? 'border-[#1356E2] bg-[#1356E2]/5 text-[#1356E2]' : 'border-[#0A0A0A]/5 text-[#0A0A0A]/40 hover:border-[#0A0A0A]/15'
                   }`}>Nenhum</button>
                 {introducers.map(intro => (
                   <button key={intro.id} onClick={() => setPForm(prev => ({ ...prev, introducerId: intro.id, utmSource: intro.referralCode }))}
                     className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
-                      pForm.introducerId === intro.id ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#2bc196]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
+                      pForm.introducerId === intro.id ? 'border-[#1356E2] bg-[#1356E2]/5 text-[#1356E2]' : 'border-[#0A0A0A]/5 text-[#0A0A0A]/40 hover:border-[#0A0A0A]/15'
                     }`}>{intro.name} <span className="text-[9px] opacity-50">({intro.referralCode})</span></button>
                 ))}
               </div>
@@ -399,14 +399,14 @@ export default function GerarLinkOnboarding() {
 
           {/* Agente + UTM */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1"><Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Agente Comercial</Label>
-              <Input value={pForm.commercialAgentName} onChange={(e) => setPForm(prev => ({ ...prev, commercialAgentName: e.target.value }))} placeholder="Nome do agente" className="border-[#002443]/10 rounded-xl h-10" /></div>
-            <div className="space-y-1"><Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Expiração</Label>
-              <Input type="date" value={pForm.expiresAt} onChange={(e) => setPForm(prev => ({ ...prev, expiresAt: e.target.value }))} className="border-[#002443]/10 rounded-xl h-10" /></div>
+            <div className="space-y-1"><Label className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-[0.15em]">Agente Comercial</Label>
+              <Input value={pForm.commercialAgentName} onChange={(e) => setPForm(prev => ({ ...prev, commercialAgentName: e.target.value }))} placeholder="Nome do agente" className="border-[#0A0A0A]/10 rounded-xl h-10" /></div>
+            <div className="space-y-1"><Label className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-[0.15em]">Expiração</Label>
+              <Input type="date" value={pForm.expiresAt} onChange={(e) => setPForm(prev => ({ ...prev, expiresAt: e.target.value }))} className="border-[#0A0A0A]/10 rounded-xl h-10" /></div>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Parâmetros UTM</Label>
+            <Label className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-[0.15em]">Parâmetros UTM</Label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { k: 'utmSource', l: 'Source', p: 'google, facebook' },
@@ -415,8 +415,8 @@ export default function GerarLinkOnboarding() {
                 { k: 'utmContent', l: 'Content', p: 'banner_top' },
               ].map(f => (
                 <div key={f.k} className="space-y-1">
-                  <p className="text-[9px] text-[#002443]/30 font-medium">{f.l}</p>
-                  <Input value={pForm[f.k]} onChange={(e) => setPForm(prev => ({ ...prev, [f.k]: e.target.value }))} placeholder={f.p} className="border-[#002443]/10 rounded-xl h-9 text-xs" />
+                  <p className="text-[9px] text-[#0A0A0A]/30 font-medium">{f.l}</p>
+                  <Input value={pForm[f.k]} onChange={(e) => setPForm(prev => ({ ...prev, [f.k]: e.target.value }))} placeholder={f.p} className="border-[#0A0A0A]/10 rounded-xl h-9 text-xs" />
                 </div>
               ))}
             </div>
@@ -424,9 +424,9 @@ export default function GerarLinkOnboarding() {
 
           {/* Preview dinâmica do link */}
           {(pForm.utmSource || pForm.utmMedium || pForm.utmCampaign || pForm.introducerId) && (
-            <div className="p-4 rounded-xl bg-[#002443]/5 border border-[#002443]/10 space-y-2">
-              <p className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider">Preview do Link</p>
-              <p className="text-xs font-mono text-[#002443]/60 break-all leading-relaxed">
+            <div className="p-4 rounded-xl bg-[#0A0A0A]/5 border border-[#0A0A0A]/10 space-y-2">
+              <p className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider">Preview do Link</p>
+              <p className="text-xs font-mono text-[#0A0A0A]/60 break-all leading-relaxed">
                 {base}/{(() => {
                   if (pForm.linkType === 'LEAD_QUESTIONNAIRE') return 'LeadQuestionnaire';
                   if (pForm.linkType === 'LEAD_SIMPLIFICADO') return 'QuestionarioSimplificadoPublico';
@@ -441,7 +441,7 @@ export default function GerarLinkOnboarding() {
           )}
 
           <Button onClick={() => createLinkMutation.mutate(pForm)} disabled={createLinkMutation.isPending}
-            className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl h-11 font-bold">
+            className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl h-11 font-bold">
             {createLinkMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
             {t('gl.create_custom')}
           </Button>
@@ -461,18 +461,18 @@ export default function GerarLinkOnboarding() {
             ].map(f => (
               <button key={f.key} onClick={() => setHistoryFilter(f.key)}
                 className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                  historyFilter === f.key ? 'bg-white shadow-sm text-[#002443] border border-[#002443]/5' : 'text-[#002443]/30 hover:text-[#002443]/50 bg-[#f4f4f4] border border-transparent'
+                  historyFilter === f.key ? 'bg-white shadow-sm text-[#0A0A0A] border border-[#0A0A0A]/5' : 'text-[#0A0A0A]/30 hover:text-[#0A0A0A]/50 bg-[#f4f4f4] border border-transparent'
                 }`}>{f.label}</button>
             ))}
           </div>
 
           {/* Links List */}
           {linksLoading ? (
-            <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div>
+            <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" /></div>
           ) : links.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-[#002443]/5">
-              <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><LinkIcon className="w-7 h-7 text-[#002443]/20" /></div>
-              <p className="text-sm text-[#002443]/50">{t('gl.no_custom_links')}</p>
+            <div className="text-center py-16 bg-white rounded-2xl border border-[#0A0A0A]/5">
+              <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><LinkIcon className="w-7 h-7 text-[#0A0A0A]/20" /></div>
+              <p className="text-sm text-[#0A0A0A]/50">{t('gl.no_custom_links')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -485,46 +485,46 @@ export default function GerarLinkOnboarding() {
                 const conversion = link.clickCount > 0 ? ((link.submissionCount / link.clickCount) * 100).toFixed(1) : 0;
                 const isExpanded = expandedLinkId === link.id;
                 return (
-                  <div key={link.id} className="bg-white border border-[#002443]/5 rounded-2xl overflow-hidden hover:shadow-sm transition-shadow">
+                  <div key={link.id} className="bg-white border border-[#0A0A0A]/5 rounded-2xl overflow-hidden hover:shadow-sm transition-shadow">
                     <div className="p-4 cursor-pointer" onClick={() => setExpandedLinkId(isExpanded ? null : link.id)}>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <Badge variant="outline" className="font-mono text-sm border-[#002443]/10">{link.uniqueCode}</Badge>
+                          <Badge variant="outline" className="font-mono text-sm border-[#0A0A0A]/10">{link.uniqueCode}</Badge>
                           <Badge className={`${getLinkBadgeStyle(link)} text-xs border-0`}>{getLinkLabel(link)}</Badge>
-                          {link.commercialAgentName && <span className="text-xs text-[#002443]/40">{link.commercialAgentName}</span>}
-                          <span className="text-[10px] text-[#002443]/20">{link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}</span>
+                          {link.commercialAgentName && <span className="text-xs text-[#0A0A0A]/40">{link.commercialAgentName}</span>}
+                          <span className="text-[10px] text-[#0A0A0A]/20">{link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}</span>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="hidden md:flex items-center gap-3 text-xs">
-                            <span className="text-[#36706c] font-bold">{link.clickCount || 0} <span className="font-normal text-[#002443]/30">cliq</span></span>
-                            <span className="text-[#2bc196] font-bold">{link.submissionCount || 0} <span className="font-normal text-[#002443]/30">sub</span></span>
-                            <Badge className="text-[10px] bg-[#f4f4f4] text-[#002443]/50 border-0">{conversion}%</Badge>
+                            <span className="text-[#E84B1C] font-bold">{link.clickCount || 0} <span className="font-normal text-[#0A0A0A]/30">cliq</span></span>
+                            <span className="text-[#1356E2] font-bold">{link.submissionCount || 0} <span className="font-normal text-[#0A0A0A]/30">sub</span></span>
+                            <Badge className="text-[10px] bg-[#f4f4f4] text-[#0A0A0A]/50 border-0">{conversion}%</Badge>
                           </div>
                           <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                             <button onClick={() => handleCopy(generateLinkUrl(link), link.id)} className="p-1.5 rounded-lg hover:bg-[#f4f4f4] transition-colors">
-                              {copiedKey === link.id ? <Check className="w-4 h-4 text-[#2bc196]" /> : <Copy className="w-4 h-4 text-[#002443]/30" />}
+                              {copiedKey === link.id ? <Check className="w-4 h-4 text-[#1356E2]" /> : <Copy className="w-4 h-4 text-[#0A0A0A]/30" />}
                             </button>
                             <button onClick={() => window.open(generateLinkUrl(link), '_blank')} className="p-1.5 rounded-lg hover:bg-[#f4f4f4] transition-colors">
-                              <ExternalLink className="w-4 h-4 text-[#002443]/30" />
+                              <ExternalLink className="w-4 h-4 text-[#0A0A0A]/30" />
                             </button>
                             <button onClick={() => deleteLinkMutation.mutate(link.id)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
                               <Trash2 className="w-4 h-4 text-red-300" />
                             </button>
                           </div>
-                          <button className="text-[#002443]/20">{isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</button>
+                          <button className="text-[#0A0A0A]/20">{isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</button>
                         </div>
                       </div>
                       {(link.utmSource || link.utmMedium || link.utmCampaign) && (
                         <div className="flex gap-1.5 mt-2">
-                          {link.utmSource && <Badge variant="outline" className="text-[9px] border-[#002443]/5 text-[#002443]/30">source: {link.utmSource}</Badge>}
-                          {link.utmMedium && <Badge variant="outline" className="text-[9px] border-[#002443]/5 text-[#002443]/30">medium: {link.utmMedium}</Badge>}
-                          {link.utmCampaign && <Badge variant="outline" className="text-[9px] border-[#002443]/5 text-[#002443]/30">campaign: {link.utmCampaign}</Badge>}
+                          {link.utmSource && <Badge variant="outline" className="text-[9px] border-[#0A0A0A]/5 text-[#0A0A0A]/30">source: {link.utmSource}</Badge>}
+                          {link.utmMedium && <Badge variant="outline" className="text-[9px] border-[#0A0A0A]/5 text-[#0A0A0A]/30">medium: {link.utmMedium}</Badge>}
+                          {link.utmCampaign && <Badge variant="outline" className="text-[9px] border-[#0A0A0A]/5 text-[#0A0A0A]/30">campaign: {link.utmCampaign}</Badge>}
                         </div>
                       )}
                     </div>
                     {isExpanded && (
-                      <div className="border-t border-[#002443]/5 bg-[#f4f4f4] p-4">
-                        <h4 className="text-xs font-bold text-[#002443]/50 mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#2bc196]" /> Analytics</h4>
+                      <div className="border-t border-[#0A0A0A]/5 bg-[#f4f4f4] p-4">
+                        <h4 className="text-xs font-bold text-[#0A0A0A]/50 mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#1356E2]" /> Analytics</h4>
                         <LinkAnalyticsDashboard linkId={link.id} linkCode={link.uniqueCode} />
                       </div>
                     )}

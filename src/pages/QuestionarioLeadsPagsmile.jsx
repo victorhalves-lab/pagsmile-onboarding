@@ -299,14 +299,14 @@ export default function QuestionarioLeadsPagsmile() {
       <div className="min-h-[70vh] flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center rounded-2xl shadow-lg">
           <CardContent className="pt-10 pb-10 space-y-5">
-            <div className="w-20 h-20 rounded-full bg-[#2bc196]/10 flex items-center justify-center mx-auto">
-              <Check className="w-10 h-10 text-[#2bc196]" />
+            <div className="w-20 h-20 rounded-full bg-[#1356E2]/10 flex items-center justify-center mx-auto">
+              <Check className="w-10 h-10 text-[#1356E2]" />
             </div>
-            <h2 className="text-2xl font-bold text-[#002443]">Questionário Enviado!</h2>
-            <p className="text-sm text-[#002443]/60">
-              Seu protocolo é <strong className="text-[#2bc196] text-lg">{protocolo}</strong>
+            <h2 className="text-2xl font-bold text-[#0A0A0A]">Questionário Enviado!</h2>
+            <p className="text-sm text-[#0A0A0A]/60">
+              Seu protocolo é <strong className="text-[#1356E2] text-lg">{protocolo}</strong>
             </p>
-            <p className="text-sm text-[#002443]/60">Nossa equipe entrará em contato em breve com uma proposta personalizada.</p>
+            <p className="text-sm text-[#0A0A0A]/60">Nossa equipe entrará em contato em breve com uma proposta personalizada.</p>
           </CardContent>
         </Card>
       </div>
@@ -323,12 +323,12 @@ export default function QuestionarioLeadsPagsmile() {
       <div className="text-center mb-8">
         <img 
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
-          alt="Pagsmile" 
+          alt="Pin Bank" 
           className="h-8 mx-auto mb-4"
           style={{ filter: 'brightness(0) saturate(100%) invert(12%) sepia(36%) saturate(2476%) hue-rotate(183deg) brightness(91%) contrast(107%)' }}
         />
-        <h1 className="text-2xl font-bold text-[#002443]">Questionário de Lead PagSmile</h1>
-        <p className="text-sm text-[#002443]/50 mt-1">{STEPS.length} etapas · progresso salvo automaticamente</p>
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Questionário de Lead Pin Bank</h1>
+        <p className="text-sm text-[#0A0A0A]/50 mt-1">{STEPS.length} etapas · progresso salvo automaticamente</p>
       </div>
 
       {/* Draft recovery banner */}
@@ -343,14 +343,14 @@ export default function QuestionarioLeadsPagsmile() {
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
-          <span className="text-xs font-bold text-[#002443]/50">
+          <span className="text-xs font-bold text-[#0A0A0A]/50">
             Etapa {step + 1} de {STEPS.length}: {STEPS[step].label}
           </span>
           <StepProgressIndicator total={fieldCount.total} filled={fieldCount.filled} />
         </div>
-        <div className="w-full h-2 bg-[#002443]/5 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-[#0A0A0A]/5 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#1356E2] to-[#E84B1C] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -366,7 +366,7 @@ export default function QuestionarioLeadsPagsmile() {
       )}
 
       {/* Step Content */}
-      <Card className="rounded-2xl border border-[#002443]/5 shadow-sm mb-6">
+      <Card className="rounded-2xl border border-[#0A0A0A]/5 shadow-sm mb-6">
         <CardContent className="p-6 sm:p-8">
           {step === 0 && <StepSegmento form={form} updateField={updateField} cnpjData={cnpjData} />}
           {step === 1 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} setBdcData={(d) => { setBdcData(d); updateField('_bdcQuickData', d); }} />}
@@ -398,7 +398,7 @@ export default function QuestionarioLeadsPagsmile() {
           <Button
             onClick={handleSubmit}
             disabled={submitting || nextDisabled}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl gap-2 px-8 disabled:opacity-50"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl gap-2 px-8 disabled:opacity-50"
             title={nextDisabled ? `Faltam ${validation.summary.length} campos obrigatórios` : ''}
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : nextDisabled ? <Lock className="w-4 h-4" /> : <Send className="w-4 h-4" />}
@@ -407,7 +407,7 @@ export default function QuestionarioLeadsPagsmile() {
         ) : (
           <Button
             onClick={nextStep}
-            className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-xl gap-2 disabled:opacity-60"
+            className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white rounded-xl gap-2 disabled:opacity-60"
             title={nextDisabled ? `Faltam ${validation.summary.length} campos obrigatórios` : ''}
           >
             {nextDisabled && <Lock className="w-3.5 h-3.5" />}
@@ -418,7 +418,7 @@ export default function QuestionarioLeadsPagsmile() {
 
       {/* Bottom hint */}
       {nextDisabled && showValidation && (
-        <p className="text-center text-[10px] text-[#002443]/40 mt-4">
+        <p className="text-center text-[10px] text-[#0A0A0A]/40 mt-4">
           💾 Seus dados estão sendo salvos automaticamente — você pode fechar e voltar depois
         </p>
       )}

@@ -22,10 +22,10 @@ export default function PixFormCompetitors({ form, updateField }) {
   };
 
   return (
-    <Card className="border-[#002443]/5">
+    <Card className="border-[#0A0A0A]/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Target className="w-5 h-5 text-[#2bc196]" />
+          <Target className="w-5 h-5 text-[#1356E2]" />
           Concorrência e Dores
         </CardTitle>
       </CardHeader>
@@ -57,7 +57,7 @@ export default function PixFormCompetitors({ form, updateField }) {
               </Button>
             </label>
             {form.competitorProposalUrl && (
-              <span className="text-xs text-[#2bc196] flex items-center gap-1">
+              <span className="text-xs text-[#1356E2] flex items-center gap-1">
                 <Check className="w-3 h-3" /> Arquivo enviado
               </span>
             )}

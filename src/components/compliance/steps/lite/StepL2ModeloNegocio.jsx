@@ -29,14 +29,14 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 rounded-xl bg-[var(--pagsmile-green)]/10">
-          <Briefcase className="w-6 h-6 text-[var(--pagsmile-green)]" />
+        <div className="p-3 rounded-xl bg-[var(--pinbank-blue)]/10">
+          <Briefcase className="w-6 h-6 text-[var(--pinbank-blue)]" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Modelo de Negócio e Entrega
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Informe como sua empresa opera e entrega seus produtos/serviços
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
       <div className="grid gap-6">
         {/* Modelo de Negócio */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
             Modelo de Negócio Principal <span className="text-red-500">*</span>
           </Label>
           <Select
@@ -65,7 +65,7 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
 
         {/* Canal de Venda */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
             Canal de Venda Principal <span className="text-red-500">*</span>
           </Label>
           <Select
@@ -85,7 +85,7 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
 
         {/* Entrega Produto Físico */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
             Vocês entregam produto físico? <span className="text-red-500">*</span>
           </Label>
           <div className="flex gap-4">
@@ -94,24 +94,24 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
               onClick={() => handleChange('entregaProdutoFisico', true)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaProdutoFisico === true
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
-              <Package className="w-6 h-6 mx-auto mb-2 text-[var(--pagsmile-blue)]" />
-              <p className="font-semibold text-[var(--pagsmile-blue)]">Sim</p>
+              <Package className="w-6 h-6 mx-auto mb-2 text-[var(--pinbank-blue)]" />
+              <p className="font-semibold text-[var(--pinbank-blue)]">Sim</p>
             </button>
             <button
               type="button"
               onClick={() => handleChange('entregaProdutoFisico', false)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaProdutoFisico === false
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <Package className="w-6 h-6 mx-auto mb-2 text-slate-400" />
-              <p className="font-semibold text-[var(--pagsmile-blue)]">Não</p>
+              <p className="font-semibold text-[var(--pinbank-blue)]">Não</p>
             </button>
           </div>
         </div>
@@ -119,10 +119,10 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
         {/* Condicionais para Produto Físico */}
         {formData.entregaProdutoFisico === true && (
           <div className="space-y-6 p-6 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-sm font-medium text-[var(--pagsmile-blue)]/80">Detalhes da entrega física:</p>
+            <p className="text-sm font-medium text-[var(--pinbank-blue)]/80">Detalhes da entrega física:</p>
             
             <div className="space-y-2">
-              <Label className="text-[var(--pagsmile-blue)] font-semibold">
+              <Label className="text-[var(--pinbank-blue)] font-semibold">
                 Quem realiza a entrega? <span className="text-red-500">*</span>
               </Label>
               <Select
@@ -141,7 +141,7 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[var(--pagsmile-blue)] font-semibold">
+              <Label className="text-[var(--pinbank-blue)] font-semibold">
                 Como vocês comprovam entrega? <span className="text-red-500">*</span>
               </Label>
               <Select
@@ -163,7 +163,7 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
 
         {/* Entrega Digital/Serviço */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
             Vocês entregam produto digital ou prestam serviço? <span className="text-red-500">*</span>
           </Label>
           <div className="flex gap-4">
@@ -172,24 +172,24 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
               onClick={() => handleChange('entregaDigitalServico', true)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaDigitalServico === true
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
-              <Laptop className="w-6 h-6 mx-auto mb-2 text-[var(--pagsmile-blue)]" />
-              <p className="font-semibold text-[var(--pagsmile-blue)]">Sim</p>
+              <Laptop className="w-6 h-6 mx-auto mb-2 text-[var(--pinbank-blue)]" />
+              <p className="font-semibold text-[var(--pinbank-blue)]">Sim</p>
             </button>
             <button
               type="button"
               onClick={() => handleChange('entregaDigitalServico', false)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaDigitalServico === false
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <Laptop className="w-6 h-6 mx-auto mb-2 text-slate-400" />
-              <p className="font-semibold text-[var(--pagsmile-blue)]">Não</p>
+              <p className="font-semibold text-[var(--pinbank-blue)]">Não</p>
             </button>
           </div>
         </div>
@@ -197,10 +197,10 @@ export default function StepL2ModeloNegocio({ formData, handleChange }) {
         {/* Condicionais para Digital/Serviço */}
         {formData.entregaDigitalServico === true && (
           <div className="space-y-6 p-6 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-sm font-medium text-[var(--pagsmile-blue)]/80">Detalhes da entrega digital/serviço:</p>
+            <p className="text-sm font-medium text-[var(--pinbank-blue)]/80">Detalhes da entrega digital/serviço:</p>
             
             <div className="space-y-2">
-              <Label className="text-[var(--pagsmile-blue)] font-semibold">
+              <Label className="text-[var(--pinbank-blue)] font-semibold">
                 Como vocês comprovam entrega/prestação? <span className="text-red-500">*</span>
               </Label>
               <Select

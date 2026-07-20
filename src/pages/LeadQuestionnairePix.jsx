@@ -138,14 +138,14 @@ export default function LeadQuestionnairePix() {
       <div className="min-h-[70vh] flex items-center justify-center">
         <Card className="max-w-md w-full text-center">
           <CardContent className="pt-8 pb-8 space-y-4">
-            <div className="w-16 h-16 rounded-full bg-[#2bc196]/10 flex items-center justify-center mx-auto">
-              <Check className="w-8 h-8 text-[#2bc196]" />
+            <div className="w-16 h-16 rounded-full bg-[#1356E2]/10 flex items-center justify-center mx-auto">
+              <Check className="w-8 h-8 text-[#1356E2]" />
             </div>
             <h2 className="text-xl font-bold">Questionário Enviado!</h2>
-            <p className="text-sm text-[#002443]/60">
-              Seu protocolo é <strong className="text-[#2bc196]">{protocolo}</strong>
+            <p className="text-sm text-[#0A0A0A]/60">
+              Seu protocolo é <strong className="text-[#1356E2]">{protocolo}</strong>
             </p>
-            <p className="text-sm text-[#002443]/60">Nossa equipe entrará em contato em breve.</p>
+            <p className="text-sm text-[#0A0A0A]/60">Nossa equipe entrará em contato em breve.</p>
           </CardContent>
         </Card>
       </div>
@@ -156,15 +156,15 @@ export default function LeadQuestionnairePix() {
     <div className="max-w-3xl mx-auto space-y-6 py-4">
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="w-14 h-14 rounded-2xl bg-[#2bc196]/10 flex items-center justify-center mx-auto">
-          <Zap className="w-7 h-7 text-[#2bc196]" />
+        <div className="w-14 h-14 rounded-2xl bg-[#1356E2]/10 flex items-center justify-center mx-auto">
+          <Zap className="w-7 h-7 text-[#1356E2]" />
         </div>
-        <h1 className="text-2xl font-bold text-[#002443]">Questionário PIX</h1>
-        <p className="text-sm text-[#002443]/60">Preencha para receber uma proposta personalizada de PIX</p>
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Questionário PIX</h1>
+        <p className="text-sm text-[#0A0A0A]/60">Preencha para receber uma proposta personalizada de PIX</p>
       </div>
 
       {/* Basic Info */}
-      <Card className="border-[#002443]/5">
+      <Card className="border-[#0A0A0A]/5">
         <CardHeader className="pb-3"><CardTitle className="text-base">Dados da Empresa</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -189,13 +189,13 @@ export default function LeadQuestionnairePix() {
       </Card>
 
       {/* Volume PIX */}
-      <Card className="border-[#002443]/5">
+      <Card className="border-[#0A0A0A]/5">
         <CardHeader className="pb-3"><CardTitle className="text-base">Volume PIX</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div><Label>TPV Mensal em PIX (R$) *</Label><Input type="number" value={form.pixTpv} onChange={e => updateField('pixTpv', e.target.value)} placeholder="150000" /></div>
             <div><Label>Ticket Médio PIX (R$) *</Label><Input type="number" value={form.pixTicketMedio} onChange={e => updateField('pixTicketMedio', e.target.value)} placeholder="75" /></div>
-            <div><Label>Volume Transações/Mês</Label><Input type="number" value={form.pixVolume} readOnly className="bg-[#f4f4f4] font-semibold" placeholder="Calculado" /><p className="text-[10px] text-[#002443]/50 mt-1">TPV ÷ Ticket Médio</p></div>
+            <div><Label>Volume Transações/Mês</Label><Input type="number" value={form.pixVolume} readOnly className="bg-[#f4f4f4] font-semibold" placeholder="Calculado" /><p className="text-[10px] text-[#0A0A0A]/50 mt-1">TPV ÷ Ticket Médio</p></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div><Label>Modelo de Negócio</Label><Textarea value={form.businessModel} onChange={e => updateField('businessModel', e.target.value)} placeholder="Como sua empresa opera?" rows={2} /></div>
@@ -205,7 +205,7 @@ export default function LeadQuestionnairePix() {
       </Card>
 
       {/* Competitors */}
-      <Card className="border-[#002443]/5">
+      <Card className="border-[#0A0A0A]/5">
         <CardHeader className="pb-3"><CardTitle className="text-base">Situação Atual</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -222,7 +222,7 @@ export default function LeadQuestionnairePix() {
                   <span>{uploading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Upload className="w-4 h-4 mr-1" />}Selecionar</span>
                 </Button>
               </label>
-              {form.competitorFileUrl && <span className="text-xs text-[#2bc196] flex items-center gap-1"><Check className="w-3 h-3" />Enviado</span>}
+              {form.competitorFileUrl && <span className="text-xs text-[#1356E2] flex items-center gap-1"><Check className="w-3 h-3" />Enviado</span>}
             </div>
           </div>
         </CardContent>
@@ -230,7 +230,7 @@ export default function LeadQuestionnairePix() {
 
       {/* Submit */}
       <div className="flex justify-center pb-8">
-        <Button onClick={handleSubmit} disabled={submitting} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 py-3 text-base">
+        <Button onClick={handleSubmit} disabled={submitting} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white px-8 py-3 text-base">
           {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Send className="w-5 h-5 mr-2" />}
           Enviar Questionário
         </Button>

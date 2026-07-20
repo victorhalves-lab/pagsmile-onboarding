@@ -49,11 +49,11 @@ export default function MCCSearchModal({ isOpen, onClose, onSelect }) {
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-200">
           <div>
-            <h2 className="text-lg font-bold text-[#002443]">Buscar Código MCC</h2>
-            <p className="text-xs text-[#002443]/60 mt-0.5">Merchant Category Code - Código de atividade do negócio</p>
+            <h2 className="text-lg font-bold text-[#0A0A0A]">Buscar Código MCC</h2>
+            <p className="text-xs text-[#0A0A0A]/60 mt-0.5">Merchant Category Code - Código de atividade do negócio</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
-            <X className="w-5 h-5 text-[#002443]/60" />
+            <X className="w-5 h-5 text-[#0A0A0A]/60" />
           </button>
         </div>
 
@@ -64,8 +64,8 @@ export default function MCCSearchModal({ isOpen, onClose, onSelect }) {
               onClick={() => setActiveTab('keyword')}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 ${
                 activeTab === 'keyword' 
-                  ? 'bg-white text-[#002443] shadow-sm' 
-                  : 'text-[#002443]/50 hover:text-[#002443]/70'
+                  ? 'bg-white text-[#0A0A0A] shadow-sm' 
+                  : 'text-[#0A0A0A]/50 hover:text-[#0A0A0A]/70'
               }`}
             >
               <Search className="w-4 h-4" />
@@ -75,8 +75,8 @@ export default function MCCSearchModal({ isOpen, onClose, onSelect }) {
               onClick={() => setActiveTab('cnae')}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 ${
                 activeTab === 'cnae' 
-                  ? 'bg-white text-[#002443] shadow-sm' 
-                  : 'text-[#002443]/50 hover:text-[#002443]/70'
+                  ? 'bg-white text-[#0A0A0A] shadow-sm' 
+                  : 'text-[#0A0A0A]/50 hover:text-[#0A0A0A]/70'
               }`}
             >
               <Building2 className="w-4 h-4" />
@@ -86,7 +86,7 @@ export default function MCCSearchModal({ isOpen, onClose, onSelect }) {
 
           {activeTab === 'keyword' ? (
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
               <Input
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
@@ -97,7 +97,7 @@ export default function MCCSearchModal({ isOpen, onClose, onSelect }) {
             </div>
           ) : (
             <div className="relative">
-              <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+              <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
               <Input
                 value={cnaeSearch}
                 onChange={e => setCnaeSearch(e.target.value)}
@@ -116,7 +116,7 @@ export default function MCCSearchModal({ isOpen, onClose, onSelect }) {
 
         {/* Lista de resultados */}
         <div className="flex-1 overflow-y-auto px-5 py-3 min-h-0">
-          <p className="text-xs text-[#002443]/50 mb-2">
+          <p className="text-xs text-[#0A0A0A]/50 mb-2">
             {filteredMCCs.length} {filteredMCCs.length === 1 ? 'resultado' : 'resultados'}
           </p>
           <div className="space-y-1.5">
@@ -127,16 +127,16 @@ export default function MCCSearchModal({ isOpen, onClose, onSelect }) {
                   onSelect(mcc.mcc);
                   onClose();
                 }}
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-[#2bc196] hover:bg-[#2bc196]/5 transition-all text-left group"
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-[#1356E2] hover:bg-[#1356E2]/5 transition-all text-left group"
               >
-                <Badge className="bg-[#002443]/10 text-[#002443] font-mono font-bold text-sm px-2.5 py-1 shrink-0">
+                <Badge className="bg-[#0A0A0A]/10 text-[#0A0A0A] font-mono font-bold text-sm px-2.5 py-1 shrink-0">
                   {mcc.mcc}
                 </Badge>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#002443] truncate">{mcc.name}</p>
-                  <p className="text-xs text-[#002443]/50 truncate">{mcc.nameEn}</p>
+                  <p className="text-sm font-medium text-[#0A0A0A] truncate">{mcc.name}</p>
+                  <p className="text-xs text-[#0A0A0A]/50 truncate">{mcc.nameEn}</p>
                 </div>
-                <span className="text-xs text-[#2bc196] font-semibold opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                <span className="text-xs text-[#1356E2] font-semibold opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                   Selecionar
                 </span>
               </button>

@@ -33,16 +33,16 @@ export default function BdcV4AnalysisPanel({ latestScore }) {
 
   if (!latestScore?.variaveis_aplicadas) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-8 text-center">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-8 text-center">
         <Shield className="w-12 h-12 mx-auto text-slate-300 mb-3" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50 font-medium">Análise V4 não disponível</p>
-        <p className="text-xs text-[var(--pagsmile-blue)]/30 mt-1">O enriquecimento BDC e scoring V4 ainda não foram executados.</p>
+        <p className="text-sm text-[var(--pinbank-blue)]/50 font-medium">Análise V4 não disponível</p>
+        <p className="text-xs text-[var(--pinbank-blue)]/30 mt-1">O enriquecimento BDC e scoring V4 ainda não foram executados.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50/50 to-white">
         <div className="flex items-center justify-between">
@@ -51,12 +51,12 @@ export default function BdcV4AnalysisPanel({ latestScore }) {
               <Shield className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[var(--pagsmile-blue)]">Análise de Risco V4 — Visão Microscópica</h2>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40">Cada item analisado com explicação didática, base regulatória e impacto no score</p>
+              <h2 className="text-base font-bold text-[var(--pinbank-blue)]">Análise de Risco V4 — Visão Microscópica</h2>
+              <p className="text-xs text-[var(--pinbank-blue)]/40">Cada item analisado com explicação didática, base regulatória e impacto no score</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-[var(--pagsmile-blue)] text-white text-xs">Score: {scoring.final}/849</Badge>
+            <Badge className="bg-[var(--pinbank-blue)] text-white text-xs">Score: {scoring.final}/849</Badge>
             <Badge className={`text-xs border-0 ${getSubfaixaColor(scoring.subfaixa)}`}>{scoring.subfaixa} — {scoring.subfaixaNome}</Badge>
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function BdcV4AnalysisPanel({ latestScore }) {
         {/* Sections */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)] flex items-center gap-2">
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)] flex items-center gap-2">
               <Layers className="w-4 h-4" />
               Análise por Dimensão ({sectionKeys.length} dimensões, {sectionKeys.reduce((s, k) => s + (sections[k]?.items?.length || 0), 0)} itens)
             </h3>
@@ -116,8 +116,8 @@ export default function BdcV4AnalysisPanel({ latestScore }) {
                 >
                   <span className="text-lg">{SECTION_ICONS[key] || '📊'}</span>
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{info.title || key}</span>
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{itemCount} itens analisados</p>
+                    <span className="text-sm font-bold text-[var(--pinbank-blue)]">{info.title || key}</span>
+                    <p className="text-[10px] text-[var(--pinbank-blue)]/40">{itemCount} itens analisados</p>
                   </div>
                   <div className="flex items-center gap-2">
                     {criticalCount > 0 && <Badge className="bg-red-100 text-red-700 text-[10px] border-0">{criticalCount} crítico</Badge>}
@@ -148,10 +148,10 @@ export default function BdcV4AnalysisPanel({ latestScore }) {
 
 function ScoreCard({ label, value, desc, highlight }) {
   return (
-    <div className={`p-3 rounded-xl border ${highlight ? 'bg-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]' : 'bg-white border-slate-200'}`}>
-      <p className={`text-[10px] font-semibold uppercase tracking-wide ${highlight ? 'text-white/60' : 'text-[var(--pagsmile-blue)]/40'}`}>{label}</p>
-      <p className={`text-xl font-black mt-0.5 ${highlight ? 'text-white' : 'text-[var(--pagsmile-blue)]'}`}>{value ?? '—'}</p>
-      <p className={`text-[9px] mt-0.5 ${highlight ? 'text-white/50' : 'text-[var(--pagsmile-blue)]/30'}`}>{desc}</p>
+    <div className={`p-3 rounded-xl border ${highlight ? 'bg-[var(--pinbank-blue)] border-[var(--pinbank-blue)]' : 'bg-white border-slate-200'}`}>
+      <p className={`text-[10px] font-semibold uppercase tracking-wide ${highlight ? 'text-white/60' : 'text-[var(--pinbank-blue)]/40'}`}>{label}</p>
+      <p className={`text-xl font-black mt-0.5 ${highlight ? 'text-white' : 'text-[var(--pinbank-blue)]'}`}>{value ?? '—'}</p>
+      <p className={`text-[9px] mt-0.5 ${highlight ? 'text-white/50' : 'text-[var(--pinbank-blue)]/30'}`}>{desc}</p>
     </div>
   );
 }

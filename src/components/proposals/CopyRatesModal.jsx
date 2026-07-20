@@ -24,7 +24,7 @@ function RateSummary({ rates }) {
   const pixVal = rates.pix?.valor;
   const pixTipo = rates.pix?.tipo;
   return (
-    <div className="flex items-center gap-2 text-[10px] text-[#002443]/50 mt-1">
+    <div className="flex items-center gap-2 text-[10px] text-[#0A0A0A]/50 mt-1">
       {masterAvista != null && masterAvista !== '' && (
         <span className="flex items-center gap-0.5">
           <CreditCard className="w-2.5 h-2.5" /> Master à vista: {masterAvista}%
@@ -64,7 +64,7 @@ export default function CopyRatesModal({ isOpen, onClose, onSelect, currentPropo
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#2bc196]" />
+            <FileText className="w-5 h-5 text-[#1356E2]" />
             Copiar Taxas de Outra Proposta
           </DialogTitle>
           <DialogDescription>
@@ -73,7 +73,7 @@ export default function CopyRatesModal({ isOpen, onClose, onSelect, currentPropo
         </DialogHeader>
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -85,10 +85,10 @@ export default function CopyRatesModal({ isOpen, onClose, onSelect, currentPropo
         <ScrollArea className="h-[340px] -mx-2 px-2">
           {isLoading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+              <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-12 text-sm text-[#002443]/40">
+            <div className="text-center py-12 text-sm text-[#0A0A0A]/40">
               Nenhuma proposta encontrada
             </div>
           ) : (
@@ -97,24 +97,24 @@ export default function CopyRatesModal({ isOpen, onClose, onSelect, currentPropo
                 <button
                   key={p.id}
                   onClick={() => onSelect(p.id)}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-[#002443]/5 hover:border-[#2bc196]/30 hover:bg-[#2bc196]/5 transition-all text-left group"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-[#0A0A0A]/5 hover:border-[#1356E2]/30 hover:bg-[#1356E2]/5 transition-all text-left group"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-[#2bc196] font-semibold">{p.codigo || '-'}</span>
+                      <span className="font-mono text-xs text-[#1356E2] font-semibold">{p.codigo || '-'}</span>
                       <Badge className="text-[9px] bg-slate-100 text-slate-600 border-0">
                         {p.status}
                       </Badge>
                     </div>
                     <p className="text-sm font-medium truncate mt-0.5">{p.clienteNome || 'Sem nome'}</p>
-                    <div className="flex items-center gap-3 text-[10px] text-[#002443]/40 mt-0.5">
+                    <div className="flex items-center gap-3 text-[10px] text-[#0A0A0A]/40 mt-0.5">
                       <span>{formatCNPJ(p.clienteCnpj)}</span>
                       <span>{moment(p.created_date).format('DD/MM/YYYY')}</span>
                     </div>
                     <RateSummary rates={p.rates} />
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-8 h-8 rounded-lg bg-[#2bc196] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-[#1356E2] flex items-center justify-center">
                       <Check className="w-4 h-4 text-white" />
                     </div>
                   </div>

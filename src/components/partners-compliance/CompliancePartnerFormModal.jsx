@@ -199,7 +199,7 @@ export default function CompliancePartnerFormModal({ open, onClose, partner, onS
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleSave} disabled={saving} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+          <Button onClick={handleSave} disabled={saving} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
             {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Salvar
           </Button>

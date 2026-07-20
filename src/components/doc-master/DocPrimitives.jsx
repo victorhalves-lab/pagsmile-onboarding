@@ -19,9 +19,9 @@ export function Sec({ id, children }) {
 /* ===================== HEADERS ===================== */
 export function H1({ num, children }) {
   return (
-    <h1 className="print-h1 text-2xl md:text-3xl font-black text-[#002443] mb-2 mt-2 leading-tight border-b-2 border-[#2bc196] pb-3">
+    <h1 className="print-h1 text-2xl md:text-3xl font-black text-[#0A0A0A] mb-2 mt-2 leading-tight border-b-2 border-[#1356E2] pb-3">
       {num && (
-        <span className="text-[12px] font-mono font-bold tracking-[0.2em] text-[#2bc196] uppercase block mb-1">
+        <span className="text-[12px] font-mono font-bold tracking-[0.2em] text-[#1356E2] uppercase block mb-1">
           Capítulo {num}
         </span>
       )}
@@ -32,8 +32,8 @@ export function H1({ num, children }) {
 
 export function H2({ num, children }) {
   return (
-    <h2 className="text-xl font-extrabold text-[#002443] mt-7 mb-3 leading-tight">
-      {num && <span className="text-[#2bc196] font-mono mr-2">§{num}</span>}
+    <h2 className="text-xl font-extrabold text-[#0A0A0A] mt-7 mb-3 leading-tight">
+      {num && <span className="text-[#1356E2] font-mono mr-2">§{num}</span>}
       {children}
     </h2>
   );
@@ -41,15 +41,15 @@ export function H2({ num, children }) {
 
 export function H3({ num, children }) {
   return (
-    <h3 className="text-[15.5px] font-bold text-[#002443] mt-5 mb-2 leading-snug">
-      {num && <span className="text-[#2bc196]/80 font-mono mr-1.5">§{num}</span>}
+    <h3 className="text-[15.5px] font-bold text-[#0A0A0A] mt-5 mb-2 leading-snug">
+      {num && <span className="text-[#1356E2]/80 font-mono mr-1.5">§{num}</span>}
       {children}
     </h3>
   );
 }
 
 export function H4({ children }) {
-  return <h4 className="text-[13.5px] font-bold text-[#002443] mt-4 mb-1.5">{children}</h4>;
+  return <h4 className="text-[13.5px] font-bold text-[#0A0A0A] mt-4 mb-1.5">{children}</h4>;
 }
 
 /* ===================== TEXTO ===================== */
@@ -66,12 +66,12 @@ export function Li({ children }) {
 }
 
 export function B({ children }) {
-  return <strong className="font-bold text-[#002443]">{children}</strong>;
+  return <strong className="font-bold text-[#0A0A0A]">{children}</strong>;
 }
 
 export function C({ children }) {
   return (
-    <code className="font-mono text-[11.5px] bg-[#f4f4f4] text-[#002443] px-1.5 py-0.5 rounded border border-[#e8e8e8] whitespace-nowrap">
+    <code className="font-mono text-[11.5px] bg-[#f4f4f4] text-[#0A0A0A] px-1.5 py-0.5 rounded border border-[#e8e8e8] whitespace-nowrap">
       {children}
     </code>
   );
@@ -81,7 +81,7 @@ export function C({ children }) {
 export function CodeBlock({ language = 'js', children }) {
   return (
     <pre className="print-code bg-[#0f1623] text-[#e6e9ef] text-[11px] leading-[1.55] p-3.5 rounded-md overflow-x-auto my-3 border border-[#1a2436]">
-      <div className="text-[9.5px] uppercase tracking-[0.18em] text-[#5cf7cf]/70 font-mono mb-1.5 pb-1 border-b border-white/5">
+      <div className="text-[9.5px] uppercase tracking-[0.18em] text-[#E84B1C]/70 font-mono mb-1.5 pb-1 border-b border-white/5">
         {language}
       </div>
       <code className="font-mono whitespace-pre">{children}</code>
@@ -94,7 +94,7 @@ export function Table({ headers, rows, dense = false }) {
   return (
     <div className="print-table my-3 overflow-x-auto rounded-md border border-[#e8e8e8]">
       <table className="w-full border-collapse text-left">
-        <thead className="bg-[#002443] text-white">
+        <thead className="bg-[#0A0A0A] text-white">
           <tr>
             {headers.map((h, i) => (
               <th
@@ -131,7 +131,7 @@ export function Table({ headers, rows, dense = false }) {
 /* ===================== NOTAS ===================== */
 export function Note({ title, kind = 'info', children }) {
   const styles = {
-    info: 'bg-[#e8f4fb] border-[#0a6dba] text-[#002443]',
+    info: 'bg-[#e8f4fb] border-[#0a6dba] text-[#0A0A0A]',
     warn: 'bg-[#fff4e0] border-[#d97706] text-[#7c2d12]',
     rule: 'bg-[#dcfce7] border-[#15803d] text-[#14532d]',
     danger: 'bg-[#fee2e2] border-[#b91c1c] text-[#7f1d1d]',
@@ -157,12 +157,12 @@ export function Pipeline({ steps }) {
           key={i}
           className="flex gap-3 p-3 bg-white rounded-md border border-[#e8e8e8]"
         >
-          <div className="flex-shrink-0 w-12 h-12 rounded-md bg-[#2bc196]/10 flex items-center justify-center font-mono text-[10.5px] font-bold text-[#2bc196] uppercase text-center leading-tight">
+          <div className="flex-shrink-0 w-12 h-12 rounded-md bg-[#1356E2]/10 flex items-center justify-center font-mono text-[10.5px] font-bold text-[#1356E2] uppercase text-center leading-tight">
             {s.id}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-0.5">
-              <span className="text-[13px] font-bold text-[#002443]">{s.name}</span>
+              <span className="text-[13px] font-bold text-[#0A0A0A]">{s.name}</span>
               {s.duration && (
                 <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 bg-[#f4f4f4] rounded text-[#1a1a1a]/60">
                   {s.duration}
@@ -205,7 +205,7 @@ export function Threshold({ severity, when, points, source }) {
         {severity}
       </span>
       <span className="font-mono text-[11.5px] text-[#1a1a1a] flex-1 min-w-[200px]">{when}</span>
-      <span className="text-[#002443] font-bold text-[11.5px]">{points}</span>
+      <span className="text-[#0A0A0A] font-bold text-[11.5px]">{points}</span>
       {source && <span className="text-[10px] text-[#1a1a1a]/50 font-mono italic w-full pl-[60px]">↳ {source}</span>}
     </div>
   );
@@ -221,7 +221,7 @@ export function Endpoint({ method, path, auth, description, params = [], returns
     PATCH: 'bg-[#e0e7ff] text-[#3730a3]',
     UPDATE: 'bg-[#fef3c7] text-[#854d0e]',
   };
-  const mc = methodColors[method] || 'bg-[#f4f4f4] text-[#002443]';
+  const mc = methodColors[method] || 'bg-[#f4f4f4] text-[#0A0A0A]';
 
   return (
     <div className="my-3 border border-[#e8e8e8] rounded-md overflow-hidden">
@@ -230,11 +230,11 @@ export function Endpoint({ method, path, auth, description, params = [], returns
           <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider ${mc}`}>
             {method}
           </span>
-          <code className="font-mono text-[12px] text-[#002443] font-bold break-all">{path}</code>
+          <code className="font-mono text-[12px] text-[#0A0A0A] font-bold break-all">{path}</code>
         </div>
         {auth && (
           <div className="mt-1 text-[10.5px] font-mono uppercase tracking-wider text-[#1a1a1a]/60">
-            🔒 Auth: <span className="text-[#002443]">{auth}</span>
+            🔒 Auth: <span className="text-[#0A0A0A]">{auth}</span>
           </div>
         )}
       </div>
@@ -244,11 +244,11 @@ export function Endpoint({ method, path, auth, description, params = [], returns
         )}
         {params.length > 0 && (
           <div className="my-2">
-            <div className="text-[10px] uppercase tracking-wider text-[#2bc196] font-bold mb-1">Parâmetros</div>
+            <div className="text-[10px] uppercase tracking-wider text-[#1356E2] font-bold mb-1">Parâmetros</div>
             <div className="space-y-1">
               {params.map((p, i) => (
                 <div key={i} className="text-[11.5px] font-mono">
-                  <span className="text-[#002443] font-bold">{p.name}</span>
+                  <span className="text-[#0A0A0A] font-bold">{p.name}</span>
                   <span className="text-[#1a1a1a]/50"> : </span>
                   <span className="text-[#0a6dba]">{p.type}</span>
                   {p.required && <span className="ml-1 text-[#b91c1c] font-bold">*</span>}
@@ -260,7 +260,7 @@ export function Endpoint({ method, path, auth, description, params = [], returns
         )}
         {returns && (
           <div className="my-2">
-            <div className="text-[10px] uppercase tracking-wider text-[#2bc196] font-bold mb-1">Retorno</div>
+            <div className="text-[10px] uppercase tracking-wider text-[#1356E2] font-bold mb-1">Retorno</div>
             <pre className="bg-[#0f1623] text-[#e6e9ef] text-[10.5px] leading-[1.5] p-2 rounded overflow-x-auto font-mono whitespace-pre">
 {returns}
             </pre>
@@ -278,8 +278,8 @@ export function Endpoint({ method, path, auth, description, params = [], returns
 export function Schema({ name, fields }) {
   return (
     <div className="my-3 border border-[#e8e8e8] rounded-md overflow-hidden">
-      <div className="bg-[#002443] text-white px-3 py-2 flex items-center gap-2">
-        <span className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-[#5cf7cf]">Entidade</span>
+      <div className="bg-[#0A0A0A] text-white px-3 py-2 flex items-center gap-2">
+        <span className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-[#E84B1C]">Entidade</span>
         <code className="font-mono text-[13px] font-bold text-white">{name}</code>
         <span className="text-[10px] text-white/50 ml-auto">{fields.length} campos</span>
       </div>
@@ -290,7 +290,7 @@ export function Schema({ name, fields }) {
             className={`flex items-start gap-3 px-3 py-2 ${i % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f4]'} border-b border-[#e8e8e8]/50 last:border-0`}
           >
             <div className="flex-shrink-0 w-44">
-              <code className="font-mono text-[11.5px] text-[#002443] font-bold">{f.name}</code>
+              <code className="font-mono text-[11.5px] text-[#0A0A0A] font-bold">{f.name}</code>
               {f.required && <span className="ml-1 text-[10px] text-[#b91c1c] font-bold">*</span>}
             </div>
             <div className="flex-shrink-0 w-32">
@@ -320,7 +320,7 @@ export function Source({ files }) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-0.5">
         {files.map((f, i) => (
-          <code key={i} className="font-mono text-[10.5px] text-[#002443] block">
+          <code key={i} className="font-mono text-[10.5px] text-[#0A0A0A] block">
             • {f}
           </code>
         ))}

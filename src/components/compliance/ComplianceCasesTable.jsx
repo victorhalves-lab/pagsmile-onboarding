@@ -81,7 +81,7 @@ const getModelBadge = (model) => {
 
 // V4 Score Badge: 0-849 scale where 0=best
 const getV4ScoreBadge = (v4Score, subfaixa, subfaixaNome) => {
-  if (v4Score === undefined || v4Score === null) return <span className="text-[var(--pagsmile-blue)]/50">-</span>;
+  if (v4Score === undefined || v4Score === null) return <span className="text-[var(--pinbank-blue)]/50">-</span>;
   const subfaixaColors = {
     '1A': 'text-green-700 bg-green-50', '1B': 'text-green-600 bg-green-50',
     '2A': 'text-blue-700 bg-blue-50', '2B': 'text-blue-600 bg-blue-50',
@@ -99,7 +99,7 @@ const getV4ScoreBadge = (v4Score, subfaixa, subfaixaNome) => {
 };
 
 const getDecisionBadge = (decision) => {
-  if (!decision) return <span className="text-[var(--pagsmile-blue)]/50">-</span>;
+  if (!decision) return <span className="text-[var(--pinbank-blue)]/50">-</span>;
   const config = {
     'Aprovado': 'bg-green-100 text-green-700',
     'Aprovado com Condições': 'bg-blue-100 text-blue-700',
@@ -175,16 +175,16 @@ export default function ComplianceCasesTable({
 }) {
   const [cafModalCase, setCafModalCase] = React.useState(null);
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
         </div>
       ) : paginatedCases.length === 0 ? (
         <div className="text-center py-12">
-          <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-          <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum questionário encontrado</p>
-          <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
+          <FileCheck className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/40 mb-4" />
+          <p className="text-[var(--pinbank-blue)]/70 font-medium">Nenhum questionário encontrado</p>
+          <p className="text-sm text-[var(--pinbank-blue)]/50 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
         </div>
       ) : (
         <Table>
@@ -199,7 +199,7 @@ export default function ComplianceCasesTable({
                 />
               </TableHead>
               <TableHead className="w-[280px]">
-                <button className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
+                <button className="flex items-center gap-1 hover:text-[var(--pinbank-blue)] font-semibold"
                   onClick={() => { if (sortField === 'merchant') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); else { setSortField('merchant'); setSortOrder('asc'); } }}>
                   Merchant <ArrowUpDown className="w-3 h-3" />
                 </button>
@@ -207,14 +207,14 @@ export default function ComplianceCasesTable({
               <TableHead>Modelo</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-center">
-                <button className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold mx-auto"
+                <button className="flex items-center gap-1 hover:text-[var(--pinbank-blue)] font-semibold mx-auto"
                   onClick={() => { if (sortField === 'riskScoreV4') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); else { setSortField('riskScoreV4'); setSortOrder('asc'); } }}>
                   Score V4 <ArrowUpDown className="w-3 h-3" />
                 </button>
               </TableHead>
               <TableHead className="text-center">Subfaixa</TableHead>
               <TableHead className="text-center">
-                <button className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold mx-auto"
+                <button className="flex items-center gap-1 hover:text-[var(--pinbank-blue)] font-semibold mx-auto"
                   onClick={() => { if (sortField === 'iaDecision') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); else { setSortField('iaDecision'); setSortOrder('asc'); } }}>
                   <Brain className="w-4 h-4 mr-1" /> Decisão <ArrowUpDown className="w-3 h-3" />
                 </button>
@@ -224,7 +224,7 @@ export default function ComplianceCasesTable({
               <TableHead>Introducer</TableHead>
               <TableHead>Analista</TableHead>
               <TableHead>
-                <button className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
+                <button className="flex items-center gap-1 hover:text-[var(--pinbank-blue)] font-semibold"
                   onClick={() => { if (sortField === 'created_date') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); else { setSortField('created_date'); setSortOrder('desc'); } }}>
                   Submissão <ArrowUpDown className="w-3 h-3" />
                 </button>
@@ -237,7 +237,7 @@ export default function ComplianceCasesTable({
               const merchant = merchantMap[c.merchantId];
               return (
                 <React.Fragment key={c.id}>
-                  <TableRow className={`hover:bg-[#f4f4f4] transition-colors cursor-pointer ${selectedRows.includes(c.id) ? 'bg-[#2bc196]/5' : ''}`}>
+                  <TableRow className={`hover:bg-[#f4f4f4] transition-colors cursor-pointer ${selectedRows.includes(c.id) ? 'bg-[#1356E2]/5' : ''}`}>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox checked={selectedRows.includes(c.id)}
                         onCheckedChange={(checked) => setSelectedRows(prev => checked ? [...prev, c.id] : prev.filter(id => id !== c.id))} />
@@ -248,8 +248,8 @@ export default function ComplianceCasesTable({
                           {merchant?.type === 'PF' ? <User className="w-4 h-4 text-blue-600" /> : <Building2 className="w-4 h-4 text-purple-600" />}
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--pagsmile-blue)]">{merchant?.fullName || 'N/A'}</p>
-                          <p className="text-sm text-[var(--pagsmile-blue)]/70">{merchant?.cpfCnpj || '-'}</p>
+                          <p className="font-medium text-[var(--pinbank-blue)]">{merchant?.fullName || 'N/A'}</p>
+                          <p className="text-sm text-[var(--pinbank-blue)]/70">{merchant?.cpfCnpj || '-'}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -266,7 +266,7 @@ export default function ComplianceCasesTable({
                            '3A':'bg-yellow-100 text-yellow-700','3B':'bg-orange-100 text-orange-700',
                            '4':'bg-red-100 text-red-700','5':'bg-red-200 text-red-800'}[c.subfaixa] || 'bg-slate-100 text-slate-600'
                         }`}>{c.subfaixa}</Badge>
-                      ) : <span className="text-[var(--pagsmile-blue)]/50">-</span>}
+                      ) : <span className="text-[var(--pinbank-blue)]/50">-</span>}
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex justify-center">{getDecisionBadge(scoresMap[c.id]?.recomendacao_final || c.iaDecision)}</div>
@@ -295,37 +295,37 @@ export default function ComplianceCasesTable({
                         if (introducer) {
                           return (
                             <div className="flex items-center gap-1.5">
-                              <UserPlus className="w-3.5 h-3.5 text-[#2bc196]" />
-                              <span className="text-sm font-medium text-[var(--pagsmile-blue)]">{introducer.name}</span>
+                              <UserPlus className="w-3.5 h-3.5 text-[#1356E2]" />
+                              <span className="text-sm font-medium text-[var(--pinbank-blue)]">{introducer.name}</span>
                             </div>
                           );
                         }
-                        return <span className="text-sm text-[var(--pagsmile-blue)]/40">-</span>;
+                        return <span className="text-sm text-[var(--pinbank-blue)]/40">-</span>;
                       })()}
                     </TableCell>
-                    <TableCell><span className="text-sm text-[var(--pagsmile-blue)]/80">{c.assignedAnalystName || '-'}</span></TableCell>
+                    <TableCell><span className="text-sm text-[var(--pinbank-blue)]/80">{c.assignedAnalystName || '-'}</span></TableCell>
                     <TableCell>
                       <div>
-                        <p className="text-[var(--pagsmile-blue)] text-sm">{c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}</p>
-                        <p className="text-xs text-[var(--pagsmile-blue)]/50">{c.created_date ? new Date(c.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
+                        <p className="text-[var(--pinbank-blue)] text-sm">{c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}</p>
+                        <p className="text-xs text-[var(--pinbank-blue)]/50">{c.created_date ? new Date(c.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setExpandedRow(expandedRow === c.id ? null : c.id); }} className="text-[#002443]/50">
+                        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setExpandedRow(expandedRow === c.id ? null : c.id); }} className="text-[#0A0A0A]/50">
                           <ChevronDown className={`w-4 h-4 transition-transform ${expandedRow === c.id ? 'rotate-180' : ''}`} />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={(e) => { e.stopPropagation(); setCafModalCase(c); }}
-                          className="text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10"
+                          className="text-[#1356E2] hover:text-[#1356E2] hover:bg-[#1356E2]/10"
                           title="Gerar link para o cliente"
                         >
                           <Link2 className="w-4 h-4 mr-1" /> Gerar Link
                         </Button>
                         <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
-                          <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+                          <Button variant="ghost" size="sm" className="text-[var(--pinbank-blue)] hover:text-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/10">
                             <Eye className="w-4 h-4 mr-1" /> Analisar
                           </Button>
                         </Link>
@@ -361,14 +361,14 @@ export default function ComplianceCasesTable({
       {/* Paginação */}
       {filteredCasesCount > 0 && (
         <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-          <p className="text-sm text-[var(--pagsmile-blue)]/70">
+          <p className="text-sm text-[var(--pinbank-blue)]/70">
             Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredCasesCount)} de {filteredCasesCount} questionários
           </p>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="text-sm text-[var(--pagsmile-blue)]/80">Página {currentPage} de {totalPages || 1}</span>
+            <span className="text-sm text-[var(--pinbank-blue)]/80">Página {currentPage} de {totalPages || 1}</span>
             <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages || totalPages === 0}>
               <ChevronRight className="w-4 h-4" />
             </Button>

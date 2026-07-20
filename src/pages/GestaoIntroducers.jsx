@@ -94,17 +94,17 @@ export default function GestaoIntroducers() {
   const hasFilters = search || statusFilter !== 'all';
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <Users className="w-6 h-6 text-[#5cf7cf]" />
+              <Users className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('gi.title')}</h1>
@@ -115,7 +115,7 @@ export default function GestaoIntroducers() {
             <Button variant="outline" size="sm" onClick={() => queryClient.invalidateQueries()} className="border-white/20 text-white hover:bg-white/10 rounded-xl">
               <RefreshCw className="w-4 h-4" />
             </Button>
-            <Button size="sm" onClick={handleNewIntroducer} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+            <Button size="sm" onClick={handleNewIntroducer} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
               <Plus className="w-4 h-4 mr-2" /> {t('gi.new')}
             </Button>
           </div>
@@ -128,7 +128,7 @@ export default function GestaoIntroducers() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('gi.search_placeholder')} className="pl-10 h-10 rounded-xl" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>

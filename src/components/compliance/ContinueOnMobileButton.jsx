@@ -38,7 +38,7 @@ export default function ContinueOnMobileButton({ resumeUrl, prefilledEmail = '' 
       const res = await callPublicFunction('emailComplianceResumeLink', {
         toEmail: email,
         resumeUrl,
-        brandName: 'Pagsmile',
+        brandName: 'Pin Bank',
       });
       if (res?.ok) {
         setSent(true);
@@ -86,8 +86,8 @@ export default function ContinueOnMobileButton({ resumeUrl, prefilledEmail = '' 
           >
             <div className="flex items-center justify-between p-5 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <Smartphone className="w-5 h-5 text-[#2bc196]" />
-                <h3 className="text-base font-bold text-[#002443]">Continuar em outro dispositivo</h3>
+                <Smartphone className="w-5 h-5 text-[#1356E2]" />
+                <h3 className="text-base font-bold text-[#0A0A0A]">Continuar em outro dispositivo</h3>
               </div>
               <button
                 onClick={() => setOpen(false)}
@@ -99,19 +99,19 @@ export default function ContinueOnMobileButton({ resumeUrl, prefilledEmail = '' 
             </div>
 
             <div className="p-5 space-y-5">
-              <p className="text-sm text-[#002443]/70">
+              <p className="text-sm text-[#0A0A0A]/70">
                 Seus dados e documentos enviados <strong>já estão salvos</strong>. Escolha como retomar em outro aparelho:
               </p>
 
               {/* QR code */}
               <div className="bg-slate-50 rounded-xl p-5 text-center">
-                <p className="text-xs font-semibold text-[#002443] mb-3">
+                <p className="text-xs font-semibold text-[#0A0A0A] mb-3">
                   📱 Aponte a câmera do celular para o QR code
                 </p>
                 <div className="inline-block bg-white p-3 rounded-xl border border-slate-200">
                   <QRCodeSVG value={resumeUrl} size={180} level="M" />
                 </div>
-                <p className="text-[11px] text-[#002443]/50 mt-3">
+                <p className="text-[11px] text-[#0A0A0A]/50 mt-3">
                   Você cai exatamente onde parou, com tudo preenchido.
                 </p>
               </div>
@@ -124,7 +124,7 @@ export default function ContinueOnMobileButton({ resumeUrl, prefilledEmail = '' 
 
               {/* E-mail */}
               <div>
-                <p className="text-xs font-semibold text-[#002443] mb-2 flex items-center gap-1.5">
+                <p className="text-xs font-semibold text-[#0A0A0A] mb-2 flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5" />
                   Receba o link por e-mail
                 </p>
@@ -146,7 +146,7 @@ export default function ContinueOnMobileButton({ resumeUrl, prefilledEmail = '' 
                     <Button
                       onClick={handleSendEmail}
                       disabled={sending || !email}
-                      className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white text-xs px-4"
+                      className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white text-xs px-4"
                     >
                       {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Enviar'}
                     </Button>
@@ -158,7 +158,7 @@ export default function ContinueOnMobileButton({ resumeUrl, prefilledEmail = '' 
               <div className="pt-2 border-t border-slate-100">
                 <button
                   onClick={handleCopy}
-                  className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs font-medium text-[#002443]/70 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs font-medium text-[#0A0A0A]/70 transition-colors"
                   type="button"
                 >
                   {copied ? (
@@ -175,7 +175,7 @@ export default function ContinueOnMobileButton({ resumeUrl, prefilledEmail = '' 
                 </button>
               </div>
 
-              <p className="text-[10px] text-[#002443]/50 text-center leading-relaxed">
+              <p className="text-[10px] text-[#0A0A0A]/50 text-center leading-relaxed">
                 🔒 O link é único, expira após você concluir o cadastro e só você consegue retomar de onde parou.
               </p>
             </div>

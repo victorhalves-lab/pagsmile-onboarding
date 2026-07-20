@@ -16,13 +16,13 @@ export default function ComplianceVariablesDetail({ score }) {
   const neutralVars = varKeys.filter(k => appliedVars[k]?.ativa && (appliedVars[k]?.pontos || 0) === 0);
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
       <button 
         onClick={() => setExpanded(!expanded)} 
-        className="w-full flex items-center justify-between text-sm font-semibold text-[var(--pagsmile-blue)]"
+        className="w-full flex items-center justify-between text-sm font-semibold text-[var(--pinbank-blue)]"
       >
         <span className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-[var(--pagsmile-green)]" />
+          <TrendingUp className="w-4 h-4 text-[var(--pinbank-blue)]" />
           Variáveis de Risco Detalhadas
           {varKeys.length > 0 && (
             <Badge variant="outline" className="text-[10px] ml-1">{activeVars.length} ativas de {varKeys.length}</Badge>
@@ -68,7 +68,7 @@ export default function ComplianceVariablesDetail({ score }) {
       {/* Detailed view */}
       {expanded && varKeys.length > 0 && (
         <div className="mt-4 border-t border-gray-100 pt-4">
-          <p className="text-xs text-[var(--pagsmile-blue)]/50 mb-3">Detalhamento completo de todas as variáveis avaliadas (V01-V60):</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/50 mb-3">Detalhamento completo de todas as variáveis avaliadas (V01-V60):</p>
           <div className="space-y-1 max-h-[500px] overflow-y-auto">
             {varKeys.map(key => {
               const v = appliedVars[key];
@@ -79,10 +79,10 @@ export default function ComplianceVariablesDetail({ score }) {
               return (
                 <div key={key} className={`flex items-center gap-3 p-2 rounded-lg text-xs ${!isActive ? 'bg-gray-50 opacity-50' : isPositive ? 'bg-green-50' : isNeutral ? 'bg-gray-50' : 'bg-red-50'}`}>
                   <div className="w-12 flex-shrink-0">
-                    <span className="font-mono font-bold text-[var(--pagsmile-blue)]">{key}</span>
+                    <span className="font-mono font-bold text-[var(--pinbank-blue)]">{key}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[var(--pagsmile-blue)]/70 truncate block">{v?.desc || '—'}</span>
+                    <span className="text-[var(--pinbank-blue)]/70 truncate block">{v?.desc || '—'}</span>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {isActive ? (

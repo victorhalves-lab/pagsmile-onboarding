@@ -48,8 +48,8 @@ export default function Term({ code, children, inline = false, icon = 'after', c
           type="button"
           className={cn(
             'inline-flex items-center gap-1 align-baseline cursor-help transition-colors',
-            showText && 'underline decoration-dotted decoration-[#2bc196]/60 underline-offset-2 hover:decoration-[#2bc196]',
-            'hover:text-[#2bc196] focus:outline-none focus:ring-2 focus:ring-[#2bc196]/30 focus:ring-offset-1 rounded-sm',
+            showText && 'underline decoration-dotted decoration-[#1356E2]/60 underline-offset-2 hover:decoration-[#1356E2]',
+            'hover:text-[#1356E2] focus:outline-none focus:ring-2 focus:ring-[#1356E2]/30 focus:ring-offset-1 rounded-sm',
             className
           )}
           aria-label={`Defini\u00e7\u00e3o de ${term.label}`}
@@ -59,7 +59,7 @@ export default function Term({ code, children, inline = false, icon = 'after', c
             <Info className={cn(
               'flex-shrink-0',
               icon === 'only' ? 'w-3.5 h-3.5' : 'w-3 h-3',
-              'text-[#2bc196]/70'
+              'text-[#1356E2]/70'
             )} />
           )}
         </button>
@@ -86,13 +86,13 @@ export default function Term({ code, children, inline = false, icon = 'after', c
               </span>
               <span className="text-[10px] text-slate-400 font-mono">{code}</span>
             </div>
-            <h4 className="text-sm font-bold text-[#002443] mt-0.5 truncate">{term.label}</h4>
+            <h4 className="text-sm font-bold text-[#0A0A0A] mt-0.5 truncate">{term.label}</h4>
           </div>
         </div>
 
         {/* Defini\u00e7\u00e3o curta */}
         <div className="px-4 py-3 bg-white">
-          <p className="text-[13px] font-semibold text-[#002443] leading-snug">
+          <p className="text-[13px] font-semibold text-[#0A0A0A] leading-snug">
             {term.short}
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function Term({ code, children, inline = false, icon = 'after', c
           <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/50">
             <div className="flex items-start gap-2">
               <BookOpen className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
-              <p className="text-[12px] text-[#002443]/80 leading-relaxed">
+              <p className="text-[12px] text-[#0A0A0A]/80 leading-relaxed">
                 {term.full}
               </p>
             </div>

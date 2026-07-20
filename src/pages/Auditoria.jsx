@@ -40,13 +40,13 @@ export default function Auditoria() {
   });
 
   const actionConfig = {
-    'CREATE': { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: Plus, label: t('aud.action_create') },
-    'UPDATE': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: Edit, label: t('aud.action_update') },
+    'CREATE': { bg: 'bg-[#E84B1C]/10', text: 'text-[#E84B1C]', icon: Plus, label: t('aud.action_create') },
+    'UPDATE': { bg: 'bg-[#0A0A0A]/5', text: 'text-[#0A0A0A]', icon: Edit, label: t('aud.action_update') },
     'DELETE': { bg: 'bg-red-50', text: 'text-red-500', icon: Trash2, label: t('aud.action_delete') },
-    'VIEW': { bg: 'bg-[#f4f4f4]', text: 'text-[#002443]/60', icon: Eye, label: t('aud.action_view') },
-    'APPROVAL': { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: t('aud.action_approval') },
+    'VIEW': { bg: 'bg-[#f4f4f4]', text: 'text-[#0A0A0A]/60', icon: Eye, label: t('aud.action_view') },
+    'APPROVAL': { bg: 'bg-[#1356E2]/10', text: 'text-[#1356E2]', icon: CheckCircle2, label: t('aud.action_approval') },
     'REJECTION': { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: t('aud.action_rejection') },
-    'VALIDATION': { bg: 'bg-[#5cf7cf]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: t('aud.action_validation') },
+    'VALIDATION': { bg: 'bg-[#E84B1C]/10', text: 'text-[#E84B1C]', icon: AlertTriangle, label: t('aud.action_validation') },
   };
 
   const getActionBadge = (action) => {
@@ -56,9 +56,9 @@ export default function Auditoria() {
   };
 
   const getActorIcon = (changedBy) => {
-    if (changedBy === 'HELENA_AI') return <Bot className="w-4 h-4 text-[#2bc196]" />;
-    if (changedBy === 'System') return <Settings className="w-4 h-4 text-[#002443]/40" />;
-    return <User className="w-4 h-4 text-[#002443]/40" />;
+    if (changedBy === 'HELENA_AI') return <Bot className="w-4 h-4 text-[#1356E2]" />;
+    if (changedBy === 'System') return <Settings className="w-4 h-4 text-[#0A0A0A]/40" />;
+    return <User className="w-4 h-4 text-[#0A0A0A]/40" />;
   };
 
   const filteredLogs = React.useMemo(() => {
@@ -105,10 +105,10 @@ export default function Auditoria() {
   };
 
   const stats = [
-    { label: t('aud.total_records'), value: auditLogs.length, color: '#002443' },
-    { label: t('aud.approvals'), value: auditLogs.filter(l => l.actionType === 'APPROVAL').length, color: '#2bc196' },
-    { label: t('aud.rejections'), value: auditLogs.filter(l => l.actionType === 'REJECTION').length, color: '#002443' },
-    { label: t('aud.helena_actions'), value: auditLogs.filter(l => l.changedBy === 'HELENA_AI').length, color: '#36706c' },
+    { label: t('aud.total_records'), value: auditLogs.length, color: '#0A0A0A' },
+    { label: t('aud.approvals'), value: auditLogs.filter(l => l.actionType === 'APPROVAL').length, color: '#1356E2' },
+    { label: t('aud.rejections'), value: auditLogs.filter(l => l.actionType === 'REJECTION').length, color: '#0A0A0A' },
+    { label: t('aud.helena_actions'), value: auditLogs.filter(l => l.changedBy === 'HELENA_AI').length, color: '#E84B1C' },
   ];
 
   return (
@@ -116,20 +116,20 @@ export default function Auditoria() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
-            <History className="w-5 h-5 text-[#002443]" />
+          <div className="w-10 h-10 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center">
+            <History className="w-5 h-5 text-[#0A0A0A]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">{t('aud.title')}</h1>
-            <p className="text-sm text-[#002443]/60">{t('aud.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('aud.title')}</h1>
+            <p className="text-sm text-[#0A0A0A]/60">{t('aud.subtitle')}</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-            <Download className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('aud.export')}</span>
+          <Button variant="outline" onClick={handleExport} className="border-[#0A0A0A]/10 hover:bg-[#f4f4f4] rounded-xl">
+            <Download className="w-4 h-4 mr-2 text-[#0A0A0A]/50" /> <span className="text-[#0A0A0A]/70">{t('aud.export')}</span>
           </Button>
-          <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-            <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('aud.refresh')}</span>
+          <Button variant="outline" onClick={() => refetch()} className="border-[#0A0A0A]/10 hover:bg-[#f4f4f4] rounded-xl">
+            <RefreshCw className="w-4 h-4 mr-2 text-[#0A0A0A]/50" /> <span className="text-[#0A0A0A]/70">{t('aud.refresh')}</span>
           </Button>
         </div>
       </div>
@@ -137,18 +137,18 @@ export default function Auditoria() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+          <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
             <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
-            <p className="text-xs text-[#002443]/50">{s.label}</p>
+            <p className="text-xs text-[#0A0A0A]/50">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
         <div className="flex flex-col md:flex-row gap-3 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-[#002443]/30" />
+            <Filter className="w-4 h-4 text-[#0A0A0A]/30" />
             {[
               { value: actionFilter, onChange: setActionFilter, placeholder: t('aud.col_action'), width: 'w-40', options: [
                 { v: 'all', l: t('aud.all_actions') }, { v: 'CREATE', l: t('aud.action_create') }, { v: 'UPDATE', l: t('aud.action_update') }, { v: 'DELETE', l: t('aud.action_delete') }, { v: 'APPROVAL', l: t('aud.action_approval') }, { v: 'REJECTION', l: t('aud.action_rejection') }, { v: 'VALIDATION', l: t('aud.action_validation') }
@@ -164,38 +164,38 @@ export default function Auditoria() {
               ]},
             ].map((filter, idx) => (
               <Select key={idx} value={filter.value} onValueChange={filter.onChange}>
-                <SelectTrigger className={`${filter.width} border-[#002443]/10 text-sm`}><SelectValue placeholder={filter.placeholder} /></SelectTrigger>
+                <SelectTrigger className={`${filter.width} border-[#0A0A0A]/10 text-sm`}><SelectValue placeholder={filter.placeholder} /></SelectTrigger>
                 <SelectContent>{filter.options.map(o => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}</SelectContent>
               </Select>
             ))}
             {(actionFilter !== 'all' || actorTypeFilter !== 'all' || dateFilter !== 'all' || entityFilter) && (
-              <button onClick={() => { setActionFilter('all'); setActorTypeFilter('all'); setDateFilter('all'); setEntityFilter(null); }} className="text-xs text-[#2bc196] hover:text-[#36706c] font-medium">
+              <button onClick={() => { setActionFilter('all'); setActorTypeFilter('all'); setDateFilter('all'); setEntityFilter(null); }} className="text-xs text-[#1356E2] hover:text-[#E84B1C] font-medium">
                 {t('aud.clear_filters')}
               </button>
             )}
           </div>
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
-            <Input placeholder={t('aud.search_placeholder')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 border-[#002443]/10" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
+            <Input placeholder={t('aud.search_placeholder')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 border-[#0A0A0A]/10" />
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>
         ) : paginatedLogs.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><History className="w-7 h-7 text-[#002443]/20" /></div>
-            <p className="text-sm text-[#002443]/50">{t('aud.no_records')}</p>
+            <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><History className="w-7 h-7 text-[#0A0A0A]/20" /></div>
+            <p className="text-sm text-[#0A0A0A]/50">{t('aud.no_records')}</p>
           </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow className="bg-[#f4f4f4]">
                 {[t('aud.col_datetime'), t('aud.col_action'), t('aud.col_description'), t('aud.col_actor'), t('aud.col_entity'), ''].map((h, i) => (
-                  <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 5 ? 'text-right' : ''}`}>{h}</TableHead>
+                  <TableHead key={i} className={`text-[10px] font-bold text-[#0A0A0A]/40 uppercase ${i === 5 ? 'text-right' : ''}`}>{h}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -203,21 +203,21 @@ export default function Auditoria() {
               {paginatedLogs.map((log) => (
                 <TableRow key={log.id} className="hover:bg-[#f4f4f4]/50">
                   <TableCell className="text-sm">
-                    <p className="font-medium text-[#002443]">{log.changeDate ? new Date(log.changeDate).toLocaleDateString() : '-'}</p>
-                    <p className="text-[10px] text-[#002443]/30">{log.changeDate ? new Date(log.changeDate).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ''}</p>
+                    <p className="font-medium text-[#0A0A0A]">{log.changeDate ? new Date(log.changeDate).toLocaleDateString() : '-'}</p>
+                    <p className="text-[10px] text-[#0A0A0A]/30">{log.changeDate ? new Date(log.changeDate).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ''}</p>
                   </TableCell>
                   <TableCell>{getActionBadge(log.actionType)}</TableCell>
-                  <TableCell className="max-w-xs truncate text-xs text-[#002443]/60">{log.actionDescription || '-'}</TableCell>
+                  <TableCell className="max-w-xs truncate text-xs text-[#0A0A0A]/60">{log.actionDescription || '-'}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {getActorIcon(log.changedBy)}
-                      <span className="text-xs text-[#002443]/60">{log.changedBy || '-'}</span>
+                      <span className="text-xs text-[#0A0A0A]/60">{log.changedBy || '-'}</span>
                     </div>
                   </TableCell>
-                  <TableCell><Badge variant="outline" className="text-[10px] border-[#002443]/10 text-[#002443]/50">{log.entityName}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className="text-[10px] border-[#0A0A0A]/10 text-[#0A0A0A]/50">{log.entityName}</Badge></TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedLog(log)}>
-                      <Eye className="w-4 h-4 text-[#002443]/30" />
+                      <Eye className="w-4 h-4 text-[#0A0A0A]/30" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -227,16 +227,16 @@ export default function Auditoria() {
         )}
 
         {filteredLogs.length > 0 && (
-          <div className="px-5 py-3 border-t border-[#002443]/5 flex items-center justify-between">
-            <p className="text-xs text-[#002443]/40">
+          <div className="px-5 py-3 border-t border-[#0A0A0A]/5 flex items-center justify-between">
+            <p className="text-xs text-[#0A0A0A]/40">
               {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredLogs.length)} de {filteredLogs.length}
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="rounded-lg border-[#002443]/10" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
+              <Button variant="outline" size="sm" className="rounded-lg border-[#0A0A0A]/10" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-xs text-[#002443]/50">{currentPage} / {totalPages || 1}</span>
-              <Button variant="outline" size="sm" className="rounded-lg border-[#002443]/10" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages || totalPages === 0}>
+              <span className="text-xs text-[#0A0A0A]/50">{currentPage} / {totalPages || 1}</span>
+              <Button variant="outline" size="sm" className="rounded-lg border-[#0A0A0A]/10" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages || totalPages === 0}>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
@@ -247,22 +247,22 @@ export default function Auditoria() {
       {/* Detail Modal */}
       <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
         <DialogContent className="max-w-lg rounded-2xl">
-          <DialogHeader><DialogTitle className="text-[#002443]">{t('aud.detail_title')}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-[#0A0A0A]">{t('aud.detail_title')}</DialogTitle></DialogHeader>
           {selectedLog && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_datetime')}</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changeDate ? new Date(selectedLog.changeDate).toLocaleString() : '-'}</p></div>
-                <div><p className="text-xs text-[#002443]/40 mb-1">{t('aud.detail_action')}</p>{getActionBadge(selectedLog.actionType)}</div>
-                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_actor')}</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changedBy}</p></div>
-                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_entity')}</p><p className="font-medium text-sm text-[#002443]">{selectedLog.entityName}</p></div>
+                <div><p className="text-xs text-[#0A0A0A]/40">{t('aud.detail_datetime')}</p><p className="font-medium text-sm text-[#0A0A0A]">{selectedLog.changeDate ? new Date(selectedLog.changeDate).toLocaleString() : '-'}</p></div>
+                <div><p className="text-xs text-[#0A0A0A]/40 mb-1">{t('aud.detail_action')}</p>{getActionBadge(selectedLog.actionType)}</div>
+                <div><p className="text-xs text-[#0A0A0A]/40">{t('aud.detail_actor')}</p><p className="font-medium text-sm text-[#0A0A0A]">{selectedLog.changedBy}</p></div>
+                <div><p className="text-xs text-[#0A0A0A]/40">{t('aud.detail_entity')}</p><p className="font-medium text-sm text-[#0A0A0A]">{selectedLog.entityName}</p></div>
               </div>
-              <div><p className="text-xs text-[#002443]/40">{t('aud.detail_description')}</p><p className="text-sm text-[#002443]">{selectedLog.actionDescription}</p></div>
-              <div><p className="text-xs text-[#002443]/40">{t('aud.detail_entity_id')}</p><p className="font-mono text-xs bg-[#f4f4f4] p-2 rounded-xl text-[#36706c]">{selectedLog.entityId}</p></div>
+              <div><p className="text-xs text-[#0A0A0A]/40">{t('aud.detail_description')}</p><p className="text-sm text-[#0A0A0A]">{selectedLog.actionDescription}</p></div>
+              <div><p className="text-xs text-[#0A0A0A]/40">{t('aud.detail_entity_id')}</p><p className="font-mono text-xs bg-[#f4f4f4] p-2 rounded-xl text-[#E84B1C]">{selectedLog.entityId}</p></div>
               {selectedLog.details && (
-                <div><p className="text-xs text-[#002443]/40 mb-1">{t('aud.detail_additional')}</p><pre className="bg-[#f4f4f4] p-3 rounded-xl text-xs overflow-auto max-h-40 text-[#002443]/70">{JSON.stringify(selectedLog.details, null, 2)}</pre></div>
+                <div><p className="text-xs text-[#0A0A0A]/40 mb-1">{t('aud.detail_additional')}</p><pre className="bg-[#f4f4f4] p-3 rounded-xl text-xs overflow-auto max-h-40 text-[#0A0A0A]/70">{JSON.stringify(selectedLog.details, null, 2)}</pre></div>
               )}
               {selectedLog.ipAddress && (
-                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_ip')}</p><p className="font-mono text-xs text-[#002443]/60">{selectedLog.ipAddress}</p></div>
+                <div><p className="text-xs text-[#0A0A0A]/40">{t('aud.detail_ip')}</p><p className="font-mono text-xs text-[#0A0A0A]/60">{selectedLog.ipAddress}</p></div>
               )}
             </div>
           )}

@@ -137,13 +137,13 @@ export default function QuestionarioReuniaoPix() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('QuestionariosLeads'))} className="text-white/70 hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
           </Button>
           <div className="p-3 rounded-xl bg-white/10">
-            <Zap className="w-6 h-6 text-[#5cf7cf]" />
+            <Zap className="w-6 h-6 text-[#E84B1C]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Questionário de Reunião - PIX</h1>
@@ -159,7 +159,7 @@ export default function QuestionarioReuniaoPix() {
       {/* Submit */}
       <div className="flex justify-end gap-3 pb-8">
         <Button variant="outline" onClick={() => navigate(createPageUrl('QuestionariosLeads'))}>Cancelar</Button>
-        <Button onClick={handleSubmit} disabled={saving} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+        <Button onClick={handleSubmit} disabled={saving} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           Salvar e Criar Lead
         </Button>

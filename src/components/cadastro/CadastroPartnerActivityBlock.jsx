@@ -39,9 +39,9 @@ export default function CadastroPartnerActivityBlock({ assignments = [] }) {
   if (!activities.length) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5 mt-3">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
-        <Activity className="w-4 h-4 text-[var(--pagsmile-green)]" />
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5 mt-3">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
+        <Activity className="w-4 h-4 text-[var(--pinbank-blue)]" />
         Atividade dos Parceiros ({activities.length})
       </h3>
       <div className="space-y-2">
@@ -55,12 +55,12 @@ export default function CadastroPartnerActivityBlock({ assignments = [] }) {
                   <Badge className={`text-[10px] ${color}`}>{label}</Badge>
                   {a.performedByRole && <Badge variant="outline" className="text-[10px]">{a.performedByRole}</Badge>}
                 </div>
-                {a.description && <p className="text-xs text-[var(--pagsmile-blue)]/80 mt-1">{a.description}</p>}
-                {a.performedByName && <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">por {a.performedByName}</p>}
+                {a.description && <p className="text-xs text-[var(--pinbank-blue)]/80 mt-1">{a.description}</p>}
+                {a.performedByName && <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">por {a.performedByName}</p>}
               </div>
               <div className="text-right flex-shrink-0">
-                <Calendar className="w-3 h-3 text-[var(--pagsmile-blue)]/30 inline" />
-                <span className="text-[10px] text-[var(--pagsmile-blue)]/40 ml-1">{new Date(a.created_date).toLocaleDateString('pt-BR')}</span>
+                <Calendar className="w-3 h-3 text-[var(--pinbank-blue)]/30 inline" />
+                <span className="text-[10px] text-[var(--pinbank-blue)]/40 ml-1">{new Date(a.created_date).toLocaleDateString('pt-BR')}</span>
               </div>
             </div>
           );

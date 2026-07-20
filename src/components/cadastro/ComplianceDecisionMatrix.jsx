@@ -29,7 +29,7 @@ function ConfidenceBar({ value }) {
       <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${value}%` }} />
       </div>
-      <span className="text-[10px] font-bold text-[var(--pagsmile-blue)]/60">{value}%</span>
+      <span className="text-[10px] font-bold text-[var(--pinbank-blue)]/60">{value}%</span>
     </div>
   );
 }
@@ -54,7 +54,7 @@ function DimensionCard({ dimension, data }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[var(--pagsmile-blue)]">{dimension.label}</span>
+            <span className="text-xs font-semibold text-[var(--pinbank-blue)]">{dimension.label}</span>
             <Badge className={`text-[9px] ${config.badge}`}>
               <VIcon className="w-2.5 h-2.5 mr-0.5" />
               {veredicto === 'NAO_DISPONIVEL' ? 'N/D' : veredicto}
@@ -75,13 +75,13 @@ function DimensionCard({ dimension, data }) {
       {expanded && (
         <div className="px-3 pb-3 space-y-2">
           {data?.resumo && (
-            <p className="text-xs text-[var(--pagsmile-blue)]/70 leading-relaxed bg-white/60 rounded-lg p-2">{data.resumo}</p>
+            <p className="text-xs text-[var(--pinbank-blue)]/70 leading-relaxed bg-white/60 rounded-lg p-2">{data.resumo}</p>
           )}
           {findings.length > 0 && (
             <div className="space-y-1">
               {findings.map((f, i) => (
-                <div key={i} className="flex items-start gap-2 text-[11px] text-[var(--pagsmile-blue)]/60 bg-white/40 rounded p-1.5">
-                  <span className="text-[9px] font-bold text-[var(--pagsmile-blue)]/30 mt-0.5">F{i+1}</span>
+                <div key={i} className="flex items-start gap-2 text-[11px] text-[var(--pinbank-blue)]/60 bg-white/40 rounded p-1.5">
+                  <span className="text-[9px] font-bold text-[var(--pinbank-blue)]/30 mt-0.5">F{i+1}</span>
                   <span>{f}</span>
                 </div>
               ))}
@@ -108,10 +108,10 @@ export default function ComplianceDecisionMatrix({ score }) {
   const nd = dims.filter(d => !d.data || d.data?.veredicto === 'NAO_DISPONIVEL').length;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-[var(--pagsmile-blue)] flex items-center gap-2">
-          <Shield className="w-4 h-4 text-[var(--pagsmile-green)]" />
+        <h3 className="text-sm font-bold text-[var(--pinbank-blue)] flex items-center gap-2">
+          <Shield className="w-4 h-4 text-[var(--pinbank-blue)]" />
           Matriz de Decisão por Dimensão
         </h3>
         <div className="flex gap-1.5">

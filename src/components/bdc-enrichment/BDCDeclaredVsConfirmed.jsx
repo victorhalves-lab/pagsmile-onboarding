@@ -205,8 +205,8 @@ export default function BDCDeclaredVsConfirmed({ merchant, analysis, questionnai
   return (
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
       <div className="p-4 border-b border-slate-100">
-        <h4 className="text-sm font-bold text-[#002443] mb-1">🔍 Declarado vs Confirmado</h4>
-        <p className="text-[10px] text-[#002443]/40">
+        <h4 className="text-sm font-bold text-[#0A0A0A] mb-1">🔍 Declarado vs Confirmado</h4>
+        <p className="text-[10px] text-[#0A0A0A]/40">
           Comparativo entre os dados declarados pelo merchant no questionário e os dados encontrados na Big Data Corp
         </p>
         <div className="flex gap-3 mt-2">
@@ -220,7 +220,7 @@ export default function BDCDeclaredVsConfirmed({ merchant, analysis, questionnai
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-50 text-[10px] font-bold text-[#002443]/50 uppercase tracking-wider">
+              <tr className="bg-slate-50 text-[10px] font-bold text-[#0A0A0A]/50 uppercase tracking-wider">
                 <th className="px-4 py-2.5 text-left">Campo</th>
                 <th className="px-4 py-2.5 text-left">Declarado pelo Merchant</th>
                 <th className="px-4 py-2.5 text-left">Confirmado pela BDC</th>
@@ -235,9 +235,9 @@ export default function BDCDeclaredVsConfirmed({ merchant, analysis, questionnai
                 const semaforo = row.status === 'match' ? '✅' : row.status === 'divergence' ? '⚠️' : row.status === 'mismatch' ? '❌' : '❓';
                 return (
                   <tr key={i} className={`${cfg.bg}/30 hover:${cfg.bg}/50 transition-colors`}>
-                    <td className="px-4 py-3 text-xs font-semibold text-[#002443]">{row.field}</td>
-                    <td className="px-4 py-3 text-xs text-[#002443]/70">{row.declared || <span className="text-[#002443]/30 italic">Não declarado</span>}</td>
-                    <td className="px-4 py-3 text-xs text-[#002443]/70 font-medium">{row.confirmed || <span className="text-[#002443]/30 italic">Não encontrado</span>}</td>
+                    <td className="px-4 py-3 text-xs font-semibold text-[#0A0A0A]">{row.field}</td>
+                    <td className="px-4 py-3 text-xs text-[#0A0A0A]/70">{row.declared || <span className="text-[#0A0A0A]/30 italic">Não declarado</span>}</td>
+                    <td className="px-4 py-3 text-xs text-[#0A0A0A]/70 font-medium">{row.confirmed || <span className="text-[#0A0A0A]/30 italic">Não encontrado</span>}</td>
                     <td className="px-4 py-3 text-center">
                       {explanation ? (
                         <Tooltip>
@@ -248,8 +248,8 @@ export default function BDCDeclaredVsConfirmed({ merchant, analysis, questionnai
                               <span className={`text-[10px] font-semibold ${cfg.color}`}>{cfg.label}</span>
                             </div>
                           </TooltipTrigger>
-                          <TooltipContent side="left" className="max-w-xs bg-[#002443] text-white border-[#002443]">
-                            <p className="text-[10px] font-bold mb-1 text-[#2bc196]">
+                          <TooltipContent side="left" className="max-w-xs bg-[#0A0A0A] text-white border-[#0A0A0A]">
+                            <p className="text-[10px] font-bold mb-1 text-[#1356E2]">
                               {row.status === 'divergence' ? '⚠️ Divergência leve' : '❌ Divergência grave'}
                             </p>
                             <p className="text-[11px] leading-relaxed">{explanation}</p>

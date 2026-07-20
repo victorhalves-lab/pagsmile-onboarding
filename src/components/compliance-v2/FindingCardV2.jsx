@@ -38,7 +38,7 @@ export default function FindingCardV2({ finding }) {
           <div className="flex-1 min-w-0">
             {/* Title + badges */}
             <div className="flex items-center gap-2 flex-wrap mb-2">
-              <h4 className="text-sm font-bold text-[var(--pagsmile-blue)]">{finding.titulo}</h4>
+              <h4 className="text-sm font-bold text-[var(--pinbank-blue)]">{finding.titulo}</h4>
               <Badge className={`${cfg.color} text-[10px] border-0`}>{cfg.label}</Badge>
               {finding.deducao_pontos > 0 && (
                 <Badge className="bg-red-100 text-red-700 text-[10px] border-0 font-bold flex items-center gap-1">
@@ -49,7 +49,7 @@ export default function FindingCardV2({ finding }) {
 
             {/* Description - formatted */}
             {finding.descricao && (
-              <div className="mb-3 text-xs text-[var(--pagsmile-blue)]/75 leading-relaxed">
+              <div className="mb-3 text-xs text-[var(--pinbank-blue)]/75 leading-relaxed">
                 {finding.descricao.split(/\.\s+/).filter(Boolean).map((sentence, i) => (
                   <p key={i} className="mb-1">{sentence.endsWith('.') ? sentence : sentence + '.'}</p>
                 ))}
@@ -66,20 +66,20 @@ export default function FindingCardV2({ finding }) {
             <div className="flex flex-wrap gap-2 items-center">
               {finding.fonte_externa && (
                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/70 border border-slate-200 text-[10px]">
-                  <Database className="w-3 h-3 text-[var(--pagsmile-blue)]/40" />
-                  <span className="font-bold text-[var(--pagsmile-blue)]/70">{finding.fonte_externa}</span>
+                  <Database className="w-3 h-3 text-[var(--pinbank-blue)]/40" />
+                  <span className="font-bold text-[var(--pinbank-blue)]/70">{finding.fonte_externa}</span>
                   {FONTE_EXPLAIN[finding.fonte_externa] && (
-                    <span className="text-[var(--pagsmile-blue)]/40">— {FONTE_EXPLAIN[finding.fonte_externa]}</span>
+                    <span className="text-[var(--pinbank-blue)]/40">— {FONTE_EXPLAIN[finding.fonte_externa]}</span>
                   )}
                 </div>
               )}
               {finding.fase && (
-                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/70 border border-slate-200 text-[10px] text-[var(--pagsmile-blue)]/40">
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/70 border border-slate-200 text-[10px] text-[var(--pinbank-blue)]/40">
                   <Shield className="w-3 h-3" /> Fase {finding.fase}
                 </div>
               )}
               {finding.data_identificacao && (
-                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/70 border border-slate-200 text-[10px] text-[var(--pagsmile-blue)]/40">
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/70 border border-slate-200 text-[10px] text-[var(--pinbank-blue)]/40">
                   <Clock className="w-3 h-3" />
                   {new Date(finding.data_identificacao).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -104,23 +104,23 @@ export default function FindingCardV2({ finding }) {
             <div className="px-5 pb-5 space-y-4">
               {finding.secao_questionario && (
                 <div className="flex items-start gap-3 p-3.5 bg-white rounded-xl border border-slate-200">
-                  <FileText className="w-4 h-4 flex-shrink-0 mt-0.5 text-[var(--pagsmile-blue)]/40" />
+                  <FileText className="w-4 h-4 flex-shrink-0 mt-0.5 text-[var(--pinbank-blue)]/40" />
                   <div>
-                    <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mb-0.5">Seção do Questionário</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/70">{finding.secao_questionario}</p>
+                    <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 uppercase tracking-wider mb-0.5">Seção do Questionário</p>
+                    <p className="text-xs text-[var(--pinbank-blue)]/70">{finding.secao_questionario}</p>
                   </div>
                 </div>
               )}
 
               {evidenceBullets.length > 0 && (
                 <div className="p-4 bg-white rounded-xl border border-slate-200">
-                  <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/60 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/60 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                     <Database className="w-3.5 h-3.5" /> Evidência — O Que Foi Encontrado
                   </p>
                   <ul className="space-y-1.5">
                     {evidenceBullets.map((b, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-[var(--pagsmile-blue)]/75 leading-relaxed">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--pagsmile-blue)]/30 flex-shrink-0 mt-1.5" />
+                      <li key={i} className="flex items-start gap-2 text-xs text-[var(--pinbank-blue)]/75 leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--pinbank-blue)]/30 flex-shrink-0 mt-1.5" />
                         {b}
                       </li>
                     ))}

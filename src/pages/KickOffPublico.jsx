@@ -23,8 +23,8 @@ export default function KickOffPublico() {
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-[#002443]">Link inválido</h1>
-          <p className="text-sm text-[#002443]/50">Token não encontrado na URL.</p>
+          <h1 className="text-xl font-bold text-[#0A0A0A]">Link inválido</h1>
+          <p className="text-sm text-[#0A0A0A]/50">Token não encontrado na URL.</p>
         </div>
       </div>
     );
@@ -34,8 +34,8 @@ export default function KickOffPublico() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-[#2bc196] mx-auto mb-4" />
-          <p className="text-sm text-[#002443]/50">Carregando apresentação...</p>
+          <Loader2 className="w-10 h-10 animate-spin text-[#1356E2] mx-auto mb-4" />
+          <p className="text-sm text-[#0A0A0A]/50">Carregando apresentação...</p>
         </div>
       </div>
     );
@@ -46,8 +46,8 @@ export default function KickOffPublico() {
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-[#002443]">Apresentação não encontrada</h1>
-          <p className="text-sm text-[#002443]/50">Este link pode ter expirado ou sido arquivado.</p>
+          <h1 className="text-xl font-bold text-[#0A0A0A]">Apresentação não encontrada</h1>
+          <p className="text-sm text-[#0A0A0A]/50">Este link pode ter expirado ou sido arquivado.</p>
         </div>
       </div>
     );
@@ -59,7 +59,7 @@ export default function KickOffPublico() {
       <div className="fixed bottom-6 right-6 z-50 print:hidden">
         <Button
           onClick={() => window.print()}
-          className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-full px-6 py-3 shadow-2xl font-bold"
+          className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white rounded-full px-6 py-3 shadow-2xl font-bold"
         >
           <Printer className="w-4 h-4 mr-2" /> Exportar PDF
         </Button>

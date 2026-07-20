@@ -89,9 +89,9 @@ export default function CafOnlyLinkModal({ open, onOpenChange, caseData, merchan
           {/* Case info */}
           {caseData && (
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-              <p className="font-semibold text-[#002443]">{merchant?.fullName || '—'}</p>
-              <p className="text-xs text-[#002443]/60 mt-0.5">{merchant?.cpfCnpj || '—'}</p>
-              <p className="text-xs text-[#002443]/50 mt-1">Caso: {caseData.id}</p>
+              <p className="font-semibold text-[#0A0A0A]">{merchant?.fullName || '—'}</p>
+              <p className="text-xs text-[#0A0A0A]/60 mt-0.5">{merchant?.cpfCnpj || '—'}</p>
+              <p className="text-xs text-[#0A0A0A]/50 mt-1">Caso: {caseData.id}</p>
             </div>
           )}
 
@@ -151,7 +151,7 @@ export default function CafOnlyLinkModal({ open, onOpenChange, caseData, merchan
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </div>
-              <p className="text-[11px] text-[#002443]/50">
+              <p className="text-[11px] text-[#0A0A0A]/50">
                 Template: <strong>{result.templateName}</strong>
                 {result.templateModel ? ` (${result.templateModel})` : ''}
               </p>

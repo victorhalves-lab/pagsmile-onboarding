@@ -46,8 +46,8 @@ export default function StepE2SociosGovernanca({ formData, handleChange }) {
           <Users className="w-5 h-5 text-purple-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Sócios e Governança</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Estrutura societária da empresa</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Sócios e Governança</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Estrutura societária da empresa</p>
         </div>
       </div>
 

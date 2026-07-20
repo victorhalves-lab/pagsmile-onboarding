@@ -83,9 +83,9 @@ export default function DocumentViewerModal({
 
   const renderFallback = () => (
     <div className="flex flex-col items-center justify-center h-64">
-      <FileText className="w-12 h-12 text-[#002443]/30 mb-3" />
-      <p className="text-sm text-[#282828]/50 mb-1">Pré-visualização não disponível</p>
-      <p className="text-xs text-[#282828]/30 mb-4">Use os botões abaixo para abrir ou baixar o documento</p>
+      <FileText className="w-12 h-12 text-[#0A0A0A]/30 mb-3" />
+      <p className="text-sm text-[#0A0A0A]/50 mb-1">Pré-visualização não disponível</p>
+      <p className="text-xs text-[#0A0A0A]/30 mb-4">Use os botões abaixo para abrir ou baixar o documento</p>
       {effectiveUrl && (
         <div className="flex gap-2">
           <a href={effectiveUrl} target="_blank" rel="noopener noreferrer">
@@ -115,11 +115,11 @@ export default function DocumentViewerModal({
             {effectiveUrl && (
               <div className="flex gap-2">
                 <a href={effectiveUrl} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-[#002443]/60 hover:text-[#002443]">
+                  <Button variant="ghost" size="sm" className="text-[#0A0A0A]/60 hover:text-[#0A0A0A]">
                     <ExternalLink className="w-4 h-4" />
                   </Button>
                 </a>
-                <Button variant="ghost" size="sm" onClick={handleDownload} className="text-[#002443]/60 hover:text-[#002443]">
+                <Button variant="ghost" size="sm" onClick={handleDownload} className="text-[#0A0A0A]/60 hover:text-[#0A0A0A]">
                   <Download className="w-4 h-4" />
                 </Button>
               </div>
@@ -129,17 +129,17 @@ export default function DocumentViewerModal({
 
         <div className="flex flex-col gap-4">
           {/* Document Preview */}
-          <div className="bg-[#f4f4f4] rounded-xl border border-[#002443]/5 overflow-hidden flex items-center justify-center" style={{ minHeight: '400px', maxHeight: '60vh' }}>
+          <div className="bg-[#f4f4f4] rounded-xl border border-[#0A0A0A]/5 overflow-hidden flex items-center justify-center" style={{ minHeight: '400px', maxHeight: '60vh' }}>
             {loadingUrl ? (
               <div className="flex flex-col items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 text-[#2bc196] animate-spin mb-3" />
-                <p className="text-sm text-[#282828]/60">Carregando documento…</p>
+                <Loader2 className="w-8 h-8 text-[#1356E2] animate-spin mb-3" />
+                <p className="text-sm text-[#0A0A0A]/60">Carregando documento…</p>
               </div>
             ) : urlError ? (
               <div className="flex flex-col items-center justify-center h-64 px-6 text-center">
                 <XCircle className="w-10 h-10 text-red-400 mb-3" />
-                <p className="text-sm font-medium text-[#002443] mb-1">Falha ao carregar o documento</p>
-                <p className="text-xs text-[#282828]/50">{urlError}</p>
+                <p className="text-sm font-medium text-[#0A0A0A] mb-1">Falha ao carregar o documento</p>
+                <p className="text-xs text-[#0A0A0A]/50">{urlError}</p>
               </div>
             ) : isImage && effectiveUrl && !imgError ? (
               <img 
@@ -163,7 +163,7 @@ export default function DocumentViewerModal({
           </div>
 
           {/* Metadata */}
-          <div className="flex items-center justify-between text-xs text-[#282828]/50">
+          <div className="flex items-center justify-between text-xs text-[#0A0A0A]/50">
             <span>{document.fileName}</span>
             <span>
               {document.uploadDate 
@@ -176,11 +176,11 @@ export default function DocumentViewerModal({
 
           {/* Actions */}
           {canValidate && (
-            <div className="flex items-center gap-3 pt-2 border-t border-[#002443]/5">
+            <div className="flex items-center gap-3 pt-2 border-t border-[#0A0A0A]/5">
               <Button
                 onClick={() => onApprove(document)}
                 disabled={isPending}
-                className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"
+                className="flex-1 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl"
               >
                 {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
                 Aprovar Documento
@@ -198,7 +198,7 @@ export default function DocumentViewerModal({
           )}
 
           {!canValidate && document.validationNotes && (
-            <div className="p-3 bg-[#f4f4f4] rounded-xl text-xs text-[#282828]/60">
+            <div className="p-3 bg-[#f4f4f4] rounded-xl text-xs text-[#0A0A0A]/60">
               <span className="font-semibold">Observação:</span> {document.validationNotes}
             </div>
           )}

@@ -96,7 +96,7 @@ export default function CafFallbackLinksConfig() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -104,19 +104,19 @@ export default function CafFallbackLinksConfig() {
   return (
     <div className="space-y-5">
       {/* Explainer */}
-      <div className="bg-[#002443]/5 border border-[#002443]/10 rounded-2xl p-4 flex items-start gap-3">
-        <div className="w-9 h-9 rounded-xl bg-[#002443] flex items-center justify-center shrink-0">
+      <div className="bg-[#0A0A0A]/5 border border-[#0A0A0A]/10 rounded-2xl p-4 flex items-start gap-3">
+        <div className="w-9 h-9 rounded-xl bg-[#0A0A0A] flex items-center justify-center shrink-0">
           <Link2 className="w-4 h-4 text-white" />
         </div>
-        <div className="flex-1 text-xs text-[#002443]/80 leading-relaxed">
-          <p className="font-bold text-[#002443] mb-1">Links de Fallback CAF (cadastro.io) por Segmento</p>
+        <div className="flex-1 text-xs text-[#0A0A0A]/80 leading-relaxed">
+          <p className="font-bold text-[#0A0A0A] mb-1">Links de Fallback CAF (cadastro.io) por Segmento</p>
           <p>
             Quando o cliente <strong>falha 2x</strong> no Liveness/FaceMatch via SDK embarcado, oferecemos o link
             do segmento dele como alternativa. Cada link é um <em>Query Template</em> configurado no Trust Platform da CAF.
             <strong> Abandonos/desistências não contam</strong> como falha — só reprovas técnicas reais.
           </p>
-          <p className="mt-1.5 text-[#002443]/60">
-            O webhook desses templates deve apontar para <code className="bg-white px-1 py-0.5 rounded text-[#36706c]">cafWebhookHandler</code> — já configurado.
+          <p className="mt-1.5 text-[#0A0A0A]/60">
+            O webhook desses templates deve apontar para <code className="bg-white px-1 py-0.5 rounded text-[#E84B1C]">cafWebhookHandler</code> — já configurado.
           </p>
         </div>
       </div>
@@ -130,7 +130,7 @@ export default function CafFallbackLinksConfig() {
       </div>
 
       {/* Lista de modelos */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 divide-y divide-[#002443]/5">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 divide-y divide-[#0A0A0A]/5">
         {Object.keys(MODEL_LABELS).map(model => {
           const currentUrl = currentLinks[model] || '';
           const editedUrl = editedValues[model];
@@ -143,14 +143,14 @@ export default function CafFallbackLinksConfig() {
             <div key={model} className="p-4 flex flex-col md:flex-row md:items-center gap-3">
               <div className="md:w-56 shrink-0">
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-sm text-[#002443]">{MODEL_LABELS[model]}</p>
+                  <p className="font-semibold text-sm text-[#0A0A0A]">{MODEL_LABELS[model]}</p>
                   {isOverridden && (
-                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[9px] border-0 px-1.5 py-0">
+                    <Badge className="bg-[#1356E2]/10 text-[#1356E2] text-[9px] border-0 px-1.5 py-0">
                       Customizado
                     </Badge>
                   )}
                 </div>
-                <p className="text-[10px] text-[#002443]/40 font-mono mt-0.5">{model}</p>
+                <p className="text-[10px] text-[#0A0A0A]/40 font-mono mt-0.5">{model}</p>
               </div>
 
               <div className="flex-1 flex items-center gap-2 min-w-0">
@@ -158,16 +158,16 @@ export default function CafFallbackLinksConfig() {
                   value={displayUrl}
                   onChange={(e) => handleChange(model, e.target.value)}
                   placeholder="https://cadastro.io/..."
-                  className={`font-mono text-xs ${hasChanges ? 'border-[#2bc196] ring-1 ring-[#2bc196]/30' : 'border-[#002443]/10'}`}
+                  className={`font-mono text-xs ${hasChanges ? 'border-[#1356E2] ring-1 ring-[#1356E2]/30' : 'border-[#0A0A0A]/10'}`}
                 />
                 <a
                   href={currentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 p-2 rounded-lg hover:bg-[#002443]/5"
+                  className="shrink-0 p-2 rounded-lg hover:bg-[#0A0A0A]/5"
                   title="Abrir link atual"
                 >
-                  <ExternalLink className="w-4 h-4 text-[#002443]/40" />
+                  <ExternalLink className="w-4 h-4 text-[#0A0A0A]/40" />
                 </a>
               </div>
 
@@ -176,7 +176,7 @@ export default function CafFallbackLinksConfig() {
                   size="sm"
                   onClick={() => handleSave(model)}
                   disabled={!hasChanges || isSaving}
-                  className="h-9 rounded-lg bg-[#2bc196] hover:bg-[#2bc196]/90 text-white disabled:opacity-40"
+                  className="h-9 rounded-lg bg-[#1356E2] hover:bg-[#1356E2]/90 text-white disabled:opacity-40"
                 >
                   {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                   <span className="ml-1.5 text-xs">Salvar</span>
@@ -187,7 +187,7 @@ export default function CafFallbackLinksConfig() {
                     variant="outline"
                     onClick={() => handleReset(model)}
                     disabled={isSaving}
-                    className="h-9 rounded-lg border-[#002443]/15 text-[#002443]/70 hover:bg-[#002443]/5"
+                    className="h-9 rounded-lg border-[#0A0A0A]/15 text-[#0A0A0A]/70 hover:bg-[#0A0A0A]/5"
                     title="Resetar ao valor padrão"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />

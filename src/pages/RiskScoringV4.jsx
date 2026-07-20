@@ -49,11 +49,11 @@ export default function RiskScoringV4() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <Shield className="w-6 h-6 text-[#5cf7cf]" />
+              <Shield className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Risk Scoring</h1>
@@ -75,7 +75,7 @@ export default function RiskScoringV4() {
               size="sm"
               onClick={() => handleRevalidate(false)}
               disabled={revalidating}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/80 text-white text-xs"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/80 text-white text-xs"
             >
               {revalidating ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <RefreshCw className="w-3 h-3 mr-1" />}
               Revalidar Todos
@@ -86,7 +86,7 @@ export default function RiskScoringV4() {
 
       {/* Resultado da revalidação */}
       {revalResult && (
-        <Card className={revalResult.error ? 'border-red-200 bg-red-50' : 'border-[#2bc196]/30 bg-[#2bc196]/5'}>
+        <Card className={revalResult.error ? 'border-red-200 bg-red-50' : 'border-[#1356E2]/30 bg-[#1356E2]/5'}>
           <CardContent className="p-4">
             {revalResult.error ? (
               <div className="flex items-center gap-2 text-red-700">
@@ -96,8 +96,8 @@ export default function RiskScoringV4() {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#2bc196]" />
-                  <span className="text-sm font-bold text-[#002443]">
+                  <CheckCircle2 className="w-4 h-4 text-[#1356E2]" />
+                  <span className="text-sm font-bold text-[#0A0A0A]">
                     {revalResult.dryRun ? 'Simulação concluída' : 'Revalidação concluída'}
                   </span>
                   {revalResult.dryRun && <Badge className="bg-amber-100 text-amber-700 border-0 text-[10px]">SIMULAÇÃO — nada foi alterado</Badge>}
@@ -111,12 +111,12 @@ export default function RiskScoringV4() {
                     { label: 'Erros', value: revalResult.summary?.errors, isError: true },
                   ].map((item, i) => (
                     <div key={i} className="bg-white rounded-lg p-3 border border-slate-100 text-center">
-                      <p className="text-xl font-bold text-[#002443]" style={item.isError && item.value > 0 ? { color: '#ef4444' } : {}}>{item.value ?? 0}</p>
-                      <p className="text-[10px] text-[#002443]/50 font-medium">{item.label}</p>
+                      <p className="text-xl font-bold text-[#0A0A0A]" style={item.isError && item.value > 0 ? { color: '#ef4444' } : {}}>{item.value ?? 0}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50 font-medium">{item.label}</p>
                     </div>
                   ))}
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => setRevalResult(null)} className="text-xs text-[#002443]/50">
+                <Button variant="ghost" size="sm" onClick={() => setRevalResult(null)} className="text-xs text-[#0A0A0A]/50">
                   Fechar
                 </Button>
               </div>
@@ -127,7 +127,7 @@ export default function RiskScoringV4() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
         </div>
       ) : (
         <InsightsRiskScoringV4Section complianceScores={complianceScores} cases={cases} merchants={merchants} />

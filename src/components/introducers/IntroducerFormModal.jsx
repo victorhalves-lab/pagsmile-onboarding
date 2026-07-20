@@ -84,25 +84,25 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className={`${isCompany ? 'sm:max-w-3xl max-h-[90vh] overflow-y-auto' : 'sm:max-w-lg'}`}>
         <DialogHeader>
-          <DialogTitle className="text-[#002443]">{introducer ? 'Editar Introducer' : 'Novo Introducer'}</DialogTitle>
+          <DialogTitle className="text-[#0A0A0A]">{introducer ? 'Editar Introducer' : 'Novo Introducer'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           {/* Type selector */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-bold text-[#002443]/50">Tipo de Introducer</Label>
+            <Label className="text-xs font-bold text-[#0A0A0A]/50">Tipo de Introducer</Label>
             <RadioGroup
               value={form.type}
               onValueChange={v => setForm(p => ({ ...p, type: v }))}
               className="flex gap-4"
             >
-              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${form.type === 'individual' ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-[#002443]/10 hover:border-[#002443]/20'}`}>
+              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${form.type === 'individual' ? 'border-[#1356E2] bg-[#1356E2]/5' : 'border-[#0A0A0A]/10 hover:border-[#0A0A0A]/20'}`}>
                 <RadioGroupItem value="individual" />
-                <User className="w-4 h-4 text-[#002443]/60" />
+                <User className="w-4 h-4 text-[#0A0A0A]/60" />
                 <span className="text-sm font-medium">Individual</span>
               </label>
-              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${form.type === 'company' ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-[#002443]/10 hover:border-[#002443]/20'}`}>
+              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${form.type === 'company' ? 'border-[#1356E2] bg-[#1356E2]/5' : 'border-[#0A0A0A]/10 hover:border-[#0A0A0A]/20'}`}>
                 <RadioGroupItem value="company" />
-                <Building2 className="w-4 h-4 text-[#002443]/60" />
+                <Building2 className="w-4 h-4 text-[#0A0A0A]/60" />
                 <span className="text-sm font-medium">Empresa</span>
               </label>
             </RadioGroup>
@@ -111,7 +111,7 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
           {/* Common fields */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-[#002443]/50">Nome *</Label>
+              <Label className="text-xs font-bold text-[#0A0A0A]/50">Nome *</Label>
               <Input value={form.name} onChange={e => {
                 const newName = e.target.value;
                 const updates = { name: newName };
@@ -122,7 +122,7 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
               }} placeholder="Nome do parceiro" className="h-10 rounded-xl" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-[#002443]/50">{isCompany ? 'CNPJ' : 'CPF'}</Label>
+              <Label className="text-xs font-bold text-[#0A0A0A]/50">{isCompany ? 'CNPJ' : 'CPF'}</Label>
               {isCompany ? (
                 <Input value={form.cnpj} onChange={e => setForm(p => ({ ...p, cnpj: e.target.value }))} placeholder="00.000.000/0001-00" className="h-10 rounded-xl font-mono" />
               ) : (
@@ -132,30 +132,30 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-[#002443]/50">Código UTM *</Label>
+              <Label className="text-xs font-bold text-[#0A0A0A]/50">Código UTM *</Label>
               <Input value={form.referralCode} onChange={e => {
                 setCodeManuallyEdited(true);
                 setForm(p => ({ ...p, referralCode: e.target.value.toLowerCase().replace(/\s/g, '') }));
               }} placeholder="ex: agenciax" className="h-10 rounded-xl font-mono" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-[#002443]/50">E-mail</Label>
+              <Label className="text-xs font-bold text-[#0A0A0A]/50">E-mail</Label>
               <Input type="email" value={form.contactEmail} onChange={e => setForm(p => ({ ...p, contactEmail: e.target.value }))} placeholder="email@parceiro.com" className="h-10 rounded-xl" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-[#002443]/50">Telefone</Label>
+              <Label className="text-xs font-bold text-[#0A0A0A]/50">Telefone</Label>
               <Input value={form.contactPhone} onChange={e => setForm(p => ({ ...p, contactPhone: e.target.value }))} placeholder="(11) 99999-9999" className="h-10 rounded-xl" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-[#002443]/50">Comissão (%)</Label>
+              <Label className="text-xs font-bold text-[#0A0A0A]/50">Comissão (%)</Label>
               <Input type="number" step="0.1" value={form.commissionRate} onChange={e => setForm(p => ({ ...p, commissionRate: e.target.value ? parseFloat(e.target.value) : '' }))} placeholder="Ex: 1.5" className="h-10 rounded-xl" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-[#002443]/50">Status</Label>
+              <Label className="text-xs font-bold text-[#0A0A0A]/50">Status</Label>
               <Select value={form.status} onValueChange={v => setForm(p => ({ ...p, status: v }))}>
                 <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -166,7 +166,7 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs font-bold text-[#002443]/50">Observações</Label>
+            <Label className="text-xs font-bold text-[#0A0A0A]/50">Observações</Label>
             <Textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} placeholder="Notas internas sobre o parceiro..." className="min-h-[80px] rounded-xl resize-none" />
           </div>
 
@@ -183,7 +183,7 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} className="rounded-xl">Cancelar</Button>
-          <Button onClick={handleSubmit} disabled={isSaving} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+          <Button onClick={handleSubmit} disabled={isSaving} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             {introducer ? 'Salvar' : 'Criar Introducer'}
           </Button>

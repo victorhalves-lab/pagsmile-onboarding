@@ -59,17 +59,17 @@ function FieldRow({ label, value, isPercent, isMoney, isLink, highlight }) {
   return (
     <div className={`group flex items-start justify-between gap-4 rounded-xl px-5 py-3.5 transition-all border ${
       highlight
-        ? 'bg-[#2bc196]/5 border-[#2bc196]/30 hover:border-[#2bc196]/50'
-        : 'bg-[#f8fafc] hover:bg-[#f1f5f9] border-[#e2e8f0] hover:border-[#2bc196]/30'
+        ? 'bg-[#1356E2]/5 border-[#1356E2]/30 hover:border-[#1356E2]/50'
+        : 'bg-[#f8fafc] hover:bg-[#f1f5f9] border-[#e2e8f0] hover:border-[#1356E2]/30'
     }`}>
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-[#002443]/55 font-medium mb-1 flex items-center gap-1.5">
-          {highlight && <Star className="w-3 h-3 text-[#2bc196] fill-[#2bc196]" />}
+        <p className="text-xs text-[#0A0A0A]/55 font-medium mb-1 flex items-center gap-1.5">
+          {highlight && <Star className="w-3 h-3 text-[#1356E2] fill-[#1356E2]" />}
           {label}
         </p>
         {isLink ? (
           <a href={String(normalized).startsWith('http') ? normalized : `https://${normalized}`} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[#2bc196] hover:text-[#2bc196]/80 text-sm font-semibold transition-colors break-all">
+            className="inline-flex items-center gap-1.5 text-[#1356E2] hover:text-[#1356E2]/80 text-sm font-semibold transition-colors break-all">
             <Globe className="w-3.5 h-3.5 shrink-0" />{normalized}<ExternalLink className="w-3 h-3 shrink-0" />
           </a>
         ) : isMoney && isNumeric ? (
@@ -77,13 +77,13 @@ function FieldRow({ label, value, isPercent, isMoney, isLink, highlight }) {
         ) : isPercent && isNumeric ? (
           <span className="text-lg font-bold text-indigo-600">{displayValue}</span>
         ) : (
-          <p className="text-sm text-[#002443] font-semibold leading-relaxed whitespace-pre-wrap">{displayValue}</p>
+          <p className="text-sm text-[#0A0A0A] font-semibold leading-relaxed whitespace-pre-wrap">{displayValue}</p>
         )}
       </div>
       <button onClick={handleCopy}
-        className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-[#002443]/5 shrink-0 mt-0.5"
+        className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-[#0A0A0A]/5 shrink-0 mt-0.5"
         title="Copiar">
-        {copied ? <CheckCircle className="w-4 h-4 text-[#2bc196]" /> : <Copy className="w-4 h-4 text-[#002443]/25" />}
+        {copied ? <CheckCircle className="w-4 h-4 text-[#1356E2]" /> : <Copy className="w-4 h-4 text-[#0A0A0A]/25" />}
       </button>
     </div>
   );
@@ -94,11 +94,11 @@ function DistributionBar({ label, value }) {
   const pct = Number(value) || 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs font-medium text-[#002443]/70 min-w-[100px]">{label}</span>
+      <span className="text-xs font-medium text-[#0A0A0A]/70 min-w-[100px]">{label}</span>
       <div className="flex-1 max-w-[220px] h-5 bg-slate-100 rounded-full overflow-hidden">
-        <div className="h-full bg-[#2bc196] rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%` }} />
+        <div className="h-full bg-[#1356E2] rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%` }} />
       </div>
-      <span className="text-sm font-bold text-[#002443] w-12 text-right">{pct}%</span>
+      <span className="text-sm font-bold text-[#0A0A0A] w-12 text-right">{pct}%</span>
     </div>
   );
 }
@@ -135,19 +135,19 @@ function ScoreCard({ title, score, level, levelColors, description }) {
   return (
     <div className="rounded-xl border border-[#e2e8f0] bg-white p-4 space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-[#002443]/60 uppercase tracking-wider">{title}</p>
+        <p className="text-xs font-semibold text-[#0A0A0A]/60 uppercase tracking-wider">{title}</p>
         {level && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${color}`}>{level}</span>}
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-[#002443]">{Number(score).toFixed(0)}</span>
-        <span className="text-xs text-[#002443]/40">/ 100</span>
+        <span className="text-2xl font-bold text-[#0A0A0A]">{Number(score).toFixed(0)}</span>
+        <span className="text-xs text-[#0A0A0A]/40">/ 100</span>
       </div>
-      {description && <p className="text-[11px] text-[#002443]/50 leading-relaxed">{description}</p>}
+      {description && <p className="text-[11px] text-[#0A0A0A]/50 leading-relaxed">{description}</p>}
     </div>
   );
 }
 
-export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
+export default function PinBankV5ResponsesModal({ open, onClose, lead }) {
   const [activeSection, setActiveSection] = useState('empresa');
   const qd = lead?.questionnaireData || {};
   const dist = qd.distribuicao || {};
@@ -279,7 +279,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
     fechamento: [
       { label: 'Quando quer começar a operar', value: qd.urgencia },
       { label: 'Expectativa de Crescimento (12m)', value: qd.crescimento },
-      { label: 'Como Conheceu a Pagsmile', value: qd.comoConheceu === '__other__' ? (qd.comoConheceuOutro || 'Outro') : qd.comoConheceu },
+      { label: 'Como Conheceu a Pin Bank', value: qd.comoConheceu === '__other__' ? (qd.comoConheceuOutro || 'Outro') : qd.comoConheceu },
       { label: 'Como Conheceu (Outro)', value: qd.comoConheceu === '__other__' ? qd.comoConheceuOutro : null },
       { label: 'Observações Adicionais', value: qd.observacoes },
     ],
@@ -314,22 +314,22 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl p-0 gap-0 overflow-hidden bg-white border-[#e2e8f0] max-h-[92vh] rounded-2xl shadow-2xl">
         {/* Header */}
-        <div className="relative px-6 py-5 border-b border-[#e2e8f0] bg-gradient-to-r from-[#002443] to-[#003366]">
+        <div className="relative px-6 py-5 border-b border-[#e2e8f0] bg-gradient-to-r from-[#0A0A0A] to-[#003366]">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#2bc196]/20 flex items-center justify-center border border-[#2bc196]/30">
-                  <Building2 className="w-5 h-5 text-[#2bc196]" />
+                <div className="w-11 h-11 rounded-xl bg-[#1356E2]/20 flex items-center justify-center border border-[#1356E2]/30">
+                  <Building2 className="w-5 h-5 text-[#1356E2]" />
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">{lead?.fullName || lead?.companyName || 'Lead'}</h2>
                   <div className="flex items-center gap-2 mt-0.5">
                     {lead?.cpfCnpj && <span className="text-xs text-white/50 font-mono">{lead.cpfCnpj}</span>}
                     {lead?.protocolo && (
-                      <Badge className="bg-[#2bc196]/15 text-[#2bc196] border-[#2bc196]/30 text-[10px] px-2 py-0.5">{lead.protocolo}</Badge>
+                      <Badge className="bg-[#1356E2]/15 text-[#1356E2] border-[#1356E2]/30 text-[10px] px-2 py-0.5">{lead.protocolo}</Badge>
                     )}
                     <Badge className="bg-indigo-500/20 text-indigo-300 border-indigo-400/30 text-[10px] px-2 py-0.5">
-                      Pagsmile V5
+                      Pin Bank V5
                     </Badge>
                     {qd.segmentoLabel && (
                       <Badge className="bg-white/10 text-white/80 border-white/20 text-[10px] px-2 py-0.5">{qd.segmentoLabel}</Badge>
@@ -339,7 +339,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
               </div>
               <div className="flex items-center gap-4 text-xs text-white/50">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-[#2bc196]" />
+                  <CheckCircle className="w-3.5 h-3.5 text-[#1356E2]" />
                   <strong className="text-white/90">{totalFilled}</strong> campos preenchidos
                 </span>
                 {lead?.tpvMensal > 0 && (
@@ -376,14 +376,14 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     <button key={sec.id} onClick={() => setActiveSection(sec.id)}
                       className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs transition-all duration-150 ${
                         isActive
-                          ? 'bg-white text-[#002443] font-bold shadow-sm border border-[#e2e8f0]'
-                          : 'text-[#002443]/60 hover:text-[#002443] hover:bg-white/60'
+                          ? 'bg-white text-[#0A0A0A] font-bold shadow-sm border border-[#e2e8f0]'
+                          : 'text-[#0A0A0A]/60 hover:text-[#0A0A0A] hover:bg-white/60'
                       }`}>
                       <div className={`w-6 h-6 rounded-lg ${sec.accent} flex items-center justify-center shrink-0 ${isActive ? 'opacity-100' : 'opacity-40'}`}>
                         <Icon className="w-3 h-3 text-white" />
                       </div>
                       <span className="flex-1 text-left truncate">{sec.label}</span>
-                      <span className={`text-[10px] tabular-nums font-semibold ${isActive ? 'text-[#2bc196]' : 'text-[#002443]/30'}`}>
+                      <span className={`text-[10px] tabular-nums font-semibold ${isActive ? 'text-[#1356E2]' : 'text-[#0A0A0A]/30'}`}>
                         {count}
                       </span>
                     </button>
@@ -408,8 +408,8 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                         <Icon className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-base font-bold text-[#002443]">{sec.label}</h3>
-                        <p className="text-[11px] text-[#002443]/40">{countFilled(activeSection)} campos com dados</p>
+                        <h3 className="text-base font-bold text-[#0A0A0A]">{sec.label}</h3>
+                        <p className="text-[11px] text-[#0A0A0A]/40">{countFilled(activeSection)} campos com dados</p>
                       </div>
                     </div>
                   );
@@ -422,7 +422,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     {distTotal > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-3">
-                          <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">Meio de Pagamento (Atual)</p>
+                          <p className="text-xs font-bold text-[#0A0A0A]/55 uppercase tracking-wider">Meio de Pagamento (Atual)</p>
                           <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
                             Math.round(distTotal) === 100 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
                           }`}>
@@ -442,7 +442,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     {distParcTotal > 0 && (
                       <div className="pt-4 border-t border-[#e2e8f0]">
                         <div className="flex items-center justify-between mb-3">
-                          <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">Parcelamento (Cartão Crédito)</p>
+                          <p className="text-xs font-bold text-[#0A0A0A]/55 uppercase tracking-wider">Parcelamento (Cartão Crédito)</p>
                           <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
                             Math.round(distParcTotal) === 100 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
                           }`}>
@@ -462,7 +462,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     {distDesTotal > 0 && (
                       <div className="pt-4 border-t border-[#e2e8f0]">
                         <div className="flex items-center justify-between mb-3">
-                          <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">Distribuição Desejada</p>
+                          <p className="text-xs font-bold text-[#0A0A0A]/55 uppercase tracking-wider">Distribuição Desejada</p>
                           <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
                             Math.round(distDesTotal) === 100 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
                           }`}>
@@ -495,7 +495,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                         return (
                           <div className="pt-4 border-t border-[#e2e8f0]">
                             <div className="flex items-center justify-between mb-3">
-                              <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">
+                              <p className="text-xs font-bold text-[#0A0A0A]/55 uppercase tracking-wider">
                                 Composição por Produto ({qd.tipoProduto || '—'})
                               </p>
                               <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
@@ -507,7 +507,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                             {fisicos.length > 0 && (
                               <div className="space-y-3 mb-4">
                                 {digitais.length > 0 && (
-                                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Produtos Físicos</p>
+                                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/40">Produtos Físicos</p>
                                 )}
                                 {fisicos.map(p => <DistributionBar key={p.nome} label={p.nome} value={m[p.nome]} />)}
                               </div>
@@ -515,7 +515,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                             {digitais.length > 0 && (
                               <div className="space-y-3">
                                 {fisicos.length > 0 && (
-                                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40 pt-2 border-t border-[#e2e8f0]/50">Produtos Digitais</p>
+                                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 pt-2 border-t border-[#e2e8f0]/50">Produtos Digitais</p>
                                 )}
                                 {digitais.map(p => <DistributionBar key={p.nome} label={p.nome} value={m[p.nome]} />)}
                               </div>
@@ -539,7 +539,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                         return (
                           <div className="pt-4 border-t border-[#e2e8f0]">
                             <div className="flex items-center justify-between mb-3">
-                              <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">Composição da Operação (versão antiga)</p>
+                              <p className="text-xs font-bold text-[#0A0A0A]/55 uppercase tracking-wider">Composição da Operação (versão antiga)</p>
                               <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
                                 Math.round(total) === 100 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
                               }`}>
@@ -559,7 +559,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     })()}
 
                     {distTotal === 0 && distParcTotal === 0 && distDesTotal === 0 && !qd.mixOperacao && (
-                      <p className="text-sm text-[#002443]/40 italic text-center py-8">Nenhuma distribuição informada</p>
+                      <p className="text-sm text-[#0A0A0A]/40 italic text-center py-8">Nenhuma distribuição informada</p>
                     )}
                   </div>
                 ) : activeSection === 'taxas_atuais' ? (
@@ -572,8 +572,8 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     {/* Comprovantes anexados (V5.1 — opcional, sem OCR) */}
                     {Array.isArray(qd.comprovantesTaxas) && qd.comprovantesTaxas.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-[#e2e8f0]">
-                        <p className="text-xs text-[#002443]/55 font-medium mb-3 flex items-center gap-1.5">
-                          <FileText className="w-3.5 h-3.5 text-[#2bc196]" />
+                        <p className="text-xs text-[#0A0A0A]/55 font-medium mb-3 flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-[#1356E2]" />
                           Comprovantes Anexados ({qd.comprovantesTaxas.length})
                         </p>
                         <div className="space-y-2">
@@ -583,14 +583,14 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                               href={f.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-3 p-3 rounded-xl bg-[#2bc196]/5 border border-[#2bc196]/20 hover:bg-[#2bc196]/10 transition-colors group"
+                              className="flex items-center gap-3 p-3 rounded-xl bg-[#1356E2]/5 border border-[#1356E2]/20 hover:bg-[#1356E2]/10 transition-colors group"
                             >
-                              <FileText className="w-4 h-4 text-[#2bc196] shrink-0" />
+                              <FileText className="w-4 h-4 text-[#1356E2] shrink-0" />
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs font-medium text-[#002443] truncate">{f.name || `Arquivo ${i + 1}`}</p>
-                                {f.size && <p className="text-[10px] text-[#002443]/40">{(f.size / 1024).toFixed(0)} KB</p>}
+                                <p className="text-xs font-medium text-[#0A0A0A] truncate">{f.name || `Arquivo ${i + 1}`}</p>
+                                {f.size && <p className="text-[10px] text-[#0A0A0A]/40">{(f.size / 1024).toFixed(0)} KB</p>}
                               </div>
-                              <ExternalLink className="w-3.5 h-3.5 text-[#002443]/40 group-hover:text-[#2bc196] shrink-0" />
+                              <ExternalLink className="w-3.5 h-3.5 text-[#0A0A0A]/40 group-hover:text-[#1356E2] shrink-0" />
                             </a>
                           ))}
                         </div>
@@ -605,7 +605,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                       ))}
                     </div>
                     <div className="mt-4 pt-4 border-t border-[#e2e8f0]">
-                      <p className="text-xs text-[#002443]/55 font-medium mb-3">Flags Silenciosas Calculadas</p>
+                      <p className="text-xs text-[#0A0A0A]/55 font-medium mb-3">Flags Silenciosas Calculadas</p>
                       <FlagsPanel flags={flags} />
                     </div>
                   </div>
@@ -676,10 +676,10 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     {/* Decisão IA */}
                     {lead?.iaDecision && lead.iaDecision !== 'PENDENTE' && (
                       <div className="rounded-xl border border-[#e2e8f0] bg-white p-4">
-                        <p className="text-xs font-semibold text-[#002443]/60 uppercase tracking-wider mb-2">Decisão IA Recomendada</p>
-                        <p className="text-sm font-bold text-[#002443]">{lead.iaDecision}</p>
+                        <p className="text-xs font-semibold text-[#0A0A0A]/60 uppercase tracking-wider mb-2">Decisão IA Recomendada</p>
+                        <p className="text-sm font-bold text-[#0A0A0A]">{lead.iaDecision}</p>
                         {lead.iaAnalysisReport && (
-                          <p className="text-xs text-[#002443]/70 mt-2 whitespace-pre-wrap leading-relaxed">{lead.iaAnalysisReport}</p>
+                          <p className="text-xs text-[#0A0A0A]/70 mt-2 whitespace-pre-wrap leading-relaxed">{lead.iaAnalysisReport}</p>
                         )}
                       </div>
                     )}
@@ -687,11 +687,11 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     {/* Sugestões IA */}
                     {Array.isArray(lead?.iaSuggestions) && lead.iaSuggestions.length > 0 && (
                       <div className="rounded-xl border border-[#e2e8f0] bg-white p-4">
-                        <p className="text-xs font-semibold text-[#002443]/60 uppercase tracking-wider mb-3">Sugestões da IA</p>
+                        <p className="text-xs font-semibold text-[#0A0A0A]/60 uppercase tracking-wider mb-3">Sugestões da IA</p>
                         <ul className="space-y-2">
                           {lead.iaSuggestions.map((s, i) => (
-                            <li key={i} className="flex items-start gap-2 text-xs text-[#002443]/80 leading-relaxed">
-                              <Sparkles className="w-3 h-3 text-[#2bc196] shrink-0 mt-0.5" />
+                            <li key={i} className="flex items-start gap-2 text-xs text-[#0A0A0A]/80 leading-relaxed">
+                              <Sparkles className="w-3 h-3 text-[#1356E2] shrink-0 mt-0.5" />
                               <span>{s}</span>
                             </li>
                           ))}
@@ -702,7 +702,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     {/* BDC Flags */}
                     {Array.isArray(lead?.bdcFlags) && lead.bdcFlags.length > 0 && (
                       <div className="rounded-xl border border-[#e2e8f0] bg-white p-4">
-                        <p className="text-xs font-semibold text-[#002443]/60 uppercase tracking-wider mb-3">BDC Flags</p>
+                        <p className="text-xs font-semibold text-[#0A0A0A]/60 uppercase tracking-wider mb-3">BDC Flags</p>
                         <div className="flex flex-wrap gap-2">
                           {lead.bdcFlags.map((f, i) => (
                             <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-700">
@@ -714,7 +714,7 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     )}
 
                     {/* Datas dos enriquecimentos */}
-                    <div className="text-[10px] text-[#002443]/40 space-y-1 pt-2 border-t border-[#e2e8f0]">
+                    <div className="text-[10px] text-[#0A0A0A]/40 space-y-1 pt-2 border-t border-[#e2e8f0]">
                       {lead?.bdcEnrichmentDate && <p>BDC enriquecido em: {new Date(lead.bdcEnrichmentDate).toLocaleString('pt-BR')}</p>}
                       {lead?.iaAnalysisDate && <p>IA analisada em: {new Date(lead.iaAnalysisDate).toLocaleString('pt-BR')}</p>}
                       {lead?.leadQualifierDate && <p>Qualifier rodado em: {new Date(lead.leadQualifierDate).toLocaleString('pt-BR')}</p>}
@@ -722,9 +722,9 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
 
                     {countFilled('enriquecimento') === 0 && (
                       <div className="text-center py-12">
-                        <Sparkles className="w-10 h-10 mx-auto text-[#002443]/10 mb-3" />
-                        <p className="text-[#002443]/40 text-sm">Análises de enriquecimento ainda não disponíveis</p>
-                        <p className="text-[10px] text-[#002443]/30 mt-1">BDC + IA processam em segundo plano após a submissão</p>
+                        <Sparkles className="w-10 h-10 mx-auto text-[#0A0A0A]/10 mb-3" />
+                        <p className="text-[#0A0A0A]/40 text-sm">Análises de enriquecimento ainda não disponíveis</p>
+                        <p className="text-[10px] text-[#0A0A0A]/30 mt-1">BDC + IA processam em segundo plano após a submissão</p>
                       </div>
                     )}
                   </div>
@@ -735,8 +735,8 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                     ))}
                     {(sectionContent[activeSection] || []).every(f => normalizeValue(f.value) === null) && (
                       <div className="text-center py-12">
-                        <FileText className="w-10 h-10 mx-auto text-[#002443]/10 mb-3" />
-                        <p className="text-[#002443]/30 text-sm">Nenhum dado nesta seção</p>
+                        <FileText className="w-10 h-10 mx-auto text-[#0A0A0A]/10 mb-3" />
+                        <p className="text-[#0A0A0A]/30 text-sm">Nenhum dado nesta seção</p>
                       </div>
                     )}
                   </div>

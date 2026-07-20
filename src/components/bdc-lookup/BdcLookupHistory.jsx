@@ -49,7 +49,7 @@ export default function BdcLookupHistory() {
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="px-5 py-3 border-b border-slate-100 flex items-center gap-2">
         <Clock className="w-4 h-4 text-slate-500" />
-        <h3 className="text-sm font-semibold text-[#002443]">Últimas consultas</h3>
+        <h3 className="text-sm font-semibold text-[#0A0A0A]">Últimas consultas</h3>
         <span className="text-xs text-slate-400 ml-auto">{logs.length} registros</span>
       </div>
       <div className="divide-y divide-slate-50 max-h-96 overflow-y-auto">
@@ -57,9 +57,9 @@ export default function BdcLookupHistory() {
           <div key={log.id} className="px-5 py-3 hover:bg-slate-50/50 flex items-center gap-4 text-xs">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="font-mono font-semibold text-[#002443]">{log.documentMasked}</span>
+                <span className="font-mono font-semibold text-[#0A0A0A]">{log.documentMasked}</span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">{log.documentType}</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2bc196]/10 text-[#2bc196] font-medium">{MODE_LABELS[log.mode] || log.mode}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#1356E2]/10 text-[#1356E2] font-medium">{MODE_LABELS[log.mode] || log.mode}</span>
               </div>
               <div className="flex items-center gap-3 text-[11px] text-slate-500">
                 <span className="flex items-center gap-1"><User className="w-3 h-3" />{log.queriedBy}</span>

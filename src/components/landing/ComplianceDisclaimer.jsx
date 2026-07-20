@@ -17,7 +17,7 @@ export default function ComplianceDisclaimer() {
         <div>
           <p className="text-sm font-bold text-amber-900 mb-1">Importante — Sujeito à Aprovação</p>
           <p className="text-sm text-amber-800 leading-relaxed">
-            As taxas são referenciais e estão sujeitas à aprovação de Compliance e validação do modelo de negócio pela Pagsmile.
+            As taxas são referenciais e estão sujeitas à aprovação de Compliance e validação do modelo de negócio pela Pin Bank.
           </p>
         </div>
       </div>

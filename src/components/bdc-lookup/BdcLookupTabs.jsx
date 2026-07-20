@@ -64,13 +64,13 @@ export default function BdcLookupTabs({ result, docType, status, queryId }) {
                 onClick={() => setActive(tab.id)}
                 className={`flex items-center gap-2 px-4 py-3 text-xs font-medium whitespace-nowrap transition-all border-b-2 ${
                   isActive
-                    ? 'border-[#2bc196] text-[#2bc196] bg-[#2bc196]/5'
-                    : 'border-transparent text-slate-500 hover:text-[#002443] hover:bg-slate-50'
+                    ? 'border-[#1356E2] text-[#1356E2] bg-[#1356E2]/5'
+                    : 'border-transparent text-slate-500 hover:text-[#0A0A0A] hover:bg-slate-50'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 {tab.label}
-                {tab.highlight && <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196]" />}
+                {tab.highlight && <span className="w-1.5 h-1.5 rounded-full bg-[#1356E2]" />}
               </button>
             );
           })}

@@ -228,14 +228,14 @@ export default function LeadPixV4() {
       <div className="min-h-[70vh] flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center rounded-2xl shadow-lg">
           <CardContent className="pt-10 pb-10 space-y-5">
-            <div className="w-20 h-20 rounded-full bg-[#2bc196]/10 flex items-center justify-center mx-auto">
-              <Check className="w-10 h-10 text-[#2bc196]" />
+            <div className="w-20 h-20 rounded-full bg-[#1356E2]/10 flex items-center justify-center mx-auto">
+              <Check className="w-10 h-10 text-[#1356E2]" />
             </div>
-            <h2 className="text-2xl font-bold text-[#002443]">Questionário PIX Enviado!</h2>
-            <p className="text-sm text-[#002443]/60">
-              Seu protocolo é <strong className="text-[#2bc196] text-lg">{protocolo}</strong>
+            <h2 className="text-2xl font-bold text-[#0A0A0A]">Questionário PIX Enviado!</h2>
+            <p className="text-sm text-[#0A0A0A]/60">
+              Seu protocolo é <strong className="text-[#1356E2] text-lg">{protocolo}</strong>
             </p>
-            <p className="text-sm text-[#002443]/60">Nossa equipe entrará em contato em breve com uma proposta PIX personalizada.</p>
+            <p className="text-sm text-[#0A0A0A]/60">Nossa equipe entrará em contato em breve com uma proposta PIX personalizada.</p>
           </CardContent>
         </Card>
       </div>
@@ -251,31 +251,31 @@ export default function LeadPixV4() {
       <div className="text-center mb-8">
         <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png"
-          alt="Pagsmile"
+          alt="Pin Bank"
           className="h-8 mx-auto mb-4 invert"
         />
         <div className="flex items-center justify-center gap-2 mb-2">
-          <Zap className="w-6 h-6 text-[#2bc196]" />
-          <h1 className="text-2xl font-bold text-[#002443]">Questionário Lead PIX v4.0</h1>
+          <Zap className="w-6 h-6 text-[#1356E2]" />
+          <h1 className="text-2xl font-bold text-[#0A0A0A]">Questionário Lead PIX v4.0</h1>
         </div>
-        <p className="text-sm text-[#002443]/50">{STEPS.length} etapas • Autocomplete CNPJ • 11 flags • Score 0-100</p>
+        <p className="text-sm text-[#0A0A0A]/50">{STEPS.length} etapas • Autocomplete CNPJ • 11 flags • Score 0-100</p>
       </div>
 
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-bold text-[#002443]/50">
+          <span className="text-xs font-bold text-[#0A0A0A]/50">
             Etapa {step + 1} de {STEPS.length}: {STEPS[step].label}
           </span>
-          <span className="text-xs font-bold text-[#2bc196]">{Math.round(progress)}%</span>
+          <span className="text-xs font-bold text-[#1356E2]">{Math.round(progress)}%</span>
         </div>
-        <div className="w-full h-2 bg-[#002443]/5 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="w-full h-2 bg-[#0A0A0A]/5 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-[#1356E2] to-[#E84B1C] rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
       {/* Step Content */}
-      <Card className="rounded-2xl border border-[#002443]/5 shadow-sm mb-6">
+      <Card className="rounded-2xl border border-[#0A0A0A]/5 shadow-sm mb-6">
         <CardContent className="p-6 sm:p-8">
           {step === 0 && <StepTipoNegocio form={form} updateField={updateField} />}
           {step === 1 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} setBdcData={(d) => { setBdcData(d); updateField('_bdcQuickData', d); }} />}
@@ -293,12 +293,12 @@ export default function LeadPixV4() {
           <ChevronLeft className="w-4 h-4" /> Anterior
         </Button>
         {isLastStep ? (
-          <Button onClick={handleSubmit} disabled={submitting} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl gap-2 px-8">
+          <Button onClick={handleSubmit} disabled={submitting} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl gap-2 px-8">
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             Enviar Questionário
           </Button>
         ) : (
-          <Button onClick={nextStep} className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-xl gap-2">
+          <Button onClick={nextStep} className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white rounded-xl gap-2">
             Próximo <ChevronRight className="w-4 h-4" />
           </Button>
         )}

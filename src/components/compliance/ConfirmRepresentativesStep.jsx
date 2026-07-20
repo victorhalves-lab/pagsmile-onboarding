@@ -142,10 +142,10 @@ export default function ConfirmRepresentativesStep({
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-blue-50 mb-3">
           <UserCheck className="w-7 h-7 text-blue-600" />
         </div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#002443] mb-2">
+        <h1 className="text-xl md:text-2xl font-bold text-[#0A0A0A] mb-2">
           Confirme os representantes legais
         </h1>
-        <p className="text-sm text-[#002443]/70 leading-relaxed max-w-xl mx-auto">
+        <p className="text-sm text-[#0A0A0A]/70 leading-relaxed max-w-xl mx-auto">
           Identificamos os seguintes representantes da empresa. Para cada um <strong>ativo</strong>,
           vamos pedir um documento de identidade. Se alguém não é mais sócio, marque como inativo.
         </p>
@@ -155,7 +155,7 @@ export default function ConfirmRepresentativesStep({
       <div className="space-y-3 mb-6">
         {reps.length === 0 && (
           <div className="text-center py-8 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-sm text-[#002443]/60 mb-3">Nenhum representante identificado.</p>
+            <p className="text-sm text-[#0A0A0A]/60 mb-3">Nenhum representante identificado.</p>
             <Button onClick={addManualRep} variant="outline" size="sm">
               <Plus className="w-4 h-4 mr-1.5" />
               Adicionar representante
@@ -197,7 +197,7 @@ export default function ConfirmRepresentativesStep({
               {/* Linha 2: Nome + CPF (editáveis se manual ou inválidos) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div>
-                  <Label className="text-xs text-[#002443]/70 mb-1 block">
+                  <Label className="text-xs text-[#0A0A0A]/70 mb-1 block">
                     Nome completo {isActive && <span className="text-red-500">*</span>}
                   </Label>
                   {(isManual || !nameValid) && isActive ? (
@@ -208,13 +208,13 @@ export default function ConfirmRepresentativesStep({
                       className="h-10 text-sm"
                     />
                   ) : (
-                    <p className="text-sm font-semibold text-[#002443] py-2 break-words">
-                      {rep.nome || <span className="italic text-[#002443]/40">Não informado</span>}
+                    <p className="text-sm font-semibold text-[#0A0A0A] py-2 break-words">
+                      {rep.nome || <span className="italic text-[#0A0A0A]/40">Não informado</span>}
                     </p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-xs text-[#002443]/70 mb-1 block">
+                  <Label className="text-xs text-[#0A0A0A]/70 mb-1 block">
                     CPF {isActive && <span className="text-red-500">*</span>}
                   </Label>
                   {(isManual || !cpfValid) && isActive ? (
@@ -225,7 +225,7 @@ export default function ConfirmRepresentativesStep({
                       className="h-10 text-sm"
                     />
                   ) : (
-                    <p className="text-sm font-mono text-[#002443] py-2">
+                    <p className="text-sm font-mono text-[#0A0A0A] py-2">
                       {isActive ? formatCpf(rep.cpf) : maskCpf(rep.cpf)}
                     </p>
                   )}
@@ -234,7 +234,7 @@ export default function ConfirmRepresentativesStep({
 
               {/* Cargo se houver */}
               {rep.cargo && (
-                <p className="text-xs text-[#002443]/60 mb-3">
+                <p className="text-xs text-[#0A0A0A]/60 mb-3">
                   <strong>Cargo:</strong> {rep.cargo}
                 </p>
               )}
@@ -270,7 +270,7 @@ export default function ConfirmRepresentativesStep({
                     size="sm"
                     variant="ghost"
                     onClick={() => toggleStatus(rep.id)}
-                    className="h-9 text-xs text-[#002443]/60 hover:text-amber-700 hover:bg-amber-50 whitespace-normal text-left"
+                    className="h-9 text-xs text-[#0A0A0A]/60 hover:text-amber-700 hover:bg-amber-50 whitespace-normal text-left"
                   >
                     <UserX className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
                     Não é mais sócio
@@ -348,7 +348,7 @@ export default function ConfirmRepresentativesStep({
         <Button
           variant="ghost"
           onClick={onBack}
-          className="text-slate-600 hover:text-[#002443] w-full sm:w-auto"
+          className="text-slate-600 hover:text-[#0A0A0A] w-full sm:w-auto"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
@@ -356,7 +356,7 @@ export default function ConfirmRepresentativesStep({
         <Button
           onClick={handleConfirm}
           disabled={!canConfirm}
-          className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-6 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50 w-full sm:w-auto"
+          className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white px-6 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50 w-full sm:w-auto"
         >
           Confirmar e enviar documentos
           <ArrowRight className="w-4 h-4 ml-2" />

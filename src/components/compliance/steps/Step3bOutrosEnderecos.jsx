@@ -17,7 +17,7 @@ export default function Step3bOutrosEnderecos({ formData, handleChange }) {
         onChange={(value) => handleChange('outrosEnderecos', value)}
         placeholder="Caso possua outros escritórios, informe os endereços completos aqui..."
         rows={6}
-        className="text-[var(--pagsmile-blue)]"
+        className="text-[var(--pinbank-blue)]"
       />
     </FormSection>
   );

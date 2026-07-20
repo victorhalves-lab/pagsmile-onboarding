@@ -87,8 +87,8 @@ export default function InsightsProfitabilitySection({ proposals, partners, pixP
   if (!hasData) {
     return (
       <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center mt-2">
-        <p className="text-sm text-[#002443]/50">Nenhuma proposta com dados de rentabilidade calculados.</p>
-        <p className="text-xs text-[#002443]/30 mt-1">Os dados aparecerão quando propostas tiverem cálculos de receita/custo/margem.</p>
+        <p className="text-sm text-[#0A0A0A]/50">Nenhuma proposta com dados de rentabilidade calculados.</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">Os dados aparecerão quando propostas tiverem cálculos de receita/custo/margem.</p>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function InsightsProfitabilitySection({ proposals, partners, pixP
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <StatCard label="Receita Pipeline" value={formatCurrency(pipelineRevenue)} subtitle="Propostas em aberto" icon={DollarSign} />
-        <StatCard label="Receita Realizada" value={formatCurrency(acceptedRevenue)} subtitle="Propostas aceitas" icon={TrendingUp} accentColor="#2bc196" />
+        <StatCard label="Receita Realizada" value={formatCurrency(acceptedRevenue)} subtitle="Propostas aceitas" icon={TrendingUp} accentColor="#1356E2" />
         <StatCard label="Revenue at Risk" value={formatCurrency(riskRevenue)} subtitle="Expira em ≤7 dias" icon={DollarSign} accentColor="#ef4444" />
         <StatCard label="Margem Mediana" value={formatCurrency(marginStats.median)} subtitle={`${marginPctStats.median}% med.`} icon={Wallet} />
         <StatCard label="Propostas" value={current.length} subtitle={`${revenues.length} c/ rentab.`} icon={Percent} />
@@ -127,13 +127,13 @@ export default function InsightsProfitabilitySection({ proposals, partners, pixP
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={partnerBarData} barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} />
               <Tooltip contentStyle={TT} formatter={v => formatCurrency(v)} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="Receita" fill="#002443" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="Receita" fill="#0A0A0A" radius={[8, 8, 0, 0]} />
               <Bar dataKey="Custo" fill="#94a3b8" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="Margem" fill="#2bc196" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="Margem" fill="#1356E2" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

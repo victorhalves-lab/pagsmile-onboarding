@@ -33,9 +33,9 @@ export default function ComparatorMetricRow({
     <div className="grid grid-cols-12 gap-3 items-center py-3 border-b border-slate-100 last:border-b-0">
       {/* Label */}
       <div className="col-span-12 md:col-span-3">
-        <p className="text-xs font-bold text-[#002443]">{label}</p>
+        <p className="text-xs font-bold text-[#0A0A0A]">{label}</p>
         {hint && (
-          <p className="text-[10px] text-[#002443]/55 mt-0.5 flex items-start gap-1">
+          <p className="text-[10px] text-[#0A0A0A]/55 mt-0.5 flex items-start gap-1">
             <Info className="w-2.5 h-2.5 mt-0.5 shrink-0" />
             <span>{hint}</span>
           </p>
@@ -46,7 +46,7 @@ export default function ComparatorMetricRow({
       <div className="col-span-5 md:col-span-4">
         <div className="px-3 py-2 rounded-lg bg-blue-50/60 border border-blue-100">
           <p className="text-[9px] font-bold uppercase tracking-wider text-blue-600 mb-0.5">V4</p>
-          <p className="text-sm font-semibold text-[#002443] break-words">{v4Display}</p>
+          <p className="text-sm font-semibold text-[#0A0A0A] break-words">{v4Display}</p>
         </div>
       </div>
 
@@ -59,13 +59,13 @@ export default function ComparatorMetricRow({
       <div className="col-span-5 md:col-span-4">
         <div className={`px-3 py-2 rounded-lg border ${
           diff.type === 'match'
-            ? 'bg-[#2bc196]/5 border-[#2bc196]/20'
+            ? 'bg-[#1356E2]/5 border-[#1356E2]/20'
             : critical
             ? 'bg-red-50 border-red-200'
             : 'bg-amber-50 border-amber-200'
         }`}>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-[#2bc196] mb-0.5">V5.2</p>
-          <p className="text-sm font-semibold text-[#002443] break-words">{v5_2Display}</p>
+          <p className="text-[9px] font-bold uppercase tracking-wider text-[#1356E2] mb-0.5">V5.2</p>
+          <p className="text-sm font-semibold text-[#0A0A0A] break-words">{v5_2Display}</p>
           {diff.type === 'numeric' && diff.delta !== 0 && (
             <p className={`text-[10px] mt-0.5 font-medium ${
               diff.delta > 0 ? 'text-emerald-700' : 'text-red-700'

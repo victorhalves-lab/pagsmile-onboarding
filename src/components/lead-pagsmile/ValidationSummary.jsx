@@ -10,9 +10,9 @@ export default function ValidationSummary({ messages, totalFields, filledFields 
   if (!messages || messages.length === 0) {
     if (totalFields > 0 && filledFields === totalFields) {
       return (
-        <div className="mb-4 rounded-xl border border-[#2bc196]/30 bg-[#2bc196]/5 p-3 flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-[#2bc196] shrink-0" />
-          <p className="text-xs font-medium text-[#002443]">
+        <div className="mb-4 rounded-xl border border-[#1356E2]/30 bg-[#1356E2]/5 p-3 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-[#1356E2] shrink-0" />
+          <p className="text-xs font-medium text-[#0A0A0A]">
             Tudo certo nesta etapa. Você pode avançar.
           </p>
         </div>

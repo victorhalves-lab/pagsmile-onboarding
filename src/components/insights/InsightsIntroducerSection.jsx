@@ -89,12 +89,12 @@ export default function InsightsIntroducerSection({ leads, proposals }) {
           <ResponsiveContainer width="100%" height={320}>
             <BarChart data={barData} barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#002443' }} axisLine={false} tickLine={false} angle={-20} textAnchor="end" height={50} />
+              <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#0A0A0A' }} axisLine={false} tickLine={false} angle={-20} textAnchor="end" height={50} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="Leads" fill="#002443" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="Convertidos" fill="#2bc196" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="Leads" fill="#0A0A0A" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="Convertidos" fill="#1356E2" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -103,33 +103,33 @@ export default function InsightsIntroducerSection({ leads, proposals }) {
       {/* Ranking Table */}
       {ranking.length > 0 && (
         <div className="rounded-2xl bg-white border border-slate-100 p-5 overflow-x-auto">
-          <h3 className="text-sm font-bold text-[#002443] mb-4">Ranking Composto de Introducers</h3>
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">Ranking Composto de Introducers</h3>
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4">#</th>
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4">Introducer</th>
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4 text-right">Leads</th>
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4 text-right">Conv.</th>
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4 text-right">Conv. %</th>
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4 text-right">TPV Potencial</th>
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4 text-right">Qualidade</th>
-                <th className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 text-right">Score</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4">#</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4">Introducer</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4 text-right">Leads</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4 text-right">Conv.</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4 text-right">Conv. %</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4 text-right">TPV Potencial</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4 text-right">Qualidade</th>
+                <th className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 text-right">Score</th>
               </tr>
             </thead>
             <tbody>
               {ranking.map((r, i) => (
-                <tr key={i} className="border-b border-slate-50 hover:bg-[#2bc196]/[0.02] transition-colors">
-                  <td className="py-2.5 pr-4"><span className="text-[10px] font-extrabold text-[#002443]/30">{i + 1}</span></td>
-                  <td className="py-2.5 pr-4 text-xs font-semibold text-[#002443]">{r.name}</td>
-                  <td className="py-2.5 pr-4 text-xs font-bold text-[#002443] text-right">{r.total}</td>
-                  <td className="py-2.5 pr-4 text-xs font-bold text-[#2bc196] text-right">{r.converted}</td>
+                <tr key={i} className="border-b border-slate-50 hover:bg-[#1356E2]/[0.02] transition-colors">
+                  <td className="py-2.5 pr-4"><span className="text-[10px] font-extrabold text-[#0A0A0A]/30">{i + 1}</span></td>
+                  <td className="py-2.5 pr-4 text-xs font-semibold text-[#0A0A0A]">{r.name}</td>
+                  <td className="py-2.5 pr-4 text-xs font-bold text-[#0A0A0A] text-right">{r.total}</td>
+                  <td className="py-2.5 pr-4 text-xs font-bold text-[#1356E2] text-right">{r.converted}</td>
                   <td className="py-2.5 pr-4 text-right">
-                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${parseFloat(r.convRate) >= 50 ? 'bg-[#2bc196]/10 text-[#2bc196]' : parseFloat(r.convRate) >= 25 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500'}`}>{r.convRate}%</span>
+                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${parseFloat(r.convRate) >= 50 ? 'bg-[#1356E2]/10 text-[#1356E2]' : parseFloat(r.convRate) >= 25 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500'}`}>{r.convRate}%</span>
                   </td>
-                  <td className="py-2.5 pr-4 text-xs text-[#002443] text-right">{formatCurrency(r.tpvTotal)}</td>
-                  <td className="py-2.5 pr-4 text-xs text-[#002443] text-right">{r.avgScore}</td>
-                  <td className="py-2.5 text-right"><span className="text-xs font-extrabold text-[#002443]">{r.compositeScore}</span></td>
+                  <td className="py-2.5 pr-4 text-xs text-[#0A0A0A] text-right">{formatCurrency(r.tpvTotal)}</td>
+                  <td className="py-2.5 pr-4 text-xs text-[#0A0A0A] text-right">{r.avgScore}</td>
+                  <td className="py-2.5 text-right"><span className="text-xs font-extrabold text-[#0A0A0A]">{r.compositeScore}</span></td>
                 </tr>
               ))}
             </tbody>

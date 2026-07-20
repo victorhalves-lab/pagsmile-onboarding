@@ -20,12 +20,12 @@ export default function CadastroSessionDraftsBlock({ merchantEmail }) {
   if (!sessions.length) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
-        <FileEdit className="w-4 h-4 text-[var(--pagsmile-green)]" />
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
+        <FileEdit className="w-4 h-4 text-[var(--pinbank-blue)]" />
         Rascunhos de Questionário ({sessions.length})
       </h3>
-      <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mb-3">
+      <p className="text-[10px] text-[var(--pinbank-blue)]/40 mb-3">
         Sessões salvas automaticamente pelo cliente durante o preenchimento.
       </p>
       <div className="space-y-2">
@@ -38,7 +38,7 @@ export default function CadastroSessionDraftsBlock({ merchantEmail }) {
                 <Badge variant="outline" className="text-[10px]">Fase: {s.currentPhase}</Badge>
                 <Badge variant="outline" className="text-[10px]">Step: {s.currentStep}</Badge>
               </div>
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-1">
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-1">
                 Iniciado em {new Date(s.created_date).toLocaleString('pt-BR')}
                 {s.lastAccessDate && ` • último acesso ${new Date(s.lastAccessDate).toLocaleString('pt-BR')}`}
               </p>

@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 function RateInput({ label, value, onChange, suffix = '%', step = '0.01' }) {
   return (
     <div className="space-y-0.5">
-      <Label className="text-[10px] font-bold text-[#002443]/40">{label}</Label>
+      <Label className="text-[10px] font-bold text-[#0A0A0A]/40">{label}</Label>
       <div className="relative">
         <Input
           type="number"
@@ -20,7 +20,7 @@ function RateInput({ label, value, onChange, suffix = '%', step = '0.01' }) {
           onChange={e => onChange(e.target.value ? parseFloat(e.target.value) : '')}
           className="h-8 rounded-lg text-xs pr-8"
         />
-        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#002443]/30">{suffix}</span>
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#0A0A0A]/30">{suffix}</span>
       </div>
     </div>
   );
@@ -30,7 +30,7 @@ function SegmentCard({ segment, index, onUpdate, onRemove }) {
   const update = (field, value) => onUpdate(index, { ...segment, [field]: value });
 
   return (
-    <div className="border border-[#002443]/10 rounded-xl p-4 space-y-3">
+    <div className="border border-[#0A0A0A]/10 rounded-xl p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Input
@@ -59,7 +59,7 @@ function SegmentCard({ segment, index, onUpdate, onRemove }) {
 
       {/* MDR */}
       <div>
-        <p className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider mb-1.5">MDR Cartão</p>
+        <p className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider mb-1.5">MDR Cartão</p>
         <div className="grid grid-cols-4 gap-2">
           <RateInput label="1x (à vista)" value={segment.mdrAvista} onChange={v => update('mdrAvista', v)} />
           <RateInput label="2-6x" value={segment.mdr2a6x} onChange={v => update('mdr2a6x', v)} />
@@ -70,7 +70,7 @@ function SegmentCard({ segment, index, onUpdate, onRemove }) {
 
       {/* Operational */}
       <div>
-        <p className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider mb-1.5">Taxas Operacionais</p>
+        <p className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider mb-1.5">Taxas Operacionais</p>
         <div className="grid grid-cols-4 gap-2">
           <RateInput label="Processamento" value={segment.feeTransacao} onChange={v => update('feeTransacao', v)} suffix="R$" step="0.01" />
           <RateInput label="Antifraude" value={segment.antifraude} onChange={v => update('antifraude', v)} suffix="R$" step="0.01" />
@@ -81,7 +81,7 @@ function SegmentCard({ segment, index, onUpdate, onRemove }) {
 
       {/* PIX */}
       <div>
-        <p className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider mb-1.5">PIX</p>
+        <p className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider mb-1.5">PIX</p>
         <div className="grid grid-cols-2 gap-2">
           <RateInput label="PIX Percentual" value={segment.pixTaxaPercentual} onChange={v => update('pixTaxaPercentual', v)} />
           <RateInput label="PIX Fixo" value={segment.pixTaxaFixa} onChange={v => update('pixTaxaFixa', v)} suffix="R$" step="0.01" />
@@ -132,9 +132,9 @@ export default function StandardRatesEditor({ rates = [], onChange }) {
   };
 
   return (
-    <div className="space-y-3 pt-2 border-t border-[#002443]/10">
+    <div className="space-y-3 pt-2 border-t border-[#0A0A0A]/10">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-bold text-[#2bc196] uppercase tracking-wider">Taxas por Segmento</p>
+        <p className="text-xs font-bold text-[#1356E2] uppercase tracking-wider">Taxas por Segmento</p>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleLoadDefaults} disabled={isLoadingDefaults} className="rounded-xl text-xs h-7">
             {isLoadingDefaults ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
@@ -148,7 +148,7 @@ export default function StandardRatesEditor({ rates = [], onChange }) {
 
       {rates.length === 0 && (
         <div className="text-center py-6 bg-[#f4f4f4] rounded-xl">
-          <p className="text-xs text-[#002443]/40 mb-2">Nenhum segmento configurado</p>
+          <p className="text-xs text-[#0A0A0A]/40 mb-2">Nenhum segmento configurado</p>
           <Button variant="outline" size="sm" onClick={handleLoadDefaults} disabled={isLoadingDefaults} className="rounded-xl text-xs">
             {isLoadingDefaults ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1.5" />}
             Carregar os 10 Segmentos Padrão

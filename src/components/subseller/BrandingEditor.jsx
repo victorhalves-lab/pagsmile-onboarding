@@ -9,8 +9,8 @@ import { toast } from 'sonner';
 export default function BrandingEditor({ link, onUpdate }) {
   const [brandName, setBrandName] = useState(link.brandName || '');
   const [brandLogoUrl, setBrandLogoUrl] = useState(link.brandLogoUrl || '');
-  const [brandPrimaryColor, setBrandPrimaryColor] = useState(link.brandPrimaryColor || '#2bc196');
-  const [brandSecondaryColor, setBrandSecondaryColor] = useState(link.brandSecondaryColor || '#002443');
+  const [brandPrimaryColor, setBrandPrimaryColor] = useState(link.brandPrimaryColor || '#1356E2');
+  const [brandSecondaryColor, setBrandSecondaryColor] = useState(link.brandSecondaryColor || '#0A0A0A');
   const [customSlug, setCustomSlug] = useState(link.customSlug || '');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -69,11 +69,11 @@ export default function BrandingEditor({ link, onUpdate }) {
     });
     setBrandName('');
     setBrandLogoUrl('');
-    setBrandPrimaryColor('#2bc196');
-    setBrandSecondaryColor('#002443');
+    setBrandPrimaryColor('#1356E2');
+    setBrandSecondaryColor('#0A0A0A');
     setCustomSlug('');
     setSaving(false);
-    toast.success('Personalização removida — voltará ao padrão PagSmile.');
+    toast.success('Personalização removida — voltará ao padrão Pin Bank.');
     if (onUpdate) onUpdate();
   };
 
@@ -81,11 +81,11 @@ export default function BrandingEditor({ link, onUpdate }) {
     <div className="space-y-4">
       {/* URL curta personalizada */}
       <div>
-        <Label className="text-xs font-semibold text-[#002443]/70 flex items-center gap-1.5">
+        <Label className="text-xs font-semibold text-[#0A0A0A]/70 flex items-center gap-1.5">
           <LinkIcon className="w-3 h-3" /> URL curta personalizada
         </Label>
         <div className="flex items-center gap-0 mt-1">
-          <span className="text-xs text-[#002443]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
+          <span className="text-xs text-[#0A0A0A]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
             {window.location.origin}/s/
           </span>
           <Input
@@ -104,7 +104,7 @@ export default function BrandingEditor({ link, onUpdate }) {
 
       {/* Nome */}
       <div>
-        <Label className="text-xs font-semibold text-[#002443]/70">Nome do Cliente (exibido no questionário)</Label>
+        <Label className="text-xs font-semibold text-[#0A0A0A]/70">Nome do Cliente (exibido no questionário)</Label>
         <Input
           value={brandName}
           onChange={e => setBrandName(e.target.value)}
@@ -115,7 +115,7 @@ export default function BrandingEditor({ link, onUpdate }) {
 
       {/* Logo */}
       <div>
-        <Label className="text-xs font-semibold text-[#002443]/70">Logo do Cliente</Label>
+        <Label className="text-xs font-semibold text-[#0A0A0A]/70">Logo do Cliente</Label>
         <div className="mt-1 flex items-center gap-3">
           {brandLogoUrl ? (
             <div className="relative">
@@ -126,12 +126,12 @@ export default function BrandingEditor({ link, onUpdate }) {
             </div>
           ) : (
             <>
-              <label className="cursor-pointer flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-lg hover:border-[#2bc196] transition-all text-sm text-[#002443]/60">
+              <label className="cursor-pointer flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-lg hover:border-[#1356E2] transition-all text-sm text-[#0A0A0A]/60">
                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 {uploading ? 'Enviando...' : 'Upload do logo'}
                 <input type="file" accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp,application/pdf,.png,.jpg,.jpeg,.svg,.webp,.pdf" className="hidden" onChange={handleLogoUpload} disabled={uploading} />
               </label>
-              <span className="text-[9px] text-[#002443]/30">PNG, SVG, JPG, WEBP ou PDF</span>
+              <span className="text-[9px] text-[#0A0A0A]/30">PNG, SVG, JPG, WEBP ou PDF</span>
             </>
           )}
         </div>
@@ -140,14 +140,14 @@ export default function BrandingEditor({ link, onUpdate }) {
       {/* Cores */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-xs font-semibold text-[#002443]/70">Cor Primária (botões, header)</Label>
+          <Label className="text-xs font-semibold text-[#0A0A0A]/70">Cor Primária (botões, header)</Label>
           <div className="flex items-center gap-2 mt-1">
             <input type="color" value={brandPrimaryColor} onChange={e => setBrandPrimaryColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
             <Input value={brandPrimaryColor} onChange={e => setBrandPrimaryColor(e.target.value)} className="font-mono text-xs" />
           </div>
         </div>
         <div>
-          <Label className="text-xs font-semibold text-[#002443]/70">Cor Secundária (textos, footer)</Label>
+          <Label className="text-xs font-semibold text-[#0A0A0A]/70">Cor Secundária (textos, footer)</Label>
           <div className="flex items-center gap-2 mt-1">
             <input type="color" value={brandSecondaryColor} onChange={e => setBrandSecondaryColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
             <Input value={brandSecondaryColor} onChange={e => setBrandSecondaryColor(e.target.value)} className="font-mono text-xs" />
@@ -156,7 +156,7 @@ export default function BrandingEditor({ link, onUpdate }) {
       </div>
 
       {/* Preview */}
-      <button onClick={() => setShowPreview(!showPreview)} className="text-xs text-[#2bc196] font-semibold flex items-center gap-1 hover:underline">
+      <button onClick={() => setShowPreview(!showPreview)} className="text-xs text-[#1356E2] font-semibold flex items-center gap-1 hover:underline">
         <Eye className="w-3 h-3" /> {showPreview ? 'Ocultar preview' : 'Ver preview'}
       </button>
       {showPreview && (
@@ -187,7 +187,7 @@ export default function BrandingEditor({ link, onUpdate }) {
 
       {/* Actions */}
       <div className="flex items-center gap-2 pt-2">
-        <Button onClick={handleSave} disabled={saving} className="bg-[#2bc196] text-white text-xs">
+        <Button onClick={handleSave} disabled={saving} className="bg-[#1356E2] text-white text-xs">
           {saving ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Paintbrush className="w-3 h-3 mr-1" />}
           Salvar Identidade Visual
         </Button>

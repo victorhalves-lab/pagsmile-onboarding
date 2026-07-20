@@ -26,7 +26,7 @@ function SocioCard({ socio, index }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <h4 className="text-sm font-bold text-[var(--pagsmile-blue)]">{nome}</h4>
+            <h4 className="text-sm font-bold text-[var(--pinbank-blue)]">{nome}</h4>
             {isPep && <Badge className="bg-red-100 text-red-700 text-[9px] border-0">PEP</Badge>}
             {hasSancoes && <Badge className="bg-red-100 text-red-700 text-[9px] border-0">Sancionado</Badge>}
             {hasProcessos && <Badge className="bg-amber-100 text-amber-700 text-[9px] border-0">{socio.processos || socio.lawsuits} processos</Badge>}
@@ -34,25 +34,25 @@ function SocioCard({ socio, index }) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px]">
             <div>
-              <span className="text-[var(--pagsmile-blue)]/40">CPF/CNPJ</span>
-              <p className="font-medium text-[var(--pagsmile-blue)]">{maskCpf(cpfCnpj)}</p>
+              <span className="text-[var(--pinbank-blue)]/40">CPF/CNPJ</span>
+              <p className="font-medium text-[var(--pinbank-blue)]">{maskCpf(cpfCnpj)}</p>
             </div>
             {participacao != null && (
               <div>
-                <span className="text-[var(--pagsmile-blue)]/40">Participação</span>
-                <p className="font-bold text-[var(--pagsmile-blue)]">{participacao}%</p>
+                <span className="text-[var(--pinbank-blue)]/40">Participação</span>
+                <p className="font-bold text-[var(--pinbank-blue)]">{participacao}%</p>
               </div>
             )}
             {qualificacao && (
               <div>
-                <span className="text-[var(--pagsmile-blue)]/40">Qualificação</span>
-                <p className="font-medium text-[var(--pagsmile-blue)]">{qualificacao}</p>
+                <span className="text-[var(--pinbank-blue)]/40">Qualificação</span>
+                <p className="font-medium text-[var(--pinbank-blue)]">{qualificacao}</p>
               </div>
             )}
             {desde && (
               <div>
-                <span className="text-[var(--pagsmile-blue)]/40">Desde</span>
-                <p className="font-medium text-[var(--pagsmile-blue)]">{desde}</p>
+                <span className="text-[var(--pinbank-blue)]/40">Desde</span>
+                <p className="font-medium text-[var(--pinbank-blue)]">{desde}</p>
               </div>
             )}
           </div>
@@ -63,7 +63,7 @@ function SocioCard({ socio, index }) {
             <VerifBadge label="Sanções" ok={!hasSancoes} />
             <VerifBadge label="Processos" ok={!hasProcessos} />
             {otherCompanies > 0 && (
-              <span className="flex items-center gap-1 text-[10px] text-[var(--pagsmile-blue)]/50 px-2 py-0.5 rounded bg-slate-50 border border-slate-100">
+              <span className="flex items-center gap-1 text-[10px] text-[var(--pinbank-blue)]/50 px-2 py-0.5 rounded bg-slate-50 border border-slate-100">
                 <Building2 className="w-3 h-3" />{otherCompanies} empresas vinculadas
               </span>
             )}
@@ -104,13 +104,13 @@ export default function BDCQSAPanel({ integrationLogs = [], validations = [] }) 
   const pepCount = socios.filter(s => s.pep === true || s.is_pep === true).length;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-indigo-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-indigo-100"><Users className="w-5 h-5 text-indigo-600" /></div>
           <div>
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">Quadro Societário (QSA) — {socios.length} sócio(s)</h3>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Dados confirmados pela Receita Federal via Big Data Corp</p>
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">Quadro Societário (QSA) — {socios.length} sócio(s)</h3>
+            <p className="text-[10px] text-[var(--pinbank-blue)]/40">Dados confirmados pela Receita Federal via Big Data Corp</p>
           </div>
           <div className="ml-auto flex gap-2">
             {singleOwner && <Badge className="bg-amber-100 text-amber-700 text-[9px] border-0">Sócio Único — Risco de concentração</Badge>}

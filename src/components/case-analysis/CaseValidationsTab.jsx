@@ -16,11 +16,11 @@ export default function CaseValidationsTab({ validations }) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
-      <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Validações Externas</h3>
+      <h3 className="text-lg font-bold text-[var(--pinbank-blue)] mb-6">Validações Externas</h3>
       {validations.length === 0 ? (
         <div className="text-center py-12">
           <Shield className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-          <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhuma validação realizada</p>
+          <p className="text-[var(--pinbank-blue)]/70 font-medium">Nenhuma validação realizada</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -38,8 +38,8 @@ export default function CaseValidationsTab({ validations }) {
                     }`} />
                   </div>
                   <div>
-                    <span className="font-semibold text-[var(--pagsmile-blue)]">{validation.provider}</span>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">{validation.validationType}</p>
+                    <span className="font-semibold text-[var(--pinbank-blue)]">{validation.provider}</span>
+                    <p className="text-sm text-[var(--pinbank-blue)]/70 font-medium">{validation.validationType}</p>
                   </div>
                 </div>
                 {getValidationStatusBadge(validation.status)}
@@ -47,20 +47,20 @@ export default function CaseValidationsTab({ validations }) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 pt-3 border-t border-slate-100">
                 {validation.score !== undefined && (
                   <div>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold">Score</p>
-                    <p className="font-semibold text-[var(--pagsmile-blue)]">{validation.score}</p>
+                    <p className="text-xs text-[var(--pinbank-blue)]/70 font-semibold">Score</p>
+                    <p className="font-semibold text-[var(--pinbank-blue)]">{validation.score}</p>
                   </div>
                 )}
                 {validation.responseTime && (
                   <div>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold">Tempo de Resposta</p>
-                    <p className="font-semibold text-[var(--pagsmile-blue)]">{validation.responseTime}ms</p>
+                    <p className="text-xs text-[var(--pinbank-blue)]/70 font-semibold">Tempo de Resposta</p>
+                    <p className="font-semibold text-[var(--pinbank-blue)]">{validation.responseTime}ms</p>
                   </div>
                 )}
                 {validation.timestamp && (
                   <div>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold">Data</p>
-                    <p className="font-semibold text-[var(--pagsmile-blue)]">{new Date(validation.timestamp).toLocaleDateString('pt-BR')}</p>
+                    <p className="text-xs text-[var(--pinbank-blue)]/70 font-semibold">Data</p>
+                    <p className="font-semibold text-[var(--pinbank-blue)]">{new Date(validation.timestamp).toLocaleDateString('pt-BR')}</p>
                   </div>
                 )}
               </div>

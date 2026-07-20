@@ -158,14 +158,14 @@ export default function LeadsV5QuestionnaireDoc() {
       <StepBlock number="9" title="Fechamento" description="Intenção de compra + atribuição">
         <Question id="urgencia" label="Qual a urgência?" type="select" required options={URGENCIA_OPTIONS} hint="'Imediato' = +15 pts | 'Apenas cotando' = -5 pts (JUST_QUOTING)" />
         <Question id="crescimento" label="Expectativa de crescimento" type="select" options={CRESCIMENTO_OPTIONS} hint="'Mais que dobrar' = +5 pts" />
-        <Question id="comoConheceu" label="Como conheceu a Pagsmile?" type="select" options={COMO_CONHECEU_OPTIONS} />
+        <Question id="comoConheceu" label="Como conheceu a Pin Bank?" type="select" options={COMO_CONHECEU_OPTIONS} />
         <Question id="observacoes" label="Observações finais" type="textarea" />
       </StepBlock>
 
       {/* SCORE 0-100 */}
-      <div className="bg-white border-2 border-[#002443] rounded-2xl p-6">
-        <h3 className="text-lg font-bold text-[#002443] mb-3">📊 Cálculo do Lead Score (0–100)</h3>
-        <p className="text-xs text-[#002443]/70 mb-4">Score inicial = <strong>40</strong>. Aplicam-se bônus e penalidades.</p>
+      <div className="bg-white border-2 border-[#0A0A0A] rounded-2xl p-6">
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-3">📊 Cálculo do Lead Score (0–100)</h3>
+        <p className="text-xs text-[#0A0A0A]/70 mb-4">Score inicial = <strong>40</strong>. Aplicam-se bônus e penalidades.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
@@ -192,7 +192,7 @@ export default function LeadsV5QuestionnaireDoc() {
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-[#002443]/10 grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
+        <div className="mt-4 pt-4 border-t border-[#0A0A0A]/10 grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
           <div className="bg-red-50 rounded p-2"><div className="text-xs font-bold text-red-700">Muito Quente</div><div className="text-[11px] text-red-600">≥ 80</div></div>
           <div className="bg-orange-50 rounded p-2"><div className="text-xs font-bold text-orange-700">Quente</div><div className="text-[11px] text-orange-600">60–79</div></div>
           <div className="bg-yellow-50 rounded p-2"><div className="text-xs font-bold text-yellow-700">Morno</div><div className="text-[11px] text-yellow-600">40–59</div></div>
@@ -202,8 +202,8 @@ export default function LeadsV5QuestionnaireDoc() {
 
       {/* FLAGS SILENCIOSAS */}
       <div className="bg-white border-2 border-amber-300 rounded-2xl p-6">
-        <h3 className="text-lg font-bold text-[#002443] mb-1">🚩 16 Flags Silenciosas</h3>
-        <p className="text-xs text-[#002443]/70 mb-4">Levantadas em background. <strong>Não aparecem para o lead</strong>, só no painel interno.</p>
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-1">🚩 16 Flags Silenciosas</h3>
+        <p className="text-xs text-[#0A0A0A]/70 mb-4">Levantadas em background. <strong>Não aparecem para o lead</strong>, só no painel interno.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <FlagCard code="PERSONAL_EMAIL" name="E-mail pessoal" description="Domínio gmail/hotmail/outlook/etc." />
           <FlagCard code="NO_WEBSITE" name="Sem presença digital" description="Não tem site, Instagram ou marca a opção 'Não possuo'" />

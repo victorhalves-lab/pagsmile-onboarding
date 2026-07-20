@@ -13,12 +13,12 @@ export default function Step19bPerfilTransacional({ formData, handleChange }) {
       subtitle="Volume e ticket médio estimado."
       icon={TrendingUp}
     >
-      <h3 className="font-semibold text-[var(--pagsmile-blue)] mb-4">B1. Perfil de Transações</h3>
+      <h3 className="font-semibold text-[var(--pinbank-blue)] mb-4">B1. Perfil de Transações</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
          <div className="space-y-2">
-           <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Volume mensal estimado (R$) <span className="text-red-500">*</span></Label>
+           <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Volume mensal estimado (R$) <span className="text-red-500">*</span></Label>
            <Select value={formData.rangeVolumeMensal} onValueChange={(val) => handleChange('rangeVolumeMensal', val)}>
-             <SelectTrigger className="border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
+             <SelectTrigger className="border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
              <SelectContent>
                <SelectItem value="ate_10k">Até R$ 10.000</SelectItem>
                <SelectItem value="10k_50k">R$ 10.001 a R$ 50.000</SelectItem>
@@ -33,9 +33,9 @@ export default function Step19bPerfilTransacional({ formData, handleChange }) {
          </div>
          
          <div className="space-y-2">
-           <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Quantidade de transações/mês <span className="text-red-500">*</span></Label>
+           <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Quantidade de transações/mês <span className="text-red-500">*</span></Label>
            <Select value={formData.rangeQtdTransacoes} onValueChange={(val) => handleChange('rangeQtdTransacoes', val)}>
-             <SelectTrigger className="border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
+             <SelectTrigger className="border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
              <SelectContent>
                <SelectItem value="ate_100">Até 100</SelectItem>
                <SelectItem value="101_500">101 a 500</SelectItem>
@@ -50,9 +50,9 @@ export default function Step19bPerfilTransacional({ formData, handleChange }) {
          </div>
 
          <div className="space-y-2">
-           <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Ticket médio (R$) <span className="text-red-500">*</span></Label>
+           <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Ticket médio (R$) <span className="text-red-500">*</span></Label>
            <Select value={formData.rangeTicketMedio} onValueChange={(val) => handleChange('rangeTicketMedio', val)}>
-             <SelectTrigger className="border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
+             <SelectTrigger className="border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
              <SelectContent>
                <SelectItem value="ate_50">Até R$ 50</SelectItem>
                <SelectItem value="51_100">R$ 51 a R$ 100</SelectItem>

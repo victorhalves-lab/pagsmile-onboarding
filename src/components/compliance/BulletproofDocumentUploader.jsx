@@ -376,7 +376,7 @@ export default function BulletproofDocumentUploader(props = {}) {
     return (
       <div className="text-center py-8 text-slate-500">
         <AlertCircle className="w-12 h-12 mx-auto text-amber-400 mb-3" />
-        <p className="font-medium text-[#002443]">Aguardando configuração do caso…</p>
+        <p className="font-medium text-[#0A0A0A]">Aguardando configuração do caso…</p>
         <p className="text-xs mt-2 text-slate-400">
           Se esta mensagem persistir, recarregue a página ou solicite um novo link ao seu consultor.
         </p>
@@ -397,8 +397,8 @@ export default function BulletproofDocumentUploader(props = {}) {
     <div className="space-y-6">
       <div className="bg-white rounded-xl border border-slate-200 p-4 sticky top-2 z-10 shadow-sm">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-[#002443]">Progresso do Envio</span>
-          <span className="text-sm font-semibold text-[#2bc196]">{progress}%</span>
+          <span className="text-sm font-medium text-[#0A0A0A]">Progresso do Envio</span>
+          <span className="text-sm font-semibold text-[#1356E2]">{progress}%</span>
         </div>
         <Progress value={progress} className="h-2" />
         <div className="flex items-center justify-between mt-2 text-xs text-slate-500">
@@ -414,8 +414,8 @@ export default function BulletproofDocumentUploader(props = {}) {
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
         <HelpCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-semibold text-[#002443] mb-1">Não tem algum documento?</p>
-          <p className="text-xs text-[#002443]/70 leading-relaxed">
+          <p className="text-sm font-semibold text-[#0A0A0A] mb-1">Não tem algum documento?</p>
+          <p className="text-xs text-[#0A0A0A]/70 leading-relaxed">
             Em alguns documentos você pode clicar em <strong>"Não tenho este documento"</strong> e escrever uma justificativa.
             Nossa equipe de compliance analisará seu caso.
             <strong className="text-amber-700"> Importante:</strong> RG/CNH, selfie, contrato social e comprovante de endereço são obrigatórios e não podem ser substituídos por justificativa.
@@ -425,7 +425,7 @@ export default function BulletproofDocumentUploader(props = {}) {
 
       {mandatoryDocs.length > 0 && (
         <div>
-          <h3 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-500" />
             Documentos Obrigatórios ({mandatoryDocs.length})
           </h3>
@@ -448,7 +448,7 @@ export default function BulletproofDocumentUploader(props = {}) {
 
       {optionalDocs.length > 0 && (
         <div>
-          <h3 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
             <File className="w-4 h-4 text-slate-400" />
             Documentos Opcionais ({optionalDocs.length})
           </h3>
@@ -470,10 +470,10 @@ export default function BulletproofDocumentUploader(props = {}) {
       )}
 
       <div className="bg-slate-50 rounded-xl p-4 flex items-start gap-3">
-        <Shield className="w-5 h-5 text-[#002443]/60 shrink-0 mt-0.5" />
+        <Shield className="w-5 h-5 text-[#0A0A0A]/60 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-medium text-[#002443]">Seus documentos estão seguros</p>
-          <p className="text-xs text-[#002443]/60 mt-1">
+          <p className="text-sm font-medium text-[#0A0A0A]">Seus documentos estão seguros</p>
+          <p className="text-xs text-[#0A0A0A]/60 mt-1">
             Todos os arquivos são criptografados e armazenados em ambiente seguro, acessíveis apenas pela equipe de compliance.
           </p>
         </div>
@@ -485,7 +485,7 @@ export default function BulletproofDocumentUploader(props = {}) {
             <Lock className="w-4 h-4 text-slate-600" />
           </div>
           <div>
-            <h4 className="font-medium text-[#002443] text-sm">Requisitos dos Arquivos</h4>
+            <h4 className="font-medium text-[#0A0A0A] text-sm">Requisitos dos Arquivos</h4>
             <ul className="text-sm text-slate-500 mt-1 space-y-1 list-disc pl-4">
               <li>Formatos aceitos: <strong>PDF, JPG e PNG</strong> <span className="text-amber-700">(Word/DOCX não é aceito)</span></li>
               <li>Tamanho máximo: <strong>7MB</strong> por arquivo</li>

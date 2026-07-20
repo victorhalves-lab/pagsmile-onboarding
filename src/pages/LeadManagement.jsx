@@ -115,7 +115,7 @@ export default function LeadManagement() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -125,8 +125,8 @@ export default function LeadManagement() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">{t('lm.title')}</h1>
-          <p className="text-[var(--pagsmile-blue)]/70">{t('lm.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-[var(--pinbank-blue)]">{t('lm.title')}</h1>
+          <p className="text-[var(--pinbank-blue)]/70">{t('lm.subtitle')}</p>
         </div>
         <Button variant="outline" onClick={() => refetch()}>
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -137,31 +137,31 @@ export default function LeadManagement() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card><CardContent className="pt-4">
-          <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.total}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.total')}</p>
+          <p className="text-2xl font-bold text-[var(--pinbank-blue)]">{stats.total}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/70">{t('lm.total')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-blue-600">{stats.novos}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.new_leads')}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/70">{t('lm.new_leads')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-amber-600">{stats.emNegociacao}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.negotiating')}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/70">{t('lm.negotiating')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-green-600">{stats.convertidos}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.converted')}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/70">{t('lm.converted')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-slate-500">{stats.perdidos}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.lost')}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/70">{t('lm.lost')}</p>
         </CardContent></Card>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
           <Input
             placeholder={t('lm.search_placeholder')}
             value={search}
@@ -225,8 +225,8 @@ export default function LeadManagement() {
               {filteredLeads.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
-                    <Users className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-                    <p className="text-[var(--pagsmile-blue)]/60">{t('lm.no_leads')}</p>
+                    <Users className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/30 mb-3" />
+                    <p className="text-[var(--pinbank-blue)]/60">{t('lm.no_leads')}</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -240,10 +240,10 @@ export default function LeadManagement() {
                     <TableRow key={lead.id} className="hover:bg-slate-50">
                       <TableCell>
                         <div>
-                          <p className="font-semibold text-[var(--pagsmile-blue)] text-sm">{lead.fullName || lead.email}</p>
-                          <p className="text-xs text-[var(--pagsmile-blue)]/60">{lead.cpfCnpj || lead.email}</p>
+                          <p className="font-semibold text-[var(--pinbank-blue)] text-sm">{lead.fullName || lead.email}</p>
+                          <p className="text-xs text-[var(--pinbank-blue)]/60">{lead.cpfCnpj || lead.email}</p>
                           {lead.protocolo && (
-                            <p className="text-xs font-mono text-[var(--pagsmile-blue)]/40 mt-0.5">{lead.protocolo}</p>
+                            <p className="text-xs font-mono text-[var(--pinbank-blue)]/40 mt-0.5">{lead.protocolo}</p>
                           )}
                         </div>
                       </TableCell>
@@ -273,7 +273,7 @@ export default function LeadManagement() {
                         <Badge className={`text-xs ${riskCfg.color}`}>{riskCfg.label}</Badge>
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-[var(--pagsmile-blue)]/60">
+                        <span className="text-xs text-[var(--pinbank-blue)]/60">
                           {lead.created_date ? moment(lead.created_date).format('DD/MM/YY HH:mm') : '-'}
                         </span>
                       </TableCell>

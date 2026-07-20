@@ -60,13 +60,13 @@ export default function QuestionLibraryModal({ open, onClose, templateId, existi
       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-[var(--pagsmile-green)]" />
+            <BookOpen className="w-5 h-5 text-[var(--pinbank-blue)]" />
             Biblioteca de Perguntas
           </DialogTitle>
         </DialogHeader>
 
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar perguntas..." className="pl-10" />
         </div>
 
@@ -74,8 +74,8 @@ export default function QuestionLibraryModal({ open, onClose, templateId, existi
           <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-8">
-            <BookOpen className="w-10 h-10 mx-auto text-[var(--pagsmile-blue)]/30 mb-2" />
-            <p className="text-sm text-[var(--pagsmile-blue)]/60">
+            <BookOpen className="w-10 h-10 mx-auto text-[var(--pinbank-blue)]/30 mb-2" />
+            <p className="text-sm text-[var(--pinbank-blue)]/60">
               {libraryQuestions.length === 0
                 ? 'Nenhuma pergunta na biblioteca. Crie perguntas com "Biblioteca" ativo.'
                 : 'Nenhum resultado para a busca.'
@@ -90,12 +90,12 @@ export default function QuestionLibraryModal({ open, onClose, templateId, existi
                 <div
                   key={q.id}
                   onClick={() => toggleSelect(q)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${isSelected ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' : 'border-slate-200 hover:border-slate-300'}`}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${isSelected ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5' : 'border-slate-200 hover:border-slate-300'}`}
                 >
                   <div className="flex items-start gap-3">
                     <Checkbox checked={isSelected} className="mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-[var(--pagsmile-blue)]">{q.text}</p>
+                      <p className="text-sm font-medium text-[var(--pinbank-blue)]">{q.text}</p>
                       <div className="flex gap-1 mt-1">
                         <Badge variant="outline" className="text-[10px]">{q.type}</Badge>
                         {q.isRequired && <Badge className="bg-red-100 text-red-700 text-[10px]">Obrigatória</Badge>}
@@ -113,7 +113,7 @@ export default function QuestionLibraryModal({ open, onClose, templateId, existi
           <Button
             onClick={() => addMutation.mutate(selected)}
             disabled={selected.length === 0 || addMutation.isPending}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90"
           >
             {addMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             <Plus className="w-4 h-4 mr-1" />

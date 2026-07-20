@@ -56,7 +56,7 @@ function CafSummarySection({ validations, integrationLogs }) {
       <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
         <div className="flex items-center gap-2">
           <ScanFace className="w-4 h-4 text-slate-400" />
-          <span className="text-sm font-semibold text-[#002443]/50">CAF — Verificação de Identidade</span>
+          <span className="text-sm font-semibold text-[#0A0A0A]/50">CAF — Verificação de Identidade</span>
           <Badge className="bg-slate-100 text-slate-500 border-0 text-[10px]">Não realizada</Badge>
         </div>
       </div>
@@ -77,12 +77,12 @@ function CafSummarySection({ validations, integrationLogs }) {
           <div className="p-1.5 rounded-lg bg-purple-50">
             <ScanFace className="w-4 h-4 text-purple-600" />
           </div>
-          <span className="text-sm font-bold text-[#002443]">CAF — Verificação de Identidade</span>
+          <span className="text-sm font-bold text-[#0A0A0A]">CAF — Verificação de Identidade</span>
           <Badge className={`text-[10px] border-0 ${allApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
             {allApproved ? 'Todas aprovadas' : 'Atenção'}
           </Badge>
           {relativeCaf && (
-            <span className="flex items-center gap-1 text-[10px] text-[#002443]/40 ml-1">
+            <span className="flex items-center gap-1 text-[10px] text-[#0A0A0A]/40 ml-1">
               <Clock className="w-2.5 h-2.5" />
               Consultado {relativeCaf}
             </span>
@@ -93,7 +93,7 @@ function CafSummarySection({ validations, integrationLogs }) {
             {sorted.map((v, i) => (
               <div key={i} className="flex items-center gap-1 text-[10px]">
                 <StatusDot success={v.status === 'Sucesso'} />
-                <span className="text-[#002443]/50">{v.validationType?.replace('DocumentDetector ', '').replace('FaceLiveness', 'Liveness')}</span>
+                <span className="text-[#0A0A0A]/50">{v.validationType?.replace('DocumentDetector ', '').replace('FaceLiveness', 'Liveness')}</span>
               </div>
             ))}
           </div>
@@ -111,13 +111,13 @@ function CafSummarySection({ validations, integrationLogs }) {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     {isLiveness ? <Fingerprint className="w-4 h-4 text-purple-500" /> : <Camera className="w-4 h-4 text-blue-500" />}
-                    <span className="text-sm font-semibold text-[#002443]">{v.validationType}</span>
+                    <span className="text-sm font-semibold text-[#0A0A0A]">{v.validationType}</span>
                   </div>
                   <Badge className={v.status === 'Sucesso' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}>
                     {v.status === 'Sucesso' ? 'Aprovado' : 'Reprovado'}
                   </Badge>
                 </div>
-                <div className="flex flex-wrap gap-3 text-xs text-[#002443]/60">
+                <div className="flex flex-wrap gap-3 text-xs text-[#0A0A0A]/60">
                   {isLiveness && rd.isAlive != null && (
                     <span>Prova de Vida: <strong className={rd.isAlive ? 'text-emerald-700' : 'text-red-700'}>{rd.isAlive ? 'SIM' : 'NÃO'}</strong></span>
                   )}
@@ -183,10 +183,10 @@ function BdcSummarySection({ validations, complianceScore, merchant, onboardingC
             <div className="p-1.5 rounded-lg bg-indigo-50">
               <Database className="w-4 h-4 text-indigo-600" />
             </div>
-            <span className="text-sm font-bold text-[#002443]">BigDataCorp — Enriquecimento Completo</span>
+            <span className="text-sm font-bold text-[#0A0A0A]">BigDataCorp — Enriquecimento Completo</span>
             <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px]">{bdcValidations.length} consulta(s)</Badge>
             {relativeBdc && (
-              <span className="flex items-center gap-1 text-[10px] text-[#002443]/40 ml-1">
+              <span className="flex items-center gap-1 text-[10px] text-[#0A0A0A]/40 ml-1">
                 <Clock className="w-2.5 h-2.5" />
                 {relativeBdc}
               </span>
@@ -226,14 +226,14 @@ function BdcSummarySection({ validations, complianceScore, merchant, onboardingC
           <div className="p-1.5 rounded-lg bg-indigo-50">
             <Database className="w-4 h-4 text-indigo-600" />
           </div>
-          <span className="text-sm font-bold text-[#002443]">BigDataCorp + CNPJ — Enriquecimento</span>
+          <span className="text-sm font-bold text-[#0A0A0A]">BigDataCorp + CNPJ — Enriquecimento</span>
           {hasBdcData ? (
             <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px]">{bdcValidations.length} consulta(s)</Badge>
           ) : (
             <Badge className="bg-slate-100 text-slate-500 border-0 text-[10px]">Não consultado</Badge>
           )}
           {relativeBdc && (
-            <span className="flex items-center gap-1 text-[10px] text-[#002443]/40 ml-1">
+            <span className="flex items-center gap-1 text-[10px] text-[#0A0A0A]/40 ml-1">
               <Clock className="w-2.5 h-2.5" />
               Consultado {relativeBdc}
             </span>
@@ -258,7 +258,7 @@ function BdcSummarySection({ validations, complianceScore, merchant, onboardingC
 
       {expanded && (
         <div className="mt-4 pt-4 border-t border-slate-100">
-          <p className="text-xs text-[#002443]/40 text-center py-4">Nenhum dado de enriquecimento disponível. O BDC será executado automaticamente após o questionário.</p>
+          <p className="text-xs text-[#0A0A0A]/40 text-center py-4">Nenhum dado de enriquecimento disponível. O BDC será executado automaticamente após o questionário.</p>
         </div>
       )}
     </div>
@@ -267,14 +267,14 @@ function BdcSummarySection({ validations, complianceScore, merchant, onboardingC
 
 export default function UnifiedSourcesSummary({ validations, integrationLogs, complianceScore, merchant, onboardingCaseId }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 p-6 space-y-4">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-6 space-y-4">
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-xl bg-slate-100">
-          <Shield className="w-5 h-5 text-[#002443]/60" />
+          <Shield className="w-5 h-5 text-[#0A0A0A]/60" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-[#002443]">Fontes de Dados Externas</h3>
-          <p className="text-xs text-[#002443]/40">Detalhes das verificações CAF e enriquecimento BigDataCorp/CNPJ</p>
+          <h3 className="text-base font-bold text-[#0A0A0A]">Fontes de Dados Externas</h3>
+          <p className="text-xs text-[#0A0A0A]/40">Detalhes das verificações CAF e enriquecimento BigDataCorp/CNPJ</p>
         </div>
       </div>
 

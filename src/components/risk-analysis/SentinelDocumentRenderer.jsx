@@ -21,7 +21,7 @@ function conclusionTone(decision) {
   if (d.includes('recusa')) return { bg: 'bg-red-50', border: 'border-red-300', barBg: 'bg-red-500', headText: 'text-red-800', chip: 'bg-red-600 text-white' };
   if (d.includes('manual') || d.includes('condi')) return { bg: 'bg-amber-50', border: 'border-amber-300', barBg: 'bg-amber-500', headText: 'text-amber-800', chip: 'bg-amber-500 text-white' };
   if (d.includes('aprov')) return { bg: 'bg-emerald-50', border: 'border-emerald-300', barBg: 'bg-emerald-500', headText: 'text-emerald-800', chip: 'bg-emerald-600 text-white' };
-  return { bg: 'bg-slate-50', border: 'border-slate-300', barBg: 'bg-slate-500', headText: 'text-[#002443]', chip: 'bg-slate-700 text-white' };
+  return { bg: 'bg-slate-50', border: 'border-slate-300', barBg: 'bg-slate-500', headText: 'text-[#0A0A0A]', chip: 'bg-slate-700 text-white' };
 }
 
 export default function SentinelDocumentRenderer({ text, showIndex = true, compact = false, decision }) {
@@ -46,10 +46,10 @@ export default function SentinelDocumentRenderer({ text, showIndex = true, compa
     <div className="space-y-4">
       {/* Table of Contents */}
       {showIndex && !singleSection && sections.length > 1 && (
-        <div className="rounded-xl border border-[#002443]/10 bg-slate-50/60 p-3">
+        <div className="rounded-xl border border-[#0A0A0A]/10 bg-slate-50/60 p-3">
           <div className="flex items-center gap-2 mb-2">
-            <List className="w-3.5 h-3.5 text-[#002443]/50" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">
+            <List className="w-3.5 h-3.5 text-[#0A0A0A]/50" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">
               Índice do parecer ({sections.length} seções)
             </span>
           </div>
@@ -61,13 +61,13 @@ export default function SentinelDocumentRenderer({ text, showIndex = true, compa
                   onClick={() => handleJump(sec.id)}
                   className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-[12px] transition-all ${
                     activeId === sec.id
-                      ? 'bg-white border border-[#2bc196]/30 text-[#002443] font-semibold shadow-sm'
-                      : 'text-[#002443]/70 hover:bg-white/70 hover:text-[#002443]'
+                      ? 'bg-white border border-[#1356E2]/30 text-[#0A0A0A] font-semibold shadow-sm'
+                      : 'text-[#0A0A0A]/70 hover:bg-white/70 hover:text-[#0A0A0A]'
                   }`}
                 >
                   <span className="text-sm leading-none">{sec.icon}</span>
                   <span className="flex-1 truncate">{sec.title}</span>
-                  <ChevronRight className="w-3 h-3 text-[#002443]/30" />
+                  <ChevronRight className="w-3 h-3 text-[#0A0A0A]/30" />
                 </button>
               </li>
             ))}
@@ -91,17 +91,17 @@ function SectionCard({ section, index, compact, decision }) {
 
   const rootClass = isConclusion
     ? `rounded-xl border-2 ${tone.border} ${tone.bg} overflow-hidden scroll-mt-20 shadow-sm`
-    : 'rounded-xl border border-[#002443]/8 bg-white overflow-hidden scroll-mt-20';
+    : 'rounded-xl border border-[#0A0A0A]/8 bg-white overflow-hidden scroll-mt-20';
 
   return (
     <div id={`sentinel-sec-${section.id}`} className={rootClass}>
       {isConclusion && <div className={`h-1 ${tone.barBg}`} />}
 
       {/* Section header */}
-      <div className={`flex items-center gap-2.5 px-4 py-3 border-b ${isConclusion ? `${tone.border}` : 'border-[#002443]/5 bg-gradient-to-r from-slate-50 to-transparent'}`}>
+      <div className={`flex items-center gap-2.5 px-4 py-3 border-b ${isConclusion ? `${tone.border}` : 'border-[#0A0A0A]/5 bg-gradient-to-r from-slate-50 to-transparent'}`}>
         <span className="text-xl leading-none">{section.icon}</span>
         <div className="flex-1 min-w-0">
-          <h5 className={`text-sm font-bold ${isConclusion ? tone.headText : 'text-[#002443]'}`}>
+          <h5 className={`text-sm font-bold ${isConclusion ? tone.headText : 'text-[#0A0A0A]'}`}>
             {index > 0 && <span className="opacity-40 font-mono mr-2">{String(index).padStart(2, '0')}</span>}
             {section.title}
           </h5>
@@ -135,10 +135,10 @@ function Paragraph({ text, isFirst, compact }) {
     const [, lead, rest] = firstSentenceMatch;
     return (
       <div className={compact ? 'text-xs' : 'text-sm'}>
-        <p className="text-[#002443] font-semibold leading-relaxed mb-1.5">
+        <p className="text-[#0A0A0A] font-semibold leading-relaxed mb-1.5">
           <SentinelTextFormatter text={lead} variant={compact ? 'compact' : 'default'} />
         </p>
-        <div className="text-[#002443]/80 leading-relaxed">
+        <div className="text-[#0A0A0A]/80 leading-relaxed">
           <SentinelTextFormatter text={rest} variant={compact ? 'compact' : 'default'} />
         </div>
       </div>
@@ -146,7 +146,7 @@ function Paragraph({ text, isFirst, compact }) {
   }
 
   return (
-    <div className={`${compact ? 'text-xs' : 'text-sm'} text-[#002443]/80 leading-relaxed`}>
+    <div className={`${compact ? 'text-xs' : 'text-sm'} text-[#0A0A0A]/80 leading-relaxed`}>
       <SentinelTextFormatter text={text} variant={compact ? 'compact' : 'default'} />
     </div>
   );

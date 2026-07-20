@@ -9,9 +9,9 @@ export default function SlideCommercial({ contract = {}, rates = {}, slideNumber
   const rav = rates.rav || {};
 
   const tpvItems = [
-    { label: 'Mês 1', value: contract.projectedTpvMonth1, color: 'from-[#2bc196]/15 to-[#2bc196]/5', border: 'border-[#2bc196]/15' },
-    { label: 'Mês 2', value: contract.projectedTpvMonth2, color: 'from-[#002443]/[0.06] to-[#002443]/[0.02]', border: 'border-[#002443]/[0.06]' },
-    { label: 'Mês 3+', value: contract.projectedTpvMonth3, color: 'from-[#002443]/[0.06] to-[#002443]/[0.02]', border: 'border-[#002443]/[0.06]' },
+    { label: 'Mês 1', value: contract.projectedTpvMonth1, color: 'from-[#1356E2]/15 to-[#1356E2]/5', border: 'border-[#1356E2]/15' },
+    { label: 'Mês 2', value: contract.projectedTpvMonth2, color: 'from-[#0A0A0A]/[0.06] to-[#0A0A0A]/[0.02]', border: 'border-[#0A0A0A]/[0.06]' },
+    { label: 'Mês 3+', value: contract.projectedTpvMonth3, color: 'from-[#0A0A0A]/[0.06] to-[#0A0A0A]/[0.02]', border: 'border-[#0A0A0A]/[0.06]' },
   ];
 
   return (
@@ -25,9 +25,9 @@ export default function SlideCommercial({ contract = {}, rates = {}, slideNumber
           <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.4 }}
             className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-4 text-center"
           >
-            <DollarSign className="w-5 h-5 text-[#2bc196] mx-auto mb-2" />
+            <DollarSign className="w-5 h-5 text-[#1356E2] mx-auto mb-2" />
             <span className="text-[9px] text-white/40 block mb-1">TPV Mínimo — {item.label}</span>
-            <span className="text-lg font-bold font-mono text-[#2bc196]">{fmtBRL(item.value)}</span>
+            <span className="text-lg font-bold font-mono text-[#1356E2]">{fmtBRL(item.value)}</span>
           </motion.div>
         ))}
 
@@ -42,8 +42,8 @@ export default function SlideCommercial({ contract = {}, rates = {}, slideNumber
             <motion.div key={i + 3} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
               className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-4 flex items-center gap-3"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#2bc196]/10 flex items-center justify-center flex-shrink-0">
-                <Icon className="w-4.5 h-4.5 text-[#2bc196]" />
+              <div className="w-9 h-9 rounded-xl bg-[#1356E2]/10 flex items-center justify-center flex-shrink-0">
+                <Icon className="w-4.5 h-4.5 text-[#1356E2]" />
               </div>
               <div>
                 <span className="text-[9px] text-white/35 block">{item.label}</span>
@@ -74,7 +74,7 @@ export default function SlideCommercial({ contract = {}, rates = {}, slideNumber
             </span>
           </div>
           <div>
-            <span className="text-[9px] text-white/35 block mb-0.5">Multa Pagsmile</span>
+            <span className="text-[9px] text-white/35 block mb-0.5">Multa Pin Bank</span>
             <span className="text-xs font-bold text-white">
               {contract.pagsmileEarlyTerminationPenaltyPercentage ? `${contract.pagsmileEarlyTerminationPenaltyPercentage}%` : '—'}
               {contract.pagsmileEarlyTerminationPenaltyMaxAmount ? ` (máx ${fmtBRL(contract.pagsmileEarlyTerminationPenaltyMaxAmount)})` : ''}

@@ -61,16 +61,16 @@ export default function AnaliseBdcCompleta({ bdcValidations, bdcLogs, merchant, 
 
   if (allRecords.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-8 text-center">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-8 text-center">
         <Database className="w-12 h-12 mx-auto text-slate-300 mb-3" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50 font-medium">Nenhum resultado da Big Data Corp encontrado</p>
-        <p className="text-xs text-[var(--pagsmile-blue)]/30 mt-1">O enriquecimento BDC ainda não foi executado para este cadastro.</p>
+        <p className="text-sm text-[var(--pinbank-blue)]/50 font-medium">Nenhum resultado da Big Data Corp encontrado</p>
+        <p className="text-xs text-[var(--pinbank-blue)]/30 mt-1">O enriquecimento BDC ainda não foi executado para este cadastro.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/50 to-white">
         <div className="flex items-center justify-between">
@@ -79,8 +79,8 @@ export default function AnaliseBdcCompleta({ bdcValidations, bdcLogs, merchant, 
               <Database className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[var(--pagsmile-blue)]">Big Data Corp — Enriquecimento de Dados</h2>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40">Análise microscópica de todos os datasets consultados, com explicação de cada resultado</p>
+              <h2 className="text-base font-bold text-[var(--pinbank-blue)]">Big Data Corp — Enriquecimento de Dados</h2>
+              <p className="text-xs text-[var(--pinbank-blue)]/40">Análise microscópica de todos os datasets consultados, com explicação de cada resultado</p>
             </div>
           </div>
           <Badge className="bg-blue-100 text-blue-700 text-xs">{allRecords.length} consultas</Badge>
@@ -106,10 +106,10 @@ export default function AnaliseBdcCompleta({ bdcValidations, bdcLogs, merchant, 
           
           return (
             <div key={catName}>
-              <h3 className="text-sm font-bold text-[var(--pagsmile-blue)] mb-2 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[var(--pinbank-blue)] mb-2 flex items-center gap-2">
                 <CategoryIcon category={catName} />
                 {catName}
-                <span className="text-[10px] text-[var(--pagsmile-blue)]/40 font-normal">({datasets.reduce((sum, d) => sum + d.records.length, 0)} consultas)</span>
+                <span className="text-[10px] text-[var(--pinbank-blue)]/40 font-normal">({datasets.reduce((sum, d) => sum + d.records.length, 0)} consultas)</span>
               </h3>
               <div className="space-y-2 ml-6">
                 {datasets.map(({ svcType, records, info }) => {
@@ -128,8 +128,8 @@ export default function AnaliseBdcCompleta({ bdcValidations, bdcLogs, merchant, 
                           <info.icon className={`w-4 h-4 text-${info.color}-600`} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <span className="text-xs font-semibold text-[var(--pagsmile-blue)]">{info.label}</span>
-                          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{records.length} consulta(s) • {successCount} com retorno</p>
+                          <span className="text-xs font-semibold text-[var(--pinbank-blue)]">{info.label}</span>
+                          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{records.length} consulta(s) • {successCount} com retorno</p>
                         </div>
                         <div className="flex items-center gap-2">
                           {hasData ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <XCircle className="w-3.5 h-3.5 text-slate-300" />}
@@ -163,5 +163,5 @@ function CategoryIcon({ category }) {
     'Contato': Phone,
   };
   const Icon = map[category] || Database;
-  return <Icon className="w-4 h-4 text-[var(--pagsmile-blue)]/40" />;
+  return <Icon className="w-4 h-4 text-[var(--pinbank-blue)]/40" />;
 }

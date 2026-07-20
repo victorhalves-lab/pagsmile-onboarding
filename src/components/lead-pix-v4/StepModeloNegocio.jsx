@@ -14,7 +14,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-lg font-bold text-[#002443]">Modelo de Negócio</h2>
+      <h2 className="text-lg font-bold text-[#0A0A0A]">Modelo de Negócio</h2>
 
       <div>
         <Label className="text-xs mb-2 block">Segmento *</Label>
@@ -36,7 +36,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
           rows={3}
           className="text-xs"
         />
-        <p className="text-[10px] text-[#002443]/40 text-right">{(form.descricaoNegocio || '').length}/500</p>
+        <p className="text-[10px] text-[#0A0A0A]/40 text-right">{(form.descricaoNegocio || '').length}/500</p>
       </div>
 
       {isIntermediario && (
@@ -47,7 +47,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       )}
 
       <div>
-        <Label className="text-xs mb-2 block">Finalidade da conta PIX na PagSmile *</Label>
+        <Label className="text-xs mb-2 block">Finalidade da conta PIX na Pin Bank *</Label>
         <ButtonSelector options={FINALIDADE_CONTA_OPTIONS} value={form.finalidadeConta} onChange={v => updateField('finalidadeConta', v)} columns={1} />
       </div>
     </div>

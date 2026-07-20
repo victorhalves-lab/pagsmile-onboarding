@@ -17,7 +17,7 @@ function CafImagePreview({ url, label }) {
   if (!url) return null;
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-[#002443]/60">{label}</p>
+      <p className="text-xs font-semibold text-[#0A0A0A]/60">{label}</p>
       <div 
         className={`relative rounded-lg border border-slate-200 overflow-hidden cursor-pointer transition-all ${expanded ? 'max-h-[400px]' : 'max-h-[120px]'}`}
         onClick={() => setExpanded(!expanded)}
@@ -63,7 +63,7 @@ function CafResultCard({ validation, integrationLog }) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-[#002443]">{validation?.validationType}</span>
+              <span className="font-semibold text-[#0A0A0A]">{validation?.validationType}</span>
               <Badge className={
                 isSuccess ? 'bg-green-100 text-green-800' : 
                 isPendingReview ? 'bg-orange-100 text-orange-800' : 
@@ -72,7 +72,7 @@ function CafResultCard({ validation, integrationLog }) {
                 {isSuccess ? 'Aprovado' : isPendingReview ? 'Revisão Manual' : 'Reprovado'}
               </Badge>
             </div>
-            <p className="text-xs text-[#002443]/50 mt-0.5">
+            <p className="text-xs text-[#0A0A0A]/50 mt-0.5">
               {validation?.timestamp ? new Date(validation.timestamp).toLocaleString('pt-BR') : '-'}
               {validation?.responseTime ? ` • ${validation.responseTime}ms` : ''}
             </p>
@@ -181,7 +181,7 @@ function CafResultCard({ validation, integrationLog }) {
 
           {/* Session ID for liveness */}
           {rd.sessionId && (
-            <div className="text-xs text-[#002443]/40">
+            <div className="text-xs text-[#0A0A0A]/40">
               <span className="font-medium">Session ID:</span> <span className="font-mono">{rd.sessionId}</span>
             </div>
           )}
@@ -197,22 +197,22 @@ function CafResultCard({ validation, integrationLog }) {
           {/* Integration Log details */}
           {integrationLog && (
             <div className="mt-3 p-3 bg-white rounded-lg border border-slate-200">
-              <p className="text-xs font-bold text-[#002443]/50 mb-2 uppercase tracking-wide">Log de Integração</p>
+              <p className="text-xs font-bold text-[#0A0A0A]/50 mb-2 uppercase tracking-wide">Log de Integração</p>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {integrationLog.request_id && (
-                  <div><span className="text-[#002443]/40">Request ID:</span> <span className="font-mono text-[#002443]/70">{integrationLog.request_id}</span></div>
+                  <div><span className="text-[#0A0A0A]/40">Request ID:</span> <span className="font-mono text-[#0A0A0A]/70">{integrationLog.request_id}</span></div>
                 )}
                 {integrationLog.duration_ms && (
-                  <div><span className="text-[#002443]/40">Duração:</span> <span className="font-medium">{integrationLog.duration_ms}ms</span></div>
+                  <div><span className="text-[#0A0A0A]/40">Duração:</span> <span className="font-medium">{integrationLog.duration_ms}ms</span></div>
                 )}
                 {integrationLog.result_status && (
-                  <div><span className="text-[#002443]/40">Resultado:</span> <Badge className={integrationLog.result_status === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} variant="outline">{integrationLog.result_status}</Badge></div>
+                  <div><span className="text-[#0A0A0A]/40">Resultado:</span> <Badge className={integrationLog.result_status === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} variant="outline">{integrationLog.result_status}</Badge></div>
                 )}
                 {integrationLog.is_alive !== null && integrationLog.is_alive !== undefined && (
-                  <div><span className="text-[#002443]/40">is_alive:</span> <span className="font-medium">{String(integrationLog.is_alive)}</span></div>
+                  <div><span className="text-[#0A0A0A]/40">is_alive:</span> <span className="font-medium">{String(integrationLog.is_alive)}</span></div>
                 )}
                 {integrationLog.image_urls?.length > 0 && (
-                  <div className="col-span-2"><span className="text-[#002443]/40">Imagens salvas:</span> <span className="font-medium">{integrationLog.image_urls.length}</span></div>
+                  <div className="col-span-2"><span className="text-[#0A0A0A]/40">Imagens salvas:</span> <span className="font-medium">{integrationLog.image_urls.length}</span></div>
                 )}
               </div>
             </div>
@@ -250,7 +250,7 @@ function RawDataViewer({ data }) {
   if (!data || Object.keys(data).length === 0) return null;
   return (
     <div>
-      <button onClick={() => setOpen(!open)} className="text-xs text-[#002443]/40 hover:text-[#002443]/60 flex items-center gap-1">
+      <button onClick={() => setOpen(!open)} className="text-xs text-[#0A0A0A]/40 hover:text-[#0A0A0A]/60 flex items-center gap-1">
         {open ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         {open ? 'Ocultar dados brutos' : 'Ver dados brutos da CAF'}
       </button>
@@ -275,7 +275,7 @@ export default function CafResultsPanel({ validations, integrationLogs = [], onb
             <div className="p-2 rounded-lg bg-purple-50">
               <ScanFace className="w-5 h-5 text-purple-600" />
             </div>
-            <h3 className="text-lg font-bold text-[#002443]">Resultados CAF</h3>
+            <h3 className="text-lg font-bold text-[#0A0A0A]">Resultados CAF</h3>
           </div>
           {onboardingCaseId && (
             <CafResyncButton onboardingCaseId={onboardingCaseId} onSuccess={onResync} />
@@ -283,8 +283,8 @@ export default function CafResultsPanel({ validations, integrationLogs = [], onb
         </div>
         <div className="text-center py-8">
           <ScanFace className="w-12 h-12 mx-auto text-slate-300 mb-3" />
-          <p className="text-[#002443]/50 font-medium">Nenhuma verificação CAF realizada</p>
-          <p className="text-xs text-[#002443]/30 mt-1">O cliente ainda não completou a verificação de identidade.</p>
+          <p className="text-[#0A0A0A]/50 font-medium">Nenhuma verificação CAF realizada</p>
+          <p className="text-xs text-[#0A0A0A]/30 mt-1">O cliente ainda não completou a verificação de identidade.</p>
         </div>
       </div>
     );
@@ -308,8 +308,8 @@ export default function CafResultsPanel({ validations, integrationLogs = [], onb
             <ScanFace className="w-5 h-5 text-purple-600" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-[#002443]">Resultados CAF</h3>
-            <p className="text-xs text-[#002443]/50">{cafValidations.length} verificação(ões) encontrada(s)</p>
+            <h3 className="text-lg font-bold text-[#0A0A0A]">Resultados CAF</h3>
+            <p className="text-xs text-[#0A0A0A]/50">{cafValidations.length} verificação(ões) encontrada(s)</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -241,19 +241,19 @@ function decorateInline(node) {
     );
   });
   runDecorator(MONEY_RE, (t, k) => (
-    <span key={`m-${k}`} className="font-mono text-[#002443] font-semibold bg-slate-50 px-1 rounded">{t}</span>
+    <span key={`m-${k}`} className="font-mono text-[#0A0A0A] font-semibold bg-slate-50 px-1 rounded">{t}</span>
   ));
   runDecorator(PERCENT_RE, (t, k) => (
-    <span key={`p-${k}`} className="font-mono text-[#002443] font-semibold">{t}</span>
+    <span key={`p-${k}`} className="font-mono text-[#0A0A0A] font-semibold">{t}</span>
   ));
   runDecorator(CNPJ_RE, (t, k) => (
-    <span key={`cnpj-${k}`} className="font-mono text-[#002443] text-[0.95em] bg-slate-50 px-1 rounded">{t}</span>
+    <span key={`cnpj-${k}`} className="font-mono text-[#0A0A0A] text-[0.95em] bg-slate-50 px-1 rounded">{t}</span>
   ));
   runDecorator(CPF_RE, (t, k) => (
-    <span key={`cpf-${k}`} className="font-mono text-[#002443] text-[0.95em] bg-slate-50 px-1 rounded">{t}</span>
+    <span key={`cpf-${k}`} className="font-mono text-[#0A0A0A] text-[0.95em] bg-slate-50 px-1 rounded">{t}</span>
   ));
   runDecorator(DATE_RE, (t, k) => (
-    <span key={`d-${k}`} className="font-mono text-[#002443]/70">{t}</span>
+    <span key={`d-${k}`} className="font-mono text-[#0A0A0A]/70">{t}</span>
   ));
   parts.push(...chain);
   return parts;
@@ -289,10 +289,10 @@ export default function SentinelTextFormatter({ text, variant = 'default' }) {
       <ReactMarkdown
         components={{
           p: ({ children }) => (
-            <p className="mb-3 last:mb-0 text-[#002443]/85">{decorateChildren(children)}</p>
+            <p className="mb-3 last:mb-0 text-[#0A0A0A]/85">{decorateChildren(children)}</p>
           ),
           strong: ({ children }) => (
-            <strong className="font-bold text-[#002443]">{decorateChildren(children)}</strong>
+            <strong className="font-bold text-[#0A0A0A]">{decorateChildren(children)}</strong>
           ),
           em: ({ children }) => {
             const raw = String(children);
@@ -306,24 +306,24 @@ export default function SentinelTextFormatter({ text, variant = 'default' }) {
                 </span>
               );
             }
-            return <em className="text-[#002443]/70 not-italic">{decorateChildren(children)}</em>;
+            return <em className="text-[#0A0A0A]/70 not-italic">{decorateChildren(children)}</em>;
           },
           ul: ({ children }) => <ul className="space-y-1.5 my-3 ml-1">{children}</ul>,
           ol: ({ children }) => <ol className="space-y-1.5 my-3 ml-4 list-decimal list-outside">{children}</ol>,
           li: ({ children }) => (
-            <li className="flex items-start gap-2.5 pl-2 py-1 text-[#002443]/85 leading-relaxed border-l-2 border-slate-100 hover:border-[#2bc196] hover:bg-slate-50/30 transition-colors rounded-r">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196] flex-shrink-0 mt-2" />
+            <li className="flex items-start gap-2.5 pl-2 py-1 text-[#0A0A0A]/85 leading-relaxed border-l-2 border-slate-100 hover:border-[#1356E2] hover:bg-slate-50/30 transition-colors rounded-r">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1356E2] flex-shrink-0 mt-2" />
               <span className="flex-1">{decorateChildren(children)}</span>
             </li>
           ),
           h1: ({ children }) => (
-            <h3 className="text-base font-bold text-[#002443] mt-5 mb-2 pb-1.5 border-b-2 border-[#2bc196]/30">
+            <h3 className="text-base font-bold text-[#0A0A0A] mt-5 mb-2 pb-1.5 border-b-2 border-[#1356E2]/30">
               {decorateChildren(children)}
             </h3>
           ),
           h2: ({ children }) => (
-            <h4 className="text-[13px] font-bold text-[#002443] mt-4 mb-2 flex items-center gap-2">
-              <span className="w-1 h-4 bg-[#2bc196] rounded-full" />
+            <h4 className="text-[13px] font-bold text-[#0A0A0A] mt-4 mb-2 flex items-center gap-2">
+              <span className="w-1 h-4 bg-[#1356E2] rounded-full" />
               {decorateChildren(children)}
             </h4>
           ),
@@ -331,24 +331,24 @@ export default function SentinelTextFormatter({ text, variant = 'default' }) {
             // Structural header with emoji — render as a "callout heading"
             return (
               <div className="mt-4 mb-2 first:mt-0">
-                <h5 className="text-[11px] font-bold text-[#002443] uppercase tracking-wider flex items-center gap-1.5">
+                <h5 className="text-[11px] font-bold text-[#0A0A0A] uppercase tracking-wider flex items-center gap-1.5">
                   {decorateChildren(children)}
                 </h5>
               </div>
             );
           },
           h4: ({ children }) => (
-            <h6 className="text-xs font-semibold text-[#002443]/70 mt-3 mb-1 uppercase tracking-wide">
+            <h6 className="text-xs font-semibold text-[#0A0A0A]/70 mt-3 mb-1 uppercase tracking-wide">
               {decorateChildren(children)}
             </h6>
           ),
           code: ({ children }) => (
-            <code className="px-1.5 py-0.5 rounded bg-slate-100 text-[11px] font-mono text-[#002443]">
+            <code className="px-1.5 py-0.5 rounded bg-slate-100 text-[11px] font-mono text-[#0A0A0A]">
               {children}
             </code>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-3 border-[#2bc196] bg-slate-50/60 pl-3 py-1 my-3 italic text-[#002443]/70">
+            <blockquote className="border-l-3 border-[#1356E2] bg-slate-50/60 pl-3 py-1 my-3 italic text-[#0A0A0A]/70">
               {children}
             </blockquote>
           ),

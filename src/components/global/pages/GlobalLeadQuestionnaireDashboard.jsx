@@ -19,27 +19,27 @@ export default function GlobalLeadQuestionnaireDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-8">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-8">
         <div className="flex items-start gap-4 mb-6">
-          <div className="p-3 rounded-xl bg-[#2bc196]/10">
-            <ClipboardList className="w-6 h-6 text-[#2bc196]" />
+          <div className="p-3 rounded-xl bg-[#1356E2]/10">
+            <ClipboardList className="w-6 h-6 text-[#1356E2]" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#002443]">
+            <h2 className="text-xl font-bold text-[#0A0A0A]">
               {t('global.lead_link.title') || 'Link do Questionário Global'}
             </h2>
-            <p className="text-sm text-[#002443]/60 mt-1">
+            <p className="text-sm text-[#0A0A0A]/60 mt-1">
               {t('global.lead_link.subtitle') || 'Compartilhe este link para que leads internacionais preencham o questionário em USD.'}
             </p>
           </div>
         </div>
 
         <div className="bg-[#f4f4f4] rounded-xl p-4 mb-4">
-          <code className="text-sm text-[#002443] font-mono break-all">{link}</code>
+          <code className="text-sm text-[#0A0A0A] font-mono break-all">{link}</code>
         </div>
 
         <div className="flex gap-2">
-          <Button onClick={copyLink} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2">
+          <Button onClick={copyLink} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2">
             {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             {copied ? (t('common.copied') || 'Copiado!') : (t('common.copy_link') || 'Copiar Link')}
           </Button>

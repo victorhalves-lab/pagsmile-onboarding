@@ -36,7 +36,7 @@ export function resolveComplianceModel(lead) {
 
   const qData = lead.questionnaireData || {};
 
-  // 1. Se veio do questionário PagSmile V5, usar segmento granular
+  // 1. Se veio do questionário Pin Bank V5, usar segmento granular
   if (qData.segmento && SEGMENT_ID_TO_COMPLIANCE[qData.segmento]) {
     return SEGMENT_ID_TO_COMPLIANCE[qData.segmento];
   }

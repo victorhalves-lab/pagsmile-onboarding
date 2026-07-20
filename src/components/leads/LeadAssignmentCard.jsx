@@ -121,7 +121,7 @@ export default function LeadAssignmentCard({ lead }) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Handshake className="w-4 h-4 text-[#2bc196]" /> Atribuições do Lead
+          <Handshake className="w-4 h-4 text-[#1356E2]" /> Atribuições do Lead
         </CardTitle>
         {!editing && (
           <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setEditing(true)}>
@@ -133,14 +133,14 @@ export default function LeadAssignmentCard({ lead }) {
         {!editing ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-[10px] uppercase tracking-wider font-bold text-[#002443]/40 mb-1">Introducer</p>
-              <p className={`font-medium ${lead.introducerName ? 'text-[#002443]' : 'text-[#002443]/40 italic'}`}>
+              <p className="text-[10px] uppercase tracking-wider font-bold text-[#0A0A0A]/40 mb-1">Introducer</p>
+              <p className={`font-medium ${lead.introducerName ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]/40 italic'}`}>
                 {introducerLabel}
               </p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider font-bold text-[#002443]/40 mb-1">Comercial Responsável</p>
-              <p className={`font-medium ${lead.commercialAgentName ? 'text-[#002443]' : 'text-[#002443]/40 italic'}`}>
+              <p className="text-[10px] uppercase tracking-wider font-bold text-[#0A0A0A]/40 mb-1">Comercial Responsável</p>
+              <p className={`font-medium ${lead.commercialAgentName ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]/40 italic'}`}>
                 {agentLabel}
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function LeadAssignmentCard({ lead }) {
         ) : (
           <div className="space-y-3">
             <div>
-              <label className="text-[10px] uppercase tracking-wider font-bold text-[#002443]/60 mb-1 block">Introducer</label>
+              <label className="text-[10px] uppercase tracking-wider font-bold text-[#0A0A0A]/60 mb-1 block">Introducer</label>
               <Select value={introducerId} onValueChange={setIntroducerId} disabled={loadingIntroducers}>
                 <SelectTrigger className="h-9 text-sm">
                   <SelectValue placeholder={loadingIntroducers ? 'Carregando…' : 'Selecione um introducer'} />
@@ -165,7 +165,7 @@ export default function LeadAssignmentCard({ lead }) {
               </Select>
             </div>
             <div>
-              <label className="text-[10px] uppercase tracking-wider font-bold text-[#002443]/60 mb-1 block">Comercial Responsável</label>
+              <label className="text-[10px] uppercase tracking-wider font-bold text-[#0A0A0A]/60 mb-1 block">Comercial Responsável</label>
               <Select value={agentEmail} onValueChange={setAgentEmail} disabled={loadingUsers}>
                 <SelectTrigger className="h-9 text-sm">
                   <SelectValue placeholder={loadingUsers ? 'Carregando…' : 'Selecione um responsável'} />
@@ -187,7 +187,7 @@ export default function LeadAssignmentCard({ lead }) {
               </Button>
               <Button
                 size="sm"
-                className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+                className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
                 onClick={() => saveMutation.mutate()}
                 disabled={saveMutation.isPending}
               >

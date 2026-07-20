@@ -56,13 +56,13 @@ export default function BDCProcessosPanel({ integrationLogs = [], validations = 
   const totalValor = processos.reduce((sum, p) => sum + (p.valor || 0), 0);
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-rose-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-rose-100"><Scale className="w-5 h-5 text-rose-600" /></div>
           <div>
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">Processos Judiciais — {processos.length} encontrado(s)</h3>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Dados de Tribunais de Justiça via Big Data Corp</p>
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">Processos Judiciais — {processos.length} encontrado(s)</h3>
+            <p className="text-[10px] text-[var(--pinbank-blue)]/40">Dados de Tribunais de Justiça via Big Data Corp</p>
           </div>
           {totalValor > 0 && <Badge className="bg-red-100 text-red-700 text-xs ml-auto border-0">Total: {formatCurrency(totalValor)}</Badge>}
         </div>
@@ -105,11 +105,11 @@ function ProcessoRow({ processo }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap mb-1">
           <Badge className={`text-[9px] ${cfg.color} border-0`}>{cfg.label}</Badge>
-          {processo.numero && <span className="text-[var(--pagsmile-blue)]/40 font-mono text-[10px]">{processo.numero}</span>}
+          {processo.numero && <span className="text-[var(--pinbank-blue)]/40 font-mono text-[10px]">{processo.numero}</span>}
           {processo.valor > 0 && <span className="font-bold text-red-600">{formatCurrency(processo.valor)}</span>}
         </div>
-        {processo.assunto && <p className="text-[var(--pagsmile-blue)]/60 leading-relaxed">{processo.assunto}</p>}
-        {processo.tribunal && <p className="text-[10px] text-[var(--pagsmile-blue)]/30 mt-0.5">{processo.tribunal}</p>}
+        {processo.assunto && <p className="text-[var(--pinbank-blue)]/60 leading-relaxed">{processo.assunto}</p>}
+        {processo.tribunal && <p className="text-[10px] text-[var(--pinbank-blue)]/30 mt-0.5">{processo.tribunal}</p>}
       </div>
     </div>
   );

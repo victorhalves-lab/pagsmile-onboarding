@@ -21,7 +21,7 @@ const StepIndicator = ({ current, total }) => (
       <div
         key={i}
         className={`h-2 rounded-full transition-all duration-300 ${
-          i + 1 === current ? 'w-8 bg-[#2bc196]' : 'w-2 bg-[#002443]/10'
+          i + 1 === current ? 'w-8 bg-[#1356E2]' : 'w-2 bg-[#0A0A0A]/10'
         }`}
       />
     ))}
@@ -147,7 +147,7 @@ export default function FechamentoLandingPage() {
     return (
       <div className="max-w-xl mx-auto py-20 text-center">
         <h2 className="text-2xl font-bold text-red-600 mb-4">Link de Proposta Inválido</h2>
-        <p className="text-[#002443]/80">Não foi possível encontrar os dados da proposta. Por favor, verifique o link ou entre em contato com nosso time comercial.</p>
+        <p className="text-[#0A0A0A]/80">Não foi possível encontrar os dados da proposta. Por favor, verifique o link ou entre em contato com nosso time comercial.</p>
         <Button onClick={() => navigate('/')} className="mt-8 gap-2"><ArrowLeft /> Voltar ao Início</Button>
       </div>
     );
@@ -169,8 +169,8 @@ export default function FechamentoLandingPage() {
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold text-[#002443] tracking-tight">Estamos quase lá!</h1>
-        <p className="text-lg text-[#002443]/70 mt-2">
+        <h1 className="text-3xl font-bold text-[#0A0A0A] tracking-tight">Estamos quase lá!</h1>
+        <p className="text-lg text-[#0A0A0A]/70 mt-2">
           Confira as taxas da sua proposta e preencha os dados para iniciarmos o processo de compliance.
         </p>
       </div>

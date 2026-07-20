@@ -43,12 +43,12 @@ export default function OnboardingCompletion() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-gradient-to-br from-[#002443] to-[#001020] flex items-center justify-center p-6">
+    <div className="min-h-[calc(100vh-73px)] bg-gradient-to-br from-[#0A0A0A] to-[#001020] flex items-center justify-center p-6">
       <div className="max-w-lg w-full text-center">
         {/* Ícone de sucesso */}
         <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[var(--pagsmile-green)]/20 mb-4">
-            <CheckCircle2 className="w-14 h-14 text-[var(--pagsmile-green)]" />
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[var(--pinbank-blue)]/20 mb-4">
+            <CheckCircle2 className="w-14 h-14 text-[var(--pinbank-blue)]" />
           </div>
         </div>
 
@@ -66,8 +66,8 @@ export default function OnboardingCompletion() {
           
           <div className="space-y-4">
             <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-[var(--pagsmile-green)]/20">
-                <Clock className="w-5 h-5 text-[var(--pagsmile-green)]" />
+              <div className="p-2 rounded-lg bg-[var(--pinbank-blue)]/20">
+                <Clock className="w-5 h-5 text-[var(--pinbank-blue)]" />
               </div>
               <div>
                 <h3 className="font-medium text-white">Análise em Andamento</h3>
@@ -78,8 +78,8 @@ export default function OnboardingCompletion() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-[var(--pagsmile-green)]/20">
-                <Mail className="w-5 h-5 text-[var(--pagsmile-green)]" />
+              <div className="p-2 rounded-lg bg-[var(--pinbank-blue)]/20">
+                <Mail className="w-5 h-5 text-[var(--pinbank-blue)]" />
               </div>
               <div>
                 <h3 className="font-medium text-white">Notificação por E-mail</h3>
@@ -90,8 +90,8 @@ export default function OnboardingCompletion() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-[var(--pagsmile-green)]/20">
-                <Shield className="w-5 h-5 text-[var(--pagsmile-green)]" />
+              <div className="p-2 rounded-lg bg-[var(--pinbank-blue)]/20">
+                <Shield className="w-5 h-5 text-[var(--pinbank-blue)]" />
               </div>
               <div>
                 <h3 className="font-medium text-white">Prazo Estimado</h3>
@@ -139,7 +139,7 @@ export default function OnboardingCompletion() {
         <div className="mt-12">
           <img 
             src="https://pagsmile.com/images/header/pagsmile_logo.svg" 
-            alt="Pagsmile" 
+            alt="Pin Bank" 
             className="h-8 mx-auto opacity-50"
           />
         </div>

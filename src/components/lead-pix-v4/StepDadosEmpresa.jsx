@@ -74,8 +74,8 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-bold text-[#002443]">Dados da Empresa</h2>
-      <p className="text-xs text-[#002443]/50">Digite o CNPJ para preenchimento automático via Big Data Corp.</p>
+      <h2 className="text-lg font-bold text-[#0A0A0A]">Dados da Empresa</h2>
+      <p className="text-xs text-[#0A0A0A]/50">Digite o CNPJ para preenchimento automático via Big Data Corp.</p>
 
       {/* CNPJ */}
       <div className="space-y-1">
@@ -88,7 +88,7 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
             className={`h-12 rounded-xl font-mono ${errors?.cnpj ? 'border-red-400' : ''}`}
             maxLength={18}
           />
-          {isLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
+          {isLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />}
           {cnpjData && !isLoading && <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
         </div>
         {errors?.cnpj && <p className="text-xs text-red-500">CNPJ válido é obrigatório</p>}
@@ -97,9 +97,9 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
 
       {/* BDC Activity Banner */}
       {ai && (
-        <div className="p-3 rounded-xl bg-[#002443]/5 border border-[#002443]/10 flex items-center gap-3 flex-wrap">
-          <Shield className="w-4 h-4 text-[#002443]/40 shrink-0" />
-          <span className="text-[10px] font-bold text-[#002443]/50 uppercase">BDC Verified</span>
+        <div className="p-3 rounded-xl bg-[#0A0A0A]/5 border border-[#0A0A0A]/10 flex items-center gap-3 flex-wrap">
+          <Shield className="w-4 h-4 text-[#0A0A0A]/40 shrink-0" />
+          <span className="text-[10px] font-bold text-[#0A0A0A]/50 uppercase">BDC Verified</span>
           {ai.activityLevel != null && (
             <Badge variant="outline" className={`text-[10px] ${ai.activityLevel >= 0.3 ? 'border-emerald-300 text-emerald-700' : 'border-red-300 text-red-700'}`}>
               Atividade: {(ai.activityLevel * 100).toFixed(0)}%
@@ -139,7 +139,7 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
           className={`h-12 rounded-xl ${errors?.nomeFantasia ? 'border-red-400' : ''}`}
         />
         {errors?.nomeFantasia && <p className="text-xs text-red-500">Campo obrigatório</p>}
-        <p className="text-[10px] text-[#002443]/40 mt-0.5">Nome que aparece para quem paga via PIX</p>
+        <p className="text-[10px] text-[#0A0A0A]/40 mt-0.5">Nome que aparece para quem paga via PIX</p>
       </div>
 
       {/* Presença Digital */}

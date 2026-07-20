@@ -21,10 +21,10 @@ export default function ComplianceCaseFilters({
   const hasActiveFilters = statusFilter !== 'all' || merchantTypeFilter !== 'all' || scoreFilter !== 'all' || dateFilter !== 'all' || analystFilter !== 'all' || priorityFilter !== 'all' || modelFilter !== 'all';
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4 sticky top-0 z-10">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4 sticky top-0 z-10">
       <div className="flex flex-col md:flex-row gap-4 justify-between">
         <div className="flex gap-2 flex-wrap items-center">
-          <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+          <Filter className="w-4 h-4 text-[var(--pinbank-blue)]/50" />
           
           <Select value={modelFilter} onValueChange={onModelFilterChange}>
             <SelectTrigger className="w-44"><SelectValue placeholder="Modelo" /></SelectTrigger>
@@ -103,14 +103,14 @@ export default function ComplianceCaseFilters({
           </Select>
 
           {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={onClearFilters} className="text-[var(--pagsmile-blue)]/70">
+            <Button variant="ghost" size="sm" onClick={onClearFilters} className="text-[var(--pinbank-blue)]/70">
               Limpar filtros
             </Button>
           )}
         </div>
         
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/50" />
           <Input
             placeholder="Buscar por nome, CPF/CNPJ, e-mail ou ID..."
             value={searchTerm}

@@ -180,8 +180,8 @@ export default function BulkReprocess() {
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#002443]">Reprocessamento de Compliance</h1>
-        <p className="text-sm text-[#002443]/60 mt-1">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Reprocessamento de Compliance</h1>
+        <p className="text-sm text-[#0A0A0A]/60 mt-1">
           Selecione os casos para limpar e reprocessar pelo pipeline V5 completo (BDC → CAF → SENTINEL).
         </p>
       </div>
@@ -189,15 +189,15 @@ export default function BulkReprocess() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Total', value: cases.length, color: 'text-[#002443]' },
+          { label: 'Total', value: cases.length, color: 'text-[#0A0A0A]' },
           { label: 'Processados', value: cases.filter(c => c.validationsDone).length, color: 'text-green-600' },
           { label: 'Pendentes', value: cases.filter(c => !c.validationsDone).length, color: 'text-amber-600' },
-          { label: 'Selecionados', value: selectedIds.length, color: 'text-[#2bc196]' },
+          { label: 'Selecionados', value: selectedIds.length, color: 'text-[#1356E2]' },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="pt-4 pb-3 text-center">
               <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
-              <div className="text-xs text-[#002443]/50 mt-0.5">{s.label}</div>
+              <div className="text-xs text-[#0A0A0A]/50 mt-0.5">{s.label}</div>
             </CardContent>
           </Card>
         ))}
@@ -209,7 +209,7 @@ export default function BulkReprocess() {
           {/* Filters */}
           <div className="flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px] max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
               <Input
                 placeholder="Buscar merchant, CNPJ ou case ID..."
                 value={search}
@@ -219,7 +219,7 @@ export default function BulkReprocess() {
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[180px]">
-                <Filter className="w-3.5 h-3.5 mr-1.5 text-[#002443]/40" />
+                <Filter className="w-3.5 h-3.5 mr-1.5 text-[#0A0A0A]/40" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -256,7 +256,7 @@ export default function BulkReprocess() {
             <Button
               onClick={handleReprocess}
               disabled={selectedIds.length === 0 || isProcessing || phase === 'cleaning'}
-              className="gap-2 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+              className="gap-2 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
             >
               <Play className="w-4 h-4" />
               Reprocessar Pipeline V5 ({selectedIds.length})
@@ -291,7 +291,7 @@ export default function BulkReprocess() {
             <CardTitle className="text-lg flex items-center justify-between">
               <span>Fila de Processamento</span>
               {phase === 'done' && (
-                <span className="text-sm font-normal text-[#002443]/60">
+                <span className="text-sm font-normal text-[#0A0A0A]/60">
                   {queueSuccessCount} sucesso · {queueFailCount} falhas
                 </span>
               )}
@@ -314,7 +314,7 @@ export default function BulkReprocess() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+              <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
             </div>
           ) : (
             <CaseSelectionTable

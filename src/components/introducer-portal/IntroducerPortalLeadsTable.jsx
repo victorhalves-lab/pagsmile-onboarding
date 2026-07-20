@@ -63,7 +63,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -87,7 +87,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -105,7 +105,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
-                    <p className="text-[#002443]/50">{t('idash.no_leads')}</p>
+                    <p className="text-[#0A0A0A]/50">{t('idash.no_leads')}</p>
                   </TableCell>
                 </TableRow>
               ) : filtered.map(lead => {
@@ -114,7 +114,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
                   <TableRow key={lead.id} className="hover:bg-[#f4f4f4] transition-colors">
                     <TableCell>
                       <p className="font-semibold text-sm">{lead.fullName}</p>
-                      <p className="text-[10px] text-[#002443]/40">{lead.email}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/40">{lead.email}</p>
                     </TableCell>
                     <TableCell><span className="text-sm">{lead.companyName || '-'}</span></TableCell>
                     <TableCell>
@@ -134,7 +134,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
                         }`}>
                           <Star className="w-3 h-3" /> {lead.leadQualifierScore}
                         </span>
-                      ) : <span className="text-xs text-[#002443]/30">-</span>}
+                      ) : <span className="text-xs text-[#0A0A0A]/30">-</span>}
                     </TableCell>
                     <TableCell className="text-right">
                       <span className="font-mono text-sm">
@@ -142,7 +142,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-xs text-[#002443]/50">
+                      <span className="text-xs text-[#0A0A0A]/50">
                         {lead.created_date ? moment(lead.created_date).format('DD/MM/YY') : '-'}
                       </span>
                     </TableCell>
@@ -153,7 +153,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
           </Table>
         </div>
       </div>
-      <p className="text-[10px] text-[#002443]/30 text-right">{t('idash.leads_count', { filtered: filtered.length, total: leads.length })}</p>
+      <p className="text-[10px] text-[#0A0A0A]/30 text-right">{t('idash.leads_count', { filtered: filtered.length, total: leads.length })}</p>
     </div>
   );
 }

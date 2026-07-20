@@ -193,8 +193,8 @@ export default function Cadastro() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Cadastro de Clientes</h1>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">Visão unificada de todos os sellers e subsellers</p>
+          <h1 className="text-2xl font-bold text-[var(--pinbank-blue)]">Cadastro de Clientes</h1>
+          <p className="text-sm text-[var(--pinbank-blue)]/60 mt-1">Visão unificada de todos os sellers e subsellers</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {totalDuplicates > 0 && (
@@ -207,7 +207,7 @@ export default function Cadastro() {
               Mesclar Duplicatas ({totalDuplicates})
             </Button>
           )}
-          <Button onClick={() => setExportOpen(true)} variant="outline" className="gap-2 border-[var(--pagsmile-green)]/30 text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5">
+          <Button onClick={() => setExportOpen(true)} variant="outline" className="gap-2 border-[var(--pinbank-blue)]/30 text-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/5">
             <Download className="w-4 h-4" /> Exportar CSV
           </Button>
         </div>
@@ -230,7 +230,7 @@ export default function Cadastro() {
 
       {/* View Tabs */}
       <Tabs value={viewMode} onValueChange={setViewMode}>
-        <TabsList className="bg-white border border-[var(--pagsmile-blue)]/8">
+        <TabsList className="bg-white border border-[var(--pinbank-blue)]/8">
           <TabsTrigger value="list" className="gap-1.5 text-xs"><List className="w-3.5 h-3.5" />Lista</TabsTrigger>
           <TabsTrigger value="dashboard" className="gap-1.5 text-xs"><BarChart3 className="w-3.5 h-3.5" />Dashboard</TabsTrigger>
         </TabsList>
@@ -251,7 +251,7 @@ export default function Cadastro() {
           {/* Filtros */}
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
               <Input
                 placeholder="Buscar por nome, CNPJ, e-mail..."
                 value={search}
@@ -300,7 +300,7 @@ export default function Cadastro() {
           {/* Lista enriquecida */}
           <div className="space-y-2 mt-4">
             {filtered.length === 0 && (
-              <div className="text-center py-16 text-[var(--pagsmile-blue)]/50">
+              <div className="text-center py-16 text-[var(--pinbank-blue)]/50">
                 <Building2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
                 <p>Nenhum seller encontrado</p>
               </div>
@@ -339,13 +339,13 @@ export default function Cadastro() {
 
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-4 flex items-center gap-3">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-4 flex items-center gap-3">
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${bg}`}>
         <Icon className={`w-5 h-5 ${color}`} />
       </div>
       <div>
-        <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{value}</p>
-        <p className="text-xs text-[var(--pagsmile-blue)]/50">{label}</p>
+        <p className="text-2xl font-bold text-[var(--pinbank-blue)]">{value}</p>
+        <p className="text-xs text-[var(--pinbank-blue)]/50">{label}</p>
       </div>
     </div>
   );

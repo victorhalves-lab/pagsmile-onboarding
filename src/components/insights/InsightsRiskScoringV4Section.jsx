@@ -141,9 +141,9 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases, 
   if (!stats || stats.total === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Shield className="w-12 h-12 text-[#002443]/20 mb-4" />
-        <p className="text-sm font-semibold text-[#002443]/50">Nenhum score encontrado</p>
-        <p className="text-xs text-[#002443]/30 mt-1">Casos processados com o motor de risco aparecerão aqui</p>
+        <Shield className="w-12 h-12 text-[#0A0A0A]/20 mb-4" />
+        <p className="text-sm font-semibold text-[#0A0A0A]/50">Nenhum score encontrado</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">Casos processados com o motor de risco aparecerão aqui</p>
       </div>
     );
   }
@@ -152,10 +152,10 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases, 
     <div className="space-y-6">
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <StatCard label="Total Scores" value={stats.total} icon={Shield} color="#002443" />
+        <StatCard label="Total Scores" value={stats.total} icon={Shield} color="#0A0A0A" />
         <StatCard label="Score Médio" value={stats.avgScore} suffix="/1000" icon={Gauge} color={stats.avgScore < 300 ? '#22c55e' : stats.avgScore < 600 ? '#eab308' : '#ef4444'} />
         <StatCard label="Rolling Reserve Médio" value={`${stats.avgRR}%`} icon={Lock} color="#f97316" />
-        <StatCard label="Decisão Automática" value={stats.autoCount} suffix={`/${stats.total}`} icon={TrendingUp} color="#2bc196" />
+        <StatCard label="Decisão Automática" value={stats.autoCount} suffix={`/${stats.total}`} icon={TrendingUp} color="#1356E2" />
         <StatCard label="Fluxo PIX" value={stats.pixCount} icon={Activity} color="#3b82f6" />
         <StatCard label="Bloqueios Ativos" value={stats.topBlocks.reduce((a, b) => a + b.count, 0)} icon={AlertTriangle} color="#ef4444" />
       </div>
@@ -196,16 +196,16 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases, 
               { label: 'C3 - Enriquecimento (E01-E11)', value: stats.avgC3, color: '#8b5cf6', desc: 'Dados externos enriquecidos' },
             ].map((c, i) => (
               <div key={i} className="bg-slate-50 rounded-xl p-4 text-center border border-slate-100">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40 mb-1">{c.label}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-1">{c.label}</p>
                 <p className="text-3xl font-extrabold" style={{ color: c.color }}>{c.value}</p>
-                <p className="text-[10px] text-[#002443]/40 mt-1">{c.desc}</p>
+                <p className="text-[10px] text-[#0A0A0A]/40 mt-1">{c.desc}</p>
               </div>
             ))}
           </div>
           <div className="mt-4 bg-slate-50 rounded-xl p-3 border border-slate-100">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-[#002443]/70">Score Final Médio = C1 + C2 + C3</span>
-              <Badge className="bg-[#002443] text-white border-0 text-sm font-bold">{stats.avgScore} / 1000</Badge>
+              <span className="font-semibold text-[#0A0A0A]/70">Score Final Médio = C1 + C2 + C3</span>
+              <Badge className="bg-[#0A0A0A] text-white border-0 text-sm font-bold">{stats.avgScore} / 1000</Badge>
             </div>
             <div className="mt-2 h-3 rounded-full bg-slate-200 overflow-hidden flex">
               <div className="h-full bg-blue-500" style={{ width: `${(stats.avgC1 / Math.max(stats.avgScore, 1)) * 100}%` }} />
@@ -265,12 +265,12 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases, 
           </CardHeader>
           <CardContent>
             {stats.topBlocks.length === 0 ? (
-              <p className="text-xs text-[#002443]/40 text-center py-8">Nenhum bloqueio ativo registrado</p>
+              <p className="text-xs text-[#0A0A0A]/40 text-center py-8">Nenhum bloqueio ativo registrado</p>
             ) : (
               <div className="space-y-2">
                 {stats.topBlocks.map((b, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono text-[#002443]/60 w-[200px] truncate">{b.name}</span>
+                    <span className="text-[10px] font-mono text-[#0A0A0A]/60 w-[200px] truncate">{b.name}</span>
                     <div className="flex-1 h-5 bg-red-50 rounded-full overflow-hidden">
                       <div className="h-full bg-red-500 rounded-full" style={{ width: `${Math.min(100, (b.count / (stats.topBlocks[0]?.count || 1)) * 100)}%` }} />
                     </div>
@@ -290,11 +290,11 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases, 
             <div className="space-y-2">
               {stats.segData.map((s, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <span className="text-[10px] font-semibold text-[#002443]/60 w-[140px] truncate capitalize">{s.name.replace(/_/g, ' ')}</span>
-                  <div className="flex-1 h-5 bg-[#2bc196]/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#2bc196] rounded-full" style={{ width: `${Math.min(100, (s.count / (stats.segData[0]?.count || 1)) * 100)}%` }} />
+                  <span className="text-[10px] font-semibold text-[#0A0A0A]/60 w-[140px] truncate capitalize">{s.name.replace(/_/g, ' ')}</span>
+                  <div className="flex-1 h-5 bg-[#1356E2]/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#1356E2] rounded-full" style={{ width: `${Math.min(100, (s.count / (stats.segData[0]?.count || 1)) * 100)}%` }} />
                   </div>
-                  <span className="text-xs font-bold text-[#002443] w-8 text-right">{s.count}</span>
+                  <span className="text-xs font-bold text-[#0A0A0A] w-8 text-right">{s.count}</span>
                 </div>
               ))}
             </div>
@@ -309,7 +309,7 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases, 
         </CardHeader>
         <CardContent>
           {stats.topVars.length === 0 ? (
-            <p className="text-xs text-[#002443]/40 text-center py-8">Nenhuma variável registrada</p>
+            <p className="text-xs text-[#0A0A0A]/40 text-center py-8">Nenhuma variável registrada</p>
           ) : (
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={stats.topVars} layout="vertical" margin={{ left: 100 }}>
@@ -337,7 +337,7 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases, 
               {stats.topConditions.map((c, i) => (
                 <div key={i} className="flex items-center gap-3 bg-amber-50 rounded-lg p-3 border border-amber-100">
                   <Badge className="bg-amber-500 text-white border-0 text-[10px] font-bold">{c.count}×</Badge>
-                  <span className="text-xs text-[#002443]/70">{c.name}</span>
+                  <span className="text-xs text-[#0A0A0A]/70">{c.name}</span>
                 </div>
               ))}
             </div>

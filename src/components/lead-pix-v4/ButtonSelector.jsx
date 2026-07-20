@@ -25,8 +25,8 @@ export default function ButtonSelector({ options, value, onChange, multi = false
             onClick={() => handleClick(label)}
             className={`px-3 py-2.5 rounded-xl text-xs font-medium border-2 transition-all text-left
               ${isSelected
-                ? 'border-[#2bc196] bg-[#2bc196]/10 text-[#002443] ring-1 ring-[#2bc196]/30'
-                : 'border-[#002443]/10 bg-white text-[#002443]/70 hover:border-[#2bc196]/40'
+                ? 'border-[#1356E2] bg-[#1356E2]/10 text-[#0A0A0A] ring-1 ring-[#1356E2]/30'
+                : 'border-[#0A0A0A]/10 bg-white text-[#0A0A0A]/70 hover:border-[#1356E2]/40'
               }`}
           >
             {label}

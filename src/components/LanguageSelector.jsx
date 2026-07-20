@@ -31,7 +31,7 @@ export default function LanguageSelector({ variant = 'default' }) {
             <DropdownMenuItem
               key={lang.code}
               onClick={() => changeLanguage(lang.code)}
-              className={`gap-2 text-xs cursor-pointer ${language === lang.code ? 'font-bold bg-[#2bc196]/10' : ''}`}
+              className={`gap-2 text-xs cursor-pointer ${language === lang.code ? 'font-bold bg-[#1356E2]/10' : ''}`}
             >
               <span className="text-base">{lang.flag}</span>
               <span>{lang.short}</span>
@@ -57,7 +57,7 @@ export default function LanguageSelector({ variant = 'default' }) {
             <DropdownMenuItem
               key={lang.code}
               onClick={() => changeLanguage(lang.code)}
-              className={`gap-2 text-xs cursor-pointer ${language === lang.code ? 'font-bold bg-[#2bc196]/10' : ''}`}
+              className={`gap-2 text-xs cursor-pointer ${language === lang.code ? 'font-bold bg-[#1356E2]/10' : ''}`}
             >
               <span className="text-base">{lang.flag}</span>
               <span>{lang.short}</span>
@@ -74,7 +74,7 @@ export default function LanguageSelector({ variant = 'default' }) {
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/80 backdrop-blur-sm border border-slate-200 hover:bg-white transition-all duration-150">
           <span className="text-base leading-none">{current.flag}</span>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/70">{current.short}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/70">{current.short}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-[130px]">
@@ -82,7 +82,7 @@ export default function LanguageSelector({ variant = 'default' }) {
           <DropdownMenuItem
             key={lang.code}
             onClick={() => changeLanguage(lang.code)}
-            className={`gap-2 text-xs cursor-pointer ${language === lang.code ? 'font-bold bg-[#2bc196]/10' : ''}`}
+            className={`gap-2 text-xs cursor-pointer ${language === lang.code ? 'font-bold bg-[#1356E2]/10' : ''}`}
           >
             <span className="text-base">{lang.flag}</span>
             <span>{lang.short}</span>

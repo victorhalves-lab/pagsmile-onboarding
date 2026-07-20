@@ -107,7 +107,7 @@ function buildPrefillMap(lead, leadQuestions) {
   add('expectativa de crescimento', lead.expectativaCrescimento, 'Lead.expectativaCrescimento');
 
   // =====================================================
-  // 2b. CAMPOS DO LEAD v5 (questionário Pagsmile)
+  // 2b. CAMPOS DO LEAD v5 (questionário Pin Bank)
   //     Campos do questionnaireData com chaves diretas
   // =====================================================
   if (qd.descricaoNegocio) {

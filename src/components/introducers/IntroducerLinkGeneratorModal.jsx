@@ -45,8 +45,8 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
     if (!template) return 'QuestionarioLeadsPagsmile';
     // Use EXACT model match — templates hardcoded no frontend precisam de rota específica
     const model = template.model || '';
-    // Pagsmile V5 — hardcoded em QuestionarioLeadsPagsmile (não usa entidade Question)
-    if (model === 'LEAD_PAGSMILE_V5') return 'QuestionarioLeadsPagsmile';
+    // Pin Bank V5 — hardcoded em QuestionarioLeadsPagsmile (não usa entidade Question)
+    if (model === 'LEAD_PIN_BANK_V5') return 'QuestionarioLeadsPagsmile';
     // PIX V4 — hardcoded em LeadPixV4 (não usa entidade Question)
     if (model === 'LEAD_PIX_V4') return 'LeadPixV4';
     // Legados genéricos baseados em entidade Question
@@ -122,7 +122,7 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-[#2bc196]" />
+            <UserPlus className="w-5 h-5 text-[#1356E2]" />
             Gerar Link por Introducer
           </DialogTitle>
           <DialogDescription>
@@ -168,7 +168,7 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
                   {leadTemplates.map(t => (
                     <SelectItem key={t.id} value={t.id}>
                       <span className="flex items-center gap-2">
-                        {(t.model || '').toLowerCase().includes('pix') ? <Zap className="w-3 h-3 text-[#2bc196]" /> : <Briefcase className="w-3 h-3 text-[#002443]" />}
+                        {(t.model || '').toLowerCase().includes('pix') ? <Zap className="w-3 h-3 text-[#1356E2]" /> : <Briefcase className="w-3 h-3 text-[#0A0A0A]" />}
                         {t.name}
                       </span>
                     </SelectItem>
@@ -196,18 +196,18 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
 
           {/* UTM Source preview */}
           {selectedIntroducer && (
-            <div className="bg-[#f4f4f4] p-3 rounded-xl border border-[#002443]/5 text-xs space-y-1">
-              <p className="font-semibold text-[#002443]">UTM Source (automático):</p>
-              <code className="text-[#2bc196] font-mono">{selectedIntroducer.referralCode}</code>
+            <div className="bg-[#f4f4f4] p-3 rounded-xl border border-[#0A0A0A]/5 text-xs space-y-1">
+              <p className="font-semibold text-[#0A0A0A]">UTM Source (automático):</p>
+              <code className="text-[#1356E2] font-mono">{selectedIntroducer.referralCode}</code>
             </div>
           )}
 
           {/* Generated Link */}
           {generatedLink ? (
-            <div className="space-y-2 pt-2 border-t border-[#002443]/5">
+            <div className="space-y-2 pt-2 border-t border-[#0A0A0A]/5">
               <Label className="text-xs text-green-600 font-bold">Link Gerado:</Label>
               <div className="flex gap-2">
-                <Input readOnly value={generatedLink} className="font-mono text-xs bg-[#5cf7cf]/10 border-[#2bc196]/30 rounded-lg" />
+                <Input readOnly value={generatedLink} className="font-mono text-xs bg-[#E84B1C]/10 border-[#1356E2]/30 rounded-lg" />
                 <Button size="sm" onClick={handleCopy} className={copied ? 'bg-green-600' : ''}>
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
@@ -218,7 +218,7 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
             </div>
           ) : (
             <Button
-              className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+              className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
               onClick={() => createMutation.mutate()}
               disabled={!selectedIntroducerId || !selectedTemplateId || createMutation.isPending}
             >

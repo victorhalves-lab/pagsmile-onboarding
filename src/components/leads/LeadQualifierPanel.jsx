@@ -69,17 +69,17 @@ function DimensionCard({ name, data }) {
   };
 
   return (
-    <div className="p-4 rounded-xl border border-[#002443]/5 bg-[#f4f4f4]/50">
+    <div className="p-4 rounded-xl border border-[#0A0A0A]/5 bg-[#f4f4f4]/50">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-[#002443]/50" />
+          <Icon className="w-4 h-4 text-[#0A0A0A]/50" />
           <span className="text-sm font-medium">{label}</span>
         </div>
         <span className={`text-lg font-bold ${getColor(pct)}`}>{score}/{max}</span>
       </div>
       <Progress value={pct} className={`h-2 ${getProgressColor(pct)}`} />
       {data?.detalhes && (
-        <p className="text-xs text-[#002443]/60 mt-2 leading-relaxed">{data.detalhes}</p>
+        <p className="text-xs text-[#0A0A0A]/60 mt-2 leading-relaxed">{data.detalhes}</p>
       )}
       {data?.camposFaltantes?.length > 0 && (
         <div className="mt-2">
@@ -148,18 +148,18 @@ export default function LeadQualifierPanel({ lead }) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Brain className="w-5 h-5 text-[#2bc196]" />
+            <Brain className="w-5 h-5 text-[#1356E2]" />
             Lead Qualifier IA
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <Brain className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-            <p className="text-[#002443]/60 mb-4">Análise Lead Qualifier ainda não realizada</p>
+            <Brain className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-3" />
+            <p className="text-[#0A0A0A]/60 mb-4">Análise Lead Qualifier ainda não realizada</p>
             <Button
               onClick={() => analyzeMutation.mutate()}
               disabled={analyzeMutation.isPending}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
             >
               {analyzeMutation.isPending ? (
                 <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Analisando...</>
@@ -180,12 +180,12 @@ export default function LeadQualifierPanel({ lead }) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Brain className="w-5 h-5 text-[#2bc196]" />
+            <Brain className="w-5 h-5 text-[#1356E2]" />
             Lead Qualifier IA
           </CardTitle>
           <div className="flex items-center gap-2">
             {lead.leadQualifierDate && (
-              <span className="text-[10px] text-[#002443]/40">
+              <span className="text-[10px] text-[#0A0A0A]/40">
                 {moment(lead.leadQualifierDate).format('DD/MM/YY HH:mm')}
               </span>
             )}
@@ -203,7 +203,7 @@ export default function LeadQualifierPanel({ lead }) {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Score Header */}
-        <div className="flex items-center gap-6 p-4 rounded-xl bg-gradient-to-r from-[#002443] to-[#36706c]">
+        <div className="flex items-center gap-6 p-4 rounded-xl bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C]">
           <div className="text-center">
             <p className="text-4xl font-bold text-white">{score}</p>
             <p className="text-xs text-white/50">/100</p>
@@ -259,9 +259,9 @@ export default function LeadQualifierPanel({ lead }) {
 
         {/* Recomendação Comercial */}
         {report.recomendacaoComercial && (
-          <div className="p-4 rounded-xl bg-[#2bc196]/5 border border-[#2bc196]/20">
-            <h4 className="text-sm font-semibold text-[#002443] mb-2 flex items-center gap-1"><Target className="w-4 h-4 text-[#2bc196]" /> Recomendação Comercial</h4>
-            <p className="text-sm text-[#002443]/80 leading-relaxed">{report.recomendacaoComercial}</p>
+          <div className="p-4 rounded-xl bg-[#1356E2]/5 border border-[#1356E2]/20">
+            <h4 className="text-sm font-semibold text-[#0A0A0A] mb-2 flex items-center gap-1"><Target className="w-4 h-4 text-[#1356E2]" /> Recomendação Comercial</h4>
+            <p className="text-sm text-[#0A0A0A]/80 leading-relaxed">{report.recomendacaoComercial}</p>
           </div>
         )}
 
@@ -271,7 +271,7 @@ export default function LeadQualifierPanel({ lead }) {
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-1"><HelpCircle className="w-4 h-4 text-blue-500" /> Perguntas Sugeridas para o Comercial</h4>
             <ol className="space-y-1.5 list-decimal list-inside">
               {report.perguntasSugeridas.map((p, i) => (
-                <li key={i} className="text-sm text-[#002443]/80">{p}</li>
+                <li key={i} className="text-sm text-[#0A0A0A]/80">{p}</li>
               ))}
             </ol>
           </div>

@@ -25,7 +25,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import LeadQualifierBadge from './LeadQualifierBadge';
 import ReassignComplianceModal from './ReassignComplianceModal';
-import PagsmileV5ResponsesModal from './PagsmileV5ResponsesModal';
+import PinBankV5ResponsesModal from './PinBankV5ResponsesModal';
 
 const SUB_CAT = { MERCHAN: { label: 'Merchan', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
 
@@ -93,13 +93,13 @@ export default function IntroducerLeadsTab() {
 
   React.useEffect(() => { setPage(1); }, [search, introducerFilter]);
 
-  if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+  if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>;
 
   if (introducerLeads.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-        <UserPlus className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-[#002443]/50 font-medium">Nenhum lead via Introducer ainda</p>
+        <UserPlus className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-3" />
+        <p className="text-[#0A0A0A]/50 font-medium">Nenhum lead via Introducer ainda</p>
       </div>
     );
   }
@@ -113,7 +113,7 @@ export default function IntroducerLeadsTab() {
 
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por CNPJ, empresa, introducer..." className="pl-10 h-10" />
         </div>
         <Select value={introducerFilter} onValueChange={setIntroducerFilter}>
@@ -132,7 +132,7 @@ export default function IntroducerLeadsTab() {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -152,8 +152,8 @@ export default function IntroducerLeadsTab() {
               {paginated.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center py-12">
-                    <UserPlus className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-                    <p className="text-[#002443]/40">Nenhum resultado</p>
+                    <UserPlus className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-3" />
+                    <p className="text-[#0A0A0A]/40">Nenhum resultado</p>
                   </TableCell>
                 </TableRow>
               ) : paginated.map(record => {
@@ -162,17 +162,17 @@ export default function IntroducerLeadsTab() {
                 const sCfg = STATUS_CONFIG[record.status] || STATUS_CONFIG.novo;
                 return (
                   <TableRow key={record.id} className="hover:bg-[#f4f4f4]">
-                    <TableCell><span className="font-mono text-xs text-[#2bc196]">{record.protocolo || '-'}</span></TableCell>
+                    <TableCell><span className="font-mono text-xs text-[#1356E2]">{record.protocolo || '-'}</span></TableCell>
                     <TableCell>
                       <p className="font-medium text-sm">{record.fullName || record.email}</p>
-                      <p className="text-[10px] text-[#002443]/50">{record.cpfCnpj}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50">{record.cpfCnpj}</p>
                     </TableCell>
                     <TableCell>
                       <Badge className="bg-purple-100 text-purple-700 text-xs border-0 gap-1">
                         <UserPlus className="w-3 h-3" />
                         {record.introducerName}
                       </Badge>
-                      <p className="text-[10px] text-[#002443]/40 mt-0.5">{record.introducerReferralCode}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/40 mt-0.5">{record.introducerReferralCode}</p>
                     </TableCell>
                     <TableCell>
                       {sc && <div className="flex items-center gap-1"><ScIcon className="w-3 h-3" /><span className="text-xs">{sc.label}</span></div>}
@@ -180,7 +180,7 @@ export default function IntroducerLeadsTab() {
                     <TableCell><Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge></TableCell>
                     <TableCell><LeadQualifierBadge lead={record} size="xs" /></TableCell>
                     <TableCell><span className="text-sm font-mono">{record.tpvMensal ? `R$ ${record.tpvMensal.toLocaleString('pt-BR')}` : '-'}</span></TableCell>
-                    <TableCell><span className="text-xs text-[#002443]/60">{record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}</span></TableCell>
+                    <TableCell><span className="text-xs text-[#0A0A0A]/60">{record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}</span></TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         {record.questionnaireData && (
@@ -213,9 +213,9 @@ export default function IntroducerLeadsTab() {
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#0A0A0A]/5">
             <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
-            <span className="text-xs text-[#002443]/60">Página {page} de {totalPages}</span>
+            <span className="text-xs text-[#0A0A0A]/60">Página {page} de {totalPages}</span>
             <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
           </div>
         )}
@@ -241,7 +241,7 @@ export default function IntroducerLeadsTab() {
         entityName="IntroducerLead"
         invalidateKeys={[['introducer-leads']]}
       />
-      <PagsmileV5ResponsesModal
+      <PinBankV5ResponsesModal
         open={!!responsesRecord}
         onClose={() => setResponsesRecord(null)}
         lead={responsesRecord}

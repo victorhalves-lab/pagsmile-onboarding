@@ -10,7 +10,7 @@ export default function ProgressBar({ currentStep, totalSteps }) {
         <span className="text-slate-600">
           Etapa {currentStep} de {totalSteps}
         </span>
-        <span className="font-medium text-[var(--pagsmile-green)]">
+        <span className="font-medium text-[var(--pinbank-blue)]">
           {percentage}%
         </span>
       </div>

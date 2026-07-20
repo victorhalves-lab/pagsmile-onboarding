@@ -29,9 +29,9 @@ export default function PhaseProgressBar({ current = 'questionnaire', showCaf = 
                 <div
                   className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                     isDone
-                      ? 'bg-[#2bc196] text-white'
+                      ? 'bg-[#1356E2] text-white'
                       : isActive
-                      ? 'bg-[#002443] text-white ring-4 ring-[#002443]/15'
+                      ? 'bg-[#0A0A0A] text-white ring-4 ring-[#0A0A0A]/15'
                       : 'bg-slate-100 text-slate-400'
                   }`}
                 >
@@ -39,7 +39,7 @@ export default function PhaseProgressBar({ current = 'questionnaire', showCaf = 
                 </div>
                 <span
                   className={`text-[10px] md:text-xs font-semibold text-center truncate w-full ${
-                    isActive ? 'text-[#002443]' : isDone ? 'text-[#2bc196]' : 'text-slate-400'
+                    isActive ? 'text-[#0A0A0A]' : isDone ? 'text-[#1356E2]' : 'text-slate-400'
                   }`}
                 >
                   {phase.label}
@@ -47,7 +47,7 @@ export default function PhaseProgressBar({ current = 'questionnaire', showCaf = 
               </div>
               {idx < visiblePhases.length - 1 && (
                 <div className={`flex-1 h-1 rounded-full transition-all ${
-                  isDone ? 'bg-[#2bc196]' : 'bg-slate-200'
+                  isDone ? 'bg-[#1356E2]' : 'bg-slate-200'
                 }`} style={{ maxWidth: 80 }} />
               )}
             </React.Fragment>

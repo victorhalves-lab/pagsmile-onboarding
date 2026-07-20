@@ -13,8 +13,8 @@ export default function QuestionnairePreview({ template, questions }) {
   if (!template?.name && questions.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-dashed border-slate-300 p-8 text-center">
-        <Eye className="w-8 h-8 mx-auto text-[var(--pagsmile-blue)]/30 mb-2" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Adicione perguntas para ver a pré-visualização</p>
+        <Eye className="w-8 h-8 mx-auto text-[var(--pinbank-blue)]/30 mb-2" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Adicione perguntas para ver a pré-visualização</p>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export default function QuestionnairePreview({ template, questions }) {
       case 'BOOLEAN': return (
         <div className="flex items-center gap-3">
           <Switch disabled />
-          <span className="text-sm text-[var(--pagsmile-blue)]/50">Sim / Não</span>
+          <span className="text-sm text-[var(--pinbank-blue)]/50">Sim / Não</span>
         </div>
       );
       case 'SELECT': return (
@@ -49,7 +49,7 @@ export default function QuestionnairePreview({ template, questions }) {
         </div>
       );
       case 'FILE_UPLOAD': return (
-        <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center text-sm text-[var(--pagsmile-blue)]/40">
+        <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center text-sm text-[var(--pinbank-blue)]/40">
           Arraste um arquivo ou clique para enviar
         </div>
       );
@@ -59,7 +59,7 @@ export default function QuestionnairePreview({ template, questions }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-t-xl p-4 text-center">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-t-xl p-4 text-center">
         <h3 className="text-white font-bold text-sm">{template?.name || 'Questionário'}</h3>
         {template?.description && <p className="text-white/60 text-xs mt-1">{template.description}</p>}
       </div>
@@ -69,14 +69,14 @@ export default function QuestionnairePreview({ template, questions }) {
           <Card key={q.id || idx} className="border-slate-200">
             <CardContent className="p-4 space-y-2">
               <div className="flex items-start gap-2">
-                <span className="text-xs font-bold text-[var(--pagsmile-blue)]/40 mt-0.5">{idx + 1}.</span>
+                <span className="text-xs font-bold text-[var(--pinbank-blue)]/40 mt-0.5">{idx + 1}.</span>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[var(--pagsmile-blue)]">
+                  <p className="text-sm font-medium text-[var(--pinbank-blue)]">
                     {q.text}
                     {q.isRequired && <span className="text-red-500 ml-1">*</span>}
                   </p>
                   {q.helpText && (
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-0.5">{q.helpText}</p>
+                    <p className="text-[10px] text-[var(--pinbank-blue)]/50 mt-0.5">{q.helpText}</p>
                   )}
                 </div>
                 {q.riskWeight > 0 && (

@@ -100,7 +100,7 @@ export default function InsightsMixSection({ leads }) {
   if (!hasData) {
     return (
       <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center mt-2">
-        <p className="text-sm text-[#002443]/50">Nenhum lead possui dados de mix de pagamento preenchidos ainda.</p>
+        <p className="text-sm text-[#0A0A0A]/50">Nenhum lead possui dados de mix de pagamento preenchidos ainda.</p>
       </div>
     );
   }
@@ -115,9 +115,9 @@ export default function InsightsMixSection({ leads }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {tpvMixData.length > 0 && <DonutChart title="Mix TPV (Mediana %)" data={tpvMixData} colorMap={{ Cartão: '#002443', PIX: '#2bc196', Boleto: '#f59e0b' }} />}
+        {tpvMixData.length > 0 && <DonutChart title="Mix TPV (Mediana %)" data={tpvMixData} colorMap={{ Cartão: '#0A0A0A', PIX: '#1356E2', Boleto: '#f59e0b' }} />}
         {bandeiraMixData.length > 0 && <DonutChart title="Mix Bandeiras (Mediana %)" data={bandeiraMixData} colorMap={{ Visa: '#1a1f71', Mastercard: '#eb001b', 'Elo/Amex/Outras': '#94a3b8' }} />}
-        {parcMixData.length > 0 && <DonutChart title="Mix Parcelamento (Mediana %)" data={parcMixData} colorMap={{ 'À Vista (1x)': '#2bc196', '2x a 6x': '#002443', '7x a 12x': '#f59e0b' }} />}
+        {parcMixData.length > 0 && <DonutChart title="Mix Parcelamento (Mediana %)" data={parcMixData} colorMap={{ 'À Vista (1x)': '#1356E2', '2x a 6x': '#0A0A0A', '7x a 12x': '#f59e0b' }} />}
       </div>
 
       {segBarData.length > 1 && (
@@ -125,12 +125,12 @@ export default function InsightsMixSection({ leads }) {
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={segBarData} barCategoryGap="25%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} unit="%" axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} formatter={v => `${v}%`} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="Cartão" fill="#002443" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="PIX" fill="#2bc196" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="Cartão" fill="#0A0A0A" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="PIX" fill="#1356E2" radius={[8, 8, 0, 0]} />
               <Bar dataKey="Boleto" fill="#f59e0b" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

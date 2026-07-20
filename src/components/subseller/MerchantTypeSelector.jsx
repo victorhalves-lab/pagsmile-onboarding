@@ -2,8 +2,8 @@ import React from 'react';
 import { User, Building2 } from 'lucide-react';
 
 export default function MerchantTypeSelector({ onSelect, branding }) {
-  const bPrimary = branding?.primaryColor || '#2bc196';
-  const bSecondary = branding?.secondaryColor || '#002443';
+  const bPrimary = branding?.primaryColor || '#1356E2';
+  const bSecondary = branding?.secondaryColor || '#0A0A0A';
   const hasBranding = !!branding?.name;
 
   const options = [
@@ -35,7 +35,7 @@ export default function MerchantTypeSelector({ onSelect, branding }) {
         ) : (
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png"
-            alt="Pagsmile"
+            alt="Pin Bank"
             className="h-7 mx-auto mb-4"
           />
         )}

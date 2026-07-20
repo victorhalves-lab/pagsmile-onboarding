@@ -17,7 +17,7 @@ export default function CountrySelector({ value = [], onChange, lang = 'en' }) {
         const items = COUNTRIES.filter(c => c.region === region.code);
         return (
           <div key={region.code}>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-1.5">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-1.5">
               {region.label[lang] || region.label.en}
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -30,8 +30,8 @@ export default function CountrySelector({ value = [], onChange, lang = 'en' }) {
                     onClick={() => toggle(c.code)}
                     className={`text-xs px-2.5 py-1 rounded-full border transition-all flex items-center gap-1.5 ${
                       isActive
-                        ? 'bg-[#2bc196] text-white border-[#2bc196]'
-                        : 'bg-white text-[#002443]/70 border-[#002443]/10 hover:border-[#2bc196]/40'
+                        ? 'bg-[#1356E2] text-white border-[#1356E2]'
+                        : 'bg-white text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:border-[#1356E2]/40'
                     }`}
                   >
                     <span>{c.flag}</span>

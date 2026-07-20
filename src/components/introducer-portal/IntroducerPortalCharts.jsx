@@ -12,7 +12,7 @@ const STATUS_COLORS = {
   proposta_recusada: '#ef4444',
   kyc_iniciado: '#06b6d4',
   kyc_aprovado: '#10b981',
-  ativado: '#2bc196',
+  ativado: '#1356E2',
   perdido: '#94a3b8',
 };
 
@@ -70,8 +70,8 @@ export default function IntroducerPortalCharts({ leads }) {
 
   if (leads.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-2xl border border-[#002443]/5">
-        <p className="text-sm text-[#002443]/40">{t('idash.no_chart_data')}</p>
+      <div className="text-center py-12 bg-white rounded-2xl border border-[#0A0A0A]/5">
+        <p className="text-sm text-[#0A0A0A]/40">{t('idash.no_chart_data')}</p>
       </div>
     );
   }
@@ -79,8 +79,8 @@ export default function IntroducerPortalCharts({ leads }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Pie Chart - Status */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-4">
-        <h3 className="text-sm font-bold text-[#002443] mb-4">{t('idash.status_distribution')}</h3>
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
+        <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">{t('idash.status_distribution')}</h3>
         <ResponsiveContainer width="100%" height={220}>
           <PieChart>
             <Pie data={statusData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
@@ -95,15 +95,15 @@ export default function IntroducerPortalCharts({ leads }) {
       </div>
 
       {/* Bar Chart - Monthly */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-4">
-        <h3 className="text-sm font-bold text-[#002443] mb-4">{t('idash.leads_per_month')}</h3>
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
+        <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">{t('idash.leads_per_month')}</h3>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={monthlyData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="mes" tick={{ fontSize: 10, fill: '#002443' }} />
-            <YAxis tick={{ fontSize: 10, fill: '#002443' }} allowDecimals={false} />
+            <XAxis dataKey="mes" tick={{ fontSize: 10, fill: '#0A0A0A' }} />
+            <YAxis tick={{ fontSize: 10, fill: '#0A0A0A' }} allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="leads" fill="#2bc196" radius={[6, 6, 0, 0]} name="Leads" />
+            <Bar dataKey="leads" fill="#1356E2" radius={[6, 6, 0, 0]} name="Leads" />
           </BarChart>
         </ResponsiveContainer>
       </div>

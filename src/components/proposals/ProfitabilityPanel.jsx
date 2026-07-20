@@ -96,8 +96,8 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
     return (
       <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-            <TrendingUp className="w-3.5 h-3.5 text-[#2bc196]" />
+          <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+            <TrendingUp className="w-3.5 h-3.5 text-[#1356E2]" />
           </div>
           <h2 className="text-sm font-bold text-white">Rentabilidade</h2>
         </div>
@@ -108,14 +108,14 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
 
   const isPositive = profitability?.margem > 0;
   const MarginIcon = isPositive ? ArrowUpRight : profitability?.margem < 0 ? ArrowDownRight : Minus;
-  const marginColor = isPositive ? 'text-[#2bc196]' : profitability?.margem < 0 ? 'text-red-400' : 'text-white/50';
+  const marginColor = isPositive ? 'text-[#1356E2]' : profitability?.margem < 0 ? 'text-red-400' : 'text-white/50';
   const FAIXA_LABELS = { avista: '1x', de2a6x: '2-6x', de7a12x: '7-12x', de13a21x: '13-21x' };
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-          <TrendingUp className="w-3.5 h-3.5 text-[#2bc196]" />
+        <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+          <TrendingUp className="w-3.5 h-3.5 text-[#1356E2]" />
         </div>
         <h2 className="text-sm font-bold text-white">Simulação de Rentabilidade</h2>
       </div>
@@ -126,15 +126,15 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
         <>
           {/* Big Numbers */}
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-[#2bc196]/5 border border-[#2bc196]/10 rounded-xl p-3 text-center">
-              <p className="text-[8px] text-[#2bc196]/70 font-bold uppercase tracking-wider">Receita Est.</p>
-              <p className="text-sm font-bold text-[#2bc196]">{fmtBRL(profitability.receitaTotal)}</p>
+            <div className="bg-[#1356E2]/5 border border-[#1356E2]/10 rounded-xl p-3 text-center">
+              <p className="text-[8px] text-[#1356E2]/70 font-bold uppercase tracking-wider">Receita Est.</p>
+              <p className="text-sm font-bold text-[#1356E2]">{fmtBRL(profitability.receitaTotal)}</p>
             </div>
             <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-3 text-center">
               <p className="text-[8px] text-red-400/70 font-bold uppercase tracking-wider">Custo Est.</p>
               <p className="text-sm font-bold text-red-400">{fmtBRL(profitability.custoTotal)}</p>
             </div>
-            <div className={`${isPositive ? 'bg-[#2bc196]/10 border-[#2bc196]/20' : 'bg-red-500/10 border-red-500/20'} border rounded-xl p-3 text-center`}>
+            <div className={`${isPositive ? 'bg-[#1356E2]/10 border-[#1356E2]/20' : 'bg-red-500/10 border-red-500/20'} border rounded-xl p-3 text-center`}>
               <p className={`text-[8px] font-bold uppercase tracking-wider ${marginColor}/70`}>Margem</p>
               <div className="flex items-center justify-center gap-1">
                 <MarginIcon className={`w-3.5 h-3.5 ${marginColor}`} />
@@ -156,16 +156,16 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
             ].map(row => (
               <div key={row.label} className="grid grid-cols-4 items-center px-3 py-2 border-t border-white/[0.03]">
                 <div className="text-[10px] text-white/60 font-medium">{row.label}</div>
-                <div className="text-[10px] text-right text-[#2bc196] font-mono">{fmtBRL(row.receita)}</div>
+                <div className="text-[10px] text-right text-[#1356E2] font-mono">{fmtBRL(row.receita)}</div>
                 <div className="text-[10px] text-right text-red-400 font-mono">{fmtBRL(row.custo)}</div>
-                <div className={`text-[10px] text-right font-bold font-mono ${row.margem >= 0 ? 'text-[#2bc196]' : 'text-red-400'}`}>{fmtBRL(row.margem)}</div>
+                <div className={`text-[10px] text-right font-bold font-mono ${row.margem >= 0 ? 'text-[#1356E2]' : 'text-red-400'}`}>{fmtBRL(row.margem)}</div>
               </div>
             ))}
             <div className="grid grid-cols-4 items-center px-3 py-2 border-t border-white/10 bg-white/[0.02]">
               <div className="text-[10px] text-white font-bold">TOTAL</div>
-              <div className="text-[10px] text-right text-[#2bc196] font-bold font-mono">{fmtBRL(profitability.receitaTotal)}</div>
+              <div className="text-[10px] text-right text-[#1356E2] font-bold font-mono">{fmtBRL(profitability.receitaTotal)}</div>
               <div className="text-[10px] text-right text-red-400 font-bold font-mono">{fmtBRL(profitability.custoTotal)}</div>
-              <div className={`text-[10px] text-right font-bold font-mono ${profitability.margem >= 0 ? 'text-[#2bc196]' : 'text-red-400'}`}>{fmtBRL(profitability.margem)}</div>
+              <div className={`text-[10px] text-right font-bold font-mono ${profitability.margem >= 0 ? 'text-[#1356E2]' : 'text-red-400'}`}>{fmtBRL(profitability.margem)}</div>
             </div>
           </div>
 
@@ -187,9 +187,9 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
           )}
 
           {profitability.alertas.length === 0 && (
-            <div className="rounded-xl bg-[#2bc196]/5 border border-[#2bc196]/10 p-2.5 flex items-center gap-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#2bc196]" />
-              <p className="text-[9px] text-[#2bc196] font-medium">Taxas dentro dos limites do parceiro</p>
+            <div className="rounded-xl bg-[#1356E2]/5 border border-[#1356E2]/10 p-2.5 flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#1356E2]" />
+              <p className="text-[9px] text-[#1356E2] font-medium">Taxas dentro dos limites do parceiro</p>
             </div>
           )}
 

@@ -1,5 +1,5 @@
 // =============================================================================
-// PROCESSOS ADICIONAIS DA PLATAFORMA PAGSMILE — 29-37
+// PROCESSOS ADICIONAIS DA PLATAFORMA PIN BANK — 29-37
 // Dashboards, Analytics, Notificações, Taxas, Helena IA, Messages, Docs, Config
 // =============================================================================
 
@@ -13,7 +13,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Dashboard CEO — Visão Estratégica da Operação',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'CEO / Gestão / Comercial',
     objetivo: 'Definir a composição e funcionalidades do Dashboard CEO para visão executiva da operação, assegurando:',
     objetivoItens: [
@@ -83,14 +83,14 @@ export const PROCESSOS_EXTRA = [
     nome: 'Dashboard Comercial — Gestão Operacional de Vendas',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Gestão',
     objetivo: 'Definir a composição e funcionalidades do Dashboard Comercial para gestão operacional diária:',
     objetivoItens: [
       'KPIs operacionais (CommercialKPIs): 8 cards — leads hoje/semana/mês, propostas enviadas/aceitas, compliance pendente, contratos, receita.',
       'Métricas rápidas (CommercialQuickMetrics): leads sem contato, propostas expirando, SLAs em risco.',
       'Funil de vendas (SalesFunnelChart): gráfico visual do pipeline atual.',
-      'Leads por origem (LeadsByOriginChart): Pagsmile v5, PIX v4, Reunião, IA, Introducer, Landing Page, Proposta Padrão, Simplificado.',
+      'Leads por origem (LeadsByOriginChart): Pin Bank v5, PIX v4, Reunião, IA, Introducer, Landing Page, Proposta Padrão, Simplificado.',
       'Leads por segmento (LeadsBySegmentChart): 10 segmentos com contagem e TPV.',
       'Tendência de leads (LeadsTrendChart): evolução temporal por dia/semana.',
       'Status de propostas (ProposalStatusPieChart): rascunho, enviada, visualizada, aceita, recusada, expirada.',
@@ -169,7 +169,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Dados & Insights — Analytics Avançado Multi-Dimensional (18 Seções)',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Dados / BI / Comercial / Compliance',
     objetivo: 'Definir as 18 seções analíticas do módulo Dados & Insights para análise profunda da operação:',
     objetivoItens: [
@@ -246,7 +246,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Sistema de Notificações e Automações (17 Backend Functions)',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Sistema / Comercial / Compliance',
     objetivo: 'Definir todas as notificações automáticas e automações agendadas da plataforma:',
     objetivoItens: [
@@ -325,7 +325,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Gestão de Taxas Padrão por Segmento (SegmentDefaultRates) com Cascata',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Admin / Financeiro / Comercial',
     objetivo: 'Definir o fluxo de gestão das taxas padrão por segmento que alimentam propostas automáticas e landing pages:',
     objetivoItens: [
@@ -387,7 +387,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Helena IA — Assistente Inteligente de Compliance e Análise',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / IA / Admin',
     objetivo: 'Definir o funcionamento da IA Helena como assistente inteligente:',
     objetivoItens: [
@@ -445,7 +445,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Gestão de Templates de Mensagem (WhatsApp/E-mail)',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Marketing / Admin',
     objetivo: 'Definir o fluxo de criação e uso de templates de mensagem para comunicação padronizada:',
     objetivoItens: [
@@ -500,7 +500,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Gestão e Validação de Documentos de Compliance',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Admin',
     objetivo: 'Definir o fluxo de gestão, validação e consulta de documentos enviados durante compliance:',
     objetivoItens: [
@@ -568,7 +568,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Governança de Acesso — Perfis Granulares + 2FA Obrigatório + Auditoria 5 Anos',
     versao: '1.0.0',
     data: '10/05/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Admin / Sistema / Compliance',
     objetivo: 'Definir o controle de acesso ao painel administrativo com três camadas de proteção combinadas:',
     objetivoItens: [
@@ -648,7 +648,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Parceiros de Compliance Externos — Atribuição, Análise e Recomendação Auditada',
     versao: '1.0.0',
     data: '10/05/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Admin / Parceiro Externo',
     objetivo: 'Definir o fluxo completo de colaboração com parceiros externos (bureaus, escritórios de auditoria, processadoras parceiras) que ANALISAM o dossiê e recomendam decisão, sem nunca terem poder de decisão final:',
     objetivoItens: [
@@ -670,24 +670,24 @@ export const PROCESSOS_EXTRA = [
       'Componente MaskedField para aplicar visibilidade configurada.',
     ],
     escopoNaoInclui: [
-      'Decisão final do caso (sempre Pagsmile — recomendação do parceiro é insumo, não ordem).',
+      'Decisão final do caso (sempre Pin Bank — recomendação do parceiro é insumo, não ordem).',
       'Doc Compliance Parceiros para BaaS (extração interna, ver PROC-040).',
       'Acesso de parceiros a Cadastro, Propostas, Contratos ou Pipeline (estritamente caged em /ComplianceParceiro).',
     ],
     steps: [
       { id: '01', resp: 'Admin', atividade: 'Acessa /AdminGestaoParceiros e clica "Novo Parceiro". Preenche: name, legalName, cnpj, contactEmail, slaHours (ex: 48), allowedOnboardingCaseModels[] (lista de modelos V4 permitidos — ex: ["ComplianceEcommerceV4", "ComplianceSaaSV4"]), defaultVisibilityLevel (full/redacted/summary_only), notificationChannels (Slack channelId).', decisao: '', gate: '', sla: '', saida: 'CompliancePartner criado e ativo', proximo: '02' },
       { id: '02', resp: 'Admin', atividade: 'Adiciona usuários do parceiro: cada um vira CompliancePartnerUser com partnerRole (viewer = só leitura, analyst = pode submeter recomendação, manager = pode reatribuir casos dentro do parceiro). Estes usuários NÃO aparecem em /GestaoUsuarios — vivem fora de AccessProfile.', decisao: '', gate: '', sla: '', saida: 'CompliancePartnerUser[] criados', proximo: '03' },
-      { id: '03', resp: 'Admin (Pagsmile)', atividade: 'No dossiê de um caso (/CadastroDetalhe), seção "Compliance Partners", clica "Atribuir a Parceiro". AssignCaseToPartnerModal abre. Seleciona parceiro (apenas ativos cujo allowedOnboardingCaseModels contém o modelo do caso), nível de visibilidade (default = defaultVisibilityLevel do parceiro), motivo, prazo (default = agora + slaHours).', decisao: 'Modelo do caso ∈ allowedOnboardingCaseModels do parceiro? Já existe assignment ativo?', gate: 'G1', sla: '', saida: 'PartnerAssignment criado (status=pending) + PartnerAssignmentActivity (assigned) + notificação Slack ao canal do parceiro', proximo: '04' },
+      { id: '03', resp: 'Admin (Pin Bank)', atividade: 'No dossiê de um caso (/CadastroDetalhe), seção "Compliance Partners", clica "Atribuir a Parceiro". AssignCaseToPartnerModal abre. Seleciona parceiro (apenas ativos cujo allowedOnboardingCaseModels contém o modelo do caso), nível de visibilidade (default = defaultVisibilityLevel do parceiro), motivo, prazo (default = agora + slaHours).', decisao: 'Modelo do caso ∈ allowedOnboardingCaseModels do parceiro? Já existe assignment ativo?', gate: 'G1', sla: '', saida: 'PartnerAssignment criado (status=pending) + PartnerAssignmentActivity (assigned) + notificação Slack ao canal do parceiro', proximo: '04' },
       { id: '04', resp: 'Admin (massa)', atividade: 'OPCIONAL: Em /QuestionariosRecebidos, seleção múltipla + "Atribuir Selecionados ao Parceiro X". adminBulkAssignPartner valida cada caso individualmente e retorna relatório de sucessos/falhas.', decisao: '', gate: '', sla: '', saida: 'PartnerAssignment[] criados em lote', proximo: '05' },
       { id: '05', resp: 'Usuário do Parceiro', atividade: 'Acessa /ComplianceParceiro (tela isolada — caged: usuários de parceiro não veem nenhuma outra página do sistema). Visualiza: KPIs (PartnerDashboardKPIs: total casos, pendentes, em atraso, concluídos), filtros (status/busca), tabela com cliente, modelo, score V4, subfaixa, prazo SLA com indicador visual de urgência (PartnerSlaIndicator).', decisao: '', gate: '', sla: '', saida: 'Lista filtrada de casos atribuídos', proximo: '06' },
       { id: '06', resp: 'Usuário do Parceiro', atividade: 'Abre um caso em /ComplianceParceiroDetalhe?id=xxx. partnerGetCaseDetail aplica o nível de visibilidade: full = dossiê completo; redacted = CPF parcial (123.XXX.XXX-45), e-mail/telefone parciais, demais dados visíveis; summary_only = apenas nome, CNPJ, modelo, subfaixa V4, score V4, status, top red flags. MaskedField processa antes de renderizar.', decisao: '', gate: '', sla: '', saida: 'Dossiê carregado com mascaramento aplicado + PartnerAssignmentActivity (viewed)', proximo: '07' },
       { id: '07', resp: 'Usuário do Parceiro', atividade: 'Faz download de documentos via partnerDownloadDocument: backend gera URL assinada temporária (5min) para o arquivo no storage privado. Parceiro nunca recebe link direto do storage.', decisao: '', gate: '', sla: '', saida: 'PartnerAssignmentActivity (documents_downloaded) registrado', proximo: '08' },
       { id: '08', resp: 'Usuário do Parceiro (analyst/manager)', atividade: 'Submete recomendação via PartnerRecommendationForm: 4 opções — approve (parceiro aprova operação), reject (parceiro não quer operar), request_docs (pede documentos adicionais), escalate (algo crítico, escalação urgente). Comentários obrigatórios.', decisao: 'Comentário preenchido? Recomendação válida?', gate: 'G2', sla: '', saida: 'PartnerAssignment.partnerRecommendation atualizado + status=completed + partnerReviewedAt + PartnerAssignmentActivity (recommendation_submitted)', proximo: '09' },
-      { id: '09', resp: 'Sistema (partnerSlaMonitor)', atividade: 'Automation horária verifica PartnerAssignments com status ∈ {pending, viewed, in_review} e dueDate ≤ 25% do tempo restante: envia 1 alerta Slack ao parceiro (sla_warning_sent). Quando dueDate < agora e status ≠ completed: muda para expired e grava sla_breached. Alerta admin Pagsmile para reassignar ou retomar internamente.', decisao: '', gate: '', sla: '', saida: 'Alertas SLA + status atualizado', proximo: '10' },
-      { id: '10', resp: 'Admin (Pagsmile)', atividade: 'OPCIONAL: revoga atribuição via adminRevokeAssignment (conflito de interesse, parceiro errado, caso resolvido internamente). PartnerAssignment.status=revoked + revokedAt + revokedBy + revokeReason + notificação Slack.', decisao: '', gate: '', sla: '', saida: 'Assignment revogado + PartnerAssignmentActivity (revoked)', proximo: 'FIM' },
+      { id: '09', resp: 'Sistema (partnerSlaMonitor)', atividade: 'Automation horária verifica PartnerAssignments com status ∈ {pending, viewed, in_review} e dueDate ≤ 25% do tempo restante: envia 1 alerta Slack ao parceiro (sla_warning_sent). Quando dueDate < agora e status ≠ completed: muda para expired e grava sla_breached. Alerta admin Pin Bank para reassignar ou retomar internamente.', decisao: '', gate: '', sla: '', saida: 'Alertas SLA + status atualizado', proximo: '10' },
+      { id: '10', resp: 'Admin (Pin Bank)', atividade: 'OPCIONAL: revoga atribuição via adminRevokeAssignment (conflito de interesse, parceiro errado, caso resolvido internamente). PartnerAssignment.status=revoked + revokedAt + revokedBy + revokeReason + notificação Slack.', decisao: '', gate: '', sla: '', saida: 'Assignment revogado + PartnerAssignmentActivity (revoked)', proximo: 'FIM' },
     ],
     regrasNegocio: [
-      { bold: 'Pagsmile decide sempre: ', text: 'A recomendação do parceiro é INSUMO, nunca ordem. Pagsmile pode aprovar internamente mesmo se parceiro recomendou rejeitar (registrando divergência) ou usar como reforço para recusa.' },
+      { bold: 'Pin Bank decide sempre: ', text: 'A recomendação do parceiro é INSUMO, nunca ordem. Pin Bank pode aprovar internamente mesmo se parceiro recomendou rejeitar (registrando divergência) ou usar como reforço para recusa.' },
       { bold: '3 Papéis do parceiro: ', text: 'viewer (só leitura), analyst (pode submeter recomendação), manager (pode reatribuir casos dentro do parceiro).' },
       { bold: '3 Níveis de visibilidade: ', text: 'full / redacted / summary_only — escolhido por atribuição (default = defaultVisibilityLevel do parceiro).' },
       { bold: 'allowedOnboardingCaseModels: ', text: 'Cada parceiro tem lista explícita de modelos que pode ver. adminAssignCaseToPartner valida e retorna 400 se modelo não permitido.' },
@@ -702,16 +702,16 @@ export const PROCESSOS_EXTRA = [
       'Mascaramento de dados sensíveis configurável por atribuição.',
       'Trilha completa: cada visualização, download, comentário e recomendação registrados.',
       'Parceiros desativados (isActive=false) não recebem novos casos.',
-      'Decisão final SEMPRE Pagsmile — divergência registrada no caso.',
+      'Decisão final SEMPRE Pin Bank — divergência registrada no caso.',
       'Retenção 5 anos para auditoria regulatória (Lei 9.613/1998).',
     ],
     governanca: [
-      { bold: 'O Admin Pagsmile ', text: 'cadastra parceiros, atribui casos e revoga atribuições.' },
+      { bold: 'O Admin Pin Bank ', text: 'cadastra parceiros, atribui casos e revoga atribuições.' },
       { bold: 'O Usuário do Parceiro ', text: 'analisa casos atribuídos e submete recomendação. NÃO decide.' },
       { bold: 'O Sistema ', text: 'aplica visibilidade, registra atividade, monitora SLA e gera alertas.' },
-      { bold: 'O Compliance Pagsmile ', text: 'usa a recomendação como insumo na decisão final.' },
+      { bold: 'O Compliance Pin Bank ', text: 'usa a recomendação como insumo na decisão final.' },
     ],
-    raciRoles: ['Admin Pagsmile', 'Compliance Pagsmile', 'Usuário Parceiro', 'Sistema'],
+    raciRoles: ['Admin Pin Bank', 'Compliance Pin Bank', 'Usuário Parceiro', 'Sistema'],
     raciActivities: [
       { name: 'Cadastrar parceiro', values: ['R', 'C', '', ''] },
       { name: 'Adicionar usuário do parceiro', values: ['R', '', 'I', ''] },
@@ -733,14 +733,14 @@ export const PROCESSOS_EXTRA = [
     nome: 'Doc Compliance Parceiros — Coleta Bancária + Export Pré-KYC para Bancos BaaS',
     versao: '1.0.0',
     data: '10/05/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Admin / Cliente',
-    objetivo: 'Definir o fluxo de extração de dados estruturados consolidados (Pré-KYC) que a equipe Pagsmile envia aos bancos parceiros (BaaS) para abertura da conta operacional do cliente:',
+    objetivo: 'Definir o fluxo de extração de dados estruturados consolidados (Pré-KYC) que a equipe Pin Bank envia aos bancos parceiros (BaaS) para abertura da conta operacional do cliente:',
     objetivoItens: [
       'Geração de link público de coleta bancária com token cripto-seguro (192 bits, 48 chars hex).',
       'Coleta bancária via formulário público SDK-free em /BankDataCollect.',
       'Resolução em cadeia de CNPJ com fallback (Merchant → OnboardingCase → Respostas → Lead por email → Lead por cpfCnpj).',
-      'Export XLSX "Pré KYC Pagsmile" com 15 colunas pré-formatadas para os bancos parceiros.',
+      'Export XLSX "Pré KYC Pin Bank" com 15 colunas pré-formatadas para os bancos parceiros.',
       'Enriquecimento BDC on-demand quando campos estão vazios (apenas PJ + CNPJ válido + slot vazio).',
       'Sanity checks pós-merge para evitar contaminação cruzada de colunas.',
     ],
@@ -752,7 +752,7 @@ export const PROCESSOS_EXTRA = [
       'Componente CaseRow para linhas hierárquicas (seller / subseller / placeholder).',
     ],
     escopoNaoInclui: [
-      'Decisão de aprovação do banco BaaS (processo externo Pagsmile↔Banco).',
+      'Decisão de aprovação do banco BaaS (processo externo Pin Bank↔Banco).',
       'Parceiros externos de compliance (ver PROC-039 — finalidade diferente).',
       'Notificação automática de expiração de tokens (não implementada — pode ser melhoria futura).',
     ],
@@ -767,7 +767,7 @@ export const PROCESSOS_EXTRA = [
       { id: '08', resp: 'Admin', atividade: 'No /DocCompParceiros, seleciona casos (auto-selecionados Aprovado+Manual em modo "auto"). Clica "Exportar XLSX". exportPartnerComplianceDoc processa cada caso em loop serial: get OnboardingCase, Merchant, QuestionnaireResponse → buildAnswerIndex (parser regex anti-falso-positivo), classifica PJ/PF, resolveCnpj (cadeia 6 níveis), busca último BankDataCollection com status=preenchido.', decisao: '', gate: '', sla: '< 30s', saida: 'Linhas montadas via pick(...vals) — primeiro valor não-vazio descartando "—", "-", strings vazias.', proximo: '09' },
       { id: '09', resp: 'Sistema (Enriquecimento BDC)', atividade: 'Dispara BDC SOMENTE se 3 condições: (i) PJ, (ii) CNPJ válido, (iii) ≥1 campo vazio em {Razão Social, Nome Fantasia, CEP, Rua, Cidade, Estado}. Chama plataforma.bigdatacorp.com.br/empresas com datasets=basic_data,addresses, query=doc{CNPJ}. Endereço preferido: Type contendo "MATRIZ"/"PRINCIPAL", senão addresses[0]. BDC preenche APENAS slots vazios — nunca sobrescreve declarado. source vira "merchant+bdc".', decisao: '', gate: '', sla: '', saida: 'Slots vazios preenchidos pela BDC quando aplicável', proximo: '10' },
       { id: '10', resp: 'Sistema (Sanity Checks)', atividade: 'Três validações defensivas pós-merge: zera row[CEP] se for CNPJ (14 dígitos), zera row[Numero] se for CNPJ, zera row[Rua] se for CNPJ. Cobrem casos extremos onde parser+BDC produziram contaminação cruzada. Prefere célula vazia a célula com dado errado.', decisao: '', gate: '', sla: '', saida: 'Linhas validadas', proximo: '11' },
-      { id: '11', resp: 'Sistema (XLSX)', atividade: 'Gera planilha aba única "Pré KYC" com 15 colunas (ordem fixa): CPF/CNPJ, Nome Fantasia, Razão Social, Agencia, Digito, Conta, Digito Conta, Banco, Email, CEP, Cidade, Rua, Numero, Bairro, Estado. Biblioteca npm:xlsx@0.18.5. Encoding ArrayBuffer→Uint8Array→base64. Nome: PreKYC-Pagsmile-YYYY-MM-DD.xlsx.', decisao: '', gate: '', sla: '< 5s', saida: 'Resposta: {fileBase64, fileName, rowCount, missingBankData[], debug[]}', proximo: '12' },
+      { id: '11', resp: 'Sistema (XLSX)', atividade: 'Gera planilha aba única "Pré KYC" com 15 colunas (ordem fixa): CPF/CNPJ, Nome Fantasia, Razão Social, Agencia, Digito, Conta, Digito Conta, Banco, Email, CEP, Cidade, Rua, Numero, Bairro, Estado. Biblioteca npm:xlsx@0.18.5. Encoding ArrayBuffer→Uint8Array→base64. Nome: PreKYC-Pin Bank-YYYY-MM-DD.xlsx.', decisao: '', gate: '', sla: '< 5s', saida: 'Resposta: {fileBase64, fileName, rowCount, missingBankData[], debug[]}', proximo: '12' },
       { id: '12', resp: 'Frontend', atividade: 'Decodifica fileBase64 via atob → Blob → URL.createObjectURL → anchor.click → revokeObjectURL. Toast: "N registros exportados. X sem dados bancários — gere links para eles."', decisao: '', gate: '', sla: 'Imediato', saida: 'Download local + alerta de pendências bancárias', proximo: 'FIM' },
     ],
     regrasNegocio: [
@@ -790,12 +790,12 @@ export const PROCESSOS_EXTRA = [
       'Auditoria mínima: array debug[] no response (sem log persistente da exportação por padrão).',
     ],
     governanca: [
-      { bold: 'O Admin Pagsmile ', text: 'gera links, monitora preenchimento e exporta XLSX para enviar aos bancos.' },
+      { bold: 'O Admin Pin Bank ', text: 'gera links, monitora preenchimento e exporta XLSX para enviar aos bancos.' },
       { bold: 'O Cliente ', text: 'preenche dados bancários no link público (LGPD-aware).' },
       { bold: 'O Sistema ', text: 'aplica resolução de CNPJ em cadeia, enriquecimento BDC e sanity checks automaticamente.' },
       { bold: 'O Banco BaaS ', text: 'recebe XLSX consolidado para abertura da conta (processo externo).' },
     ],
-    raciRoles: ['Admin Pagsmile', 'Cliente', 'Sistema', 'Banco BaaS'],
+    raciRoles: ['Admin Pin Bank', 'Cliente', 'Sistema', 'Banco BaaS'],
     raciActivities: [
       { name: 'Carregar tabela /DocCompParceiros', values: ['R', '', 'R', ''] },
       { name: 'Resolver CNPJ em cadeia', values: ['', '', 'R', ''] },
@@ -816,7 +816,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Escalações Questionáveis — Monitoramento de Qualidade da Decisão Compliance',
     versao: '1.0.0',
     data: '10/05/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Sistema',
     objetivo: 'Definir o monitoramento contínuo de escalações para Revisão Manual em casos de baixo/médio risco (subfaixas 1A-3B), garantindo que a arquitetura Data-First v7 (decisão determinística V4 + veto biométrico CAF) está funcionando como esperado:',
     objetivoItens: [
@@ -885,7 +885,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Link de Documentos Exclusivos — Fluxo Acelerado Sem CAF SDK',
     versao: '1.0.0',
     data: '10/05/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Cliente / Sistema',
     objetivo: 'Definir o fluxo de envio de documentos quando a identidade do representante legal já foi verificada anteriormente, permitindo coleta complementar sem refazer biometria CAF SDK:',
     objetivoItens: [
@@ -963,7 +963,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Reprocessamento em Massa de Compliance — Atualização Coerente do Portfólio',
     versao: '1.0.0',
     data: '10/05/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Admin / Sistema',
     objetivo: 'Definir o fluxo de reexecução do pipeline de compliance em múltiplos casos quando regras V4 mudam, datasets BDC ficam disponíveis ou framework é atualizado:',
     objetivoItens: [
@@ -1033,7 +1033,7 @@ export const PROCESSOS_EXTRA = [
     nome: 'Configurações Gerais, Regras de Compliance e Auditoria',
     versao: '1.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Admin / Compliance / Sistema',
     objetivo: 'Definir os módulos de configuração do sistema, regras de compliance e auditoria:',
     objetivoItens: [

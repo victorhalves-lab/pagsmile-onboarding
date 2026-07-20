@@ -29,7 +29,7 @@ import QuestionarioSimplificadoCard from '../components/questionario-simplificad
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierBadge from '../components/leads/LeadQualifierBadge';
 import QuestionnaireResponsesModal from '../components/leads/QuestionnaireResponsesModal';
-import PagsmileV5ResponsesModal from '../components/leads/PagsmileV5ResponsesModal';
+import PinBankV5ResponsesModal from '../components/leads/PinBankV5ResponsesModal';
 import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
 import MeetingQuestionnaireTab from '../components/meeting-questionnaire/MeetingQuestionnaireTab';
 import AIQuestionnaireTab from '../components/meeting-questionnaire/AIQuestionnaireTab';
@@ -246,7 +246,7 @@ export default function QuestionariosLeads() {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" /></div>;
   }
 
   const handleVerDetalhes = (q) => {
@@ -296,18 +296,18 @@ export default function QuestionariosLeads() {
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <ClipboardList className="w-6 h-6 text-[#5cf7cf]" />
+              <ClipboardList className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('quest_leads.title')}</h1>
               <div className="flex gap-3 text-xs text-white/60 mt-1.5 flex-wrap">
                 <span className="bg-white/10 px-2 py-0.5 rounded-md">Total: {totalAllSources}</span>
                 <span className="bg-white/10 px-2 py-0.5 rounded-md">Completo: {completoLeads.length}</span>
-                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md">Prop. Padrão: {spLeads.length}</span>
+                <span className="bg-[#1356E2]/20 text-[#E84B1C] px-2 py-0.5 rounded-md">Prop. Padrão: {spLeads.length}</span>
                 <span className="bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-md">Landing: {lpLeads.length}</span>
                 <span className="bg-purple-500/20 text-purple-200 px-2 py-0.5 rounded-md">Introducer: {introducerLeads.length}</span>
                 <span className="bg-white/10 px-2 py-0.5 rounded-md">Simplificado: {questionariosSimplificados.length}</span>
@@ -360,11 +360,11 @@ export default function QuestionariosLeads() {
 
         <TabsContent value="simplificado" className="mt-4">
           {loadingSimplificados ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" /></div>
           ) : questionariosSimplificados.length === 0 ? (
             <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-              <Zap className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-              <p className="text-[var(--pagsmile-blue)]/60">{t('quest_leads.no_simplified')}</p>
+              <Zap className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/30 mb-3" />
+              <p className="text-[var(--pinbank-blue)]/60">{t('quest_leads.no_simplified')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -409,7 +409,7 @@ export default function QuestionariosLeads() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('quest_leads.search_placeholder')} className="pl-10 h-10" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -457,7 +457,7 @@ export default function QuestionariosLeads() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -478,8 +478,8 @@ export default function QuestionariosLeads() {
               {paginatedLeads.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={10} className="text-center py-12">
-                    <ClipboardList className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-                    <p className="text-[var(--pagsmile-blue)]/60">
+                    <ClipboardList className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/30 mb-3" />
+                    <p className="text-[var(--pinbank-blue)]/60">
                       {hasFilters ? t('quest_leads.no_results_filter') : t('quest_leads.no_questionnaires')}
                     </p>
                   </TableCell>
@@ -490,10 +490,10 @@ export default function QuestionariosLeads() {
                 const ScIcon = sc?.icon || ShoppingCart;
                 return (
                   <TableRow key={lead.id} className="hover:bg-[#f4f4f4] transition-colors">
-                    <TableCell><span className="font-mono text-xs text-[var(--pagsmile-green)]">{lead.protocolo || '-'}</span></TableCell>
+                    <TableCell><span className="font-mono text-xs text-[var(--pinbank-blue)]">{lead.protocolo || '-'}</span></TableCell>
                     <TableCell>
                       <p className="font-medium text-sm">{lead.fullName || lead.email}</p>
-                      <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{lead.cpfCnpj || ''}</p>
+                      <p className="text-[10px] text-[var(--pinbank-blue)]/50">{lead.cpfCnpj || ''}</p>
                     </TableCell>
                     <TableCell>
                       {sc && <div className="flex items-center gap-1"><ScIcon className="w-3 h-3" /><span className="text-xs">{sc.label}</span></div>}
@@ -529,7 +529,7 @@ export default function QuestionariosLeads() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <span className="text-xs text-[var(--pagsmile-blue)]/60">
+                        <span className="text-xs text-[var(--pinbank-blue)]/60">
                           {lead.created_date ? moment(lead.created_date).format('DD/MM/YY HH:mm') : '-'}
                         </span>
                         <LeadSLAIndicator lead={lead} />
@@ -544,7 +544,7 @@ export default function QuestionariosLeads() {
                               key={i}
                               variant={btn.variant === 'default' ? 'default' : 'outline'}
                               size="sm"
-                              className={btn.variant === 'default' ? 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white h-7 text-xs' : 'h-7 text-xs'}
+                              className={btn.variant === 'default' ? 'bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white h-7 text-xs' : 'h-7 text-xs'}
                               onClick={async () => {
                                 if (btn.action === 'contact') {
                                   await base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
@@ -580,9 +580,9 @@ export default function QuestionariosLeads() {
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#0A0A0A]/5">
             <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>{t('common.previous')}</Button>
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('common.page_of', { page, total: totalPages })}</span>
+            <span className="text-xs text-[var(--pinbank-blue)]/60">{t('common.page_of', { page, total: totalPages })}</span>
             <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>{t('common.next')}</Button>
           </div>
         )}
@@ -609,7 +609,7 @@ export default function QuestionariosLeads() {
 
       {/* Questionnaire Responses Modal — choose correct modal based on lead origin */}
       {responsesModalLead?.questionnaireData?.origem === 'questionario_leads_pagsmile_v5' ? (
-        <PagsmileV5ResponsesModal
+        <PinBankV5ResponsesModal
           open={!!responsesModalLead}
           onClose={() => setResponsesModalLead(null)}
           lead={responsesModalLead}

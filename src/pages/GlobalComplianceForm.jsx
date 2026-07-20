@@ -81,8 +81,8 @@ export default function GlobalComplianceForm() {
       <PublicGlobalShell title={t('kyc_title')} subtitle={t('kyc_subtitle')} lang={lang} setLang={setLang}>
         <div className="p-10 text-center">
           <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-[#002443] mb-2">{t('success_title')}</h2>
-          <p className="text-[#002443]/70">{t('success_desc')}</p>
+          <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">{t('success_title')}</h2>
+          <p className="text-[#0A0A0A]/70">{t('success_desc')}</p>
         </div>
       </PublicGlobalShell>
     );
@@ -145,13 +145,13 @@ export default function GlobalComplianceForm() {
         {step === 2 && (
           <div className="space-y-5">
             <div>
-              <h3 className="text-sm font-semibold text-[#002443] mb-2">{t('ubos_title')}</h3>
+              <h3 className="text-sm font-semibold text-[#0A0A0A] mb-2">{t('ubos_title')}</h3>
               <UboList value={f.ubos} onChange={(v) => set('ubos', v)} t={t} />
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-[#002443]">{t('directors_title')}</h3>
-                <label className="text-xs flex items-center gap-1.5 text-[#002443]/70 cursor-pointer">
+                <h3 className="text-sm font-semibold text-[#0A0A0A]">{t('directors_title')}</h3>
+                <label className="text-xs flex items-center gap-1.5 text-[#0A0A0A]/70 cursor-pointer">
                   <input type="checkbox" checked={f.directors_same_as_ubos} onChange={(e) => set('directors_same_as_ubos', e.target.checked)} />
                   {t('directors_same_as_ubos')}
                 </label>
@@ -198,7 +198,7 @@ export default function GlobalComplianceForm() {
 
         {error && <div className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg p-2">{error}</div>}
 
-        <div className="flex items-center justify-between pt-4 border-t border-[#002443]/5">
+        <div className="flex items-center justify-between pt-4 border-t border-[#0A0A0A]/5">
           <Button variant="ghost" disabled={step === 0} onClick={() => setStep(s => s - 1)}>
             <ArrowLeft className="w-4 h-4 mr-1" /> {t('back')}
           </Button>
@@ -224,12 +224,12 @@ function YesNoRow({ label, val, onVal, detail, onDetail, t }) {
   return (
     <div className="bg-[#f4f4f4]/40 rounded-xl p-3 space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <span className="text-sm text-[#002443] font-medium">{label}</span>
+        <span className="text-sm text-[#0A0A0A] font-medium">{label}</span>
         <div className="flex gap-1">
           <button type="button" onClick={() => onVal(true)}
-            className={`px-3 py-1 rounded-md text-xs ${val === true ? 'bg-[#2bc196] text-white' : 'bg-white text-[#002443]/60 border border-[#002443]/10'}`}>{t('yes')}</button>
+            className={`px-3 py-1 rounded-md text-xs ${val === true ? 'bg-[#1356E2] text-white' : 'bg-white text-[#0A0A0A]/60 border border-[#0A0A0A]/10'}`}>{t('yes')}</button>
           <button type="button" onClick={() => onVal(false)}
-            className={`px-3 py-1 rounded-md text-xs ${val === false ? 'bg-[#002443] text-white' : 'bg-white text-[#002443]/60 border border-[#002443]/10'}`}>{t('no')}</button>
+            className={`px-3 py-1 rounded-md text-xs ${val === false ? 'bg-[#0A0A0A] text-white' : 'bg-white text-[#0A0A0A]/60 border border-[#0A0A0A]/10'}`}>{t('no')}</button>
         </div>
       </div>
       {val === true && (

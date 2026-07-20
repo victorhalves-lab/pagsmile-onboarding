@@ -33,7 +33,7 @@ export default function SelectionButton({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       {helperText && (
-        <span className="text-xs font-medium text-[var(--pagsmile-blue)]/60 uppercase tracking-wider ml-1 mb-1">
+        <span className="text-xs font-medium text-[var(--pinbank-blue)]/60 uppercase tracking-wider ml-1 mb-1">
           {helperText}
         </span>
       )}
@@ -55,8 +55,8 @@ export default function SelectionButton({
                   "group relative p-4 rounded-xl text-left transition-all duration-300 ease-out",
                   "border-2 flex flex-col h-full",
                   isSelected 
-                    ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-md" 
-                    : "border-[var(--pagsmile-blue)]/20 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5 hover:shadow-sm"
+                    ? "border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)] shadow-md" 
+                    : "border-[var(--pinbank-blue)]/20 bg-white hover:border-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/5 hover:shadow-sm"
                 )}
               >
                 <div className="flex justify-between items-start w-full mb-4">
@@ -64,7 +64,7 @@ export default function SelectionButton({
                     "p-2 rounded-lg transition-colors duration-300",
                     isSelected 
                       ? "bg-white/20 text-white" 
-                      : "bg-[var(--pagsmile-blue)]/5 text-[var(--pagsmile-blue)] group-hover:text-[var(--pagsmile-blue)] group-hover:bg-[var(--pagsmile-blue)]/10"
+                      : "bg-[var(--pinbank-blue)]/5 text-[var(--pinbank-blue)] group-hover:text-[var(--pinbank-blue)] group-hover:bg-[var(--pinbank-blue)]/10"
                   )}>
                     {option.icon}
                   </div>
@@ -79,14 +79,14 @@ export default function SelectionButton({
                 <div className="mt-auto">
                   <h3 className={cn(
                     "font-bold text-base mb-1 transition-colors",
-                    isSelected ? "text-white" : "text-[var(--pagsmile-blue)]"
+                    isSelected ? "text-white" : "text-[var(--pinbank-blue)]"
                   )}>
                     {option.label}
                   </h3>
                   {option.description && (
                     <p className={cn(
                       "text-sm leading-relaxed transition-colors",
-                      isSelected ? "text-white/90" : "text-[var(--pagsmile-blue)]/70"
+                      isSelected ? "text-white/90" : "text-[var(--pinbank-blue)]/70"
                     )}>
                       {option.description}
                     </p>
@@ -105,8 +105,8 @@ export default function SelectionButton({
                 "group relative px-3 py-2 rounded-lg text-left transition-all duration-200",
                 "border flex items-center gap-3",
                 isSelected 
-                ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-sm" 
-                : "border-[var(--pagsmile-blue)]/20 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
+                ? "border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)] shadow-sm" 
+                : "border-[var(--pinbank-blue)]/20 bg-white hover:border-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/5"
               )}
             >
                {isSelected && (
@@ -118,14 +118,14 @@ export default function SelectionButton({
                 <div className="flex-1 min-w-0">
                   <h3 className={cn(
                     "font-medium text-sm transition-colors",
-                    isSelected ? "text-white" : "text-[var(--pagsmile-blue)]"
+                    isSelected ? "text-white" : "text-[var(--pinbank-blue)]"
                   )}>
                     {option.label}
                   </h3>
                   {option.description && (
                     <p className={cn(
                       "text-xs mt-0.5 truncate transition-colors",
-                      isSelected ? "text-white/80" : "text-[var(--pagsmile-blue)]/60"
+                      isSelected ? "text-white/80" : "text-[var(--pinbank-blue)]/60"
                     )}>
                       {option.description}
                     </p>

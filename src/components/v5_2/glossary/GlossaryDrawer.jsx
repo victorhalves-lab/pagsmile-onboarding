@@ -55,15 +55,15 @@ export default function GlossaryDrawer({ trigger, variant = 'button' }) {
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-xl p-0 flex flex-col">
         {/* Header fixo */}
-        <SheetHeader className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-[#2bc196]/5 to-transparent">
-          <SheetTitle className="flex items-center gap-2 text-[#002443]">
-            <BookOpen className="w-5 h-5 text-[#2bc196]" />
+        <SheetHeader className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-[#1356E2]/5 to-transparent">
+          <SheetTitle className="flex items-center gap-2 text-[#0A0A0A]">
+            <BookOpen className="w-5 h-5 text-[#1356E2]" />
             <span>Gloss\u00e1rio V5.2</span>
             <Badge variant="secondary" className="ml-auto">
               {GLOSSARY_TERM_COUNT} termos
             </Badge>
           </SheetTitle>
-          <p className="text-xs text-[#002443]/60 mt-1">
+          <p className="text-xs text-[#0A0A0A]/60 mt-1">
             Cat\u00e1logo can\u00f4nico DOC6 \u00a72.5.6 — termos t\u00e9cnicos do framework V5.2 com fundamenta\u00e7\u00e3o regulat\u00f3ria.
           </p>
         </SheetHeader>
@@ -97,8 +97,8 @@ export default function GlossaryDrawer({ trigger, variant = 'button' }) {
               disabled={query.trim().length >= 2}
               className={`text-[10px] font-semibold px-2 py-1 rounded-md transition-colors ${
                 activeCategory === 'all' && query.trim().length < 2
-                  ? 'bg-[#002443] text-white'
-                  : 'bg-slate-100 text-[#002443] hover:bg-slate-200 disabled:opacity-40'
+                  ? 'bg-[#0A0A0A] text-white'
+                  : 'bg-slate-100 text-[#0A0A0A] hover:bg-slate-200 disabled:opacity-40'
               }`}
             >
               Todos ({GLOSSARY_TERM_COUNT})
@@ -140,7 +140,7 @@ export default function GlossaryDrawer({ trigger, variant = 'button' }) {
               return (
                 <div
                   key={term.code}
-                  className="border border-slate-200 rounded-lg overflow-hidden hover:border-[#2bc196]/40 hover:shadow-sm transition-all"
+                  className="border border-slate-200 rounded-lg overflow-hidden hover:border-[#1356E2]/40 hover:shadow-sm transition-all"
                 >
                   <div
                     className="px-3 py-2 flex items-center gap-2 border-b border-slate-100"
@@ -153,10 +153,10 @@ export default function GlossaryDrawer({ trigger, variant = 'button' }) {
                     <span className="text-[10px] font-mono text-slate-400 ml-auto">{term.code}</span>
                   </div>
                   <div className="p-3">
-                    <h4 className="text-sm font-bold text-[#002443] mb-1">{term.label}</h4>
-                    <p className="text-[12px] font-semibold text-[#002443]/90 mb-2">{term.short}</p>
+                    <h4 className="text-sm font-bold text-[#0A0A0A] mb-1">{term.label}</h4>
+                    <p className="text-[12px] font-semibold text-[#0A0A0A]/90 mb-2">{term.short}</p>
                     {term.full && (
-                      <p className="text-[11px] text-[#002443]/70 leading-relaxed">{term.full}</p>
+                      <p className="text-[11px] text-[#0A0A0A]/70 leading-relaxed">{term.full}</p>
                     )}
                     {term.regulatory && (
                       <div className="mt-2 pt-2 border-t border-slate-100 flex items-start gap-1.5">

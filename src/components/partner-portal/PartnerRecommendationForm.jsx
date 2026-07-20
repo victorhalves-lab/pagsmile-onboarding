@@ -56,7 +56,7 @@ export default function PartnerRecommendationForm({ open, onClose, assignment, o
         <DialogHeader>
           <DialogTitle>Enviar Parecer — {assignment?.merchantName}</DialogTitle>
           <DialogDescription>
-            Sua decisão determina se você aceita operar com este cliente. A Pagsmile considerará seu parecer.
+            Sua decisão determina se você aceita operar com este cliente. A Pin Bank considerará seu parecer.
           </DialogDescription>
         </DialogHeader>
 
@@ -74,7 +74,7 @@ export default function PartnerRecommendationForm({ open, onClose, assignment, o
                   >
                     <RadioGroupItem value={opt.value} id={opt.value} className="mt-0.5" />
                     <Icon className={`w-5 h-5 mt-0.5 ${opt.color}`} />
-                    <span className="text-sm text-[#002443] flex-1">{opt.label}</span>
+                    <span className="text-sm text-[#0A0A0A] flex-1">{opt.label}</span>
                   </label>
                 );
               })}
@@ -99,7 +99,7 @@ export default function PartnerRecommendationForm({ open, onClose, assignment, o
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={submitting}>Cancelar</Button>
-          <Button onClick={handleSubmit} disabled={submitting} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+          <Button onClick={handleSubmit} disabled={submitting} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
             {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Enviar Parecer
           </Button>

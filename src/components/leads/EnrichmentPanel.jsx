@@ -34,17 +34,17 @@ function EnrichmentSection({ title, icon: Icon, riskLevel, children, defaultOpen
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 px-4 py-3 bg-[#f8fafc] hover:bg-[#f1f5f9] transition-colors"
       >
-        <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center shrink-0">
-          <Icon className="w-4 h-4 text-[#002443]/60" />
+        <div className="w-8 h-8 rounded-lg bg-[#0A0A0A]/5 flex items-center justify-center shrink-0">
+          <Icon className="w-4 h-4 text-[#0A0A0A]/60" />
         </div>
-        <span className="text-sm font-semibold text-[#002443] flex-1 text-left">{title}</span>
+        <span className="text-sm font-semibold text-[#0A0A0A] flex-1 text-left">{title}</span>
         {riskLevel && (
           <Badge variant="outline" className={`text-[10px] gap-1 ${riskColor}`}>
             <RiskIcon className="w-3 h-3" />
             {riskLevel}
           </Badge>
         )}
-        {open ? <ChevronDown className="w-4 h-4 text-[#002443]/30" /> : <ChevronRight className="w-4 h-4 text-[#002443]/30" />}
+        {open ? <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronRight className="w-4 h-4 text-[#0A0A0A]/30" />}
       </button>
       {open && <div className="px-4 py-3 border-t border-[#e2e8f0] bg-white">{children}</div>}
     </div>
@@ -55,8 +55,8 @@ function DataRow({ label, value, valueClass }) {
   if (value === null || value === undefined) return null;
   return (
     <div className="flex items-start justify-between gap-2 py-1.5 border-b border-[#e2e8f0] last:border-0">
-      <span className="text-xs text-[#002443]/50">{label}</span>
-      <span className={`text-xs font-medium text-[#002443] text-right ${valueClass || ''}`}>
+      <span className="text-xs text-[#0A0A0A]/50">{label}</span>
+      <span className={`text-xs font-medium text-[#0A0A0A] text-right ${valueClass || ''}`}>
         {typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : String(value)}
       </span>
     </div>
@@ -90,8 +90,8 @@ export default function EnrichmentPanel({ lead }) {
   if (!enrichment) {
     return (
       <div className="text-center py-8 space-y-3">
-        <FileSearch className="w-10 h-10 mx-auto text-[#002443]/15" />
-        <p className="text-sm text-[#002443]/40">Enriquecimento ainda não executado</p>
+        <FileSearch className="w-10 h-10 mx-auto text-[#0A0A0A]/15" />
+        <p className="text-sm text-[#0A0A0A]/40">Enriquecimento ainda não executado</p>
         <Button onClick={handleRunEnrichment} disabled={loading} variant="outline" className="rounded-xl gap-2">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
           Executar Enriquecimento
@@ -161,15 +161,15 @@ export default function EnrichmentPanel({ lead }) {
             <DataRow label="MEI" value={enrichment.openCnpj.mei} />
             {enrichment.openCnpj.socios?.length > 0 && (
               <div className="mt-2">
-                <p className="text-[10px] font-bold text-[#002443]/50 mb-1">Quadro Societário ({enrichment.openCnpj.socios.length})</p>
+                <p className="text-[10px] font-bold text-[#0A0A0A]/50 mb-1">Quadro Societário ({enrichment.openCnpj.socios.length})</p>
                 {enrichment.openCnpj.socios.map((s, i) => (
                   <div key={i} className="flex items-center gap-2 py-1.5 border-b border-[#e2e8f0] last:border-0">
-                    <div className="w-6 h-6 rounded-full bg-[#002443]/5 flex items-center justify-center text-[8px] font-bold text-[#002443]/40">{i + 1}</div>
+                    <div className="w-6 h-6 rounded-full bg-[#0A0A0A]/5 flex items-center justify-center text-[8px] font-bold text-[#0A0A0A]/40">{i + 1}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-[#002443] truncate">{s.nome}</p>
-                      <p className="text-[10px] text-[#002443]/40">{s.qualificacao} {s.dataEntrada ? `· desde ${s.dataEntrada}` : ''}</p>
+                      <p className="text-xs font-medium text-[#0A0A0A] truncate">{s.nome}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/40">{s.qualificacao} {s.dataEntrada ? `· desde ${s.dataEntrada}` : ''}</p>
                     </div>
-                    <span className="text-[10px] text-[#002443]/30">{s.pais}</span>
+                    <span className="text-[10px] text-[#0A0A0A]/30">{s.pais}</span>
                   </div>
                 ))}
               </div>
@@ -186,7 +186,7 @@ export default function EnrichmentPanel({ lead }) {
             <DataRow label="Registros MX" value={enrichment.dnsMx.hasMx ? 'Válidos' : 'Não encontrados'} 
               valueClass={enrichment.dnsMx.hasMx ? 'text-emerald-600' : 'text-red-600 font-bold'} />
             {enrichment.dnsMx.mxRecords?.map((mx, i) => (
-              <p key={i} className="text-[10px] text-[#002443]/40 font-mono">{mx}</p>
+              <p key={i} className="text-[10px] text-[#0A0A0A]/40 font-mono">{mx}</p>
             ))}
           </div>
         </EnrichmentSection>
@@ -216,7 +216,7 @@ export default function EnrichmentPanel({ lead }) {
             <DataRow label="CEPIM (Impedidas)" value={enrichment.trabalhoEscravo.cepim?.found ? `${enrichment.trabalhoEscravo.cepim.count} registro(s)` : 'Limpo'}
               valueClass={enrichment.trabalhoEscravo.cepim?.found ? 'text-red-600 font-bold' : 'text-emerald-600'} />
             {enrichment.trabalhoEscravo.note && (
-              <p className="text-[10px] text-[#002443]/40 italic">{enrichment.trabalhoEscravo.note}</p>
+              <p className="text-[10px] text-[#0A0A0A]/40 italic">{enrichment.trabalhoEscravo.note}</p>
             )}
           </div>
         </EnrichmentSection>
@@ -229,7 +229,7 @@ export default function EnrichmentPanel({ lead }) {
             <DataRow label="Sócios analisados" value={enrichment.ofacOnu.sociosScreened} />
             {enrichment.ofacOnu.results?.map((r, i) => (
               <div key={i} className="bg-[#f8fafc] rounded-lg p-2 border border-[#e2e8f0]">
-                <p className="text-xs font-medium text-[#002443]">{r.nome}</p>
+                <p className="text-xs font-medium text-[#0A0A0A]">{r.nome}</p>
                 <div className="flex gap-3 mt-1">
                   <span className={`text-[10px] ${r.checks.paisSancionado ? 'text-red-600 font-bold' : 'text-emerald-600'}`}>
                     País: {r.checks.pais} {r.checks.paisSancionado ? '⚠️ SANCIONADO' : '✓'}

@@ -16,7 +16,7 @@ export default function AutoSaveIndicator({ lastSaved }) {
   const time = lastSaved.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="flex items-center gap-1.5 text-xs text-[#2bc196] animate-in fade-in slide-in-from-top-2 duration-300">
+    <div className="flex items-center gap-1.5 text-xs text-[#1356E2] animate-in fade-in slide-in-from-top-2 duration-300">
       <CheckCircle className="w-3.5 h-3.5" />
       <span className="font-medium">Rascunho salvo às {time}</span>
     </div>

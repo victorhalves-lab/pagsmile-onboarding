@@ -35,28 +35,51 @@
  */
 function buildCandidateUrls(functionName) {
   const urls = [];
+  let storedAppBaseUrl = null;
   try {
     const appId =
       (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_id')) ||
       import.meta.env.VITE_BASE44_APP_ID;
-    const appBaseUrl =
+    storedAppBaseUrl =
       (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_base_url')) ||
       import.meta.env.VITE_BASE44_APP_BASE_URL;
-    if (appId && appBaseUrl) {
-      const base = String(appBaseUrl).replace(/\/+$/, '');
-      urls.push(`${base}/api/apps/${appId}/functions/${functionName}`);
-    }
+
+    // Same-origin URLs FIRST — these always match the current domain
+    // (critical when the app has a custom domain like autonboarding.base44.app
+    // and the stored appBaseUrl still points to an old domain).
     if (appId) {
       urls.push(`/api/apps/${appId}/functions/${functionName}`);
     }
+    urls.push(`/functions/${functionName}`);
+
+    // Only add the stored appBaseUrl as a FALLBACK if its hostname matches
+    // the current origin. If the domain changed (e.g. custom domain migration),
+    // the stored appBaseUrl is stale and would produce CORS or auth errors.
+    if (appId && storedAppBaseUrl) {
+      try {
+        const storedHost = new URL(String(storedAppBaseUrl)).hostname;
+        const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+        if (storedHost === currentHost) {
+          const base = String(storedAppBaseUrl).replace(/\/+$/, '');
+          urls.push(`${base}/api/apps/${appId}/functions/${functionName}`);
+        } else {
+          // Domain mismatch — clear stale value so future calls skip this check
+          if (typeof window !== 'undefined') {
+            try { window.localStorage.removeItem('base44_app_base_url'); } catch (_) {}
+          }
+        }
+      } catch (_) {
+        // storedAppBaseUrl is not a valid URL — skip it
+      }
+    }
   } catch (_) {}
-  urls.push(`/functions/${functionName}`);
   return urls;
 }
 
 async function fetchFunction(functionName, payload) {
   const urls = buildCandidateUrls(functionName);
   let lastError = null;
+  let lastAuthResponse = null;
   // CRITICAL: Stringify ONCE outside the loop. Previously we called
   // JSON.stringify on every URL attempt (up to 3x), which for upload payloads
   // (base64 strings ~2MB per file) would block the main thread for 200-500ms
@@ -78,11 +101,21 @@ async function fetchFunction(functionName, payload) {
         lastError = new Error(`non-json response from ${url} (status ${res.status})`);
         continue;
       }
+      // Save 401/403 responses as fallback — if all other URLs also fail,
+      // we return this so callPublicFunction can handle gateway envelopes.
+      if (res.status === 401 || res.status === 403) {
+        lastAuthResponse = res;
+        lastError = new Error(`auth error from ${url} (status ${res.status})`);
+        continue;
+      }
       return res;
     } catch (err) {
       lastError = err;
     }
   }
+  // If we got an auth response from at least one URL, return it so
+  // callPublicFunction can detect gateway envelopes and retry appropriately.
+  if (lastAuthResponse) return lastAuthResponse;
   throw lastError || new Error('all function endpoints failed');
 }
 

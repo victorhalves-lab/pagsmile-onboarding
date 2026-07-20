@@ -102,15 +102,15 @@ export default function DatasetResultsSummary({ score }) {
   if (activeKeys.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-blue-50/40 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-blue-100">
             <Layers className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">O Que Cada Dataset Encontrou</h3>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40">Resumo em linguagem de negócio de cada dimensão analisada pela Big Data Corp</p>
+            <h3 className="text-base font-bold text-[var(--pinbank-blue)]">O Que Cada Dataset Encontrou</h3>
+            <p className="text-xs text-[var(--pinbank-blue)]/40">Resumo em linguagem de negócio de cada dimensão analisada pela Big Data Corp</p>
           </div>
           <Badge variant="outline" className="ml-auto text-[10px]">{activeKeys.length} dimensões</Badge>
         </div>
@@ -140,7 +140,7 @@ export default function DatasetResultsSummary({ score }) {
                   <Icon className={`w-5 h-5 ${riskCfg.text} flex-shrink-0 mt-0.5`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{meta.label}</span>
+                      <span className="text-sm font-bold text-[var(--pinbank-blue)]">{meta.label}</span>
                       <Badge className={`text-[9px] border-0 ${riskCfg.badge}`}>{riskCfg.label}</Badge>
                       {sectionScore !== 0 && (
                         <span className={`text-[10px] font-bold ${sectionScore > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -148,9 +148,9 @@ export default function DatasetResultsSummary({ score }) {
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/50 leading-relaxed">{meta.desc}</p>
+                    <p className="text-[10px] text-[var(--pinbank-blue)]/50 leading-relaxed">{meta.desc}</p>
                     <div className="flex items-center gap-3 mt-2 text-[10px]">
-                      <span className="text-[var(--pagsmile-blue)]/40">{items.length} itens</span>
+                      <span className="text-[var(--pinbank-blue)]/40">{items.length} itens</span>
                       {criticalItems.length > 0 && <span className="text-red-600 font-semibold">{criticalItems.length} atenção</span>}
                       {goodItems.length > 0 && <span className="text-green-600 font-semibold">{goodItems.length} favoráveis</span>}
                     </div>
@@ -168,7 +168,7 @@ export default function DatasetResultsSummary({ score }) {
                     return (
                       <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/70">
                         <StatusIcon className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${itemRisk.text}`} />
-                        <span className="text-xs text-[var(--pagsmile-blue)]/80 leading-relaxed">
+                        <span className="text-xs text-[var(--pinbank-blue)]/80 leading-relaxed">
                           {translateItemToBusinessLanguage(item)}
                         </span>
                       </div>

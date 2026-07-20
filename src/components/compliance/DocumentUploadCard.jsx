@@ -22,8 +22,8 @@ export default function DocumentUploadCard({ doc, isUploaded, fileName, onUpload
       className={cn(
         "relative p-4 rounded-xl border-2 transition-all duration-200 group",
         isUploaded 
-          ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5" 
-          : "border-slate-200 bg-white hover:border-[var(--pagsmile-blue)]/30 hover:shadow-md"
+          ? "border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5" 
+          : "border-slate-200 bg-white hover:border-[var(--pinbank-blue)]/30 hover:shadow-md"
       )}
     >
       <input
@@ -38,7 +38,7 @@ export default function DocumentUploadCard({ doc, isUploaded, fileName, onUpload
         <div className={cn(
           "p-3 rounded-lg transition-colors",
           isUploaded 
-            ? "bg-[var(--pagsmile-green)] text-white" 
+            ? "bg-[var(--pinbank-blue)] text-white" 
             : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
         )}>
           {isUploaded ? <CheckCircle2 className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
@@ -58,7 +58,7 @@ export default function DocumentUploadCard({ doc, isUploaded, fileName, onUpload
           </div>
           
           {isUploaded ? (
-            <div className="flex items-center gap-2 mt-3 p-2 bg-white/50 rounded-lg border border-[var(--pagsmile-green)]/20">
+            <div className="flex items-center gap-2 mt-3 p-2 bg-white/50 rounded-lg border border-[var(--pinbank-blue)]/20">
               <span className="text-xs text-slate-600 truncate flex-1 font-medium">
                 {fileName}
               </span>
@@ -79,7 +79,7 @@ export default function DocumentUploadCard({ doc, isUploaded, fileName, onUpload
               variant="outline"
               size="sm"
               onClick={handleClick}
-              className="mt-3 w-full border-dashed border-slate-300 text-slate-600 hover:text-[var(--pagsmile-blue)] hover:border-[var(--pagsmile-blue)] hover:bg-slate-50"
+              className="mt-3 w-full border-dashed border-slate-300 text-slate-600 hover:text-[var(--pinbank-blue)] hover:border-[var(--pinbank-blue)] hover:bg-slate-50"
             >
               <Upload className="w-3 h-3 mr-2" />
               Selecionar Arquivo

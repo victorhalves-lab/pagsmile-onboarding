@@ -21,22 +21,22 @@ export default function ModulosForm({ contract, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2">Módulos Ativos</h3>
+      <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2">Módulos Ativos</h3>
 
       <div className="space-y-3">
         {MODULOS.map(mod => (
-          <label key={mod.key} className="flex items-center gap-3 p-3 rounded-xl border border-[#002443]/5 hover:border-[#2bc196]/20 hover:bg-[#2bc196]/5 transition-all cursor-pointer">
+          <label key={mod.key} className="flex items-center gap-3 p-3 rounded-xl border border-[#0A0A0A]/5 hover:border-[#1356E2]/20 hover:bg-[#1356E2]/5 transition-all cursor-pointer">
             <Checkbox
               checked={modules[mod.key] || false}
               onCheckedChange={(checked) => handleModuleToggle(mod.key, checked)}
             />
-            <span className="text-sm text-[#002443]">{mod.label}</span>
+            <span className="text-sm text-[#0A0A0A]">{mod.label}</span>
           </label>
         ))}
       </div>
 
       <div className="space-y-1.5 mt-4">
-        <Label className="text-xs font-semibold text-[#002443]/70 uppercase tracking-wider">Outros Módulos</Label>
+        <Label className="text-xs font-semibold text-[#0A0A0A]/70 uppercase tracking-wider">Outros Módulos</Label>
         <Textarea
           value={contract.otherModules || ''}
           onChange={e => onChange('otherModules', e.target.value)}

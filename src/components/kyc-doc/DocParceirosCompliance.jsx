@@ -6,7 +6,7 @@ export default function DocParceirosCompliance() {
     <S>
       <H1>16. Módulo de Parceiros de Compliance — Colaboração Externa</H1>
 
-      <P>O módulo de Parceiros de Compliance permite que a PagSmile compartilhe casos de onboarding com empresas parceiras externas (escritórios de auditoria, outras processadoras, bureaus de compliance) para análise colaborativa. O parceiro recebe acesso controlado a casos específicos, analisa o dossiê completo (ou mascarado), e devolve uma recomendação de decisão. A PagSmile mantém sempre o poder final de decisão — a recomendação do parceiro é um insumo, não uma ordem.</P>
+      <P>O módulo de Parceiros de Compliance permite que a Pin Bank compartilhe casos de onboarding com empresas parceiras externas (escritórios de auditoria, outras processadoras, bureaus de compliance) para análise colaborativa. O parceiro recebe acesso controlado a casos específicos, analisa o dossiê completo (ou mascarado), e devolve uma recomendação de decisão. A Pin Bank mantém sempre o poder final de decisão — a recomendação do parceiro é um insumo, não uma ordem.</P>
 
       <InfoBox title="Por que existe este módulo?">
         <p>Em operações complexas (gateways de alto volume, marketplaces internacionais, subsellers regulados), parceiros externos podem precisar validar o cliente antes que ele opere com eles — um segundo par de olhos especializados reduz risco para todas as partes envolvidas. Este módulo transforma esse processo (tradicionalmente feito via e-mail e planilhas) em um fluxo auditado, rastreável e com SLAs medidos.</p>
@@ -71,10 +71,10 @@ export default function DocParceirosCompliance() {
 
       <H3>Etapa 7 — Recomendação do Parceiro</H3>
       <P>O parceiro usa o componente <code>PartnerRecommendationForm</code> para submeter sua decisão. A função <code>partnerSubmitRecommendation</code> aceita 4 tipos:</P>
-      <Table headers={['Recomendação', 'Significado', 'Ação subsequente da Pagsmile']} rows={[
-        ['approve', 'Parceiro aprova a operação com o cliente.', 'A Pagsmile considera como insumo. Se Pagsmile também está inclinado a aprovar, decisão final = aprovado.'],
-        ['reject', 'Parceiro não quer operar com o cliente.', 'Pagsmile avalia: pode ainda aprovar internamente (registrando divergência) ou pode usar como reforço para recusa.'],
-        ['request_docs', 'Parceiro pede documentos adicionais antes de decidir.', 'Pagsmile escala para analista humano que solicita os docs ao cliente.'],
+      <Table headers={['Recomendação', 'Significado', 'Ação subsequente da Pin Bank']} rows={[
+        ['approve', 'Parceiro aprova a operação com o cliente.', 'A Pin Bank considera como insumo. Se Pin Bank também está inclinado a aprovar, decisão final = aprovado.'],
+        ['reject', 'Parceiro não quer operar com o cliente.', 'Pin Bank avalia: pode ainda aprovar internamente (registrando divergência) ou pode usar como reforço para recusa.'],
+        ['request_docs', 'Parceiro pede documentos adicionais antes de decidir.', 'Pin Bank escala para analista humano que solicita os docs ao cliente.'],
         ['escalate', 'Parceiro identificou algo crítico e quer escalação urgente.', 'Alerta Slack de alta prioridade disparado. Caso entra em Revisão Manual imediata.'],
       ]} />
       <P>Comentários obrigatórios em todos os casos. O <code>assignment.status</code> muda para <code>completed</code>, <code>partnerReviewedAt</code> é gravado, e evento <code>recommendation_submitted</code> é logado. Se o parceiro alterar uma recomendação já submetida (caso raro), é <code>recommendation_changed</code>.</P>
@@ -85,7 +85,7 @@ export default function DocParceirosCompliance() {
         <Li>Identifica <code>PartnerAssignment</code> com <code>status ∈ {`{pending, viewed, in_review}`}</code> cuja <code>dueDate</code> está a ≤ 25% do tempo restante (ex: SLA de 48h e faltam &lt; 12h).</Li>
         <Li>Envia 1 alerta de aviso ao parceiro (evento <code>sla_warning_sent</code>) via Slack se ainda não enviou.</Li>
         <Li>Quando <code>dueDate &lt; agora</code> e status ≠ completed, muda status para <code>expired</code> e grava evento <code>sla_breached</code>.</Li>
-        <Li>Alerta ao admin Pagsmile para reassignar o caso a outro parceiro ou retomar a análise internamente.</Li>
+        <Li>Alerta ao admin Pin Bank para reassignar o caso a outro parceiro ou retomar a análise internamente.</Li>
       </ul>
 
       <H2>16.6. Revogação de Atribuição</H2>
@@ -100,14 +100,14 @@ export default function DocParceirosCompliance() {
 
       <H2>16.7. Telas do Módulo</H2>
       <Table headers={['Tela', 'Rota', 'Acesso', 'Função']} rows={[
-        ['Admin — Gestão de Parceiros', '/AdminGestaoParceiros', 'Admin Pagsmile', 'CRUD de parceiros + gestão de usuários do parceiro.'],
-        ['Admin — Atribuir Caso', 'Modal dentro de /CadastroDetalhe', 'Admin Pagsmile', 'Componente AssignCaseToPartnerModal + CasePartnerAssignments para ver histórico de atribuições.'],
+        ['Admin — Gestão de Parceiros', '/AdminGestaoParceiros', 'Admin Pin Bank', 'CRUD de parceiros + gestão de usuários do parceiro.'],
+        ['Admin — Atribuir Caso', 'Modal dentro de /CadastroDetalhe', 'Admin Pin Bank', 'Componente AssignCaseToPartnerModal + CasePartnerAssignments para ver histórico de atribuições.'],
         ['Parceiro — Dashboard', '/ComplianceParceiro', 'Usuário do parceiro', 'Lista todos os casos atribuídos com filtros, KPIs e SLA.'],
         ['Parceiro — Detalhe do Caso', '/ComplianceParceiroDetalhe', 'Usuário do parceiro', 'Dossiê aplicado com nível de visibilidade + formulário de recomendação.'],
       ]} />
 
       <InfoBox title="Auditoria Regulatória — Trilha Completa">
-        <p>Toda interação do parceiro com um caso (abrir, ver documento, baixar, comentar, recomendar, alterar recomendação) gera um evento em <code>PartnerAssignmentActivity</code> com timestamp UTC, IP, usuário e detalhes. Em auditorias do regulador, a Pagsmile consegue reconstruir segundo-a-segundo quem viu o quê de cada cliente externo. Retenção: 5 anos conforme Lei 9.613/1998.</p>
+        <p>Toda interação do parceiro com um caso (abrir, ver documento, baixar, comentar, recomendar, alterar recomendação) gera um evento em <code>PartnerAssignmentActivity</code> com timestamp UTC, IP, usuário e detalhes. Em auditorias do regulador, a Pin Bank consegue reconstruir segundo-a-segundo quem viu o quê de cada cliente externo. Retenção: 5 anos conforme Lei 9.613/1998.</p>
       </InfoBox>
     </S>
   );

@@ -6,8 +6,8 @@ import { Building2, CreditCard, DollarSign, Shield, Target, User } from 'lucide-
 
 const Section = ({ icon: Icon, title, children }) => (
   <div className="mb-6">
-    <h3 className="flex items-center gap-2 text-sm font-semibold text-[#002443] mb-3 pb-2 border-b border-[#002443]/5">
-      <Icon className="w-4 h-4 text-[#2bc196]" />
+    <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0A0A0A] mb-3 pb-2 border-b border-[#0A0A0A]/5">
+      <Icon className="w-4 h-4 text-[#1356E2]" />
       {title}
     </h3>
     <div className="space-y-2">{children}</div>
@@ -18,7 +18,7 @@ const Field = ({ label, value }) => {
   if (!value && value !== 0) return null;
   return (
     <div className="flex justify-between items-start py-1.5">
-      <span className="text-xs text-[#002443]/60 flex-shrink-0 mr-4">{label}</span>
+      <span className="text-xs text-[#0A0A0A]/60 flex-shrink-0 mr-4">{label}</span>
       <span className="text-sm text-right font-medium">{value}</span>
     </div>
   );
@@ -49,7 +49,7 @@ export default function MeetingQuestionnaireDetailModal({ open, onClose, questio
             <span>{q.clientFullName}</span>
             <Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge>
           </DialogTitle>
-          <p className="text-xs text-[#002443]/50">Protocolo: {q.protocolo} | Agente: {q.commercialAgentName}</p>
+          <p className="text-xs text-[#0A0A0A]/50">Protocolo: {q.protocolo} | Agente: {q.commercialAgentName}</p>
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <Section icon={User} title="Informações do Cliente">
@@ -68,7 +68,7 @@ export default function MeetingQuestionnaireDetailModal({ open, onClose, questio
             <Field label="Canais de Venda" value={q.salesChannels} />
             {q.revenueBreakdown?.length > 0 && (
               <div className="mt-2">
-                <span className="text-xs text-[#002443]/60 block mb-1">Distribuição de Receita:</span>
+                <span className="text-xs text-[#0A0A0A]/60 block mb-1">Distribuição de Receita:</span>
                 <div className="space-y-1">
                   {q.revenueBreakdown.map((r, i) => (
                     <div key={i} className="flex justify-between text-sm bg-[#f4f4f4] rounded px-3 py-1.5">
@@ -88,7 +88,7 @@ export default function MeetingQuestionnaireDetailModal({ open, onClose, questio
             <Field label="Expectativa de Crescimento" value={q.growthExpectation} />
             {q.preferredPaymentMethods?.length > 0 && (
               <div className="flex justify-between items-start py-1.5">
-                <span className="text-xs text-[#002443]/60">Métodos Preferidos</span>
+                <span className="text-xs text-[#0A0A0A]/60">Métodos Preferidos</span>
                 <div className="flex flex-wrap gap-1 justify-end">
                   {q.preferredPaymentMethods.map(m => (
                     <Badge key={m} variant="outline" className="text-[10px]">{m}</Badge>

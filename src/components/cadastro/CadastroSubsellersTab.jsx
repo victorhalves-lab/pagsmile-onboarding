@@ -25,39 +25,39 @@ function formatDoc(doc) {
 export default function CadastroSubsellersTab({ subsellers = [] }) {
   if (!subsellers.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <Users className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum subseller vinculado</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <Users className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum subseller vinculado</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-2 mt-4">
-      <p className="text-sm text-[var(--pagsmile-blue)]/60 mb-2">{subsellers.length} subseller(s)</p>
+      <p className="text-sm text-[var(--pinbank-blue)]/60 mb-2">{subsellers.length} subseller(s)</p>
       {subsellers.map(s => (
         <Link
           key={s.id}
           to={`/CadastroDetalhe?id=${s.id}`}
-          className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 hover:border-[var(--pagsmile-green)]/40 hover:shadow-md transition-all group"
+          className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[var(--pinbank-blue)]/8 hover:border-[var(--pinbank-blue)]/40 hover:shadow-md transition-all group"
         >
           <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${s.type === 'PJ' ? 'bg-blue-50' : 'bg-purple-50'}`}>
             {s.type === 'PJ' ? <Users className="w-4 h-4 text-blue-600" /> : <User className="w-4 h-4 text-purple-600" />}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-semibold text-[var(--pagsmile-blue)] truncate">
+              <span className="text-sm font-semibold text-[var(--pinbank-blue)] truncate">
                 {s.companyName || s.fullName}
               </span>
               <Badge variant="outline" className="text-[10px]">{s.type}</Badge>
             </div>
-            <p className="text-xs text-[var(--pagsmile-blue)]/50">{formatDoc(s.cpfCnpj)}</p>
+            <p className="text-xs text-[var(--pinbank-blue)]/50">{formatDoc(s.cpfCnpj)}</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {s._scoreV4 != null && (
               <div className="text-center">
-                <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{s._scoreV4}</p>
-                <p className="text-[9px] text-[var(--pagsmile-blue)]/40">Score V4</p>
+                <p className="text-xs font-bold text-[var(--pinbank-blue)]">{s._scoreV4}</p>
+                <p className="text-[9px] text-[var(--pinbank-blue)]/40">Score V4</p>
               </div>
             )}
             {s._subfaixa && (
@@ -66,7 +66,7 @@ export default function CadastroSubsellersTab({ subsellers = [] }) {
               </Badge>
             )}
             <Badge className="text-[10px]" variant="outline">{s.onboardingStatus}</Badge>
-            <ChevronRight className="w-4 h-4 text-[var(--pagsmile-blue)]/20 group-hover:text-[var(--pagsmile-green)]" />
+            <ChevronRight className="w-4 h-4 text-[var(--pinbank-blue)]/20 group-hover:text-[var(--pinbank-blue)]" />
           </div>
         </Link>
       ))}

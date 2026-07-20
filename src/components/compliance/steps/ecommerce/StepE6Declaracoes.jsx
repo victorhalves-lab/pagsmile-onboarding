@@ -11,8 +11,8 @@ export default function StepE6Declaracoes({ formData, handleChange }) {
           <FileCheck className="w-5 h-5 text-green-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Declarações Obrigatórias</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Confirme as declarações abaixo</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Declarações Obrigatórias</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Confirme as declarações abaixo</p>
         </div>
       </div>
 

@@ -107,13 +107,13 @@ export default function PreviewContrato() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
 
   if (!contract) {
-    return <div className="text-center py-20 text-[#002443]/50">{t('pc.not_found')}</div>;
+    return <div className="text-center py-20 text-[#0A0A0A]/50">{t('pc.not_found')}</div>;
   }
 
   return (
@@ -125,8 +125,8 @@ export default function PreviewContrato() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold text-[#002443]">{t('pc.title')}</h1>
-            <p className="text-sm text-[#002443]/50 mt-0.5">
+            <h1 className="text-xl font-bold text-[#0A0A0A]">{t('pc.title')}</h1>
+            <p className="text-sm text-[#0A0A0A]/50 mt-0.5">
               {contract.codigo} • {contract.clientName}
             </p>
           </div>
@@ -146,7 +146,7 @@ export default function PreviewContrato() {
           <Button 
             onClick={() => sendMutation.mutate()}
             disabled={sendMutation.isPending || contract.status === 'sent' || contract.status === 'signed'}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {sendMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
             {t('pc.mark_sent')}
@@ -170,7 +170,7 @@ export default function PreviewContrato() {
       )}
 
       {/* Contract Preview */}
-      <Card className="bg-white border border-[#002443]/10 shadow-lg">
+      <Card className="bg-white border border-[#0A0A0A]/10 shadow-lg">
         <CardContent className="p-0">
           <div ref={contractRef}>
             <ConteudoContrato contract={contract} />

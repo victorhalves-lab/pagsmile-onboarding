@@ -35,10 +35,10 @@ export default function DocumentNotAvailableModal({ open, onOpenChange, doc, onC
             <div className="p-2 bg-amber-100 rounded-lg">
               <AlertTriangle className="w-5 h-5 text-amber-600" />
             </div>
-            <DialogTitle className="text-[#002443]">Não possuo este documento</DialogTitle>
+            <DialogTitle className="text-[#0A0A0A]">Não possuo este documento</DialogTitle>
           </div>
-          <DialogDescription className="text-[#002443]/70">
-            <strong className="text-[#002443]">{doc.label || doc.name}</strong>
+          <DialogDescription className="text-[#0A0A0A]/70">
+            <strong className="text-[#0A0A0A]">{doc.label || doc.name}</strong>
           </DialogDescription>
         </DialogHeader>
 
@@ -58,7 +58,7 @@ export default function DocumentNotAvailableModal({ open, onOpenChange, doc, onC
 
           {/* Textarea */}
           <div>
-            <label className="text-sm font-semibold text-[#002443] mb-2 block">
+            <label className="text-sm font-semibold text-[#0A0A0A] mb-2 block">
               Por que você não possui este documento? <span className="text-red-500">*</span>
             </label>
             <Textarea
@@ -84,8 +84,8 @@ export default function DocumentNotAvailableModal({ open, onOpenChange, doc, onC
 
           {/* Example tip */}
           <div className="bg-slate-50 rounded-lg p-3">
-            <p className="text-xs font-semibold text-[#002443] mb-1">💡 Dicas para uma boa justificativa:</p>
-            <ul className="text-xs text-[#002443]/70 space-y-0.5 list-disc pl-4">
+            <p className="text-xs font-semibold text-[#0A0A0A] mb-1">💡 Dicas para uma boa justificativa:</p>
+            <ul className="text-xs text-[#0A0A0A]/70 space-y-0.5 list-disc pl-4">
               <li>Explique o motivo real (ex: empresa nova, sem operação anterior)</li>
               <li>Indique documentos alternativos que você pode enviar</li>
               <li>Seja transparente — justificativas vagas são rejeitadas</li>

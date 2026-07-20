@@ -57,19 +57,19 @@ export default function CadastroV5_2Banner({ latestCase }) {
   const patchCfg = PATCH_CONFIG[patch];
 
   return (
-    <div className="bg-gradient-to-r from-[#2bc196]/8 via-white to-[#002443]/4 border border-[#2bc196]/25 rounded-xl p-4">
+    <div className="bg-gradient-to-r from-[#1356E2]/8 via-white to-[#0A0A0A]/4 border border-[#1356E2]/25 rounded-xl p-4">
       {/* Linha 1 — DNA */}
       <div className="flex items-center flex-wrap gap-2 mb-3">
-        <div className="flex items-center gap-2 pr-3 border-r border-[#002443]/10">
-          <Rocket className="w-4 h-4 text-[#2bc196]" />
-          <span className="text-xs font-bold text-[#002443]">Framework V5.2</span>
+        <div className="flex items-center gap-2 pr-3 border-r border-[#0A0A0A]/10">
+          <Rocket className="w-4 h-4 text-[#1356E2]" />
+          <span className="text-xs font-bold text-[#0A0A0A]">Framework V5.2</span>
           {isTransitional && (
             <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700">Transicional</Badge>
           )}
         </div>
 
         {tier && (
-          <Badge className="bg-[#002443]/8 text-[#002443] border-0 text-xs">
+          <Badge className="bg-[#0A0A0A]/8 text-[#0A0A0A] border-0 text-xs">
             <Layers className="w-3 h-3 mr-1" />{TIER_LABELS[tier] || tier}
           </Badge>
         )}
@@ -82,7 +82,7 @@ export default function CadastroV5_2Banner({ latestCase }) {
           <Badge variant="outline" className="text-xs">Morfologia {morfologia}</Badge>
         )}
         {scoreV52 != null && (
-          <Badge className="bg-[#2bc196]/15 text-[#36706c] border-0 text-xs font-mono">
+          <Badge className="bg-[#1356E2]/15 text-[#E84B1C] border-0 text-xs font-mono">
             Score V5.2: {scoreV52}
           </Badge>
         )}
@@ -106,10 +106,10 @@ export default function CadastroV5_2Banner({ latestCase }) {
       {/* Linha 3 — Capabilities */}
       {capabilities.length > 0 && (
         <div className="flex items-start gap-2 mb-3">
-          <Boxes className="w-3.5 h-3.5 text-[#002443]/50 mt-1 flex-shrink-0" />
+          <Boxes className="w-3.5 h-3.5 text-[#0A0A0A]/50 mt-1 flex-shrink-0" />
           <div className="flex flex-wrap gap-1.5">
             {capabilities.map((cap) => (
-              <span key={cap} className="text-[11px] px-2 py-0.5 rounded-full bg-[#002443]/6 text-[#002443]/75 font-mono">
+              <span key={cap} className="text-[11px] px-2 py-0.5 rounded-full bg-[#0A0A0A]/6 text-[#0A0A0A]/75 font-mono">
                 {cap}
               </span>
             ))}
@@ -119,8 +119,8 @@ export default function CadastroV5_2Banner({ latestCase }) {
 
       {/* Linha 4 — Bloqueios ativos */}
       {bloqueios.length > 0 && (
-        <div className="border-t border-[#002443]/8 pt-2 mt-2">
-          <p className="text-[11px] text-[#002443]/60 mb-1 font-semibold uppercase tracking-wide">
+        <div className="border-t border-[#0A0A0A]/8 pt-2 mt-2">
+          <p className="text-[11px] text-[#0A0A0A]/60 mb-1 font-semibold uppercase tracking-wide">
             Bloqueios V5.2 ativos ({bloqueios.length})
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -130,7 +130,7 @@ export default function CadastroV5_2Banner({ latestCase }) {
               </Badge>
             ))}
             {bloqueios.length > 8 && (
-              <span className="text-[10px] text-[#002443]/50">+{bloqueios.length - 8}</span>
+              <span className="text-[10px] text-[#0A0A0A]/50">+{bloqueios.length - 8}</span>
             )}
           </div>
         </div>

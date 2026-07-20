@@ -71,8 +71,8 @@ function DocRequestPanel({ latestCase, merchantEmail }) {
     setSending(true);
     await base44.integrations.Core.SendEmail({
       to: merchantEmail,
-      subject: 'Complemento de Documentos — Pagsmile',
-      body: `<p>Olá,</p><p>Para dar continuidade ao seu processo de onboarding, precisamos que envie os documentos solicitados.</p><p><a href="${docUrl}" style="display:inline-block;padding:12px 24px;background:#2bc196;color:white;text-decoration:none;border-radius:8px;font-weight:600;">Enviar Documentos</a></p><p>Se o botão não funcionar, copie e cole o link abaixo:</p><p>${docUrl}</p><p>Atenciosamente,<br/>Equipe Pagsmile</p>`,
+      subject: 'Complemento de Documentos — Pin Bank',
+      body: `<p>Olá,</p><p>Para dar continuidade ao seu processo de onboarding, precisamos que envie os documentos solicitados.</p><p><a href="${docUrl}" style="display:inline-block;padding:12px 24px;background:#1356E2;color:white;text-decoration:none;border-radius:8px;font-weight:600;">Enviar Documentos</a></p><p>Se o botão não funcionar, copie e cole o link abaixo:</p><p>${docUrl}</p><p>Atenciosamente,<br/>Equipe Pin Bank</p>`,
     });
     setSending(false);
     toast.success(`E-mail enviado para ${merchantEmail}`);
@@ -91,7 +91,7 @@ function DocRequestPanel({ latestCase, merchantEmail }) {
       ) : (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <input readOnly value={docUrl} className="flex-1 text-xs bg-white border border-amber-300 rounded-lg px-3 py-2 text-[var(--pagsmile-blue)]/80 font-mono truncate" />
+            <input readOnly value={docUrl} className="flex-1 text-xs bg-white border border-amber-300 rounded-lg px-3 py-2 text-[var(--pinbank-blue)]/80 font-mono truncate" />
             <Button onClick={handleCopy} variant="outline" size="sm" className="gap-1 border-amber-300">
               {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? 'Copiado' : 'Copiar'}
@@ -118,20 +118,20 @@ function DocCard({ doc, onOpenPrivate }) {
   const isPrivate = doc.isPrivate && doc.fileUri && !doc.fileUrl;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-4 flex items-start gap-3">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-4 flex items-start gap-3">
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${cfg.color}`}>
         <Icon className={`w-5 h-5 ${cfg.iconColor}`} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <p className="text-sm font-semibold text-[var(--pagsmile-blue)] truncate">{doc.documentName || doc.fileName || 'Documento'}</p>
+          <p className="text-sm font-semibold text-[var(--pinbank-blue)] truncate">{doc.documentName || doc.fileName || 'Documento'}</p>
           <Badge className={`text-[9px] ${cfg.color}`}>{cfg.label}</Badge>
         </div>
         {doc.fileName && doc.fileName !== doc.documentName && (
-          <p className="text-xs text-[var(--pagsmile-blue)]/40 truncate">{doc.fileName}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/40 truncate">{doc.fileName}</p>
         )}
         {doc.contextLabel && (
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-0.5 truncate">{doc.contextLabel}</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/50 mt-0.5 truncate">{doc.contextLabel}</p>
         )}
         <div className="flex items-center gap-2 mt-1 flex-wrap">
           {doc.validationStatus && (
@@ -143,7 +143,7 @@ function DocCard({ doc, onOpenPrivate }) {
             <Badge className="bg-orange-100 text-orange-700 text-[10px]">Não disponível</Badge>
           )}
           {doc.uploadDate && (
-            <span className="text-[10px] text-[var(--pagsmile-blue)]/40">
+            <span className="text-[10px] text-[var(--pinbank-blue)]/40">
               {new Date(doc.uploadDate).toLocaleDateString('pt-BR')}
             </span>
           )}
@@ -365,10 +365,10 @@ export default function CadastroDocumentosUnificadoTab({ documents = [], latestC
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
         <button
           onClick={() => setSourceFilter('all')}
-          className={`bg-white rounded-lg border p-3 text-center hover:shadow-md transition ${sourceFilter === 'all' ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-[var(--pagsmile-blue)]/8'}`}
+          className={`bg-white rounded-lg border p-3 text-center hover:shadow-md transition ${sourceFilter === 'all' ? 'border-[var(--pinbank-blue)] ring-2 ring-[var(--pinbank-blue)]/20' : 'border-[var(--pinbank-blue)]/8'}`}
         >
-          <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{unifiedDocs.length}</p>
-          <p className="text-[9px] text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mt-0.5">Total</p>
+          <p className="text-xl font-bold text-[var(--pinbank-blue)]">{unifiedDocs.length}</p>
+          <p className="text-[9px] text-[var(--pinbank-blue)]/50 uppercase tracking-wider mt-0.5">Total</p>
         </button>
         {Object.entries(SOURCE_CONFIG).map(([key, cfg]) => {
           const count = sourceCounts[key] || 0;
@@ -378,19 +378,19 @@ export default function CadastroDocumentosUnificadoTab({ documents = [], latestC
             <button
               key={key}
               onClick={() => setSourceFilter(key)}
-              className={`bg-white rounded-lg border p-3 text-center hover:shadow-md transition ${sourceFilter === key ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-[var(--pagsmile-blue)]/8'}`}
+              className={`bg-white rounded-lg border p-3 text-center hover:shadow-md transition ${sourceFilter === key ? 'border-[var(--pinbank-blue)] ring-2 ring-[var(--pinbank-blue)]/20' : 'border-[var(--pinbank-blue)]/8'}`}
             >
               <Icon className={`w-4 h-4 mx-auto mb-1 ${cfg.iconColor}`} />
-              <p className="text-base font-bold text-[var(--pagsmile-blue)]">{count}</p>
-              <p className="text-[9px] text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mt-0.5 truncate">{cfg.label}</p>
+              <p className="text-base font-bold text-[var(--pinbank-blue)]">{count}</p>
+              <p className="text-[9px] text-[var(--pinbank-blue)]/50 uppercase tracking-wider mt-0.5 truncate">{cfg.label}</p>
             </button>
           );
         })}
       </div>
 
       {/* Barra de filtros */}
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-3 flex flex-wrap items-center gap-2">
-        <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/40 ml-1" />
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-3 flex flex-wrap items-center gap-2">
+        <Filter className="w-4 h-4 text-[var(--pinbank-blue)]/40 ml-1" />
         <Input
           placeholder="Buscar por nome, arquivo, contexto..."
           value={searchTerm}
@@ -408,16 +408,16 @@ export default function CadastroDocumentosUnificadoTab({ documents = [], latestC
             ))}
           </SelectContent>
         </Select>
-        <p className="text-xs text-[var(--pagsmile-blue)]/60 ml-auto">
+        <p className="text-xs text-[var(--pinbank-blue)]/60 ml-auto">
           {filteredDocs.length} de {unifiedDocs.length}
         </p>
       </div>
 
       {/* Lista de documentos */}
       {filteredDocs.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center">
-          <FileCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-          <p className="text-sm text-[var(--pagsmile-blue)]/50">
+        <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center">
+          <FileCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+          <p className="text-sm text-[var(--pinbank-blue)]/50">
             {unifiedDocs.length === 0 ? 'Nenhum documento encontrado em todas as fontes' : 'Nenhum documento com os filtros atuais'}
           </p>
         </div>

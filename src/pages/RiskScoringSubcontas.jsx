@@ -106,23 +106,23 @@ export default function RiskScoringSubcontas() {
   }, [scores]);
 
   if (scoresLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" /></div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-white/10"><Shield className="w-6 h-6 text-[#5cf7cf]" /></div>
+            <div className="p-3 rounded-xl bg-white/10"><Shield className="w-6 h-6 text-[#E84B1C]" /></div>
             <div>
               <h1 className="text-2xl font-bold text-white">Risk Scoring Subcontas</h1>
               <p className="text-white/60 text-sm mt-1">Análise de risco para subsellers por segmento</p>
             </div>
           </div>
           <Button onClick={() => runScoringMutation.mutate()} disabled={runScoringMutation.isPending}
-            className="bg-[var(--pagsmile-green)] text-white">
+            className="bg-[var(--pinbank-blue)] text-white">
             {runScoringMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
             Executar Scoring
           </Button>
@@ -132,31 +132,31 @@ export default function RiskScoringSubcontas() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.total}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">Total Analisados</p>
+          <p className="text-2xl font-bold text-[var(--pinbank-blue)]">{stats.total}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/50">Total Analisados</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.avgScore}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">Score Médio</p>
+          <p className="text-2xl font-bold text-[var(--pinbank-blue)]">{stats.avgScore}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/50">Score Médio</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">Aprovados</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/50">Aprovados</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold text-orange-600">{stats.manual}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">Revisão Manual</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/50">Revisão Manual</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold text-red-600">{stats.rejected}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">Recusados</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/50">Recusados</p>
         </CardContent></Card>
       </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar subseller..." className="pl-10" />
         </div>
         <Select value={segmentFilter} onValueChange={setSegmentFilter}>
@@ -180,8 +180,8 @@ export default function RiskScoringSubcontas() {
         <CardContent className="p-0">
           {filteredScores.length === 0 ? (
             <div className="text-center py-12">
-              <Shield className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/20 mb-4" />
-              <p className="text-[var(--pagsmile-blue)]/50">Nenhum score encontrado. Execute o scoring para analisar subcontas.</p>
+              <Shield className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/20 mb-4" />
+              <p className="text-[var(--pinbank-blue)]/50">Nenhum score encontrado. Execute o scoring para analisar subcontas.</p>
             </div>
           ) : (
             <Table>
@@ -207,15 +207,15 @@ export default function RiskScoringSubcontas() {
                     <TableRow key={s.id} className="hover:bg-[#f4f4f4]">
                       <TableCell>
                         <div>
-                          <p className="font-medium text-[var(--pagsmile-blue)]">{subseller?.fullName || 'N/A'}</p>
-                          <p className="text-xs text-[var(--pagsmile-blue)]/50">{subseller?.cpfCnpj || '-'}</p>
+                          <p className="font-medium text-[var(--pinbank-blue)]">{subseller?.fullName || 'N/A'}</p>
+                          <p className="text-xs text-[var(--pinbank-blue)]/50">{subseller?.cpfCnpj || '-'}</p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm text-[var(--pagsmile-blue)]/70">{seller?.fullName || seller?.companyName || '-'}</p>
+                        <p className="text-sm text-[var(--pinbank-blue)]/70">{seller?.fullName || seller?.companyName || '-'}</p>
                       </TableCell>
                       <TableCell>
-                        <Badge className="bg-[var(--pagsmile-blue)]/5 text-[var(--pagsmile-blue)] border-0 text-xs">
+                        <Badge className="bg-[var(--pinbank-blue)]/5 text-[var(--pinbank-blue)] border-0 text-xs">
                           {SEGMENT_LABELS[s.segmento] || s.segmento}
                         </Badge>
                       </TableCell>
@@ -248,7 +248,7 @@ export default function RiskScoringSubcontas() {
                       <TableCell className="text-right">
                         {c && (
                           <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
-                            <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)]">
+                            <Button variant="ghost" size="sm" className="text-[var(--pinbank-blue)]">
                               <Eye className="w-4 h-4 mr-1" /> Ver
                             </Button>
                           </Link>

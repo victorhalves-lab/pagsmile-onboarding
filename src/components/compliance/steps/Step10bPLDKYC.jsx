@@ -25,7 +25,7 @@ export default function Step10bPLDKYC({ formData, handleChange }) {
       subtitle="Controles de Conheça Seu Cliente (KYC)."
       icon={ShieldCheck}
     >
-      <h3 className="font-semibold text-[var(--pagsmile-blue)] mb-2">8B. Controles KYC</h3>
+      <h3 className="font-semibold text-[var(--pinbank-blue)] mb-2">8B. Controles KYC</h3>
       
       <YesNoQuestion
         question="A empresa realiza KYC/KYB de seus próprios clientes?"
@@ -34,8 +34,8 @@ export default function Step10bPLDKYC({ formData, handleChange }) {
         required
       />
       {formData.pld_realiza_kyc === true && (
-         <div className="p-3 bg-[var(--pagsmile-blue)]/5 border border-[var(--pagsmile-blue)]/10 rounded-lg mt-2">
-            <Label className="text-sm font-medium text-[var(--pagsmile-blue)] mb-2 block">Qual o escopo da verificação?</Label>
+         <div className="p-3 bg-[var(--pinbank-blue)]/5 border border-[var(--pinbank-blue)]/10 rounded-lg mt-2">
+            <Label className="text-sm font-medium text-[var(--pinbank-blue)] mb-2 block">Qual o escopo da verificação?</Label>
             <div className="grid grid-cols-2 gap-2">
                {escopoKycOptions.map(opt => (
                   <div key={opt} className="flex items-center space-x-2">
@@ -43,9 +43,9 @@ export default function Step10bPLDKYC({ formData, handleChange }) {
                         id={`kyc_${opt}`} 
                         checked={(formData.pld_kyc_escopo || []).includes(opt)}
                         onCheckedChange={(c) => handleMultiSelect('pld_kyc_escopo', opt, c)}
-                        className="border-[var(--pagsmile-blue)]/30 text-[var(--pagsmile-green)] data-[state=checked]:bg-[var(--pagsmile-green)] data-[state=checked]:border-[var(--pagsmile-green)]"
+                        className="border-[var(--pinbank-blue)]/30 text-[var(--pinbank-blue)] data-[state=checked]:bg-[var(--pinbank-blue)] data-[state=checked]:border-[var(--pinbank-blue)]"
                      />
-                     <Label htmlFor={`kyc_${opt}`} className="text-sm font-normal text-[var(--pagsmile-blue)] cursor-pointer">{opt}</Label>
+                     <Label htmlFor={`kyc_${opt}`} className="text-sm font-normal text-[var(--pinbank-blue)] cursor-pointer">{opt}</Label>
                   </div>
                ))}
             </div>
@@ -60,7 +60,7 @@ export default function Step10bPLDKYC({ formData, handleChange }) {
       />
       {formData.pld_verifica_sancoes === true && (
          <div className="mt-2 space-y-2">
-            <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Frequência de re-verificação</Label>
+            <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Frequência de re-verificação</Label>
             <SelectionButton
                options={[
                   {value: 'continuo', label: 'Contínuo'},

@@ -83,7 +83,7 @@ function FindingCard({ finding }) {
           <div className="flex-1 min-w-0">
             {/* Title row */}
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
-              <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{finding.titulo}</span>
+              <span className="text-sm font-bold text-[var(--pinbank-blue)]">{finding.titulo}</span>
               <Badge className={`${config.color} text-[10px] border-0`}>{config.label}</Badge>
               {finding.deducao_pontos != null && finding.deducao_pontos > 0 && (
                 <Badge className="bg-red-100 text-red-700 text-[10px] border-0 font-bold">-{finding.deducao_pontos} pts no score</Badge>
@@ -92,7 +92,7 @@ function FindingCard({ finding }) {
 
             {/* Description — ALWAYS visible, not truncated */}
             {finding.descricao && (
-              <p className="text-xs text-[var(--pagsmile-blue)]/70 leading-relaxed mb-2">{finding.descricao}</p>
+              <p className="text-xs text-[var(--pinbank-blue)]/70 leading-relaxed mb-2">{finding.descricao}</p>
             )}
 
             {/* Why this severity */}
@@ -106,7 +106,7 @@ function FindingCard({ finding }) {
             {/* Source and phase — always visible */}
             <div className="flex flex-wrap gap-2 items-center">
               {finding.fonte_externa && (
-                <div className="flex items-center gap-1 text-[10px] text-[var(--pagsmile-blue)]/50">
+                <div className="flex items-center gap-1 text-[10px] text-[var(--pinbank-blue)]/50">
                   <Database className="w-3 h-3" />
                   <span className="font-semibold">{finding.fonte_externa}</span>
                   {FONTE_LABELS[finding.fonte_externa] && (
@@ -115,13 +115,13 @@ function FindingCard({ finding }) {
                 </div>
               )}
               {finding.fase && (
-                <div className="flex items-center gap-1 text-[10px] text-[var(--pagsmile-blue)]/40">
+                <div className="flex items-center gap-1 text-[10px] text-[var(--pinbank-blue)]/40">
                   <Shield className="w-3 h-3" />
                   Detectado na Fase {finding.fase}
                 </div>
               )}
               {finding.data_identificacao && (
-                <div className="flex items-center gap-1 text-[10px] text-[var(--pagsmile-blue)]/40">
+                <div className="flex items-center gap-1 text-[10px] text-[var(--pinbank-blue)]/40">
                   <Clock className="w-3 h-3" />
                   {new Date(finding.data_identificacao).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -139,7 +139,7 @@ function FindingCard({ finding }) {
         <>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-full flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold border-t border-dashed text-[var(--pagsmile-blue)]/40 hover:text-[var(--pagsmile-blue)]/70 hover:bg-white/50 transition-colors"
+            className="w-full flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold border-t border-dashed text-[var(--pinbank-blue)]/40 hover:text-[var(--pinbank-blue)]/70 hover:bg-white/50 transition-colors"
             style={{ borderColor: 'inherit' }}
           >
             {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -150,18 +150,18 @@ function FindingCard({ finding }) {
             <div className="px-4 pb-4 space-y-3">
               {finding.secao_questionario && (
                 <div className="flex items-start gap-2 p-3 bg-white/80 rounded-lg border border-slate-200">
-                  <FileText className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-[var(--pagsmile-blue)]/40" />
+                  <FileText className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-[var(--pinbank-blue)]/40" />
                   <div>
-                    <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 uppercase tracking-wide mb-0.5">Seção do Questionário</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/70">{finding.secao_questionario}</p>
+                    <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 uppercase tracking-wide mb-0.5">Seção do Questionário</p>
+                    <p className="text-xs text-[var(--pinbank-blue)]/70">{finding.secao_questionario}</p>
                   </div>
                 </div>
               )}
 
               {finding.evidencia && (
                 <div className="p-3 bg-white/80 rounded-lg border border-slate-200">
-                  <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 uppercase tracking-wide mb-1.5">📋 Evidência — O que foi encontrado</p>
-                  <p className="text-xs text-[var(--pagsmile-blue)]/80 whitespace-pre-wrap leading-relaxed">{finding.evidencia}</p>
+                  <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 uppercase tracking-wide mb-1.5">📋 Evidência — O que foi encontrado</p>
+                  <p className="text-xs text-[var(--pinbank-blue)]/80 whitespace-pre-wrap leading-relaxed">{finding.evidencia}</p>
                 </div>
               )}
 
@@ -191,7 +191,7 @@ export default function ComplianceFindingsSection({ findings, findingsBySeverity
   const warnings = findings.filter(f => f.severidade === 'HIGH' || f.severidade === 'MEDIUM');
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-rose-50/40 to-white">
         <div className="flex items-center justify-between">
@@ -200,8 +200,8 @@ export default function ComplianceFindingsSection({ findings, findingsBySeverity
               <Search className="w-5 h-5 text-rose-600" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Findings — Achados da Análise ({findings.length})</h3>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40">Cada finding é um ponto específico identificado durante a análise de risco, com sua evidência e impacto</p>
+              <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Findings — Achados da Análise ({findings.length})</h3>
+              <p className="text-xs text-[var(--pinbank-blue)]/40">Cada finding é um ponto específico identificado durante a análise de risco, com sua evidência e impacto</p>
             </div>
           </div>
           {totalDeductions > 0 && (
@@ -215,8 +215,8 @@ export default function ComplianceFindingsSection({ findings, findingsBySeverity
       <div className="p-5">
         {/* Explainer — What are findings */}
         <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 mb-5">
-          <h4 className="text-xs font-bold text-[var(--pagsmile-blue)] mb-2">O que são Findings?</h4>
-          <p className="text-[11px] text-[var(--pagsmile-blue)]/60 leading-relaxed mb-3">
+          <h4 className="text-xs font-bold text-[var(--pinbank-blue)] mb-2">O que são Findings?</h4>
+          <p className="text-[11px] text-[var(--pinbank-blue)]/60 leading-relaxed mb-3">
             Findings são <strong>achados específicos</strong> detectados durante a análise de compliance. Cada um representa algo que o sistema encontrou ao verificar os dados do merchant — seja nos dados de bureau (BDC), na verificação de identidade (CAF), ou no questionário preenchido. Eles afetam diretamente o score de risco.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -246,7 +246,7 @@ export default function ComplianceFindingsSection({ findings, findingsBySeverity
         <div className="flex flex-wrap gap-2 mb-4">
           <button
             onClick={() => setFilter('all')}
-            className={`text-xs px-3 py-1.5 rounded-lg border transition-colors font-medium ${filter === 'all' ? 'bg-[var(--pagsmile-blue)] text-white border-[var(--pagsmile-blue)]' : 'bg-white text-[var(--pagsmile-blue)]/60 border-gray-200 hover:bg-gray-50'}`}
+            className={`text-xs px-3 py-1.5 rounded-lg border transition-colors font-medium ${filter === 'all' ? 'bg-[var(--pinbank-blue)] text-white border-[var(--pinbank-blue)]' : 'bg-white text-[var(--pinbank-blue)]/60 border-gray-200 hover:bg-gray-50'}`}
           >
             Todos ({findings.length})
           </button>
@@ -273,7 +273,7 @@ export default function ComplianceFindingsSection({ findings, findingsBySeverity
         {filtered.length === 0 && (
           <div className="text-center py-8">
             <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-green-400" />
-            <p className="text-sm text-[var(--pagsmile-blue)]/40">Nenhum finding nesta categoria</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/40">Nenhum finding nesta categoria</p>
           </div>
         )}
       </div>

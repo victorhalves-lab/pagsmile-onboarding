@@ -80,7 +80,7 @@ const getModelBadge = (model) => {
 
 const getV4ScoreDisplay = (v4Score, subfaixa, subfaixaNome) => {
   if (v4Score === undefined || v4Score === null) {
-    return <span className="text-[var(--pagsmile-blue)]/50 text-xs">-</span>;
+    return <span className="text-[var(--pinbank-blue)]/50 text-xs">-</span>;
   }
   const subfaixaColors = {
     '1A': 'text-green-700', '1B': 'text-green-600',
@@ -92,13 +92,13 @@ const getV4ScoreDisplay = (v4Score, subfaixa, subfaixaNome) => {
   return (
     <div className="flex items-baseline gap-1">
       <span className={`font-bold text-sm leading-none ${colorClass}`}>{Math.round(v4Score)}</span>
-      {subfaixaNome && <span className="text-[9px] font-semibold text-[var(--pagsmile-blue)]/60 whitespace-nowrap">{subfaixaNome}</span>}
+      {subfaixaNome && <span className="text-[9px] font-semibold text-[var(--pinbank-blue)]/60 whitespace-nowrap">{subfaixaNome}</span>}
     </div>
   );
 };
 
 const getSubfaixaBadge = (subfaixa) => {
-  if (!subfaixa) return <span className="text-[var(--pagsmile-blue)]/50 text-xs">-</span>;
+  if (!subfaixa) return <span className="text-[var(--pinbank-blue)]/50 text-xs">-</span>;
   const colorMap = {
     '1A':'bg-green-100 text-green-700','1B':'bg-green-100 text-green-700',
     '2A':'bg-blue-100 text-blue-700','2B':'bg-blue-100 text-blue-700',
@@ -109,7 +109,7 @@ const getSubfaixaBadge = (subfaixa) => {
 };
 
 const getDecisionBadge = (decision) => {
-  if (!decision) return <span className="text-[var(--pagsmile-blue)]/50 text-xs">-</span>;
+  if (!decision) return <span className="text-[var(--pinbank-blue)]/50 text-xs">-</span>;
   const config = {
     'Aprovado': 'bg-green-100 text-green-700',
     'Aprovado com Condições': 'bg-blue-100 text-blue-700',
@@ -164,7 +164,7 @@ function RevalidateMenuItem({ caseData }) {
 function Field({ label, children }) {
   return (
     <div className="min-w-0">
-      <p className="text-[9px] font-semibold uppercase tracking-wide text-[var(--pagsmile-blue)]/50 mb-0.5">{label}</p>
+      <p className="text-[9px] font-semibold uppercase tracking-wide text-[var(--pinbank-blue)]/50 mb-0.5">{label}</p>
       <div className="min-w-0 truncate">{children}</div>
     </div>
   );
@@ -191,10 +191,10 @@ function CaseCard({
 
   return (
     <div className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all ${
-      isSelected ? 'border-[#2bc196] ring-1 ring-[#2bc196]/30' : 'border-[#002443]/10'
+      isSelected ? 'border-[#1356E2] ring-1 ring-[#1356E2]/30' : 'border-[#0A0A0A]/10'
     }`}>
       {/* HEADER: check + avatar + nome/cpf + modelo + status + ações */}
-      <div className="flex items-start gap-3 px-4 pt-3 pb-2 border-b border-[#002443]/5">
+      <div className="flex items-start gap-3 px-4 pt-3 pb-2 border-b border-[#0A0A0A]/5">
         <Checkbox
           className="mt-1 flex-shrink-0"
           checked={isSelected}
@@ -204,10 +204,10 @@ function CaseCard({
           {merchant?.type === 'PF' ? <User className="w-4 h-4 text-blue-600" /> : <Building2 className="w-4 h-4 text-purple-600" />}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-[var(--pagsmile-blue)] text-sm leading-tight truncate" title={merchant?.fullName}>
+          <p className="font-bold text-[var(--pinbank-blue)] text-sm leading-tight truncate" title={merchant?.fullName}>
             {merchant?.fullName || 'N/A'}
           </p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/60 leading-tight mt-0.5">{merchant?.cpfCnpj || '-'}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/60 leading-tight mt-0.5">{merchant?.cpfCnpj || '-'}</p>
           <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
             {getModelBadge(getCaseModel(c))}
             {getStatusBadge(c.status)}
@@ -218,14 +218,14 @@ function CaseCard({
         {/* Ações primárias */}
         <div className="flex items-center gap-0.5 flex-shrink-0">
           <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`} title="Analisar">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/10">
               <Eye className="w-4 h-4" />
             </Button>
           </Link>
           <Button
             variant="ghost" size="icon"
             onClick={() => onOpenAssignModal(c.id)}
-            className="h-8 w-8 text-[#002443] hover:bg-[#2bc196]/10"
+            className="h-8 w-8 text-[#0A0A0A] hover:bg-[#1356E2]/10"
             title="Atribuir a parceiro"
           >
             <Handshake className="w-4 h-4" />
@@ -233,7 +233,7 @@ function CaseCard({
           <Button
             variant="ghost" size="icon"
             onClick={() => onOpenCafModal(c)}
-            className="h-8 w-8 text-[#2bc196] hover:bg-[#2bc196]/10"
+            className="h-8 w-8 text-[#1356E2] hover:bg-[#1356E2]/10"
             title="Gerar link cliente"
           >
             <Link2 className="w-4 h-4" />
@@ -241,7 +241,7 @@ function CaseCard({
           <Button
             variant="ghost" size="icon"
             onClick={() => onOpenDocOnlyModal(c)}
-            className="h-8 w-8 text-[#002443] hover:bg-[#2bc196]/10"
+            className="h-8 w-8 text-[#0A0A0A] hover:bg-[#1356E2]/10"
             title="Gerar link só de documentos"
             disabled={c.docCompleted === true}
           >
@@ -266,7 +266,7 @@ function CaseCard({
           <Button
             variant="ghost" size="icon"
             onClick={() => setExpandedRow(isExpanded ? null : c.id)}
-            className="h-8 w-8 text-[#002443]/60"
+            className="h-8 w-8 text-[#0A0A0A]/60"
             title={isExpanded ? 'Recolher' : 'Expandir'}
           >
             <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
@@ -320,18 +320,18 @@ function CaseCard({
         <Field label="Introducer">
           {introducer ? (
             <div className="flex items-center gap-1 min-w-0">
-              <UserPlus className="w-3 h-3 text-[#2bc196] flex-shrink-0" />
-              <span className="text-xs text-[var(--pagsmile-blue)] truncate">{introducer.name}</span>
+              <UserPlus className="w-3 h-3 text-[#1356E2] flex-shrink-0" />
+              <span className="text-xs text-[var(--pinbank-blue)] truncate">{introducer.name}</span>
             </div>
           ) : (
-            <span className="text-xs text-[var(--pagsmile-blue)]/40">-</span>
+            <span className="text-xs text-[var(--pinbank-blue)]/40">-</span>
           )}
         </Field>
         <Field label="Analista">
-          <span className="text-xs text-[var(--pagsmile-blue)]/80 truncate block" title={c.assignedAnalystName}>{c.assignedAnalystName || '-'}</span>
+          <span className="text-xs text-[var(--pinbank-blue)]/80 truncate block" title={c.assignedAnalystName}>{c.assignedAnalystName || '-'}</span>
         </Field>
         <Field label="Submissão">
-          <div className="flex items-center gap-1 text-xs text-[var(--pagsmile-blue)]/80">
+          <div className="flex items-center gap-1 text-xs text-[var(--pinbank-blue)]/80">
             <Calendar className="w-3 h-3 flex-shrink-0" />
             <span>{c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}</span>
           </div>
@@ -340,7 +340,7 @@ function CaseCard({
 
       {/* Expandido */}
       {isExpanded && (
-        <div className="border-t border-[#002443]/5 bg-[#f4f4f4]/40 p-4">
+        <div className="border-t border-[#0A0A0A]/5 bg-[#f4f4f4]/40 p-4">
           <CaseExpandedDetail caseData={c} scoresMap={scoresMap} templatesMap={templatesMap} merchantMap={merchantMap} />
         </div>
       )}
@@ -366,21 +366,21 @@ export default function ComplianceCasesCardsGrid({
   return (
     <div className="space-y-3">
       {isLoading ? (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
         </div>
       ) : paginatedCases.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm text-center py-12">
-          <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-          <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum questionário encontrado</p>
-          <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm text-center py-12">
+          <FileCheck className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/40 mb-4" />
+          <p className="text-[var(--pinbank-blue)]/70 font-medium">Nenhum questionário encontrado</p>
+          <p className="text-sm text-[var(--pinbank-blue)]/50 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
         </div>
       ) : (
         <>
           {/* Seletor global */}
-          <div className="bg-white rounded-lg border border-[#002443]/10 px-4 py-2 flex items-center gap-3">
+          <div className="bg-white rounded-lg border border-[#0A0A0A]/10 px-4 py-2 flex items-center gap-3">
             <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
-            <span className="text-xs font-semibold text-[var(--pagsmile-blue)]/70">
+            <span className="text-xs font-semibold text-[var(--pinbank-blue)]/70">
               {selectedRows.length > 0 ? `${selectedRows.length} selecionado(s)` : `Selecionar todos (${paginatedCases.length})`}
             </span>
           </div>
@@ -415,15 +415,15 @@ export default function ComplianceCasesCardsGrid({
 
       {/* Paginação */}
       {filteredCasesCount > 0 && (
-        <div className="bg-white rounded-lg border border-[#002443]/5 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
-          <p className="text-sm text-[var(--pagsmile-blue)]/70">
+        <div className="bg-white rounded-lg border border-[#0A0A0A]/5 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+          <p className="text-sm text-[var(--pinbank-blue)]/70">
             Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredCasesCount)} de {filteredCasesCount} questionários
           </p>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="text-sm text-[var(--pagsmile-blue)]/80">Página {currentPage} de {totalPages || 1}</span>
+            <span className="text-sm text-[var(--pinbank-blue)]/80">Página {currentPage} de {totalPages || 1}</span>
             <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages || totalPages === 0}>
               <ChevronRight className="w-4 h-4" />
             </Button>

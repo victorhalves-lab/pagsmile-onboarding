@@ -38,7 +38,7 @@ export default function LeadQuickActions({ lead }) {
       label: 'Iniciar Contato',
       icon: Phone,
       variant: 'default',
-      className: 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white',
+      className: 'bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white',
       onClick: () => updateMutation.mutate({
         status: 'em_contato_comercial',
         activityType: 'contato_iniciado',

@@ -287,8 +287,8 @@ export default function ComplianceDocOnly() {
   if (loadingCase || loadingTemplate) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
-        <span className="ml-3 text-[#002443]/70">Carregando...</span>
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
+        <span className="ml-3 text-[#0A0A0A]/70">Carregando...</span>
       </div>
     );
   }
@@ -299,8 +299,8 @@ export default function ComplianceDocOnly() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md mx-auto p-8">
           <ShieldAlert className="w-16 h-16 mx-auto text-red-400 mb-4" />
-          <h2 className="text-xl font-bold text-[#002443] mb-2">Link inválido ou expirado</h2>
-          <p className="text-[#002443]/60 text-sm">
+          <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Link inválido ou expirado</h2>
+          <p className="text-[#0A0A0A]/60 text-sm">
             Este link de complemento de documentos não é válido. Verifique se o link está correto ou entre em contato com o suporte.
           </p>
         </div>
@@ -317,8 +317,8 @@ export default function ComplianceDocOnly() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md mx-auto p-8">
           <AlertTriangle className="w-16 h-16 mx-auto text-amber-400 mb-4" />
-          <h2 className="text-xl font-bold text-[#002443] mb-2">Template não encontrado</h2>
-          <p className="text-[#002443]/60 text-sm">
+          <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Template não encontrado</h2>
+          <p className="text-[#0A0A0A]/60 text-sm">
             Não foi possível carregar os documentos necessários para este caso.
           </p>
         </div>
@@ -335,11 +335,11 @@ export default function ComplianceDocOnly() {
 
       {/* Header */}
       <div className="text-center mb-6 md:mb-8">
-        <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pagsmile-green)]/10 mb-4">
+        <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pinbank-blue)]/10 mb-4">
           {currentStep === 'caf_verification' ? (
             <ScanFace className="w-8 h-8 text-purple-600" />
           ) : (
-            <FileUp className="w-8 h-8 text-[var(--pagsmile-green)]" />
+            <FileUp className="w-8 h-8 text-[var(--pinbank-blue)]" />
           )}
         </div>
 
@@ -393,12 +393,12 @@ export default function ComplianceDocOnly() {
           })()}
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)] mb-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--pinbank-blue)] mb-2">
           {currentStep === 'caf_verification' ? 'Verificação de Identidade'
             : currentStep === 'review' ? 'Resumo antes de enviar'
             : 'Complemento de Documentos'}
         </h1>
-        <p className="text-[var(--pagsmile-blue)]/70 max-w-lg mx-auto">
+        <p className="text-[var(--pinbank-blue)]/70 max-w-lg mx-auto">
           {cafOnlyMode
             ? 'Você está a um passo de concluir seu cadastro. Capture seu documento de identidade (frente e verso) e faça a prova de vida.'
             : currentStep === 'caf_verification'
@@ -479,8 +479,8 @@ export default function ComplianceDocOnly() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
             <CheckCircle2 className="w-10 h-10 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-[#002443] mb-3">Processo concluído com sucesso!</h2>
-          <p className="text-[#002443]/60 max-w-md mx-auto mb-6">
+          <h2 className="text-2xl font-bold text-[#0A0A0A] mb-3">Processo concluído com sucesso!</h2>
+          <p className="text-[#0A0A0A]/60 max-w-md mx-auto mb-6">
             Seus documentos e verificação de identidade foram enviados com sucesso.
             Nossa equipe de compliance irá analisar as informações.
           </p>
@@ -497,7 +497,7 @@ export default function ComplianceDocOnly() {
           <Button
             onClick={handleProceedToCaf}
             disabled={isSubmitting}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
+            className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
           >
             {isSubmitting ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando...</>

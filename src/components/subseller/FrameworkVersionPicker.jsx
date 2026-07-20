@@ -25,9 +25,9 @@ export default function FrameworkVersionPicker({ value, onChange }) {
       title: 'Trilho V5.2 (Novo)',
       description: 'Template único dinâmico tier-aware. Subseller PJ/PF com grau A/B/C, Patch Financeiro, 5 categorias de decisão.',
       icon: Rocket,
-      iconBg: 'bg-[#2bc196]/15',
-      iconColor: 'text-[#2bc196]',
-      ringActive: 'ring-[#2bc196]',
+      iconBg: 'bg-[#1356E2]/15',
+      iconColor: 'text-[#1356E2]',
+      ringActive: 'ring-[#1356E2]',
       beta: true,
     },
   ];
@@ -35,8 +35,8 @@ export default function FrameworkVersionPicker({ value, onChange }) {
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-sm font-semibold text-[#002443]">Framework de risco do link</p>
-        <p className="text-[11px] text-[#002443]/55 mt-0.5">
+        <p className="text-sm font-semibold text-[#0A0A0A]">Framework de risco do link</p>
+        <p className="text-[11px] text-[#0A0A0A]/55 mt-0.5">
           Define qual pipeline analisa os subsellers gerados por este link. O DNA é imutável após criação.
         </p>
       </div>
@@ -55,7 +55,7 @@ export default function FrameworkVersionPicker({ value, onChange }) {
                   ? `border-current ring-2 ${opt.ringActive} ring-opacity-30 bg-white`
                   : 'border-slate-200 hover:border-slate-300 bg-white'
               }`}
-              style={active ? { borderColor: opt.key === 'v5.2' ? '#2bc196' : '#3b82f6' } : {}}
+              style={active ? { borderColor: opt.key === 'v5.2' ? '#1356E2' : '#3b82f6' } : {}}
             >
               <div className="flex items-start gap-3">
                 <div className={`w-9 h-9 rounded-lg ${opt.iconBg} flex items-center justify-center shrink-0`}>
@@ -63,18 +63,18 @@ export default function FrameworkVersionPicker({ value, onChange }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-[#002443]">{opt.title}</p>
+                    <p className="text-sm font-bold text-[#0A0A0A]">{opt.title}</p>
                     {opt.beta && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#2bc196]/15 text-[#2bc196] uppercase tracking-wider">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#1356E2]/15 text-[#1356E2] uppercase tracking-wider">
                         Beta
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-[#002443]/60 mt-0.5 leading-snug">{opt.description}</p>
+                  <p className="text-[11px] text-[#0A0A0A]/60 mt-0.5 leading-snug">{opt.description}</p>
                 </div>
                 <div className={`w-4 h-4 rounded-full border-2 mt-1 shrink-0 ${
                   active
-                    ? (opt.key === 'v5.2' ? 'border-[#2bc196] bg-[#2bc196]' : 'border-blue-500 bg-blue-500')
+                    ? (opt.key === 'v5.2' ? 'border-[#1356E2] bg-[#1356E2]' : 'border-blue-500 bg-blue-500')
                     : 'border-slate-300'
                 }`}>
                   {active && <div className="w-full h-full rounded-full bg-white scale-50" />}

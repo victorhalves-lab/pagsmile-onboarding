@@ -37,7 +37,7 @@ function DimensionCard({ dim, data }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{dim.label}</span>
+            <span className="text-sm font-bold text-[var(--pinbank-blue)]">{dim.label}</span>
             <Badge className={`text-[9px] ${cfg.badge} border-0`}>
               <VIcon className="w-3 h-3 mr-0.5" />
               {veredicto === 'NAO_DISPONIVEL' ? 'Sem dados' : veredicto}
@@ -49,7 +49,7 @@ function DimensionCard({ dim, data }) {
             <div className="flex-1 h-2 bg-white/60 rounded-full overflow-hidden max-w-[200px]">
               <div className={`h-full ${cfg.bar} rounded-full transition-all`} style={{ width: `${confianca}%` }} />
             </div>
-            <span className="text-[10px] font-bold text-[var(--pagsmile-blue)]/40">{confianca}%</span>
+            <span className="text-[10px] font-bold text-[var(--pinbank-blue)]/40">{confianca}%</span>
           </div>
         </div>
         {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
@@ -64,18 +64,18 @@ function DimensionCard({ dim, data }) {
 
           {resumo && (
             <div className="p-3 bg-white rounded-lg border border-slate-200">
-              <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mb-1">Resumo da Análise</p>
-              <p className="text-xs text-[var(--pagsmile-blue)]/70 leading-relaxed">{resumo}</p>
+              <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 uppercase tracking-wider mb-1">Resumo da Análise</p>
+              <p className="text-xs text-[var(--pinbank-blue)]/70 leading-relaxed">{resumo}</p>
             </div>
           )}
 
           {findings.length > 0 && (
             <div>
-              <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mb-2">Pontos-Chave</p>
+              <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 uppercase tracking-wider mb-2">Pontos-Chave</p>
               <ul className="space-y-1.5">
                 {findings.map((f, i) => (
-                  <li key={i} className="flex items-start gap-2 p-2.5 bg-slate-50 rounded-lg text-xs text-[var(--pagsmile-blue)]/70 leading-relaxed border border-slate-100">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--pagsmile-blue)]/20 flex-shrink-0 mt-1.5" />
+                  <li key={i} className="flex items-start gap-2 p-2.5 bg-slate-50 rounded-lg text-xs text-[var(--pinbank-blue)]/70 leading-relaxed border border-slate-100">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--pinbank-blue)]/20 flex-shrink-0 mt-1.5" />
                     {f}
                   </li>
                 ))}
@@ -98,13 +98,13 @@ export default function SentinelDimensionsPanel({ score }) {
   const rejected = dims.filter(d => d.data?.veredicto === 'REPROVADO').length;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-violet-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-violet-100"><Shield className="w-5 h-5 text-violet-600" /></div>
           <div>
-            <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Análise por Dimensão — 7 Dimensões SENTINEL</h3>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-0.5">Cada dimensão com veredicto, confiança, resumo e pontos-chave</p>
+            <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Análise por Dimensão — 7 Dimensões SENTINEL</h3>
+            <p className="text-xs text-[var(--pinbank-blue)]/40 mt-0.5">Cada dimensão com veredicto, confiança, resumo e pontos-chave</p>
           </div>
           <div className="ml-auto flex gap-2">
             {approved > 0 && <Badge className="bg-green-100 text-green-700 text-[10px]">{approved} OK</Badge>}

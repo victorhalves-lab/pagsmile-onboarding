@@ -64,9 +64,9 @@ export default function CaseHeader({ onboardingCase, merchant, onRefetch }) {
             {merchant?.type === 'PF' ? <User className="w-6 h-6 text-blue-600" /> : <Building2 className="w-6 h-6 text-purple-600" />}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">{merchant?.fullName || 'Merchant'}</h1>
-            <p className="text-[var(--pagsmile-blue)]/70 font-medium">{merchant?.cpfCnpj || '-'}</p>
-            <p className="text-sm text-[var(--pagsmile-blue)]/60 font-medium mt-1">
+            <h1 className="text-2xl font-bold text-[var(--pinbank-blue)]">{merchant?.fullName || 'Merchant'}</h1>
+            <p className="text-[var(--pinbank-blue)]/70 font-medium">{merchant?.cpfCnpj || '-'}</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/60 font-medium mt-1">
               Criado em {onboardingCase.created_date ? new Date(onboardingCase.created_date).toLocaleDateString('pt-BR', {
                 day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
               }) : '-'}

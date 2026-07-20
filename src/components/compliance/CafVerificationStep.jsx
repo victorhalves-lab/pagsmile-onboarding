@@ -416,10 +416,10 @@ export default function CafVerificationStep({
           enableVisibilityChangeSecurity: true,
           appearance: {
             general: { fontFamily: 'Plus Jakarta Sans, sans-serif' },
-            capture: { captureButtonColor: '#2bc196' },
+            capture: { captureButtonColor: '#1356E2' },
             upload: {
-              startScreen: { allowButton: { backgroundColor: '#2bc196' } },
-              successScreen: { icon: { color: '#2bc196' } },
+              startScreen: { allowButton: { backgroundColor: '#1356E2' } },
+              successScreen: { icon: { color: '#1356E2' } },
             },
           },
         });
@@ -523,7 +523,7 @@ export default function CafVerificationStep({
           enableVisibilityChangeSecurity: true,
           appearance: {
             general: { fontFamily: 'Plus Jakarta Sans, sans-serif' },
-            capture: { captureButtonColor: '#2bc196' },
+            capture: { captureButtonColor: '#1356E2' },
           },
         });
 
@@ -634,7 +634,7 @@ export default function CafVerificationStep({
         }, {
           startButton: {
             label: 'Iniciar Verificação Facial',
-            backgroundColor: '#2bc196',
+            backgroundColor: '#1356E2',
             color: '#ffffff',
             borderRadius: '12px',
           },
@@ -790,8 +790,8 @@ export default function CafVerificationStep({
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
             <CheckCircle2 className="w-8 h-8 text-green-600" />
           </div>
-          <h3 className="text-lg font-bold text-[#002443] mb-2">Verificação Concluída!</h3>
-          <p className="text-sm text-[#002443]/60 mb-2">
+          <h3 className="text-lg font-bold text-[#0A0A0A] mb-2">Verificação Concluída!</h3>
+          <p className="text-sm text-[#0A0A0A]/60 mb-2">
             Documento e prova de vida verificados com sucesso.
           </p>
           <div className="flex flex-col items-center gap-1 mb-6">
@@ -807,7 +807,7 @@ export default function CafVerificationStep({
           </div>
           <Button
             onClick={() => onComplete?.({ status: 'approved', savedResults })}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-xl"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white px-8 h-12 rounded-xl"
           >
             Continuar <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
@@ -829,8 +829,8 @@ export default function CafVerificationStep({
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-purple-50 mb-4">
           <ScanFace className="w-8 h-8 text-purple-600" />
         </div>
-        <h2 className="text-xl font-bold text-[#002443] mb-2">Verificação de Identidade (CAF)</h2>
-        <p className="text-sm text-[#002443]/60 max-w-md mx-auto">
+        <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Verificação de Identidade (CAF)</h2>
+        <p className="text-sm text-[#0A0A0A]/60 max-w-md mx-auto">
           Capture seu documento de identidade e realize a prova de vida para verificar sua identidade.
         </p>
       </div>
@@ -915,10 +915,10 @@ export default function CafVerificationStep({
             <div className="flex items-start gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-[#002443]">
+                <p className="text-sm font-medium text-[#0A0A0A]">
                   Identificamos seu cadastro{resolvedPerson?.name ? `: ${resolvedPerson.name}` : ''}
                 </p>
-                <p className="text-xs text-[#002443]/60 mt-0.5">
+                <p className="text-xs text-[#0A0A0A]/60 mt-0.5">
                   CPF: {(resolvedPerson?.cpf || personCpf || '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4')}
                 </p>
                 {resolvedPerson?.source && resolvedPerson.source !== 'none' && (
@@ -948,7 +948,7 @@ export default function CafVerificationStep({
             <Button
               onClick={startVerification}
               disabled={loading}
-              className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-12 rounded-xl shadow-lg"
+              className="flex-1 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-12 rounded-xl shadow-lg"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Carregando SDK...</>
@@ -994,8 +994,8 @@ export default function CafVerificationStep({
       {phase === 'loading' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
           <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
-          <p className="text-sm font-medium text-[#002443]">Carregando SDK de verificação...</p>
-          <p className="text-xs text-[#002443]/50 mt-1">Obtendo token seguro e preparando a câmera.</p>
+          <p className="text-sm font-medium text-[#0A0A0A]">Carregando SDK de verificação...</p>
+          <p className="text-xs text-[#0A0A0A]/50 mt-1">Obtendo token seguro e preparando a câmera.</p>
         </div>
       )}
 
@@ -1006,7 +1006,7 @@ export default function CafVerificationStep({
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-3">
               <FileCheck className="w-7 h-7 text-blue-600 animate-pulse" />
             </div>
-            <h3 className="text-lg font-bold text-[#002443] mb-1">
+            <h3 className="text-lg font-bold text-[#0A0A0A] mb-1">
               {STEP_GUIDANCE[phase]?.title || 'Captura do Documento'}
             </h3>
           </div>
@@ -1063,7 +1063,7 @@ export default function CafVerificationStep({
             ref={flContainerRef} 
             className="min-h-[350px] rounded-xl overflow-hidden border border-slate-200 bg-slate-50" 
           />
-          <p className="text-[10px] text-[#002443]/30 mt-3 text-center">
+          <p className="text-[10px] text-[#0A0A0A]/30 mt-3 text-center">
             A selfie será salva automaticamente após a verificação.
           </p>
         </div>
@@ -1139,10 +1139,10 @@ export default function CafVerificationStep({
 
       {/* Security notice */}
       <div className="flex items-start gap-3 bg-slate-50 rounded-xl p-4">
-        <Shield className="w-5 h-5 text-[#002443]/40 shrink-0 mt-0.5" />
+        <Shield className="w-5 h-5 text-[#0A0A0A]/40 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-medium text-[#002443]">Verificação segura com armazenamento completo</p>
-          <p className="text-xs text-[#002443]/50 mt-1">
+          <p className="text-sm font-medium text-[#0A0A0A]">Verificação segura com armazenamento completo</p>
+          <p className="text-xs text-[#0A0A0A]/50 mt-1">
             Tecnologia certificada pela CAF (Combate à Fraude). Todas as imagens (documento frente/verso e selfie) 
             são baixadas e armazenadas permanentemente em nossos servidores para auditoria e compliance.
           </p>

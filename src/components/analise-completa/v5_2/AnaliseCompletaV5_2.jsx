@@ -45,9 +45,9 @@ export default function AnaliseCompletaV5_2({
       />
 
       {/* V5.2 Banner */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#2bc196]/10 border border-[#2bc196]/30 w-fit">
-        <Rocket className="w-3.5 h-3.5 text-[#2bc196]" />
-        <span className="text-[11px] font-bold uppercase tracking-wide text-[#2bc196]">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1356E2]/10 border border-[#1356E2]/30 w-fit">
+        <Rocket className="w-3.5 h-3.5 text-[#1356E2]" />
+        <span className="text-[11px] font-bold uppercase tracking-wide text-[#1356E2]">
           Análise V5.2 — Layout DOC6 (Hero + 4 abas)
         </span>
       </div>
@@ -57,8 +57,8 @@ export default function AnaliseCompletaV5_2({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 w-full bg-white border border-[#002443]/8 p-1 h-auto">
-          <TabsTrigger value="resumo" className="data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#2bc196] py-2.5">
+        <TabsList className="grid grid-cols-4 w-full bg-white border border-[#0A0A0A]/8 p-1 h-auto">
+          <TabsTrigger value="resumo" className="data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#1356E2] py-2.5">
             <div className="flex items-center gap-2">
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span className="text-xs font-semibold hidden md:inline">Resumo & Decisão</span>
@@ -70,7 +70,7 @@ export default function AnaliseCompletaV5_2({
               )}
             </div>
           </TabsTrigger>
-          <TabsTrigger value="evidencias" className="data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#2bc196] py-2.5">
+          <TabsTrigger value="evidencias" className="data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#1356E2] py-2.5">
             <div className="flex items-center gap-2">
               <GitCompare className="w-3.5 h-3.5" />
               <span className="text-xs font-semibold hidden md:inline">Evidências</span>
@@ -82,7 +82,7 @@ export default function AnaliseCompletaV5_2({
               )}
             </div>
           </TabsTrigger>
-          <TabsTrigger value="dimensional" className="data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#2bc196] py-2.5">
+          <TabsTrigger value="dimensional" className="data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#1356E2] py-2.5">
             <div className="flex items-center gap-2">
               <Layers className="w-3.5 h-3.5" />
               <span className="text-xs font-semibold hidden md:inline">Dimensional BDC</span>
@@ -94,7 +94,7 @@ export default function AnaliseCompletaV5_2({
               )}
             </div>
           </TabsTrigger>
-          <TabsTrigger value="sentinel" className="data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#2bc196] py-2.5">
+          <TabsTrigger value="sentinel" className="data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#1356E2] py-2.5">
             <div className="flex items-center gap-2">
               <Brain className="w-3.5 h-3.5" />
               <span className="text-xs font-semibold hidden md:inline">SENTINEL & Auditoria</span>

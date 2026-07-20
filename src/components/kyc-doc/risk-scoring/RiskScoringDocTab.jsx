@@ -29,12 +29,12 @@ function SubTab({ active, onClick, icon: Icon, label, sublabel }) {
     <button
       onClick={onClick}
       className={`flex items-center gap-2.5 px-4 py-2.5 border-b-2 transition-all ${active
-        ? 'border-[#2bc196] bg-white'
+        ? 'border-[#1356E2] bg-white'
         : 'border-transparent text-[#1a1a1a]/50 hover:bg-[#f9fafb]'}`}
     >
-      <Icon className={`w-4 h-4 ${active ? 'text-[#2bc196]' : 'text-[#1a1a1a]/40'}`} />
+      <Icon className={`w-4 h-4 ${active ? 'text-[#1356E2]' : 'text-[#1a1a1a]/40'}`} />
       <div className="text-left">
-        <p className={`text-xs font-bold ${active ? 'text-[#002443]' : 'text-[#1a1a1a]/60'}`}>{label}</p>
+        <p className={`text-xs font-bold ${active ? 'text-[#0A0A0A]' : 'text-[#1a1a1a]/60'}`}>{label}</p>
         <p className="text-[10px] text-[#1a1a1a]/40">{sublabel}</p>
       </div>
     </button>

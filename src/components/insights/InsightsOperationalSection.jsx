@@ -88,11 +88,11 @@ export default function InsightsOperationalSection({ leads, cases }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Object.keys(modeloMap).length > 0 && <DonutChart title="Modelo de Negócio" data={toDonut(modeloMap)} />}
         {Object.keys(tipoProdutoMap).length > 0 && <DonutChart title="Tipo de Produto/Serviço" data={toDonut(tipoProdutoMap)} />}
-        {Object.keys(tipoClienteMap).length > 0 && <DonutChart title="Tipo de Clientes (B2B/B2C)" data={toDonut(tipoClienteMap)} colorMap={{ B2C: '#2bc196', B2B: '#002443', Ambos: '#f59e0b' }} />}
+        {Object.keys(tipoClienteMap).length > 0 && <DonutChart title="Tipo de Clientes (B2B/B2C)" data={toDonut(tipoClienteMap)} colorMap={{ B2C: '#1356E2', B2B: '#0A0A0A', Ambos: '#f59e0b' }} />}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {flagsData.length > 0 && <HorizontalBarList title="Características Operacionais" data={flagsData} color="#002443" />}
+        {flagsData.length > 0 && <HorizontalBarList title="Características Operacionais" data={flagsData} color="#0A0A0A" />}
         {Object.keys(internacionalMap).length > 0 && <DonutChart title="Clientes Internacionais" data={toDonut(internacionalMap)} />}
       </div>
 

@@ -19,10 +19,10 @@ export default function PublicProposalErrorState({ status, onRetry, isRetrying =
         <div className="w-16 h-16 rounded-full bg-amber-100 mx-auto mb-4 flex items-center justify-center">
           <WifiOff className="w-8 h-8 text-amber-600" />
         </div>
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">
+        <h1 className="text-2xl font-bold text-[#0A0A0A] mb-2">
           Conexão instável
         </h1>
-        <p className="text-[#002443]/70 mb-6">
+        <p className="text-[#0A0A0A]/70 mb-6">
           Não conseguimos carregar a sua proposta agora. Isso pode ser um problema temporário de rede.
           <br /><br />
           Sua proposta <strong>continua disponível</strong> — basta tentar novamente.
@@ -30,7 +30,7 @@ export default function PublicProposalErrorState({ status, onRetry, isRetrying =
         <Button
           onClick={onRetry}
           disabled={isRetrying}
-          className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
+          className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white px-8 h-12 rounded-2xl font-bold"
         >
           {isRetrying ? (
             <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Recarregando...</>
@@ -38,7 +38,7 @@ export default function PublicProposalErrorState({ status, onRetry, isRetrying =
             <><RefreshCw className="w-4 h-4 mr-2" /> Tentar novamente</>
           )}
         </Button>
-        <p className="text-xs text-[#002443]/40 mt-6">
+        <p className="text-xs text-[#0A0A0A]/40 mt-6">
           Se o problema persistir, entre em contato com seu consultor.
         </p>
       </div>
@@ -49,10 +49,10 @@ export default function PublicProposalErrorState({ status, onRetry, isRetrying =
   return (
     <div className="max-w-lg mx-auto py-20 text-center px-4">
       <AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" />
-      <h1 className="text-2xl font-bold text-[#002443] mb-2">
+      <h1 className="text-2xl font-bold text-[#0A0A0A] mb-2">
         Proposta não encontrada
       </h1>
-      <p className="text-[#002443]/60 mb-4">
+      <p className="text-[#0A0A0A]/60 mb-4">
         Esta proposta não está mais disponível. Entre em contato com seu consultor para receber um novo link.
       </p>
     </div>

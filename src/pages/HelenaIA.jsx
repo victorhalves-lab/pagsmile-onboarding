@@ -78,9 +78,9 @@ export default function HelenaIA() {
   }), [helenaAnalyses]);
 
   const decisionPieData = [
-    { name: t('hi.approved'), value: stats.approved, color: '#2bc196' },
-    { name: t('hi.manual_review'), value: stats.manualReview, color: '#36706c' },
-    { name: t('hi.rejected'), value: stats.rejected, color: '#002443' },
+    { name: t('hi.approved'), value: stats.approved, color: '#1356E2' },
+    { name: t('hi.manual_review'), value: stats.manualReview, color: '#E84B1C' },
+    { name: t('hi.rejected'), value: stats.rejected, color: '#0A0A0A' },
   ].filter(d => d.value > 0);
 
   const scoreDistribution = React.useMemo(() => {
@@ -90,7 +90,7 @@ export default function HelenaIA() {
   }, [helenaAnalyses]);
 
   const getDecisionBadge = (decision) => {
-    const config = { APPROVED: { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: t('hi.decision_approved') }, REJECTED: { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: t('hi.decision_rejected') }, MANUAL_REVIEW: { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: t('hi.decision_manual') } };
+    const config = { APPROVED: { bg: 'bg-[#1356E2]/10', text: 'text-[#1356E2]', icon: CheckCircle2, label: t('hi.decision_approved') }, REJECTED: { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: t('hi.decision_rejected') }, MANUAL_REVIEW: { bg: 'bg-[#E84B1C]/10', text: 'text-[#E84B1C]', icon: AlertTriangle, label: t('hi.decision_manual') } };
     const c = config[decision] || config.MANUAL_REVIEW; const Icon = c.icon;
     return <Badge className={`${c.bg} ${c.text} gap-1 border-0`}><Icon className="w-3 h-3" />{c.label}</Badge>;
   };
@@ -99,23 +99,23 @@ export default function HelenaIA() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-            <Brain className="w-5 h-5 text-[#2bc196]" />
+          <div className="w-10 h-10 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+            <Brain className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">{t('hi.title')}</h1>
-            <p className="text-sm text-[#002443]/60">{t('hi.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('hi.title')}</h1>
+            <p className="text-sm text-[#0A0A0A]/60">{t('hi.subtitle')}</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => queryClient.invalidateQueries()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /><span className="text-[#002443]/70">{t('hi.refresh')}</span>
+        <Button variant="outline" onClick={() => queryClient.invalidateQueries()} className="border-[#0A0A0A]/10 hover:bg-[#f4f4f4] rounded-xl">
+          <RefreshCw className="w-4 h-4 mr-2 text-[#0A0A0A]/50" /><span className="text-[#0A0A0A]/70">{t('hi.refresh')}</span>
         </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
+        <TabsList className="bg-[#f4f4f4] border border-[#0A0A0A]/5">
           {['dashboard', 'config', 'history', 'training', 'logs'].map(tab => (
-            <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
+            <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A] data-[state=active]:shadow-sm">
               {tab === 'dashboard' ? t('hi.tab_dashboard') : tab === 'config' ? t('hi.tab_config') : tab === 'history' ? t('hi.tab_history') : tab === 'training' ? t('hi.tab_training') : t('hi.tab_logs')}
             </TabsTrigger>
           ))}
@@ -125,14 +125,14 @@ export default function HelenaIA() {
           {/* KPI Row 1 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: t('hi.processed_volume'), value: stats.total, icon: Activity, color: '#002443' },
-              { label: t('hi.approval_rate'), value: `${stats.approvalRate}%`, icon: CheckCircle2, color: '#2bc196' },
-              { label: t('hi.rejection_rate'), value: `${stats.rejectionRate}%`, icon: XCircle, color: '#002443' },
-              { label: t('hi.manual_rate'), value: `${stats.manualRate}%`, icon: AlertTriangle, color: '#36706c' },
+              { label: t('hi.processed_volume'), value: stats.total, icon: Activity, color: '#0A0A0A' },
+              { label: t('hi.approval_rate'), value: `${stats.approvalRate}%`, icon: CheckCircle2, color: '#1356E2' },
+              { label: t('hi.rejection_rate'), value: `${stats.rejectionRate}%`, icon: XCircle, color: '#0A0A0A' },
+              { label: t('hi.manual_rate'), value: `${stats.manualRate}%`, icon: AlertTriangle, color: '#E84B1C' },
             ].map((kpi, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+              <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
                 <div className="flex items-center gap-2 mb-1"><kpi.icon className="w-4 h-4" style={{ color: kpi.color }} /><p className="text-2xl font-bold" style={{ color: kpi.color }}>{kpi.value}</p></div>
-                <p className="text-xs text-[#002443]/50">{kpi.label}</p>
+                <p className="text-xs text-[#0A0A0A]/50">{kpi.label}</p>
               </div>
             ))}
           </div>
@@ -140,35 +140,35 @@ export default function HelenaIA() {
           {/* KPI Row 2 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: t('hi.accuracy_rate'), value: `${stats.accuracyRate}%`, icon: Target, color: '#2bc196' },
-              { label: t('hi.avg_score'), value: stats.avgScore, icon: BarChart3, color: '#36706c' },
-              { label: t('hi.avg_time'), value: `${(stats.avgProcessingTime / 1000).toFixed(1)}s`, icon: Zap, color: '#002443' },
-              { label: t('hi.pending'), value: stats.pending, icon: Clock, color: '#002443' },
+              { label: t('hi.accuracy_rate'), value: `${stats.accuracyRate}%`, icon: Target, color: '#1356E2' },
+              { label: t('hi.avg_score'), value: stats.avgScore, icon: BarChart3, color: '#E84B1C' },
+              { label: t('hi.avg_time'), value: `${(stats.avgProcessingTime / 1000).toFixed(1)}s`, icon: Zap, color: '#0A0A0A' },
+              { label: t('hi.pending'), value: stats.pending, icon: Clock, color: '#0A0A0A' },
             ].map((kpi, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+              <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
                 <div className="flex items-center gap-2 mb-1"><kpi.icon className="w-4 h-4" style={{ color: kpi.color }} /><p className="text-2xl font-bold" style={{ color: kpi.color }}>{kpi.value}</p></div>
-                <p className="text-xs text-[#002443]/50">{kpi.label}</p>
+                <p className="text-xs text-[#0A0A0A]/50">{kpi.label}</p>
               </div>
             ))}
           </div>
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
-              <h3 className="text-sm font-bold text-[#002443] mb-4">{t('hi.status_distribution')}</h3>
+            <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6">
+              <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">{t('hi.status_distribution')}</h3>
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart><Pie data={decisionPieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
                   {decisionPieData.map((entry, index) => <Cell key={index} fill={entry.color} stroke="white" strokeWidth={2} />)}
                 </Pie><Tooltip /></PieChart>
               </ResponsiveContainer>
               <div className="flex justify-center gap-4 mt-2">
-                {decisionPieData.map((entry, i) => <div key={i} className="flex items-center gap-2 text-xs text-[#002443]/60"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }}></div>{entry.name}: {entry.value}</div>)}
+                {decisionPieData.map((entry, i) => <div key={i} className="flex items-center gap-2 text-xs text-[#0A0A0A]/60"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }}></div>{entry.name}: {entry.value}</div>)}
               </div>
             </div>
-            <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
-              <h3 className="text-sm font-bold text-[#002443] mb-4">{t('hi.score_distribution')}</h3>
+            <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6">
+              <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">{t('hi.score_distribution')}</h3>
               <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={scoreDistribution}><CartesianGrid strokeDasharray="3 3" stroke="rgba(0,36,67,0.05)" /><XAxis dataKey="range" tick={{ fontSize: 11, fill: '#002443' }} /><YAxis tick={{ fontSize: 11, fill: '#002443' }} /><Tooltip /><Bar dataKey="count" fill="#2bc196" radius={[6, 6, 0, 0]} /></BarChart>
+                <BarChart data={scoreDistribution}><CartesianGrid strokeDasharray="3 3" stroke="rgba(0,36,67,0.05)" /><XAxis dataKey="range" tick={{ fontSize: 11, fill: '#0A0A0A' }} /><YAxis tick={{ fontSize: 11, fill: '#0A0A0A' }} /><Tooltip /><Bar dataKey="count" fill="#1356E2" radius={[6, 6, 0, 0]} /></BarChart>
               </ResponsiveContainer>
             </div>
           </div>
@@ -181,47 +181,47 @@ export default function HelenaIA() {
           <RiskDistributionCards lowRisk={stats.lowRisk} mediumRisk={stats.mediumRisk} highRisk={stats.highRisk} criticalRisk={stats.criticalRisk} />
 
           {/* Thresholds bar */}
-          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
-            <h3 className="text-sm font-bold text-[#002443] mb-3">{t('hi.decision_thresholds')}</h3>
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6">
+            <h3 className="text-sm font-bold text-[#0A0A0A] mb-3">{t('hi.decision_thresholds')}</h3>
             <div className="h-3 bg-[#f4f4f4] rounded-full relative overflow-hidden">
               <div className="absolute left-0 top-0 h-full bg-red-300 transition-all" style={{ width: `${thresholds.auto_reject}%` }} />
-              <div className="absolute top-0 h-full bg-[#36706c] transition-all" style={{ left: `${thresholds.auto_reject}%`, width: `${thresholds.auto_approve - thresholds.auto_reject}%` }} />
-              <div className="absolute top-0 h-full bg-[#2bc196] transition-all" style={{ left: `${thresholds.auto_approve}%`, right: 0 }} />
+              <div className="absolute top-0 h-full bg-[#E84B1C] transition-all" style={{ left: `${thresholds.auto_reject}%`, width: `${thresholds.auto_approve - thresholds.auto_reject}%` }} />
+              <div className="absolute top-0 h-full bg-[#1356E2] transition-all" style={{ left: `${thresholds.auto_approve}%`, right: 0 }} />
             </div>
             <div className="flex justify-between mt-2 text-xs">
               <span className="text-red-400">{t('hi.decision_rejected')} (&lt;{thresholds.auto_reject})</span>
-              <span className="text-[#36706c]">{t('hi.decision_manual')} ({thresholds.auto_reject}-{thresholds.auto_approve})</span>
-              <span className="text-[#2bc196]">{t('hi.decision_approved')} (&gt;{thresholds.auto_approve})</span>
+              <span className="text-[#E84B1C]">{t('hi.decision_manual')} ({thresholds.auto_reject}-{thresholds.auto_approve})</span>
+              <span className="text-[#1356E2]">{t('hi.decision_approved')} (&gt;{thresholds.auto_approve})</span>
             </div>
           </div>
         </TabsContent>
 
         {/* Config */}
         <TabsContent value="config" className="space-y-6 mt-6">
-          <div className="bg-[#36706c]/5 border border-[#36706c]/10 rounded-2xl p-4 flex items-start gap-3">
-            <Info className="w-4 h-4 text-[#36706c] mt-0.5 shrink-0" />
-            <p className="text-xs text-[#002443]/60">{t('hi.config_hint_text')}</p>
+          <div className="bg-[#E84B1C]/5 border border-[#E84B1C]/10 rounded-2xl p-4 flex items-start gap-3">
+            <Info className="w-4 h-4 text-[#E84B1C] mt-0.5 shrink-0" />
+            <p className="text-xs text-[#0A0A0A]/60">{t('hi.config_hint_text')}</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h3 className="text-base font-bold text-[#002443]">{t('hi.thresholds_title')}</h3>
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 space-y-5">
+            <h3 className="text-base font-bold text-[#0A0A0A]">{t('hi.thresholds_title')}</h3>
             {[
-              { label: t('hi.auto_approval'), key: 'auto_approve', color: '#2bc196', min: 50, max: 100 },
-              { label: t('hi.auto_rejection'), key: 'auto_reject', color: '#002443', min: 0, max: 50 },
+              { label: t('hi.auto_approval'), key: 'auto_approve', color: '#1356E2', min: 50, max: 100 },
+              { label: t('hi.auto_rejection'), key: 'auto_reject', color: '#0A0A0A', min: 0, max: 50 },
             ].map((item, i) => (
               <div key={i}>
                 <div className="flex justify-between mb-2">
-                  <Label className="text-xs text-[#002443]/50">{item.label}</Label>
+                  <Label className="text-xs text-[#0A0A0A]/50">{item.label}</Label>
                   <span className="text-sm font-bold" style={{ color: item.color }}>{thresholds[item.key]}</span>
                 </div>
                 <Slider value={[thresholds[item.key]]} onValueChange={(v) => setThresholds(prev => ({ ...prev, [item.key]: v[0] }))} min={item.min} max={item.max} step={5} />
               </div>
             ))}
-            <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">{t('hi.save')}</Button>
+            <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">{t('hi.save')}</Button>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#002443]">{t('hi.analysis_factors')}</h3>
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 space-y-4">
+            <h3 className="text-base font-bold text-[#0A0A0A]">{t('hi.analysis_factors')}</h3>
             {[
               { id: 'cadastral', label: t('hi.factor_cadastral'), icon: FileText },
               { id: 'financial', label: t('hi.factor_financial'), icon: Scale },
@@ -230,38 +230,38 @@ export default function HelenaIA() {
               { id: 'external', label: t('hi.factor_external'), icon: Activity },
               { id: 'cnpj_enrichment', label: t('hi.factor_cnpj'), icon: Shield },
             ].map(factor => (
-              <div key={factor.id} className="flex items-center gap-4 p-3 rounded-xl border border-[#002443]/5">
-                <factor.icon className="w-4 h-4 text-[#002443]/30" />
-                <p className="flex-1 text-sm font-medium text-[#002443]">{factor.label}</p>
+              <div key={factor.id} className="flex items-center gap-4 p-3 rounded-xl border border-[#0A0A0A]/5">
+                <factor.icon className="w-4 h-4 text-[#0A0A0A]/30" />
+                <p className="flex-1 text-sm font-medium text-[#0A0A0A]">{factor.label}</p>
                 <div className="w-28"><Slider value={[factorWeights[factor.id]]} onValueChange={(v) => setFactorWeights(prev => ({ ...prev, [factor.id]: v[0] }))} min={0} max={50} step={5} /></div>
-                <span className="text-sm font-bold text-[#002443] w-10 text-right">{factorWeights[factor.id]}%</span>
+                <span className="text-sm font-bold text-[#0A0A0A] w-10 text-right">{factorWeights[factor.id]}%</span>
               </div>
             ))}
-            <div className="flex justify-between items-center pt-3 border-t border-[#002443]/5">
-              <span className="text-xs text-[#002443]/50">Total:</span>
-              <span className={`text-base font-bold ${Object.values(factorWeights).reduce((a, b) => a + b, 0) === 100 ? 'text-[#2bc196]' : 'text-red-500'}`}>{Object.values(factorWeights).reduce((a, b) => a + b, 0)}%</span>
+            <div className="flex justify-between items-center pt-3 border-t border-[#0A0A0A]/5">
+              <span className="text-xs text-[#0A0A0A]/50">Total:</span>
+              <span className={`text-base font-bold ${Object.values(factorWeights).reduce((a, b) => a + b, 0) === 100 ? 'text-[#1356E2]' : 'text-red-500'}`}>{Object.values(factorWeights).reduce((a, b) => a + b, 0)}%</span>
             </div>
           </div>
         </TabsContent>
 
         {/* History */}
         <TabsContent value="history" className="mt-6">
-          <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
-            <div className="p-5 border-b border-[#002443]/5"><h3 className="text-base font-bold text-[#002443]">{t('hi.history_table')}</h3></div>
-            {isLoading ? <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div> : (
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 overflow-hidden">
+            <div className="p-5 border-b border-[#0A0A0A]/5"><h3 className="text-base font-bold text-[#0A0A0A]">{t('hi.history_table')}</h3></div>
+            {isLoading ? <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" /></div> : (
               <Table>
                 <TableHeader><TableRow className="bg-[#f4f4f4]">
-                  {[t('hi.col_date'), t('hi.col_case'), t('hi.col_score'), t('hi.col_decision'), t('hi.col_time'), t('hi.col_feedback')].map((h, i) => <TableHead key={i} className="text-[10px] font-bold text-[#002443]/40 uppercase">{h}</TableHead>)}
+                  {[t('hi.col_date'), t('hi.col_case'), t('hi.col_score'), t('hi.col_decision'), t('hi.col_time'), t('hi.col_feedback')].map((h, i) => <TableHead key={i} className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase">{h}</TableHead>)}
                 </TableRow></TableHeader>
                 <TableBody>
                   {helenaAnalyses.slice(0, 20).map(a => (
                     <TableRow key={a.id}>
-                      <TableCell className="text-xs text-[#002443]/60">{a.created_date ? new Date(a.created_date).toLocaleDateString() : '-'}</TableCell>
-                      <TableCell className="font-mono text-xs text-[#36706c]">{a.onboarding_case_id?.substring(0, 8)}...</TableCell>
-                      <TableCell><span className={`font-bold ${a.score >= 80 ? 'text-[#2bc196]' : a.score >= 40 ? 'text-[#36706c]' : 'text-red-500'}`}>{a.score || '-'}</span></TableCell>
+                      <TableCell className="text-xs text-[#0A0A0A]/60">{a.created_date ? new Date(a.created_date).toLocaleDateString() : '-'}</TableCell>
+                      <TableCell className="font-mono text-xs text-[#E84B1C]">{a.onboarding_case_id?.substring(0, 8)}...</TableCell>
+                      <TableCell><span className={`font-bold ${a.score >= 80 ? 'text-[#1356E2]' : a.score >= 40 ? 'text-[#E84B1C]' : 'text-red-500'}`}>{a.score || '-'}</span></TableCell>
                       <TableCell>{a.decision && getDecisionBadge(a.decision)}</TableCell>
-                      <TableCell className="text-xs text-[#002443]/40">{a.processing_time_ms ? `${a.processing_time_ms}ms` : '-'}</TableCell>
-                      <TableCell>{a.analyst_feedback === 'agree' && <ThumbsUp className="w-4 h-4 text-[#2bc196]" />}{a.analyst_feedback === 'disagree' && <ThumbsDown className="w-4 h-4 text-red-400" />}</TableCell>
+                      <TableCell className="text-xs text-[#0A0A0A]/40">{a.processing_time_ms ? `${a.processing_time_ms}ms` : '-'}</TableCell>
+                      <TableCell>{a.analyst_feedback === 'agree' && <ThumbsUp className="w-4 h-4 text-[#1356E2]" />}{a.analyst_feedback === 'disagree' && <ThumbsDown className="w-4 h-4 text-red-400" />}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -272,30 +272,30 @@ export default function HelenaIA() {
 
         {/* Training */}
         <TabsContent value="training" className="space-y-6 mt-6">
-          <div className="bg-[#2bc196]/5 border border-[#2bc196]/15 rounded-2xl p-4 flex items-start gap-3">
-            <Brain className="w-4 h-4 text-[#2bc196] mt-0.5 shrink-0" />
-            <p className="text-xs text-[#002443]/60">{t('hi.training_hint')}</p>
+          <div className="bg-[#1356E2]/5 border border-[#1356E2]/15 rounded-2xl p-4 flex items-start gap-3">
+            <Brain className="w-4 h-4 text-[#1356E2] mt-0.5 shrink-0" />
+            <p className="text-xs text-[#0A0A0A]/60">{t('hi.training_hint')}</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: t('hi.agreements'), value: stats.agreedCount, icon: ThumbsUp, color: '#2bc196' },
-              { label: t('hi.disagreements'), value: stats.disagreedCount, icon: ThumbsDown, color: '#002443' },
-              { label: t('hi.with_comments'), value: stats.withCommentsCount, icon: MessageSquare, color: '#36706c' },
-              { label: t('hi.accuracy_rate'), value: `${stats.accuracyRate}%`, icon: Target, color: '#2bc196' },
+              { label: t('hi.agreements'), value: stats.agreedCount, icon: ThumbsUp, color: '#1356E2' },
+              { label: t('hi.disagreements'), value: stats.disagreedCount, icon: ThumbsDown, color: '#0A0A0A' },
+              { label: t('hi.with_comments'), value: stats.withCommentsCount, icon: MessageSquare, color: '#E84B1C' },
+              { label: t('hi.accuracy_rate'), value: `${stats.accuracyRate}%`, icon: Target, color: '#1356E2' },
             ].map((s, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4 text-center">
+              <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4 text-center">
                 <s.icon className="w-6 h-6 mx-auto mb-2" style={{ color: s.color }} />
                 <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
-                <p className="text-xs text-[#002443]/50">{s.label}</p>
+                <p className="text-xs text-[#0A0A0A]/50">{s.label}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#002443]">{t('hi.instructions')}</h3>
-            <p className="text-xs text-[#002443]/40">{t('hi.instructions_hint')}</p>
-            <Textarea className="font-mono text-xs h-52 border-[#002443]/10 bg-[#f4f4f4]" defaultValue={`Você é HELENA, uma auditora de compliance sênior com mais de 15 anos de experiência em KYC/AML.
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 space-y-4">
+            <h3 className="text-base font-bold text-[#0A0A0A]">{t('hi.instructions')}</h3>
+            <p className="text-xs text-[#0A0A0A]/40">{t('hi.instructions_hint')}</p>
+            <Textarea className="font-mono text-xs h-52 border-[#0A0A0A]/10 bg-[#f4f4f4]" defaultValue={`Você é HELENA, uma auditora de compliance sênior com mais de 15 anos de experiência em KYC/AML.
 
 MATRIZ DE RISCO:
 - Score 0-39 (RECUSADO): Red flags críticos
@@ -303,29 +303,29 @@ MATRIZ DE RISCO:
 - Score 80-100 (APROVADO): Controles robustos
 
 OUTPUT: Score (0-100), Decisão, Justificativa, Fatores, Red Flags`} />
-            <div className="flex justify-end"><Button variant="outline" className="rounded-xl border-[#002443]/10 text-sm">{t('hi.restore')}</Button></div>
+            <div className="flex justify-end"><Button variant="outline" className="rounded-xl border-[#0A0A0A]/10 text-sm">{t('hi.restore')}</Button></div>
           </div>
         </TabsContent>
 
         {/* Logs */}
         <TabsContent value="logs" className="mt-6">
-          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#002443]">{t('hi.logs_title')}</h3>
-            {isLoading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div> : (
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 space-y-4">
+            <h3 className="text-base font-bold text-[#0A0A0A]">{t('hi.logs_title')}</h3>
+            {isLoading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" /></div> : (
               <div className="space-y-3">
                 {helenaAnalyses.slice(0, 10).map(a => (
-                  <div key={a.id} className="rounded-2xl border border-[#002443]/5 p-4">
+                  <div key={a.id} className="rounded-2xl border border-[#0A0A0A]/5 p-4">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">{a.decision && getDecisionBadge(a.decision)}<span className="text-xs text-[#002443]/40">{a.created_date ? new Date(a.created_date).toLocaleString('pt-BR') : '-'}</span></div>
-                      <span className={`text-2xl font-bold ${a.score >= 80 ? 'text-[#2bc196]' : a.score >= 40 ? 'text-[#36706c]' : 'text-red-500'}`}>{a.score || '-'}</span>
+                      <div className="flex items-center gap-3">{a.decision && getDecisionBadge(a.decision)}<span className="text-xs text-[#0A0A0A]/40">{a.created_date ? new Date(a.created_date).toLocaleString('pt-BR') : '-'}</span></div>
+                      <span className={`text-2xl font-bold ${a.score >= 80 ? 'text-[#1356E2]' : a.score >= 40 ? 'text-[#E84B1C]' : 'text-red-500'}`}>{a.score || '-'}</span>
                     </div>
-                    {a.justification && <div className="bg-[#f4f4f4] rounded-xl p-3 mb-3"><p className="text-xs font-semibold text-[#002443]/40 mb-1">{t('hi.justification')}</p><p className="text-xs text-[#002443]/60">{a.justification}</p></div>}
+                    {a.justification && <div className="bg-[#f4f4f4] rounded-xl p-3 mb-3"><p className="text-xs font-semibold text-[#0A0A0A]/40 mb-1">{t('hi.justification')}</p><p className="text-xs text-[#0A0A0A]/60">{a.justification}</p></div>}
                     <div className="grid grid-cols-2 gap-3">
-                      {a.positive_factors?.length > 0 && <div><p className="text-[10px] font-bold text-[#2bc196] mb-1">{t('hi.positive_factors')}</p><ul className="text-[10px] text-[#002443]/50 list-disc list-inside">{a.positive_factors.slice(0, 3).map((f, i) => <li key={i}>{f}</li>)}</ul></div>}
-                      {a.risk_factors?.length > 0 && <div><p className="text-[10px] font-bold text-red-400 mb-1">{t('hi.risk_factors')}</p><ul className="text-[10px] text-[#002443]/50 list-disc list-inside">{a.risk_factors.slice(0, 3).map((f, i) => <li key={i}>{f}</li>)}</ul></div>}
+                      {a.positive_factors?.length > 0 && <div><p className="text-[10px] font-bold text-[#1356E2] mb-1">{t('hi.positive_factors')}</p><ul className="text-[10px] text-[#0A0A0A]/50 list-disc list-inside">{a.positive_factors.slice(0, 3).map((f, i) => <li key={i}>{f}</li>)}</ul></div>}
+                      {a.risk_factors?.length > 0 && <div><p className="text-[10px] font-bold text-red-400 mb-1">{t('hi.risk_factors')}</p><ul className="text-[10px] text-[#0A0A0A]/50 list-disc list-inside">{a.risk_factors.slice(0, 3).map((f, i) => <li key={i}>{f}</li>)}</ul></div>}
                     </div>
                     {a.red_flags?.length > 0 && <div className="mt-3 p-2 bg-red-50 rounded-xl"><p className="text-[10px] font-bold text-red-400 mb-1">{t('hi.red_flags')}</p><div className="flex flex-wrap gap-1">{a.red_flags.map((flag, i) => <Badge key={i} className="bg-red-50 text-red-500 text-[10px] border-0">{flag}</Badge>)}</div></div>}
-                    {a.processing_time_ms && <p className="text-[10px] text-[#002443]/30 mt-2">{t('hi.processed_in', { time: a.processing_time_ms })}</p>}
+                    {a.processing_time_ms && <p className="text-[10px] text-[#0A0A0A]/30 mt-2">{t('hi.processed_in', { time: a.processing_time_ms })}</p>}
                   </div>
                 ))}
               </div>

@@ -71,8 +71,8 @@ export default function BDCDataConfidence({ analysis, analiseDimensional }) {
     <div className="bg-white rounded-2xl border border-slate-200 p-4">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h4 className="text-sm font-bold text-[#002443]">📊 Score de Confiança dos Dados</h4>
-          <p className="text-[10px] text-[#002443]/40">
+          <h4 className="text-sm font-bold text-[#0A0A0A]">📊 Score de Confiança dos Dados</h4>
+          <p className="text-[10px] text-[#0A0A0A]/40">
             Indica quais fontes de dados retornaram informações. Quanto mais fontes, mais confiável a análise.
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function BDCDataConfidence({ analysis, analiseDimensional }) {
           }`}>
             {confidencePercent}%
           </span>
-          <p className="text-[10px] text-[#002443]/40">cobertura</p>
+          <p className="text-[10px] text-[#0A0A0A]/40">cobertura</p>
         </div>
       </div>
 
@@ -115,8 +115,8 @@ export default function BDCDataConfidence({ analysis, analiseDimensional }) {
 
       {/* Cobertura global hint */}
       <div className="mb-3 p-2 rounded-lg bg-slate-50 border border-slate-200 flex items-start gap-2">
-        <Info className="w-3 h-3 text-[#002443]/40 shrink-0 mt-0.5" />
-        <p className="text-[10px] text-[#002443]/60 leading-relaxed">
+        <Info className="w-3 h-3 text-[#0A0A0A]/40 shrink-0 mt-0.5" />
+        <p className="text-[10px] text-[#0A0A0A]/60 leading-relaxed">
           <strong>Cobertura: {withData}/{total} fontes responderam ({confidencePercent}%).</strong>{' '}
           Quanto mais datasets BDC respondem com dados, mais confiável a análise. Datasets vazios podem indicar CNPJ novo ou sem dados históricos. Passe o mouse sobre cada card para ver o que ele traz.
         </p>
@@ -140,24 +140,24 @@ export default function BDCDataConfidence({ analysis, analiseDimensional }) {
                         ? <CheckCircle2 className="w-3 h-3 text-green-600" />
                         : <XCircle className="w-3 h-3 text-slate-400" />
                       }
-                      <span className="text-[11px] font-semibold text-[#002443]">{r.label}</span>
+                      <span className="text-[11px] font-semibold text-[#0A0A0A]">{r.label}</span>
                       {r.required && <Badge className="bg-blue-100 text-blue-600 text-[8px] px-1 h-3.5">obrigatório</Badge>}
-                      <Info className="w-2.5 h-2.5 text-[#002443]/30 ml-auto" />
+                      <Info className="w-2.5 h-2.5 text-[#0A0A0A]/30 ml-auto" />
                     </div>
-                    <p className="text-[9px] text-[#002443]/40 ml-4.5">{r.desc}</p>
+                    <p className="text-[9px] text-[#0A0A0A]/40 ml-4.5">{r.desc}</p>
                     {r.hasData && (
                       <p className="text-[9px] text-green-600 font-medium ml-4.5">{r.itemCount} item(ns)</p>
                     )}
                   </div>
                 </TooltipTrigger>
                 {info && (
-                  <TooltipContent side="top" className="max-w-xs bg-[#002443] text-white border-[#002443]">
+                  <TooltipContent side="top" className="max-w-xs bg-[#0A0A0A] text-white border-[#0A0A0A]">
                     <p className="text-[11px] font-bold mb-1">{info.label}</p>
                     <p className="text-[10px] text-white/80 leading-relaxed mb-1.5">{info.brings}</p>
                     {info.datasets && (
                       <div className="pt-1 border-t border-white/20">
                         <p className="text-[9px] text-white/50">Datasets BDC:</p>
-                        <p className="text-[9px] font-mono text-[#2bc196]">{info.datasets.join(', ')}</p>
+                        <p className="text-[9px] font-mono text-[#1356E2]">{info.datasets.join(', ')}</p>
                       </div>
                     )}
                   </TooltipContent>
@@ -169,7 +169,7 @@ export default function BDCDataConfidence({ analysis, analiseDimensional }) {
       </TooltipProvider>
 
       {/* Info about datasets queried */}
-      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-[10px] text-[#002443]/40">
+      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-[10px] text-[#0A0A0A]/40">
         <Database className="w-3 h-3" />
         <span>
           {analysis?.datasetsQueried || '?'} datasets consultados na BDC • 

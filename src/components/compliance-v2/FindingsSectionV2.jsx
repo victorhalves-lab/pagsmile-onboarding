@@ -23,14 +23,14 @@ export default function FindingsSectionV2({ findings, findingsBySeverity }) {
   const infoCount = findings.length - blockers.length - warnings.length;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-rose-50/50 to-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-rose-100"><Search className="w-5 h-5 text-rose-600" /></div>
             <div>
-              <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Findings — Achados da Análise ({findings.length})</h3>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-0.5">Pontos identificados em bureau (BDC), antifraude (CAF) e questionário, com evidência e impacto</p>
+              <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Findings — Achados da Análise ({findings.length})</h3>
+              <p className="text-xs text-[var(--pinbank-blue)]/40 mt-0.5">Pontos identificados em bureau (BDC), antifraude (CAF) e questionário, com evidência e impacto</p>
             </div>
           </div>
           {totalDeductions > 0 && (
@@ -68,7 +68,7 @@ export default function FindingsSectionV2({ findings, findingsBySeverity }) {
         {/* Filters */}
         <div className="flex flex-wrap gap-2 mb-5">
           <button onClick={() => setFilter('all')}
-            className={`text-xs px-3.5 py-2 rounded-lg border-2 transition-all font-bold ${filter === 'all' ? 'bg-[var(--pagsmile-blue)] text-white border-[var(--pagsmile-blue)]' : 'bg-white text-[var(--pagsmile-blue)]/60 border-gray-200 hover:bg-gray-50'}`}>
+            className={`text-xs px-3.5 py-2 rounded-lg border-2 transition-all font-bold ${filter === 'all' ? 'bg-[var(--pinbank-blue)] text-white border-[var(--pinbank-blue)]' : 'bg-white text-[var(--pinbank-blue)]/60 border-gray-200 hover:bg-gray-50'}`}>
             Todos ({findings.length})
           </button>
           {SEV_FILTERS.map(s => {
@@ -90,7 +90,7 @@ export default function FindingsSectionV2({ findings, findingsBySeverity }) {
         {filtered.length === 0 && (
           <div className="text-center py-10">
             <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-green-400" />
-            <p className="text-sm text-[var(--pagsmile-blue)]/40">Nenhum finding nesta categoria</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/40">Nenhum finding nesta categoria</p>
           </div>
         )}
       </div>

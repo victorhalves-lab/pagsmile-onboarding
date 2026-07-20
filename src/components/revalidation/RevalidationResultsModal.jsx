@@ -36,7 +36,7 @@ export default function RevalidationResultsModal({ open, onClose, data }) {
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-[#2bc196]" />
+            <Shield className="w-5 h-5 text-[#1356E2]" />
             Resultado da Revalidação
           </DialogTitle>
         </DialogHeader>
@@ -45,14 +45,14 @@ export default function RevalidationResultsModal({ open, onClose, data }) {
         {data.summary && (
           <div className="grid grid-cols-4 gap-3 mb-4">
             {[
-              { label: 'Processados', value: data.summary.processed, color: 'text-[#002443]' },
+              { label: 'Processados', value: data.summary.processed, color: 'text-[#0A0A0A]' },
               { label: 'Sucesso', value: data.summary.succeeded, color: 'text-green-600' },
               { label: 'Falhas', value: data.summary.failed, color: 'text-red-600' },
               { label: 'Tempo', value: `${(data.elapsed / 1000).toFixed(1)}s`, color: 'text-blue-600' },
             ].map((s, i) => (
               <div key={i} className="bg-[#f4f4f4] rounded-xl p-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="text-[10px] text-[#002443]/50">{s.label}</p>
+                <p className="text-[10px] text-[#0A0A0A]/50">{s.label}</p>
               </div>
             ))}
           </div>

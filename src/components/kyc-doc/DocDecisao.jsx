@@ -22,10 +22,10 @@ export default function DocDecisao() {
       <H2>9.1. Exceção CAF — Veto Biométrico</H2>
       <P>A ÚNICA exceção à tabela acima é quando a CAF detecta fraude biométrica CONFIRMADA. Neste caso, independentemente da subfaixa V4 (mesmo que seja 1A — melhor score possível), o caso é automaticamente encaminhado para Revisão Manual. As condições que ativam o veto CAF são:</P>
       <ul className="list-disc ml-6 space-y-1 mb-4">
-        <li className="text-sm text-[#002443]/80"><strong>Liveness REPROVED:</strong> A prova de vida detectou que não é uma pessoa real (foto, vídeo, máscara).</li>
-        <li className="text-sm text-[#002443]/80"><strong>Face Liveness REPROVED:</strong> O liveness facial falhou por motivo técnico ou anti-spoofing.</li>
-        <li className="text-sm text-[#002443]/80"><strong>Deepfake DETECTED:</strong> A selfie apresenta sinais de deepfake gerado por inteligência artificial.</li>
-        <li className="text-sm text-[#002443]/80"><strong>Documentscopy REPROVED:</strong> O documento apresenta sinais de adulteração digital (Photoshop, montagem, recorte).</li>
+        <li className="text-sm text-[#0A0A0A]/80"><strong>Liveness REPROVED:</strong> A prova de vida detectou que não é uma pessoa real (foto, vídeo, máscara).</li>
+        <li className="text-sm text-[#0A0A0A]/80"><strong>Face Liveness REPROVED:</strong> O liveness facial falhou por motivo técnico ou anti-spoofing.</li>
+        <li className="text-sm text-[#0A0A0A]/80"><strong>Deepfake DETECTED:</strong> A selfie apresenta sinais de deepfake gerado por inteligência artificial.</li>
+        <li className="text-sm text-[#0A0A0A]/80"><strong>Documentscopy REPROVED:</strong> O documento apresenta sinais de adulteração digital (Photoshop, montagem, recorte).</li>
       </ul>
 
       <InfoBox title="Por que a decisão é determinística e não baseada em IA?" color="green">

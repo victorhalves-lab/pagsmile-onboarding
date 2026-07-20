@@ -55,7 +55,7 @@ export default function Governanca() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-[#2bc196] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-[#1356E2] rounded-full animate-spin" />
       </div>
     );
   }
@@ -64,12 +64,12 @@ export default function Governanca() {
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-3 mb-1">
-          <div className="w-10 h-10 rounded-lg bg-[#002443] flex items-center justify-center">
-            <Shield className="w-5 h-5 text-[#2bc196]" />
+          <div className="w-10 h-10 rounded-lg bg-[#0A0A0A] flex items-center justify-center">
+            <Shield className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Governança</h1>
-            <p className="text-sm text-[#002443]/60">Visão centralizada de auditoria, acessos, segurança e framework de governança.</p>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">Governança</h1>
+            <p className="text-sm text-[#0A0A0A]/60">Visão centralizada de auditoria, acessos, segurança e framework de governança.</p>
           </div>
         </div>
       </div>

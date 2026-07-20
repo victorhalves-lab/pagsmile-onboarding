@@ -30,20 +30,20 @@ function TrailItem({ trail }) {
   const hasGeo = trail.country || trail.region || trail.city;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <button onClick={() => setExpanded(!expanded)} className="w-full flex items-start justify-between p-3 text-left hover:bg-slate-50/50 transition-colors">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <Badge className={`text-[10px] ${color}`}>{label}</Badge>
             {trail.action && <Badge variant="outline" className="text-[10px]">{trail.action}</Badge>}
             {hasGeo && (
-              <span className="text-[10px] text-[var(--pagsmile-blue)]/50 flex items-center gap-1">
+              <span className="text-[10px] text-[var(--pinbank-blue)]/50 flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
                 {[trail.city, trail.region, trail.country].filter(Boolean).join(', ')}
               </span>
             )}
           </div>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-1 flex items-center gap-2 flex-wrap">
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-1 flex items-center gap-2 flex-wrap">
             <Calendar className="w-3 h-3" />
             {date.toLocaleString('pt-BR')}
             {trail.ipHash && <span className="flex items-center gap-1"><Hash className="w-3 h-3" />IP: {trail.ipHash.slice(0, 12)}…</span>}
@@ -55,29 +55,29 @@ function TrailItem({ trail }) {
         <div className="border-t border-slate-100 p-3 space-y-2 text-xs">
           {trail.userAgent && (
             <div className="flex items-start gap-2 p-2 bg-slate-50 rounded">
-              <Smartphone className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40 mt-0.5 flex-shrink-0" />
+              <Smartphone className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40 mt-0.5 flex-shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50">User Agent</p>
-                <p className="text-[11px] text-[var(--pagsmile-blue)]/80 break-all">{trail.userAgent}</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50">User Agent</p>
+                <p className="text-[11px] text-[var(--pinbank-blue)]/80 break-all">{trail.userAgent}</p>
               </div>
             </div>
           )}
           {trail.timezone && (
             <div className="flex items-center gap-2 p-2 bg-slate-50 rounded">
-              <Globe className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40" />
-              <span className="text-[10px] text-[var(--pagsmile-blue)]/50">Timezone:</span>
-              <span className="text-[11px] text-[var(--pagsmile-blue)]/80">{trail.timezone}</span>
+              <Globe className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40" />
+              <span className="text-[10px] text-[var(--pinbank-blue)]/50">Timezone:</span>
+              <span className="text-[11px] text-[var(--pinbank-blue)]/80">{trail.timezone}</span>
             </div>
           )}
           {trail.referer && (
             <div className="p-2 bg-slate-50 rounded">
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mb-0.5">Referer</p>
-              <p className="text-[11px] text-[var(--pagsmile-blue)]/80 break-all">{trail.referer}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/50 mb-0.5">Referer</p>
+              <p className="text-[11px] text-[var(--pinbank-blue)]/80 break-all">{trail.referer}</p>
             </div>
           )}
           {trail.linkCode && (
             <div className="p-2 bg-slate-50 rounded">
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Link Code: <span className="font-semibold text-[var(--pagsmile-blue)]">{trail.linkCode}</span></p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/50">Link Code: <span className="font-semibold text-[var(--pinbank-blue)]">{trail.linkCode}</span></p>
             </div>
           )}
           {trail.metadata && Object.keys(trail.metadata).length > 0 && (
@@ -133,9 +133,9 @@ export default function CadastroAuditoriaTab({ merchantId, allCaseIds = [], allP
 
   if (!trails.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <ShieldCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum registro de auditoria de acesso (LGPD)</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <ShieldCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum registro de auditoria de acesso (LGPD)</p>
       </div>
     );
   }
@@ -148,8 +148,8 @@ export default function CadastroAuditoriaTab({ merchantId, allCaseIds = [], allP
 
   return (
     <div className="space-y-3 mt-4">
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-4">
-        <p className="text-xs text-[var(--pagsmile-blue)]/50 mb-2">Trilha de acessos (IP, geolocalização, user-agent) — auditoria LGPD</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-4">
+        <p className="text-xs text-[var(--pinbank-blue)]/50 mb-2">Trilha de acessos (IP, geolocalização, user-agent) — auditoria LGPD</p>
         <div className="flex flex-wrap gap-2">
           {Object.entries(grouped).map(([k, v]) => (
             <Badge key={k} className={`text-[10px] ${EVENT_COLORS[k] || 'bg-gray-100 text-gray-700'}`}>
@@ -164,7 +164,7 @@ export default function CadastroAuditoriaTab({ merchantId, allCaseIds = [], allP
           <TrailItem key={t.id} trail={t} />
         ))}
         {trails.length > 100 && (
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40 text-center pt-2">
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40 text-center pt-2">
             Mostrando 100 de {trails.length} registros
           </p>
         )}

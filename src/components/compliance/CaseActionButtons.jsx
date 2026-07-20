@@ -104,7 +104,7 @@ export default function CaseActionButtons({ caseId, merchantName, documentsCount
         size="sm"
         onClick={handleDownloadPdf}
         disabled={downloadingPdf}
-        className="text-[#002443]/70 border-[#002443]/10 hover:bg-[#2bc196]/5 hover:border-[#2bc196]/30 hover:text-[#2bc196] text-xs rounded-lg"
+        className="text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:bg-[#1356E2]/5 hover:border-[#1356E2]/30 hover:text-[#1356E2] text-xs rounded-lg"
       >
         {downloadingPdf ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1.5" />}
         PDF Respostas
@@ -114,7 +114,7 @@ export default function CaseActionButtons({ caseId, merchantName, documentsCount
         size="sm"
         onClick={handleDownloadAllDocs}
         disabled={downloadingZip || documentsCount === 0}
-        className="text-[#002443]/70 border-[#002443]/10 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 text-xs rounded-lg"
+        className="text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 text-xs rounded-lg"
         title={documentsCount === 0 ? 'Nenhum documento enviado' : `${documentsCount} documento(s)`}
       >
         {downloadingZip ? (

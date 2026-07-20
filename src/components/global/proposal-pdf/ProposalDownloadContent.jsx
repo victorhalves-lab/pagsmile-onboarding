@@ -12,7 +12,7 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
 
   const i18n = {
     en: {
-      title: 'Pagsmile Global Payments Proposal',
+      title: 'Pin Bank Global Payments Proposal',
       tagline: 'Tailored USD acquiring solution for your business',
       prepared_for: 'Prepared for',
       contact: 'Contact',
@@ -26,10 +26,10 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
       setup: 'Setup Fee', refund: 'Refund Fee', chargeback: 'Chargeback Fee', risk: 'Risk Control',
       mccs: 'Merchant Categories', markets: 'Target Markets',
       valid_until: 'This proposal is valid until',
-      footer: 'Pagsmile · Global Payments · pagsmile.com',
+      footer: 'Pin Bank · Global Payments · pagsmile.com',
     },
     pt: {
-      title: 'Proposta Comercial Pagsmile Global',
+      title: 'Proposta Comercial Pin Bank Global',
       tagline: 'Solução de adquirência em USD sob medida para o seu negócio',
       prepared_for: 'Preparada para',
       contact: 'Contato',
@@ -43,10 +43,10 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
       setup: 'Setup', refund: 'Refund', chargeback: 'Chargeback', risk: 'Controle de Risco',
       mccs: 'Categorias MCC', markets: 'Mercados-alvo',
       valid_until: 'Esta proposta é válida até',
-      footer: 'Pagsmile · Global Payments · pagsmile.com',
+      footer: 'Pin Bank · Global Payments · pagsmile.com',
     },
     zh: {
-      title: 'Pagsmile Global 商户提案',
+      title: 'Pin Bank Global 商户提案',
       tagline: '为您的业务量身定制的美元收单解决方案',
       prepared_for: '准备给',
       contact: '联系人',
@@ -60,7 +60,7 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
       setup: '开通费', refund: '退款费', chargeback: '拒付费', risk: '风险控制',
       mccs: 'MCC 类别', markets: '目标市场',
       valid_until: '本提案有效期至',
-      footer: 'Pagsmile · Global Payments · pagsmile.com',
+      footer: 'Pin Bank · Global Payments · pagsmile.com',
     },
   };
   const t = i18n[lang] || i18n.en;
@@ -76,21 +76,21 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
         width: '1080px',
         background: '#ffffff',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-        color: '#002443',
+        color: '#0A0A0A',
         padding: '48px',
       }}
     >
-      {/* Header bar — gradient Pagsmile */}
+      {/* Header bar — gradient Pin Bank */}
       <div style={{
         height: 8,
-        background: 'linear-gradient(90deg,#002443 0%,#2bc196 50%,#5cf7cf 100%)',
+        background: 'linear-gradient(90deg,#0A0A0A 0%,#1356E2 50%,#E84B1C 100%)',
         borderRadius: 4, marginBottom: 32,
       }} />
 
       {/* Title */}
       <div style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 32, fontWeight: 800, color: '#002443', lineHeight: 1.1 }}>{t.title}</div>
-        <div style={{ fontSize: 14, color: '#002443', opacity: 0.6, marginTop: 6 }}>{t.tagline}</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: '#0A0A0A', lineHeight: 1.1 }}>{t.title}</div>
+        <div style={{ fontSize: 14, color: '#0A0A0A', opacity: 0.6, marginTop: 6 }}>{t.tagline}</div>
       </div>
 
       {/* Client block */}
@@ -99,13 +99,13 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16,
       }}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: '#002443', opacity: 0.5, textTransform: 'uppercase' }}>{t.prepared_for}</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#002443', marginTop: 4 }}>{proposal.client_name || '—'}</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: '#0A0A0A', opacity: 0.5, textTransform: 'uppercase' }}>{t.prepared_for}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#0A0A0A', marginTop: 4 }}>{proposal.client_name || '—'}</div>
         </div>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: '#002443', opacity: 0.5, textTransform: 'uppercase' }}>{t.contact}</div>
-          <div style={{ fontSize: 14, color: '#002443', marginTop: 4 }}>{proposal.contact_name || '—'}</div>
-          <div style={{ fontSize: 12, color: '#002443', opacity: 0.6 }}>{proposal.contact_email || '—'}</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: '#0A0A0A', opacity: 0.5, textTransform: 'uppercase' }}>{t.contact}</div>
+          <div style={{ fontSize: 14, color: '#0A0A0A', marginTop: 4 }}>{proposal.contact_name || '—'}</div>
+          <div style={{ fontSize: 12, color: '#0A0A0A', opacity: 0.6 }}>{proposal.contact_email || '—'}</div>
         </div>
       </div>
 
@@ -140,14 +140,14 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
           <SectionTitle label={`${t.mccs} & ${t.markets}`} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#002443', opacity: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>{t.mccs}</div>
-              <div style={{ fontSize: 12, color: '#002443', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#0A0A0A', opacity: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>{t.mccs}</div>
+              <div style={{ fontSize: 12, color: '#0A0A0A', lineHeight: 1.6 }}>
                 {(proposal.mccs || []).join(' · ') || '—'}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#002443', opacity: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>{t.markets}</div>
-              <div style={{ fontSize: 12, color: '#002443', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#0A0A0A', opacity: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>{t.markets}</div>
+              <div style={{ fontSize: 12, color: '#0A0A0A', lineHeight: 1.6 }}>
                 {markets.join(' · ') || '—'}
               </div>
             </div>
@@ -156,7 +156,7 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
       )}
 
       {/* Footer */}
-      <div style={{ borderTop: '1px solid rgba(0,36,67,0.08)', paddingTop: 16, marginTop: 24, display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#002443', opacity: 0.6 }}>
+      <div style={{ borderTop: '1px solid rgba(0,36,67,0.08)', paddingTop: 16, marginTop: 24, display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#0A0A0A', opacity: 0.6 }}>
         <div>{proposal.valid_until ? `${t.valid_until}: ${proposal.valid_until}` : ''}</div>
         <div>{t.footer}</div>
       </div>
@@ -166,7 +166,7 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
 
 function SectionTitle({ label }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, color: '#2bc196', textTransform: 'uppercase', marginBottom: 10 }}>
+    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, color: '#1356E2', textTransform: 'uppercase', marginBottom: 10 }}>
       {label}
     </div>
   );
@@ -179,16 +179,16 @@ function HeroCell({ label, value, highlight }) {
       background: highlight ? 'linear-gradient(135deg,rgba(43,193,150,0.08) 0%,rgba(92,247,207,0.08) 100%)' : '#ffffff',
       border: highlight ? '1px solid rgba(43,193,150,0.3)' : '1px solid rgba(0,36,67,0.08)',
     }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: '#002443', opacity: 0.6, textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
-      <div style={{ fontSize: 36, fontWeight: 800, color: '#002443', fontFamily: "'JetBrains Mono', monospace", marginTop: 4 }}>{value}</div>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#0A0A0A', opacity: 0.6, textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
+      <div style={{ fontSize: 36, fontWeight: 800, color: '#0A0A0A', fontFamily: "'JetBrains Mono', monospace", marginTop: 4 }}>{value}</div>
     </div>
   );
 }
 function Cell({ label, value }) {
   return (
     <div style={{ padding: 12, border: '1px solid rgba(0,36,67,0.08)', borderRadius: 10, background: '#ffffff' }}>
-      <div style={{ fontSize: 9, fontWeight: 700, color: '#002443', opacity: 0.5, textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
-      <div style={{ fontSize: 14, fontWeight: 600, color: '#002443', marginTop: 3, fontFamily: "'JetBrains Mono', monospace" }}>{value}</div>
+      <div style={{ fontSize: 9, fontWeight: 700, color: '#0A0A0A', opacity: 0.5, textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
+      <div style={{ fontSize: 14, fontWeight: 600, color: '#0A0A0A', marginTop: 3, fontFamily: "'JetBrains Mono', monospace" }}>{value}</div>
     </div>
   );
 }

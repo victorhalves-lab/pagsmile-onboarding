@@ -71,7 +71,7 @@ export default function TemplatesQuestionarios() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -81,10 +81,10 @@ export default function TemplatesQuestionarios() {
     templates.filter(t => t.category === 'COMPLIANCE' || !t.category);
 
   const stats = [
-    { label: 'Total', value: templates.length, color: '#002443' },
-    { label: 'Leads', value: templates.filter(t => t.category === 'LEAD_GENERATION').length, color: '#2bc196' },
-    { label: 'Compliance', value: templates.filter(t => t.category === 'COMPLIANCE' || !t.category).length, color: '#36706c' },
-    { label: 'Ativos', value: templates.filter(t => t.isActive).length, color: '#2bc196' },
+    { label: 'Total', value: templates.length, color: '#0A0A0A' },
+    { label: 'Leads', value: templates.filter(t => t.category === 'LEAD_GENERATION').length, color: '#1356E2' },
+    { label: 'Compliance', value: templates.filter(t => t.category === 'COMPLIANCE' || !t.category).length, color: '#E84B1C' },
+    { label: 'Ativos', value: templates.filter(t => t.isActive).length, color: '#1356E2' },
   ];
 
   return (
@@ -92,11 +92,11 @@ export default function TemplatesQuestionarios() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">{t('tq.title')}</h1>
-          <p className="text-sm text-[#002443]/60">{t('tq.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('tq.title')}</h1>
+          <p className="text-sm text-[#0A0A0A]/60">{t('tq.subtitle')}</p>
         </div>
         <Link to={createPageUrl('EditorQuestionario')}>
-          <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+          <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" />
             {t('tq.new')}
           </Button>
@@ -106,24 +106,24 @@ export default function TemplatesQuestionarios() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+          <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
             <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
-            <p className="text-xs text-[#002443]/50">{s.label}</p>
+            <p className="text-xs text-[#0A0A0A]/50">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
-          <TabsTrigger value="all" className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
+        <TabsList className="bg-[#f4f4f4] border border-[#0A0A0A]/5">
+          <TabsTrigger value="all" className="data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A] data-[state=active]:shadow-sm">
             Todos ({templates.length})
           </TabsTrigger>
-          <TabsTrigger value="LEAD_GENERATION" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
+          <TabsTrigger value="LEAD_GENERATION" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A] data-[state=active]:shadow-sm">
             <Briefcase className="w-3 h-3" />
             Leads ({templates.filter(t => t.category === 'LEAD_GENERATION').length})
           </TabsTrigger>
-          <TabsTrigger value="COMPLIANCE" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
+          <TabsTrigger value="COMPLIANCE" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A] data-[state=active]:shadow-sm">
             <Shield className="w-3 h-3" />
             Compliance ({templates.filter(t => t.category === 'COMPLIANCE' || !t.category).length})
           </TabsTrigger>
@@ -132,14 +132,14 @@ export default function TemplatesQuestionarios() {
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-7 h-7 text-[#002443]/20" />
+            <FileText className="w-7 h-7 text-[#0A0A0A]/20" />
           </div>
-          <h3 className="text-base font-semibold text-[#002443] mb-1">{t('tq.no_templates')}</h3>
-          <p className="text-sm text-[#002443]/50 mb-6">{t('tq.no_templates_desc')}</p>
+          <h3 className="text-base font-semibold text-[#0A0A0A] mb-1">{t('tq.no_templates')}</h3>
+          <p className="text-sm text-[#0A0A0A]/50 mb-6">{t('tq.no_templates_desc')}</p>
           <Link to={createPageUrl('EditorQuestionario')}>
-            <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+            <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
               <Plus className="w-4 h-4 mr-2" />
               {t('tq.create')}
             </Button>
@@ -150,54 +150,54 @@ export default function TemplatesQuestionarios() {
           {filtered.map((template) => (
             <div 
               key={template.id} 
-              className="bg-white rounded-2xl border border-[#002443]/5 p-5 hover:shadow-sm transition-shadow"
+              className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-5 hover:shadow-sm transition-shadow"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1 min-w-0">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
                     template.merchantType === 'PF' 
-                      ? 'bg-[#2bc196]/10' 
-                      : 'bg-[#002443]/5'
+                      ? 'bg-[#1356E2]/10' 
+                      : 'bg-[#0A0A0A]/5'
                   }`}>
                     {template.merchantType === 'PF' ? (
-                      <Users className="w-5 h-5 text-[#2bc196]" />
+                      <Users className="w-5 h-5 text-[#1356E2]" />
                     ) : (
-                      <Building2 className="w-5 h-5 text-[#002443]" />
+                      <Building2 className="w-5 h-5 text-[#0A0A0A]" />
                     )}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-base font-semibold text-[#002443] truncate">
+                    <h3 className="text-base font-semibold text-[#0A0A0A] truncate">
                       {template.name}
                     </h3>
-                    <p className="text-sm text-[#002443]/50 mt-0.5 line-clamp-1">
+                    <p className="text-sm text-[#0A0A0A]/50 mt-0.5 line-clamp-1">
                       {template.description || t('tq.no_description')}
                     </p>
                     <div className="flex items-center gap-2 mt-3 flex-wrap">
                       <Badge className={
                         template.category === 'LEAD_GENERATION' 
-                          ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' 
-                          : 'bg-[#002443]/5 text-[#002443] border-0'
+                          ? 'bg-[#1356E2]/10 text-[#1356E2] border-0' 
+                          : 'bg-[#0A0A0A]/5 text-[#0A0A0A] border-0'
                       }>
                         {template.category === 'LEAD_GENERATION' ? '🎯 Lead' : '🛡️ Compliance'}
                       </Badge>
                       {template.category === 'LEAD_GENERATION' && template.subCategory && template.subCategory !== 'GENERAL' && (
-                        <Badge className="bg-[#36706c]/10 text-[#36706c] border-0">
+                        <Badge className="bg-[#E84B1C]/10 text-[#E84B1C] border-0">
                           {template.subCategory === 'MERCHAN' ? 'Merchant' : 
                            template.subCategory === 'GATEWAY' ? 'Gateway' : 
                            template.subCategory === 'MARKETPLACE' ? 'Marketplace' : template.subCategory}
                         </Badge>
                       )}
-                      <Badge variant="outline" className="border-[#002443]/10 text-[#002443]/60">
+                      <Badge variant="outline" className="border-[#0A0A0A]/10 text-[#0A0A0A]/60">
                         {template.merchantType === 'PF' ? t('tq.pf') : t('tq.pj')}
                       </Badge>
                       {template.model && (
-                        <Badge className="bg-[#5cf7cf]/10 text-[#36706c] border-0">
+                        <Badge className="bg-[#E84B1C]/10 text-[#E84B1C] border-0">
                           {template.model.charAt(0).toUpperCase() + template.model.slice(1)}
                         </Badge>
                       )}
                       <Badge className={template.isActive 
-                        ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' 
-                        : 'bg-[#f4f4f4] text-[#002443]/40 border-0'
+                        ? 'bg-[#1356E2]/10 text-[#1356E2] border-0' 
+                        : 'bg-[#f4f4f4] text-[#0A0A0A]/40 border-0'
                       }>
                         {template.isActive ? t('tq.active') : t('tq.inactive')}
                       </Badge>
@@ -207,17 +207,17 @@ export default function TemplatesQuestionarios() {
 
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#002443]/40">{t('tq.active_label')}</span>
+                    <span className="text-xs text-[#0A0A0A]/40">{t('tq.active_label')}</span>
                     <Switch
                       checked={template.isActive}
                       onCheckedChange={(checked) => 
                         toggleMutation.mutate({ id: template.id, isActive: checked })
                       }
-                      className="data-[state=checked]:bg-[#2bc196]"
+                      className="data-[state=checked]:bg-[#1356E2]"
                     />
                   </div>
                   
-                  <div className="h-6 w-px bg-[#002443]/5" />
+                  <div className="h-6 w-px bg-[#0A0A0A]/5" />
 
                   <Button 
                     variant="ghost" 
@@ -234,7 +234,7 @@ export default function TemplatesQuestionarios() {
                     }}
                     title="Copiar Link Público"
                   >
-                    <Copy className="w-4 h-4 text-[#2bc196]" />
+                    <Copy className="w-4 h-4 text-[#1356E2]" />
                   </Button>
 
                   <Button 
@@ -251,7 +251,7 @@ export default function TemplatesQuestionarios() {
                     }}
                     title="Abrir Link Público"
                   >
-                    <ExternalLink className="w-4 h-4 text-[#002443]/40" />
+                    <ExternalLink className="w-4 h-4 text-[#0A0A0A]/40" />
                   </Button>
 
                   <Button 
@@ -261,12 +261,12 @@ export default function TemplatesQuestionarios() {
                     onClick={() => handleDownloadPdf(template)}
                     title="Baixar PDF"
                   >
-                    <Download className="w-4 h-4 text-[#002443]/40" />
+                    <Download className="w-4 h-4 text-[#0A0A0A]/40" />
                   </Button>
 
                   <Link to={createPageUrl('EditorQuestionario') + `?id=${template.id}`}>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <Edit className="w-4 h-4 text-[#002443]/40" />
+                      <Edit className="w-4 h-4 text-[#0A0A0A]/40" />
                     </Button>
                   </Link>
                   
@@ -288,8 +288,8 @@ export default function TemplatesQuestionarios() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#002443]">{t('tq.delete_title')}</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#002443]/60">{t('tq.delete_desc')}</AlertDialogDescription>
+            <AlertDialogTitle className="text-[#0A0A0A]">{t('tq.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#0A0A0A]/60">{t('tq.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-xl">{t('tq.cancel')}</AlertDialogCancel>

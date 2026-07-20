@@ -31,8 +31,8 @@ export default function EnterpriseExecutiveSummary({
           <Shield className="w-4 h-4 text-white" />
         </div>
         <div className="flex-1">
-          <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">Executive Summary — PIX API Enterprise</h3>
-          <p className="text-[11px] text-[var(--pagsmile-blue)]/50">Visão rápida para o time de compliance</p>
+          <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">Executive Summary — PIX API Enterprise</h3>
+          <p className="text-[11px] text-[var(--pinbank-blue)]/50">Visão rápida para o time de compliance</p>
         </div>
         {summary.recommendation && (
           <Badge className={`${summary.recommendation.bg} ${summary.recommendation.color} border-0 text-[10px]`}>
@@ -45,7 +45,7 @@ export default function EnterpriseExecutiveSummary({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KPI icon={Building2} label="Empresa" value={summary.companyStatus.label} color={summary.companyStatus.color} />
         <KPI icon={User} label="Representante" value={summary.representativeStatus.label} color={summary.representativeStatus.color} />
-        <KPI icon={Users} label="Sócios / UBOs" value={`${summary.ownersCount} analisados`} color="text-[var(--pagsmile-blue)]" />
+        <KPI icon={Users} label="Sócios / UBOs" value={`${summary.ownersCount} analisados`} color="text-[var(--pinbank-blue)]" />
         <KPI icon={Scale} label="Score Final" value={summary.score != null ? `${summary.score}` : '—'} color={summary.scoreColor} />
       </div>
 
@@ -87,21 +87,21 @@ export default function EnterpriseExecutiveSummary({
 
       {/* Cruzamento declarado vs enriquecido */}
       {summary.crossValidation.length > 0 && (
-        <div className="p-3.5 rounded-xl bg-white border border-[var(--pagsmile-blue)]/8">
+        <div className="p-3.5 rounded-xl bg-white border border-[var(--pinbank-blue)]/8">
           <div className="flex items-center gap-2 mb-2.5">
-            <FileSearch className="w-4 h-4 text-[var(--pagsmile-blue)]/60" />
-            <p className="text-xs font-bold text-[var(--pagsmile-blue)]">Declarado vs Enriquecido</p>
+            <FileSearch className="w-4 h-4 text-[var(--pinbank-blue)]/60" />
+            <p className="text-xs font-bold text-[var(--pinbank-blue)]">Declarado vs Enriquecido</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {summary.crossValidation.map((row, i) => (
               <div key={i} className={`p-2 rounded-lg border text-[10px] ${row.match ? 'bg-green-50/40 border-green-100' : 'bg-amber-50/40 border-amber-100'}`}>
                 <div className="flex items-center gap-1.5">
                   {row.match ? <CheckCircle2 className="w-3 h-3 text-green-600 flex-shrink-0" /> : <AlertTriangle className="w-3 h-3 text-amber-600 flex-shrink-0" />}
-                  <span className="font-semibold text-[var(--pagsmile-blue)]">{row.field}</span>
+                  <span className="font-semibold text-[var(--pinbank-blue)]">{row.field}</span>
                 </div>
                 <div className="mt-1 ml-4.5 space-y-0.5">
-                  <p className="text-[var(--pagsmile-blue)]/50">Declarado: <span className="text-[var(--pagsmile-blue)]">{row.declared || '—'}</span></p>
-                  <p className="text-[var(--pagsmile-blue)]/50">Encontrado: <span className="text-[var(--pagsmile-blue)]">{row.found || '—'}</span></p>
+                  <p className="text-[var(--pinbank-blue)]/50">Declarado: <span className="text-[var(--pinbank-blue)]">{row.declared || '—'}</span></p>
+                  <p className="text-[var(--pinbank-blue)]/50">Encontrado: <span className="text-[var(--pinbank-blue)]">{row.found || '—'}</span></p>
                 </div>
               </div>
             ))}
@@ -124,23 +124,23 @@ export default function EnterpriseExecutiveSummary({
 
 function KPI({ icon: Icon, label, value, color }) {
   return (
-    <div className="p-3 rounded-xl bg-white border border-[var(--pagsmile-blue)]/5">
+    <div className="p-3 rounded-xl bg-white border border-[var(--pinbank-blue)]/5">
       <div className="flex items-center gap-1.5 mb-1">
-        <Icon className={`w-3 h-3 ${color || 'text-[var(--pagsmile-blue)]/40'}`} />
-        <p className="text-[9px] font-semibold uppercase tracking-wide text-[var(--pagsmile-blue)]/40">{label}</p>
+        <Icon className={`w-3 h-3 ${color || 'text-[var(--pinbank-blue)]/40'}`} />
+        <p className="text-[9px] font-semibold uppercase tracking-wide text-[var(--pinbank-blue)]/40">{label}</p>
       </div>
-      <p className={`text-sm font-bold ${color || 'text-[var(--pagsmile-blue)]'}`}>{value}</p>
+      <p className={`text-sm font-bold ${color || 'text-[var(--pinbank-blue)]'}`}>{value}</p>
     </div>
   );
 }
 
 function ActivityBadge({ icon: Icon, label, value }) {
   return (
-    <div className="p-2 rounded-lg bg-white border border-[var(--pagsmile-blue)]/5 flex items-center gap-2">
-      <Icon className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40" />
+    <div className="p-2 rounded-lg bg-white border border-[var(--pinbank-blue)]/5 flex items-center gap-2">
+      <Icon className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40" />
       <div>
-        <p className="text-[9px] text-[var(--pagsmile-blue)]/40 leading-none">{label}</p>
-        <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{value ?? '—'}</p>
+        <p className="text-[9px] text-[var(--pinbank-blue)]/40 leading-none">{label}</p>
+        <p className="text-xs font-bold text-[var(--pinbank-blue)]">{value ?? '—'}</p>
       </div>
     </div>
   );
@@ -154,7 +154,7 @@ function buildSummary({ onboardingCase, merchant, complianceScore, validations, 
 
   // Score
   const score = complianceScore?.score_final ?? onboardingCase?.riskScoreV4 ?? null;
-  const scoreColor = score == null ? 'text-[var(--pagsmile-blue)]/40'
+  const scoreColor = score == null ? 'text-[var(--pinbank-blue)]/40'
     : score <= 200 ? 'text-green-600'
     : score <= 400 ? 'text-blue-600'
     : score <= 600 ? 'text-amber-600'
@@ -183,7 +183,7 @@ function buildSummary({ onboardingCase, merchant, complianceScore, validations, 
     ? { label: 'Ativa na RFB', color: 'text-green-600' }
     : taxStatus
       ? { label: String(taxStatus), color: 'text-red-600' }
-      : { label: 'Não verificado', color: 'text-[var(--pagsmile-blue)]/40' };
+      : { label: 'Não verificado', color: 'text-[var(--pinbank-blue)]/40' };
 
   // Representante (CAF)
   const cafLogs = [...validations, ...integrationLogs].filter(r => r.provider === 'CAF');

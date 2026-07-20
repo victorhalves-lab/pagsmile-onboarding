@@ -50,11 +50,11 @@ export default function TwoFactorLoginScreen({ onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#002443] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-[#2bc196]/20 flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-[#2bc196]" />
+          <div className="w-16 h-16 rounded-2xl bg-[#1356E2]/20 flex items-center justify-center mx-auto mb-4">
+            <Shield className="w-8 h-8 text-[#1356E2]" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Verificação de 2 Fatores</h1>
           <p className="text-white/50 text-sm">
@@ -74,7 +74,7 @@ export default function TwoFactorLoginScreen({ onSuccess }) {
                   value={totpCode}
                   onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
                   placeholder="000000"
-                  className="bg-white/10 border-white/10 text-white text-center text-2xl tracking-[0.5em] h-14 rounded-xl focus:border-[#2bc196] focus:ring-[#2bc196]"
+                  className="bg-white/10 border-white/10 text-white text-center text-2xl tracking-[0.5em] h-14 rounded-xl focus:border-[#1356E2] focus:ring-[#1356E2]"
                   autoFocus autoComplete="one-time-code"
                   disabled={lockedSeconds > 0}
                 />
@@ -87,7 +87,7 @@ export default function TwoFactorLoginScreen({ onSuccess }) {
                   type="password" inputMode="numeric" maxLength={6}
                   value={pin}
                   onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                  className="bg-white/10 border-white/10 text-white text-center text-2xl tracking-[0.5em] h-14 rounded-xl focus:border-[#2bc196] focus:ring-[#2bc196]"
+                  className="bg-white/10 border-white/10 text-white text-center text-2xl tracking-[0.5em] h-14 rounded-xl focus:border-[#1356E2] focus:ring-[#1356E2]"
                   autoComplete="off"
                   disabled={lockedSeconds > 0}
                 />
@@ -101,7 +101,7 @@ export default function TwoFactorLoginScreen({ onSuccess }) {
                 value={backupCode}
                 onChange={(e) => setBackupCode(e.target.value.toUpperCase())}
                 placeholder="XXXXX-XXXXX"
-                className="bg-white/10 border-white/10 text-white text-center text-lg tracking-widest h-14 rounded-xl font-mono uppercase focus:border-[#2bc196]"
+                className="bg-white/10 border-white/10 text-white text-center text-lg tracking-widest h-14 rounded-xl font-mono uppercase focus:border-[#1356E2]"
                 autoFocus autoComplete="off"
                 disabled={lockedSeconds > 0}
               />
@@ -114,7 +114,7 @@ export default function TwoFactorLoginScreen({ onSuccess }) {
           <Button
             type="submit"
             disabled={loading || lockedSeconds > 0 || (useBackup ? backupCode.length < 11 : (totpCode.length !== 6 || pin.length !== 6))}
-            className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-semibold rounded-xl"
+            className="w-full h-12 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white font-semibold rounded-xl"
           >
             {loading ? 'Verificando...' : lockedSeconds > 0 ? 'Bloqueado' : 'Entrar'}
           </Button>
@@ -130,7 +130,7 @@ export default function TwoFactorLoginScreen({ onSuccess }) {
         </form>
 
         <p className="text-center text-white/30 text-xs mt-6">
-          &copy; {new Date().getFullYear()} Pagsmile — Acesso restrito
+          &copy; {new Date().getFullYear()} Pin Bank — Acesso restrito
         </p>
       </div>
     </div>

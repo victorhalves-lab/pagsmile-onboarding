@@ -96,8 +96,8 @@ export default function V5_2_ReplayStudio() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
-        <span className="ml-3 text-[#002443]/70">Carregando snapshots…</span>
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
+        <span className="ml-3 text-[#0A0A0A]/70">Carregando snapshots…</span>
       </div>
     );
   }
@@ -136,11 +136,11 @@ export default function V5_2_ReplayStudio() {
           </Button>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <FlaskConical className="w-5 h-5 text-[#2bc196]" />
-              <h1 className="text-lg font-bold text-[#002443]">Replay Studio V5.2</h1>
+              <FlaskConical className="w-5 h-5 text-[#1356E2]" />
+              <h1 className="text-lg font-bold text-[#0A0A0A]">Replay Studio V5.2</h1>
               <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-[10px]">read-only</Badge>
             </div>
-            <p className="text-xs text-[#002443]/55 mt-0.5">
+            <p className="text-xs text-[#0A0A0A]/55 mt-0.5">
               {merchant?.fullName || merchant?.companyName} \u00b7 reexecuta snapshots com regras V5.2 atuais
             </p>
           </div>
@@ -152,7 +152,7 @@ export default function V5_2_ReplayStudio() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            <History className="w-4 h-4 text-[#002443]/60" />
+            <History className="w-4 h-4 text-[#0A0A0A]/60" />
             Selecione o snapshot para reexecutar
           </CardTitle>
         </CardHeader>
@@ -167,7 +167,7 @@ export default function V5_2_ReplayStudio() {
                   onClick={() => { setSelectedSnapshotId(snap.id); setReplayResult(null); }}
                   className={`w-full text-left p-3 rounded-lg border transition-all ${
                     isSelected
-                      ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-sm'
+                      ? 'border-[#1356E2] bg-[#1356E2]/5 shadow-sm'
                       : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
@@ -177,10 +177,10 @@ export default function V5_2_ReplayStudio() {
                         className="w-2 h-2 rounded-full flex-shrink-0"
                         style={{ backgroundColor: meta.color }}
                       />
-                      <span className="text-xs font-bold text-[#002443] truncate">{meta.label}</span>
+                      <span className="text-xs font-bold text-[#0A0A0A] truncate">{meta.label}</span>
                       <Badge variant="outline" className="text-[10px] h-4 px-1.5">{snap.framework_version}</Badge>
                     </div>
-                    <div className="flex items-center gap-3 text-[10px] text-[#002443]/55">
+                    <div className="flex items-center gap-3 text-[10px] text-[#0A0A0A]/55">
                       <span className="inline-flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {new Date(snap.created_date).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
@@ -199,7 +199,7 @@ export default function V5_2_ReplayStudio() {
           </div>
 
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap">
-            <p className="text-[11px] text-[#002443]/55">
+            <p className="text-[11px] text-[#0A0A0A]/55">
               {selectedSnapshotId
                 ? `Snapshot selecionado: ${selectedSnapshotId.substring(0, 16)}…`
                 : 'Nenhum snapshot selecionado'}
@@ -207,7 +207,7 @@ export default function V5_2_ReplayStudio() {
             <Button
               onClick={handleRunReplay}
               disabled={!selectedSnapshotId || replaying}
-              className="bg-[#2bc196] hover:bg-[#36706c] text-white gap-2"
+              className="bg-[#1356E2] hover:bg-[#E84B1C] text-white gap-2"
               size="sm"
             >
               {replaying ? (
@@ -232,8 +232,8 @@ function ErrorState({ title, description }) {
       <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mx-auto mb-4">
         <AlertTriangle className="w-6 h-6 text-amber-600" />
       </div>
-      <h2 className="text-lg font-bold text-[#002443] mb-2">{title}</h2>
-      <p className="text-sm text-[#002443]/70">{description}</p>
+      <h2 className="text-lg font-bold text-[#0A0A0A] mb-2">{title}</h2>
+      <p className="text-sm text-[#0A0A0A]/70">{description}</p>
     </div>
   );
 }

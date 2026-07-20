@@ -38,8 +38,8 @@ function ActivityBlock({ title, icon: Icon, color, items }) {
       </div>
       <div className="p-4 space-y-2">
         {items.map((item, i) => (
-          <div key={i} className="flex items-start gap-2 text-sm text-[#002443]/80">
-            <ArrowRight className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 flex-shrink-0" />
+          <div key={i} className="flex items-start gap-2 text-sm text-[#0A0A0A]/80">
+            <ArrowRight className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 flex-shrink-0" />
             <span>{item}</span>
           </div>
         ))}
@@ -50,14 +50,14 @@ function ActivityBlock({ title, icon: Icon, color, items }) {
 
 function BenefitBlock({ title, items }) {
   return (
-    <div className="bg-gradient-to-r from-[#2bc196]/5 to-[#5cf7cf]/5 rounded-xl p-4 border border-[#2bc196]/10">
-      <h5 className="text-xs font-bold text-[#2bc196] uppercase tracking-wider mb-3 flex items-center gap-1.5">
+    <div className="bg-gradient-to-r from-[#1356E2]/5 to-[#E84B1C]/5 rounded-xl p-4 border border-[#1356E2]/10">
+      <h5 className="text-xs font-bold text-[#1356E2] uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <Star className="w-3.5 h-3.5" /> {title}
       </h5>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {items.map((item, i) => (
-          <div key={i} className="flex items-start gap-2 text-xs text-[#002443]/70">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 flex-shrink-0" />
+          <div key={i} className="flex items-start gap-2 text-xs text-[#0A0A0A]/70">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 flex-shrink-0" />
             <span>{item}</span>
           </div>
         ))}
@@ -69,7 +69,7 @@ function BenefitBlock({ title, items }) {
 export default function PersonasDetailedSection() {
   return (
     <div className="space-y-6">
-      <p className="text-sm text-[#002443]/70 leading-relaxed">
+      <p className="text-sm text-[#0A0A0A]/70 leading-relaxed">
         Abaixo, cada persona com todas as atividades que pode realizar, benefícios que obtém, e jornadas completas dentro da plataforma.
       </p>
 
@@ -167,11 +167,11 @@ export default function PersonasDetailedSection() {
       {/* TIME DE COMPLIANCE */}
       {/* ═══════════════════════════════════════════════════════ */}
       <PersonaCard
-        icon={Shield} color="bg-[#002443]" gradient="bg-gradient-to-r from-[#002443] to-[#003d6e]"
+        icon={Shield} color="bg-[#0A0A0A]" gradient="bg-gradient-to-r from-[#0A0A0A] to-[#003d6e]"
         name="Time de Compliance" role="Analistas de Compliance, Gestores de Risco, Compliance Officers"
         description="Responsável por garantir a conformidade regulatória de todos os merchants que passam pelo onboarding. Analisa casos, valida documentos, revisa decisões da IA e mantém a operação dentro das normas BACEN, PLD/FT e padrões internacionais."
       >
-        <ActivityBlock title="Dashboard e Monitoramento" icon={BarChart3} color="bg-slate-100 text-[#002443]" items={[
+        <ActivityBlock title="Dashboard e Monitoramento" icon={BarChart3} color="bg-slate-100 text-[#0A0A0A]" items={[
           "Consultar Dashboard de Compliance com 20+ KPIs em tempo real: Total Submissões, Aprovadas Helena, Em Manual, Reprovadas",
           "Acompanhar KPIs comparativos: Tempo de Conclusão, Taxa de Conversão, Taxa de Rejeição, Aprovação Automática IA",
           "Verificar Quick Metrics: Tempo médio IA, Tempo médio Manual, Score médio carteira, Docs pendentes",
@@ -318,7 +318,7 @@ export default function PersonasDetailedSection() {
       {/* MERCHANT / CLIENTE */}
       {/* ═══════════════════════════════════════════════════════ */}
       <PersonaCard
-        icon={Building2} color="bg-[#2bc196]" gradient="bg-gradient-to-r from-[#1a8f6e] to-[#2bc196]"
+        icon={Building2} color="bg-[#1356E2]" gradient="bg-gradient-to-r from-[#1a8f6e] to-[#1356E2]"
         name="Merchant (Cliente)" role="Empresa que deseja se credenciar como merchant de pagamentos"
         description="O merchant é o cliente final que utiliza as páginas públicas da plataforma para preencher questionários, receber e aceitar propostas comerciais, completar o processo de compliance/KYC e assinar contratos. Toda a experiência é 100% digital, mobile-first e com auto-save."
       >
@@ -379,7 +379,7 @@ export default function PersonasDetailedSection() {
       <PersonaCard
         icon={Handshake} color="bg-purple-600" gradient="bg-gradient-to-r from-purple-700 to-purple-500"
         name="Introducer (Parceiro de Indicação)" role="Agências, Consultores, Revendedores, Parceiros Comerciais"
-        description="O Introducer é um parceiro externo que indica novos merchants para a Pagsmile. Pode ser individual (pessoa física) ou empresa. Possui portal exclusivo, landing page co-branded e acompanhamento em tempo real dos leads indicados."
+        description="O Introducer é um parceiro externo que indica novos merchants para a Pin Bank. Pode ser individual (pessoa física) ou empresa. Possui portal exclusivo, landing page co-branded e acompanhamento em tempo real dos leads indicados."
       >
         <ActivityBlock title="Portal do Introducer" icon={BarChart3} color="bg-purple-50 text-purple-700" items={[
           "Acessar IntroducerDashboard exclusivo com login vinculado ao e-mail cadastrado",
@@ -392,8 +392,8 @@ export default function PersonasDetailedSection() {
 
         <ActivityBlock title="Landing Page Co-branded" icon={Globe} color="bg-indigo-50 text-indigo-700" items={[
           "Página pública personalizada em /parceiro/:slug (ex: /parceiro/minha-agencia)",
-          "Header com logo do Introducer ao lado do logo Pagsmile",
-          "Tabela de taxas por segmento configurada pelo admin da Pagsmile para cada Introducer",
+          "Header com logo do Introducer ao lado do logo Pin Bank",
+          "Tabela de taxas por segmento configurada pelo admin da Pin Bank para cada Introducer",
           "Calculadora de taxas interativa para o merchant estimar seus custos",
           "Disclaimer de compliance para transparência regulatória",
           "Questionário integrado para captação direta do lead — vinculação automática ao Introducer via referralCode"

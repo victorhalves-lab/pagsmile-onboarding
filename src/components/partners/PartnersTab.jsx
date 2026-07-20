@@ -126,34 +126,34 @@ export default function PartnersTab() {
   if (view === 'list') {
     return (
       <div className="space-y-6">
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 space-y-5">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Parceiros Adquirentes</h2>
-              <p className="text-xs text-[#002443]/40">Gerencie parceiros e suas taxas base para precificação</p>
+              <h2 className="text-base font-bold text-[#0A0A0A]">Parceiros Adquirentes</h2>
+              <p className="text-xs text-[#0A0A0A]/40">Gerencie parceiros e suas taxas base para precificação</p>
             </div>
-            <Button onClick={handleNewPartner} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+            <Button onClick={handleNewPartner} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
               <Plus className="w-4 h-4 mr-2" /> Novo Parceiro
             </Button>
           </div>
 
           {loadingPartners ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" /></div>
           ) : partners.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
-                <Handshake className="w-7 h-7 text-[#002443]/20" />
+                <Handshake className="w-7 h-7 text-[#0A0A0A]/20" />
               </div>
-              <p className="text-sm text-[#002443]/50">Nenhum parceiro cadastrado</p>
-              <p className="text-xs text-[#002443]/30 mt-1">Cadastre um parceiro adquirente para começar</p>
+              <p className="text-sm text-[#0A0A0A]/50">Nenhum parceiro cadastrado</p>
+              <p className="text-xs text-[#0A0A0A]/30 mt-1">Cadastre um parceiro adquirente para começar</p>
             </div>
           ) : (
-            <div className="rounded-xl border border-[#002443]/5 overflow-hidden">
+            <div className="rounded-xl border border-[#0A0A0A]/5 overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#f4f4f4]">
                     {['Parceiro', 'Fee Trans.', 'Antifraude', '3DS', 'Antecipação', 'MCCs', ''].map((h, i) => (
-                      <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 6 ? 'text-right' : ''}`}>{h}</TableHead>
+                      <TableHead key={i} className={`text-[10px] font-bold text-[#0A0A0A]/40 uppercase ${i === 6 ? 'text-right' : ''}`}>{h}</TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
@@ -166,21 +166,21 @@ export default function PartnersTab() {
                           <div className="flex items-center gap-2">
                             {partner.isPrincipal && <Star className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0" />}
                             <div>
-                              <p className="font-semibold text-sm text-[#002443]">{partner.name}</p>
+                              <p className="font-semibold text-sm text-[#0A0A0A]">{partner.name}</p>
                               {partner.isPrincipal && <Badge className="bg-amber-500/10 text-amber-600 border-0 text-[10px]">Principal</Badge>}
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-[#002443]">R$ {(partner.transactionFee || 0).toFixed(2)}</TableCell>
-                        <TableCell className="text-sm text-[#002443]">R$ {(partner.antifraudCost || 0).toFixed(2)}</TableCell>
-                        <TableCell className="text-sm text-[#002443]">R$ {(partner.threeDSCost || 0).toFixed(2)}</TableCell>
-                        <TableCell className="text-sm text-[#002443]">{(partner.percentualAntecipacao || 0).toFixed(2)}%</TableCell>
+                        <TableCell className="text-sm text-[#0A0A0A]">R$ {(partner.transactionFee || 0).toFixed(2)}</TableCell>
+                        <TableCell className="text-sm text-[#0A0A0A]">R$ {(partner.antifraudCost || 0).toFixed(2)}</TableCell>
+                        <TableCell className="text-sm text-[#0A0A0A]">R$ {(partner.threeDSCost || 0).toFixed(2)}</TableCell>
+                        <TableCell className="text-sm text-[#0A0A0A]">{(partner.percentualAntecipacao || 0).toFixed(2)}%</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="border-[#002443]/10 text-[#002443]/50 text-[10px]">{mccCount} MCC(s)</Badge>
+                          <Badge variant="outline" className="border-[#0A0A0A]/10 text-[#0A0A0A]/50 text-[10px]">{mccCount} MCC(s)</Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={(e) => { e.stopPropagation(); handleEditPartner(partner); }}>
-                            <Edit className="w-4 h-4 text-[#002443]/40" />
+                            <Edit className="w-4 h-4 text-[#0A0A0A]/40" />
                           </Button>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-400" onClick={(e) => { e.stopPropagation(); setDeleteConfirm(partner); }}>
                             <Trash2 className="w-4 h-4" />
@@ -219,7 +219,7 @@ export default function PartnersTab() {
   if (view === 'form') {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" onClick={() => { setView('list'); setSelectedPartner(null); }} className="text-[#002443]/50 hover:text-[#002443] rounded-xl">
+        <Button variant="ghost" onClick={() => { setView('list'); setSelectedPartner(null); }} className="text-[#0A0A0A]/50 hover:text-[#0A0A0A] rounded-xl">
           <ArrowLeft className="w-4 h-4 mr-2" /> Voltar
         </Button>
         <PartnerForm
@@ -237,48 +237,48 @@ export default function PartnersTab() {
   if (view === 'detail') {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" onClick={() => { setView('list'); setSelectedPartner(null); }} className="text-[#002443]/50 hover:text-[#002443] rounded-xl">
+        <Button variant="ghost" onClick={() => { setView('list'); setSelectedPartner(null); }} className="text-[#0A0A0A]/50 hover:text-[#0A0A0A] rounded-xl">
           <ArrowLeft className="w-4 h-4 mr-2" /> Voltar
         </Button>
 
         {/* Header do parceiro */}
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {selectedPartner.isPrincipal && <Star className="w-5 h-5 text-amber-500 fill-amber-500" />}
               <div>
-                <h2 className="text-lg font-bold text-[#002443]">{selectedPartner.name}</h2>
+                <h2 className="text-lg font-bold text-[#0A0A0A]">{selectedPartner.name}</h2>
                 {selectedPartner.isPrincipal && <Badge className="bg-amber-500/10 text-amber-600 border-0 text-xs">Parceiro Principal</Badge>}
               </div>
             </div>
-            <Button variant="outline" onClick={() => handleEditPartner(selectedPartner)} className="rounded-xl border-[#002443]/10">
+            <Button variant="outline" onClick={() => handleEditPartner(selectedPartner)} className="rounded-xl border-[#0A0A0A]/10">
               <Edit className="w-4 h-4 mr-2" /> Editar
             </Button>
           </div>
 
           <div className="grid grid-cols-4 gap-4 mt-4">
             <div className="p-3 rounded-xl bg-[#f4f4f4]">
-              <p className="text-[10px] text-[#002443]/40 uppercase font-bold">Fee Transação</p>
-              <p className="text-lg font-bold text-[#002443]">R$ {(selectedPartner.transactionFee || 0).toFixed(2)}</p>
+              <p className="text-[10px] text-[#0A0A0A]/40 uppercase font-bold">Fee Transação</p>
+              <p className="text-lg font-bold text-[#0A0A0A]">R$ {(selectedPartner.transactionFee || 0).toFixed(2)}</p>
             </div>
             <div className="p-3 rounded-xl bg-[#f4f4f4]">
-              <p className="text-[10px] text-[#002443]/40 uppercase font-bold">Antifraude</p>
-              <p className="text-lg font-bold text-[#002443]">R$ {(selectedPartner.antifraudCost || 0).toFixed(2)}</p>
+              <p className="text-[10px] text-[#0A0A0A]/40 uppercase font-bold">Antifraude</p>
+              <p className="text-lg font-bold text-[#0A0A0A]">R$ {(selectedPartner.antifraudCost || 0).toFixed(2)}</p>
             </div>
             <div className="p-3 rounded-xl bg-[#f4f4f4]">
-              <p className="text-[10px] text-[#002443]/40 uppercase font-bold">3DS</p>
-              <p className="text-lg font-bold text-[#002443]">R$ {(selectedPartner.threeDSCost || 0).toFixed(2)}</p>
+              <p className="text-[10px] text-[#0A0A0A]/40 uppercase font-bold">3DS</p>
+              <p className="text-lg font-bold text-[#0A0A0A]">R$ {(selectedPartner.threeDSCost || 0).toFixed(2)}</p>
             </div>
             <div className="p-3 rounded-xl bg-[#f4f4f4]">
-              <p className="text-[10px] text-[#002443]/40 uppercase font-bold">Antecipação</p>
-              <p className="text-lg font-bold text-[#002443]">{(selectedPartner.percentualAntecipacao || 0).toFixed(2)}%</p>
-              <p className="text-[10px] text-[#2bc196] font-semibold">mín. {(Math.round((selectedPartner.percentualAntecipacao || 0) * 1.20 * 100) / 100).toFixed(2)}%</p>
+              <p className="text-[10px] text-[#0A0A0A]/40 uppercase font-bold">Antecipação</p>
+              <p className="text-lg font-bold text-[#0A0A0A]">{(selectedPartner.percentualAntecipacao || 0).toFixed(2)}%</p>
+              <p className="text-[10px] text-[#1356E2] font-semibold">mín. {(Math.round((selectedPartner.percentualAntecipacao || 0) * 1.20 * 100) / 100).toFixed(2)}%</p>
             </div>
           </div>
         </div>
 
         {/* MCC Rates */}
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6">
           <MCCRatesEditor
             partnerId={selectedPartner.id}
             partnerAntecipacao={selectedPartner.percentualAntecipacao || 0}

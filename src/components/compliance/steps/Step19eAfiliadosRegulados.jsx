@@ -11,7 +11,7 @@ export default function Step19eAfiliadosRegulados({ formData, handleChange }) {
             subtitle="Informações sobre afiliados e categorias reguladas."
             icon={TrendingUp}
         >
-            <div className="p-8 text-center text-[var(--pagsmile-blue)]/60 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10">
+            <div className="p-8 text-center text-[var(--pinbank-blue)]/60 bg-[var(--pinbank-blue)]/5 rounded-xl border border-[var(--pinbank-blue)]/10">
                 <p>Nenhuma informação adicional necessária para esta seção com base nas respostas anteriores.</p>
                 <p className="text-xs mt-2">Clique em "Continuar" para prosseguir.</p>
             </div>
@@ -27,8 +27,8 @@ export default function Step19eAfiliadosRegulados({ formData, handleChange }) {
     >
       {/* Afiliados */}
       {formData.operaAfiliados === true && (
-        <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)]">B5. Afiliados/Parceiros</h3>
+        <div className="space-y-4 p-4 bg-[var(--pinbank-blue)]/5 rounded-xl border border-[var(--pinbank-blue)]/10">
+           <h3 className="font-semibold text-[var(--pinbank-blue)]">B5. Afiliados/Parceiros</h3>
            
            <YesNoQuestion
              question="Aprova/valida afiliados antes de venderem?"
@@ -64,8 +64,8 @@ export default function Step19eAfiliadosRegulados({ formData, handleChange }) {
 
       {/* Categoria Regulada */}
       {formData.categoriaSensivel === true && (
-        <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10 mt-4">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)]">B6. Categoria Regulada</h3>
+        <div className="space-y-4 p-4 bg-[var(--pinbank-blue)]/5 rounded-xl border border-[var(--pinbank-blue)]/10 mt-4">
+           <h3 className="font-semibold text-[var(--pinbank-blue)]">B6. Categoria Regulada</h3>
            
            <YesNoQuestion
              question="Operação exige licença/alvará/RT?"

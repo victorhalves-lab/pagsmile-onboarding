@@ -22,9 +22,9 @@ export default function GlobalInterchangeViewer() {
   const formatFixed = (v) => `$${Number(v).toFixed(2)}`;
 
   const SummaryCard = ({ title, data, accent }) => (
-    <Card className="border-[#002443]/5">
+    <Card className="border-[#0A0A0A]/5">
       <CardHeader>
-        <CardTitle className="text-base text-[#002443]">{title}</CardTitle>
+        <CardTitle className="text-base text-[#0A0A0A]">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-3">
@@ -33,10 +33,10 @@ export default function GlobalInterchangeViewer() {
             { key: 'avg', label: t('global.interchange.avg') || 'Média' },
             { key: 'high', label: t('global.interchange.high') || 'Maior' },
           ].map(({ key, label }) => (
-            <div key={key} className={`p-3 rounded-xl ${accent} border border-[#002443]/5`}>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">{label}</div>
-              <div className="text-lg font-bold text-[#002443] mt-1">{formatPct(data[key].percentage)}</div>
-              <div className="text-xs text-[#002443]/60">+ {formatFixed(data[key].fixed)}</div>
+            <div key={key} className={`p-3 rounded-xl ${accent} border border-[#0A0A0A]/5`}>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">{label}</div>
+              <div className="text-lg font-bold text-[#0A0A0A] mt-1">{formatPct(data[key].percentage)}</div>
+              <div className="text-xs text-[#0A0A0A]/60">+ {formatFixed(data[key].fixed)}</div>
             </div>
           ))}
         </div>
@@ -45,7 +45,7 @@ export default function GlobalInterchangeViewer() {
   );
 
   const RateTable = ({ data }) => (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -59,7 +59,7 @@ export default function GlobalInterchangeViewer() {
           {data.map((r, i) => (
             <TableRow key={i} className="hover:bg-[#f4f4f4]">
               <TableCell className="font-medium text-sm">{r.program_name}</TableCell>
-              <TableCell className="text-sm text-[#002443]/70">{r.card_type}</TableCell>
+              <TableCell className="text-sm text-[#0A0A0A]/70">{r.card_type}</TableCell>
               <TableCell className="text-right font-mono text-sm">{formatPct(r.rate_percentage)}</TableCell>
               <TableCell className="text-right font-mono text-sm">{formatFixed(r.rate_fixed)}</TableCell>
             </TableRow>
@@ -71,16 +71,16 @@ export default function GlobalInterchangeViewer() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-[#2bc196]/10">
-            <Table2 className="w-5 h-5 text-[#2bc196]" />
+          <div className="p-2.5 rounded-xl bg-[#1356E2]/10">
+            <Table2 className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#002443]">
+            <h2 className="text-lg font-bold text-[#0A0A0A]">
               {t('global.interchange.title') || 'Tabelas de Interchange'}
             </h2>
-            <p className="text-xs text-[#002443]/60">
+            <p className="text-xs text-[#0A0A0A]/60">
               {t('global.interchange.subtitle') || 'Visa e Mastercard — Card Not Present (USD)'}
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function GlobalInterchangeViewer() {
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-white border border-[#002443]/5">
+        <TabsList className="bg-white border border-[#0A0A0A]/5">
           <TabsTrigger value="summary">{t('global.interchange.summary') || 'Resumo'}</TabsTrigger>
           <TabsTrigger value="visa">Visa</TabsTrigger>
           <TabsTrigger value="master">Mastercard</TabsTrigger>
@@ -98,10 +98,10 @@ export default function GlobalInterchangeViewer() {
           <div className="grid md:grid-cols-3 gap-4">
             <SummaryCard title="Visa" data={INTERCHANGE_SUMMARY.visa} accent="bg-blue-50/50" />
             <SummaryCard title="Mastercard" data={INTERCHANGE_SUMMARY.master} accent="bg-red-50/50" />
-            <SummaryCard title={t('global.interchange.combined') || 'Combinado'} data={INTERCHANGE_SUMMARY.combined} accent="bg-[#2bc196]/5" />
+            <SummaryCard title={t('global.interchange.combined') || 'Combinado'} data={INTERCHANGE_SUMMARY.combined} accent="bg-[#1356E2]/5" />
           </div>
-          <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-5 text-sm text-[#002443]/70">
-            <p className="font-semibold text-[#002443] mb-2">{t('global.interchange.legend') || 'Legenda'}</p>
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-5 text-sm text-[#0A0A0A]/70">
+            <p className="font-semibold text-[#0A0A0A] mb-2">{t('global.interchange.legend') || 'Legenda'}</p>
             <ul className="space-y-1 list-disc list-inside">
               <li><strong>{t('global.interchange.low') || 'Menor'}:</strong> {t('global.interchange.low_desc') || 'Taxa mais baixa disponível por bandeira.'}</li>
               <li><strong>{t('global.interchange.avg') || 'Média'}:</strong> {t('global.interchange.avg_desc') || 'Média de todas as taxas da bandeira.'}</li>

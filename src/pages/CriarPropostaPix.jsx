@@ -167,28 +167,28 @@ export default function CriarPropostaPix() {
     navigate(`/PropostaPixDetalhes?id=${created.id}`);
   };
 
-  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/20 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]";
-  const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
+  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/20 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
+  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
   const errorCls = "text-[10px] text-red-400";
 
   return (
-    <div className="min-h-screen bg-[#002443] font-sans">
+    <div className="min-h-screen bg-[#0A0A0A] font-sans">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-20 bg-[#002443] border-b border-white/5">
+      <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-20 bg-[#0A0A0A] border-b border-white/5">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-white/50 hover:text-white hover:bg-white/5 rounded-xl">
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
             <h1 className="text-lg font-bold text-white">{editId ? t('cpx.edit_title') : t('cpx.new_title')}</h1>
-            <p className="text-xs text-[#2bc196]/60">{t('cpx.subtitle')}</p>
+            <p className="text-xs text-[#1356E2]/60">{t('cpx.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="ghost" onClick={handleSalvarRascunho} disabled={saving} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} {t('cpx.draft')}
           </Button>
-          <Button onClick={handleGerarProposta} disabled={saving} className="bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] font-bold rounded-xl shadow-lg shadow-[#2bc196]/20 px-6">
+          <Button onClick={handleGerarProposta} disabled={saving} className="bg-[#1356E2] hover:bg-[#E84B1C] text-[#0A0A0A] font-bold rounded-xl shadow-lg shadow-[#1356E2]/20 px-6">
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} {t('cpx.generate')}
           </Button>
         </div>
@@ -198,7 +198,7 @@ export default function CriarPropostaPix() {
         {/* Dados do Cliente */}
         <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#2bc196]" /></div>
+            <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#1356E2]" /></div>
             <h2 className="text-sm font-bold text-white">{t('cpx.client_data')}</h2>
           </div>
 
@@ -206,7 +206,7 @@ export default function CriarPropostaPix() {
             <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
               {leads.slice(0, 6).map(l => (
                 <button key={l.id} onClick={() => handleLeadSelect(l.id)}
-                  className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/50 hover:text-white hover:border-[#2bc196]/30 hover:bg-[#2bc196]/5 transition-all truncate max-w-[140px]">
+                  className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/50 hover:text-white hover:border-[#1356E2]/30 hover:bg-[#1356E2]/5 transition-all truncate max-w-[140px]">
                   {l.companyName || l.fullName}
                 </button>
               ))}
@@ -244,7 +244,7 @@ export default function CriarPropostaPix() {
         {/* Taxa PIX */}
         <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Banknote className="w-3.5 h-3.5 text-[#2bc196]" /></div>
+            <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center"><Banknote className="w-3.5 h-3.5 text-[#1356E2]" /></div>
             <h2 className="text-sm font-bold text-white">{t('cpx.pix_rate')}</h2>
           </div>
 
@@ -256,7 +256,7 @@ export default function CriarPropostaPix() {
                   <button key={opt.v} onClick={() => setPixTipo(opt.v)}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                       pixTipo === opt.v
-                        ? 'bg-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
+                        ? 'bg-[#1356E2] text-[#0A0A0A] shadow-lg shadow-[#1356E2]/20'
                         : 'bg-white/5 text-white/30 hover:text-white/50 border border-white/5'
                     }`}>
                     {pixTipo === opt.v && <Check className="w-3 h-3" />} {opt.l}
@@ -285,7 +285,7 @@ export default function CriarPropostaPix() {
         {/* TPV Mínimo Garantido */}
         <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Shield className="w-3.5 h-3.5 text-[#2bc196]" /></div>
+            <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center"><Shield className="w-3.5 h-3.5 text-[#1356E2]" /></div>
             <h2 className="text-sm font-bold text-white">{t('cpx.min_tpv')}</h2>
           </div>
 
@@ -310,8 +310,8 @@ export default function CriarPropostaPix() {
         </div>
 
         {/* Preview Card */}
-        <div className="rounded-2xl bg-[#2bc196]/5 border border-[#2bc196]/20 p-5 space-y-3">
-          <h3 className="text-sm font-bold text-[#2bc196]">{t('cpx.summary')}</h3>
+        <div className="rounded-2xl bg-[#1356E2]/5 border border-[#1356E2]/20 p-5 space-y-3">
+          <h3 className="text-sm font-bold text-[#1356E2]">{t('cpx.summary')}</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-white/40 text-xs">{t('cpx.client')}</p>

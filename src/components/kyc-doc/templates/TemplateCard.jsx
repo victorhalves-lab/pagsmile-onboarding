@@ -25,16 +25,16 @@ export default function TemplateCard({ template, questions = [] }) {
       <div className="bg-[#f9fafb] border-b border-[#e8e8e8] px-5 py-4">
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-bold text-[#002443]">{template.name}</h3>
+            <h3 className="text-base font-bold text-[#0A0A0A]">{template.name}</h3>
             <p className="text-[11px] text-[#1a1a1a]/50 mt-0.5 font-mono">
-              model: <span className="text-[#2bc196]">{template.model}</span>
+              model: <span className="text-[#1356E2]">{template.model}</span>
             </p>
           </div>
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#002443] text-white">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#0A0A0A] text-white">
               <Users className="w-3 h-3" />{template.merchantType}
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2bc196]/15 text-[#2bc196]">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#1356E2]/15 text-[#1356E2]">
               <Tag className="w-3 h-3" />{template.subCategory || 'GENERAL'}
             </span>
           </div>
@@ -74,29 +74,29 @@ export default function TemplateCard({ template, questions = [] }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[12px]">
           <div>
             <p className="text-[#1a1a1a]/50 font-semibold mb-1">Version</p>
-            <p className="text-[#002443]">{template.version || 1}</p>
+            <p className="text-[#0A0A0A]">{template.version || 1}</p>
           </div>
           <div>
             <p className="text-[#1a1a1a]/50 font-semibold mb-1">Usage Count</p>
-            <p className="text-[#002443]">{template.usageCount || 0} casos criados</p>
+            <p className="text-[#0A0A0A]">{template.usageCount || 0} casos criados</p>
           </div>
           <div>
             <p className="text-[#1a1a1a]/50 font-semibold mb-1">Auto-aprovação ≥</p>
-            <p className="text-[#002443]">{template.riskThresholds?.autoApproveAbove ?? '—'}</p>
+            <p className="text-[#0A0A0A]">{template.riskThresholds?.autoApproveAbove ?? '—'}</p>
           </div>
           <div>
             <p className="text-[#1a1a1a]/50 font-semibold mb-1">Auto-recusa &lt;</p>
-            <p className="text-[#002443]">{template.riskThresholds?.autoRejectBelow ?? '—'}</p>
+            <p className="text-[#0A0A0A]">{template.riskThresholds?.autoRejectBelow ?? '—'}</p>
           </div>
           <div>
             <p className="text-[#1a1a1a]/50 font-semibold mb-1">Revisão manual (min-max)</p>
-            <p className="text-[#002443]">
+            <p className="text-[#0A0A0A]">
               {template.riskThresholds?.manualReviewMin ?? '—'} — {template.riskThresholds?.manualReviewMax ?? '—'}
             </p>
           </div>
           <div>
             <p className="text-[#1a1a1a]/50 font-semibold mb-1">Status</p>
-            <p className="text-[#002443]">{template.isActive ? '🟢 Ativo' : '🔴 Inativo'} {template.isArchived && '| Arquivado'}</p>
+            <p className="text-[#0A0A0A]">{template.isActive ? '🟢 Ativo' : '🔴 Inativo'} {template.isArchived && '| Arquivado'}</p>
           </div>
         </div>
       </Section>
@@ -121,7 +121,7 @@ export default function TemplateCard({ template, questions = [] }) {
                   const parent = questions.find(x => x.id === q.conditionalLogic.dependsOn);
                   return (
                     <li key={q.id} className="text-[#1a1a1a]/75 leading-relaxed">
-                      <span className="font-semibold text-[#002443]">"{q.text}"</span>
+                      <span className="font-semibold text-[#0A0A0A]">"{q.text}"</span>
                       {' '}aparece quando pergunta #{parent?.order ?? '?'}{' '}
                       <span className="font-mono text-[10px]">{q.conditionalLogic.operator}</span>{' '}
                       <em>"{Array.isArray(q.conditionalLogic.value) ? q.conditionalLogic.value.join(' | ') : q.conditionalLogic.value}"</em>
@@ -140,7 +140,7 @@ export default function TemplateCard({ template, questions = [] }) {
               <ul className="text-[11px] space-y-1">
                 {riskQs.map(q => (
                   <li key={q.id} className="text-[#1a1a1a]/75 leading-relaxed">
-                    <span className="font-semibold text-[#002443]">"{q.text}"</span> — peso {q.riskWeight}
+                    <span className="font-semibold text-[#0A0A0A]">"{q.text}"</span> — peso {q.riskWeight}
                     {q.riskValues && Object.keys(q.riskValues).length > 0 && (
                       <span className="text-[#1a1a1a]/60"> — valores: {Object.entries(q.riskValues).map(([k, v]) => `"${k}"=${v}`).join(', ')}</span>
                     )}
@@ -169,7 +169,7 @@ export default function TemplateCard({ template, questions = [] }) {
 
 function Metric({ label, value, accent = 'default' }) {
   const colors = {
-    default: 'bg-white border-[#e8e8e8] text-[#002443]',
+    default: 'bg-white border-[#e8e8e8] text-[#0A0A0A]',
     blue: 'bg-blue-50 border-blue-100 text-blue-700',
     amber: 'bg-amber-50 border-amber-100 text-amber-700',
     green: 'bg-green-50 border-green-100 text-green-700',
@@ -190,8 +190,8 @@ function Section({ title, icon: Icon, expanded, onToggle, children }) {
         onClick={onToggle}
         className="w-full flex items-center gap-2 px-5 py-3 text-left hover:bg-[#f9fafb] transition-colors"
       >
-        <Icon className="w-4 h-4 text-[#2bc196]" />
-        <span className="text-[13px] font-bold text-[#002443] flex-1">{title}</span>
+        <Icon className="w-4 h-4 text-[#1356E2]" />
+        <span className="text-[13px] font-bold text-[#0A0A0A] flex-1">{title}</span>
         {expanded ? <ChevronDown className="w-4 h-4 text-[#1a1a1a]/40" /> : <ChevronRight className="w-4 h-4 text-[#1a1a1a]/40" />}
       </button>
       {expanded && <div className="px-5 py-4 border-t border-[#e8e8e8] bg-white">{children}</div>}

@@ -58,11 +58,11 @@ export default function AdminLoginScreen({ onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#002443] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-[#2bc196]/20 flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-[#2bc196]" />
+          <div className="w-16 h-16 rounded-2xl bg-[#1356E2]/20 flex items-center justify-center mx-auto mb-4">
+            <Shield className="w-8 h-8 text-[#1356E2]" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Área Administrativa</h1>
           <p className="text-white/50 text-sm">Insira os dois códigos de acesso da equipe para continuar.</p>
@@ -78,7 +78,7 @@ export default function AdminLoginScreen({ onSuccess }) {
                 value={code1}
                 onChange={(e) => setCode1(e.target.value)}
                 placeholder="Primeiro código de acesso"
-                className="pl-10 pr-10 bg-white/10 border-white/10 text-white placeholder:text-white/30 h-12 rounded-xl focus:border-[#2bc196] focus:ring-[#2bc196]"
+                className="pl-10 pr-10 bg-white/10 border-white/10 text-white placeholder:text-white/30 h-12 rounded-xl focus:border-[#1356E2] focus:ring-[#1356E2]"
                 autoFocus
                 autoComplete="off"
                 disabled={lockedSeconds > 0}
@@ -102,7 +102,7 @@ export default function AdminLoginScreen({ onSuccess }) {
                 value={code2}
                 onChange={(e) => setCode2(e.target.value)}
                 placeholder="Segundo código de acesso"
-                className="pl-10 pr-10 bg-white/10 border-white/10 text-white placeholder:text-white/30 h-12 rounded-xl focus:border-[#2bc196] focus:ring-[#2bc196]"
+                className="pl-10 pr-10 bg-white/10 border-white/10 text-white placeholder:text-white/30 h-12 rounded-xl focus:border-[#1356E2] focus:ring-[#1356E2]"
                 autoComplete="off"
                 disabled={lockedSeconds > 0}
               />
@@ -123,14 +123,14 @@ export default function AdminLoginScreen({ onSuccess }) {
           <Button
             type="submit"
             disabled={loading || !code1 || !code2 || lockedSeconds > 0}
-            className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-semibold rounded-xl"
+            className="w-full h-12 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white font-semibold rounded-xl"
           >
             {loading ? 'Verificando...' : lockedSeconds > 0 ? 'Bloqueado' : 'Entrar'}
           </Button>
         </form>
 
         <p className="text-center text-white/30 text-xs mt-6">
-          &copy; {new Date().getFullYear()} Pagsmile — Acesso restrito
+          &copy; {new Date().getFullYear()} Pin Bank — Acesso restrito
         </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
 // =============================================================================
 // Página "Download de Documentos" — exibe os questionários de leads em modo
-// microscópico (V5 Cartão + Pix V4) com export PDF na identidade visual Pagsmile.
+// microscópico (V5 Cartão + Pix V4) com export PDF na identidade visual Pin Bank.
 // Acessada como tab "Download de Documentos" dentro de HubPropostas.
 // =============================================================================
 
@@ -13,8 +13,8 @@ import html2canvas from 'html2canvas';
 import Ch21_QuestionariosLeads from '@/components/doc-master/chapters/Ch21_QuestionariosLeads';
 
 const TABS = [
-  { id: 'v5',  label: 'Questionário V5 — Cartão', icon: CreditCard, filename: 'Pagsmile_Questionario_Leads_V5_Cartao.pdf' },
-  { id: 'pix', label: 'Questionário Pix V4',      icon: Zap,        filename: 'Pagsmile_Questionario_Leads_Pix_V4.pdf' },
+  { id: 'v5',  label: 'Questionário V5 — Cartão', icon: CreditCard, filename: 'PinBank_Questionario_Leads_V5_Cartao.pdf' },
+  { id: 'pix', label: 'Questionário Pix V4',      icon: Zap,        filename: 'PinBank_Questionario_Leads_Pix_V4.pdf' },
 ];
 
 export default function DownloadDocumentos() {
@@ -68,15 +68,15 @@ export default function DownloadDocumentos() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex items-start gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#002443] to-[#003366] flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0A0A0A] to-[#003366] flex items-center justify-center">
               <FileText className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-[#002443]">Download de Documentos</h1>
-              <p className="text-sm text-[#002443]/60 mt-0.5">
+              <h1 className="text-xl font-bold text-[#0A0A0A]">Download de Documentos</h1>
+              <p className="text-sm text-[#0A0A0A]/60 mt-0.5">
                 Documentação microscópica dos questionários públicos de captação de leads.
               </p>
             </div>
@@ -84,7 +84,7 @@ export default function DownloadDocumentos() {
           <Button
             onClick={handleDownload}
             disabled={downloading}
-            className="bg-[#2bc196] hover:bg-[#36706c] text-white"
+            className="bg-[#1356E2] hover:bg-[#E84B1C] text-white"
           >
             {downloading ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando PDF…</>
@@ -104,7 +104,7 @@ export default function DownloadDocumentos() {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                  isActive ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/60 hover:text-[#002443]'
+                  isActive ? 'bg-white text-[#0A0A0A] shadow-sm' : 'text-[#0A0A0A]/60 hover:text-[#0A0A0A]'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -115,16 +115,16 @@ export default function DownloadDocumentos() {
         </div>
       </div>
 
-      {/* Área imprimível com branding Pagsmile no topo (entra no PDF) */}
+      {/* Área imprimível com branding Pin Bank no topo (entra no PDF) */}
       <div ref={printableRef} className="bg-[#f4f4f4] p-6 rounded-2xl">
         {/* Capa interna do PDF — só aparece no documento exportado */}
-        <div className="bg-gradient-to-br from-[#002443] via-[#003366] to-[#002443] rounded-2xl p-8 mb-6 text-white relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2bc196] via-[#5cf7cf] to-[#2bc196]" />
+        <div className="bg-gradient-to-br from-[#0A0A0A] via-[#003366] to-[#0A0A0A] rounded-2xl p-8 mb-6 text-white relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#1356E2] via-[#E84B1C] to-[#1356E2]" />
           <div className="flex items-center justify-between">
             <div>
               <img
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png"
-                alt="Pagsmile"
+                alt="Pin Bank"
                 className="h-8 mb-4"
               />
               <h2 className="text-2xl font-bold">{currentTab.label}</h2>
@@ -132,7 +132,7 @@ export default function DownloadDocumentos() {
             </div>
             <div className="text-right text-xs text-white/60">
               <div>Gerado em {new Date().toLocaleDateString('pt-BR')}</div>
-              <div className="mt-1">Pagsmile · Confidencial</div>
+              <div className="mt-1">Pin Bank · Confidencial</div>
             </div>
           </div>
         </div>
@@ -141,8 +141,8 @@ export default function DownloadDocumentos() {
         <Ch21_QuestionariosLeads tab={tab} />
 
         {/* Rodapé do PDF */}
-        <div className="mt-8 pt-4 border-t border-[#002443]/10 text-center text-[10px] text-[#002443]/50">
-          © {new Date().getFullYear()} Pagsmile · Documento gerado automaticamente pelo Hub de Propostas.
+        <div className="mt-8 pt-4 border-t border-[#0A0A0A]/10 text-center text-[10px] text-[#0A0A0A]/50">
+          © {new Date().getFullYear()} Pin Bank · Documento gerado automaticamente pelo Hub de Propostas.
         </div>
       </div>
     </div>

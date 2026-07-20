@@ -87,7 +87,7 @@ export default function ChangelogTimeline({ entries, onRefresh }) {
       <Card className="p-4">
         <div className="flex flex-wrap gap-2 items-center">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#002443]/40" />
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#0A0A0A]/40" />
             <Input placeholder="Buscar por título, descrição, tag..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -104,7 +104,7 @@ export default function ChangelogTimeline({ entries, onRefresh }) {
               {Object.entries(severityConfig).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button onClick={() => setShowForm(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+          <Button onClick={() => setShowForm(true)} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
             <Plus className="w-4 h-4 mr-1" /> Registrar Mudança
           </Button>
           <Button onClick={handleReconstruct} disabled={reconstructing} variant="outline" title="Reconstrói retroativamente o histórico de implementações usando IA + estrutura do código">
@@ -116,15 +116,15 @@ export default function ChangelogTimeline({ entries, onRefresh }) {
 
       {filtered.length === 0 && (
         <Card className="p-12 text-center">
-          <GitCommit className="w-12 h-12 text-[#002443]/20 mx-auto mb-3" />
-          <p className="text-[#002443]/60">Nenhuma mudança registrada ainda.</p>
-          <p className="text-xs text-[#002443]/40 mt-1">Use "Registrar Mudança" para documentar implementações feitas via chat.</p>
+          <GitCommit className="w-12 h-12 text-[#0A0A0A]/20 mx-auto mb-3" />
+          <p className="text-[#0A0A0A]/60">Nenhuma mudança registrada ainda.</p>
+          <p className="text-xs text-[#0A0A0A]/40 mt-1">Use "Registrar Mudança" para documentar implementações feitas via chat.</p>
         </Card>
       )}
 
       {grouped.map(([key, group]) => (
         <div key={key}>
-          <h3 className="text-sm font-bold text-[#002443]/60 uppercase tracking-wider mb-3">{group.label} <span className="text-xs font-normal">({group.items.length})</span></h3>
+          <h3 className="text-sm font-bold text-[#0A0A0A]/60 uppercase tracking-wider mb-3">{group.label} <span className="text-xs font-normal">({group.items.length})</span></h3>
           <div className="space-y-3">
             {group.items.map(e => {
               const cat = categoryConfig[e.category] || categoryConfig.FEATURE;
@@ -138,15 +138,15 @@ export default function ChangelogTimeline({ entries, onRefresh }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <h4 className="font-semibold text-[#002443] text-sm">{e.title}</h4>
+                        <h4 className="font-semibold text-[#0A0A0A] text-sm">{e.title}</h4>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
                           <Badge className={cat.color}>{cat.label}</Badge>
                           <Badge className={sev.color}>{sev.label}</Badge>
                           {e.breakingChanges && <Badge className="bg-red-100 text-red-700"><AlertTriangle className="w-3 h-3 mr-1" />Breaking</Badge>}
                         </div>
                       </div>
-                      <p className="text-xs text-[#002443]/70 line-clamp-2">{e.summary}</p>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-[#002443]/50">
+                      <p className="text-xs text-[#0A0A0A]/70 line-clamp-2">{e.summary}</p>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-[#0A0A0A]/50">
                         <span>{format(new Date(e.implementedAt || e.created_date), 'dd/MM/yyyy HH:mm')}</span>
                         {e.implementedBy && <span>· {e.implementedBy}</span>}
                         {e.filesChanged?.length > 0 && <span>· {e.filesChanged.length} arquivo(s)</span>}

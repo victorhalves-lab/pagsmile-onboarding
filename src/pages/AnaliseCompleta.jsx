@@ -92,7 +92,7 @@ export default function AnaliseCompleta() {
   if (!merchant) {
     return (
       <div className="text-center py-20">
-        <p className="text-[var(--pagsmile-blue)]/50">Merchant não encontrado</p>
+        <p className="text-[var(--pinbank-blue)]/50">Merchant não encontrado</p>
         <Link to="/Cadastro"><button className="mt-4 text-sm underline">Voltar ao Cadastro</button></Link>
       </div>
     );
@@ -108,21 +108,21 @@ export default function AnaliseCompleta() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Navigation */}
-      <Link to={`/CadastroDetalhe?id=${merchantId}`} className="inline-flex items-center gap-2 text-sm text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-green)] transition-colors">
+      <Link to={`/CadastroDetalhe?id=${merchantId}`} className="inline-flex items-center gap-2 text-sm text-[var(--pinbank-blue)]/60 hover:text-[var(--pinbank-blue)] transition-colors">
         <ArrowLeft className="w-4 h-4" /> Voltar ao Cadastro
       </Link>
 
       {/* Page Header */}
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-6">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-6">
         <div className="flex items-center gap-4">
           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${merchant.type === 'PJ' ? 'bg-blue-50' : 'bg-purple-50'}`}>
             {merchant.type === 'PJ' ? <Building2 className="w-6 h-6 text-blue-600" /> : <User className="w-6 h-6 text-purple-600" />}
           </div>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-[var(--pagsmile-blue)]">
+            <h1 className="text-xl font-bold text-[var(--pinbank-blue)]">
               Análise Completa — Validações Externas
             </h1>
-            <p className="text-sm text-[var(--pagsmile-blue)]/50">
+            <p className="text-sm text-[var(--pinbank-blue)]/50">
               {merchant.companyName || merchant.fullName} • {formatDoc(merchant.cpfCnpj)} • {merchant.type}
             </p>
           </div>

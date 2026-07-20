@@ -15,7 +15,7 @@ export default function StepL5aDeclaracoes({ formData, handleChange }) {
       key: 'declaracaoAutorizacao',
       label: 'Autorizo validações e checagens em bases públicas/terceiros para fins de compliance.',
       icon: ShieldCheck,
-      description: 'Permito que a Pagsmile realize verificações de dados em fontes oficiais e parceiros.'
+      description: 'Permito que a Pin Bank realize verificações de dados em fontes oficiais e parceiros.'
     },
     {
       key: 'declaracaoLegalidade',
@@ -30,14 +30,14 @@ export default function StepL5aDeclaracoes({ formData, handleChange }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 rounded-xl bg-[var(--pagsmile-green)]/10">
-          <FileCheck className="w-6 h-6 text-[var(--pagsmile-green)]" />
+        <div className="p-3 rounded-xl bg-[var(--pinbank-blue)]/10">
+          <FileCheck className="w-6 h-6 text-[var(--pinbank-blue)]" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Declarações e Autorização
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Leia e aceite para finalizar
           </p>
         </div>
@@ -53,7 +53,7 @@ export default function StepL5aDeclaracoes({ formData, handleChange }) {
               key={declaracao.key}
               className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
                 isChecked
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300 bg-white'
               }`}
               onClick={() => handleChange(declaracao.key, !isChecked)}
@@ -67,15 +67,15 @@ export default function StepL5aDeclaracoes({ formData, handleChange }) {
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <Icon className={`w-4 h-4 ${isChecked ? 'text-[var(--pagsmile-green)]' : 'text-slate-400'}`} />
+                    <Icon className={`w-4 h-4 ${isChecked ? 'text-[var(--pinbank-blue)]' : 'text-slate-400'}`} />
                     <Label 
                       htmlFor={declaracao.key}
-                      className="text-[var(--pagsmile-blue)] font-semibold cursor-pointer text-sm"
+                      className="text-[var(--pinbank-blue)] font-semibold cursor-pointer text-sm"
                     >
                       {declaracao.label}
                     </Label>
                   </div>
-                  <p className="text-xs text-[var(--pagsmile-blue)]/60 ml-6">
+                  <p className="text-xs text-[var(--pinbank-blue)]/60 ml-6">
                     {declaracao.description}
                   </p>
                 </div>
@@ -100,7 +100,7 @@ export default function StepL5aDeclaracoes({ formData, handleChange }) {
 
       {/* Aviso Legal */}
       <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-        <p className="text-xs text-[var(--pagsmile-blue)]/60 leading-relaxed">
+        <p className="text-xs text-[var(--pinbank-blue)]/60 leading-relaxed">
           Ao aceitar as declarações acima, você confirma ter ciência de que informações falsas ou 
           omissões podem resultar em recusa da solicitação, cancelamento de serviços e, quando 
           aplicável, medidas legais cabíveis conforme legislação vigente.

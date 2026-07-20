@@ -100,7 +100,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
             <select
               value={newParcela}
               onChange={(e) => setNewParcela(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 text-white h-9 rounded-lg text-xs px-2 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]"
+              className="w-full bg-white/5 border border-white/10 text-white h-9 rounded-lg text-xs px-2 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]"
             >
               <option value="">—</option>
               {Array.from({ length: 21 }, (_, i) => i + 1).map(p => (
@@ -115,7 +115,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
             <select
               value={newPrazo}
               onChange={(e) => setNewPrazo(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 text-white h-9 rounded-lg text-xs px-2 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]"
+              className="w-full bg-white/5 border border-white/10 text-white h-9 rounded-lg text-xs px-2 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]"
             >
               {AVAILABLE_PRAZOS.map(p => (
                 <option key={p} value={p}>{p}</option>
@@ -130,7 +130,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
               value={newTaxa}
               onChange={(e) => setNewTaxa(e.target.value)}
               placeholder="ex: 2,50"
-              className="bg-white/5 border-white/10 text-white h-9 rounded-lg text-xs text-right focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]"
+              className="bg-white/5 border-white/10 text-white h-9 rounded-lg text-xs text-right focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]"
               onKeyDown={(e) => e.key === 'Enter' && addOverride()}
             />
           </div>
@@ -140,7 +140,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
             size="sm"
             onClick={addOverride}
             disabled={!newParcela || !newPrazo || !newTaxa}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/80 text-[#002443] h-9 px-3 rounded-lg disabled:opacity-30"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/80 text-[#0A0A0A] h-9 px-3 rounded-lg disabled:opacity-30"
           >
             <Plus className="w-4 h-4" />
           </Button>
@@ -164,7 +164,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
                 <div className="divide-y divide-white/[0.03]">
                   {items.map(o => (
                     <div key={`${o.parcela}-${o.prazo}`} className="flex items-center gap-3 px-3 py-2 group hover:bg-white/[0.02]">
-                      <span className="text-[10px] font-semibold text-[#2bc196] bg-[#2bc196]/10 px-2 py-0.5 rounded-md w-14 text-center">{o.prazo}</span>
+                      <span className="text-[10px] font-semibold text-[#1356E2] bg-[#1356E2]/10 px-2 py-0.5 rounded-md w-14 text-center">{o.prazo}</span>
                       <span className="text-xs text-white/50">→</span>
                       <span className="text-xs font-bold text-amber-400 flex-1">{o.taxa.toFixed(2).replace('.', ',')}%</span>
                       <button
@@ -196,7 +196,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
             type="checkbox"
             checked={hideCalculationColumns}
             onChange={(e) => onToggleHideColumns(e.target.checked)}
-            className="w-4 h-4 rounded border-white/20 text-[#2bc196] focus:ring-[#2bc196] bg-white/5"
+            className="w-4 h-4 rounded border-white/20 text-[#1356E2] focus:ring-[#1356E2] bg-white/5"
           />
           <div>
             <span className="text-xs font-medium text-white">Ocultar cálculo na proposta</span>

@@ -24,7 +24,7 @@ export default function TemplateVersionHistory({ open, onClose, templateName, cu
       <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <History className="w-5 h-5 text-[var(--pagsmile-blue)]/60" />
+            <History className="w-5 h-5 text-[var(--pinbank-blue)]/60" />
             Histórico de Versões
           </DialogTitle>
         </DialogHeader>
@@ -33,21 +33,21 @@ export default function TemplateVersionHistory({ open, onClose, templateName, cu
           <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : versions.length <= 1 ? (
           <div className="text-center py-8">
-            <History className="w-10 h-10 mx-auto text-[var(--pagsmile-blue)]/30 mb-2" />
-            <p className="text-sm text-[var(--pagsmile-blue)]/60">Apenas a versão atual existe.</p>
+            <History className="w-10 h-10 mx-auto text-[var(--pinbank-blue)]/30 mb-2" />
+            <p className="text-sm text-[var(--pinbank-blue)]/60">Apenas a versão atual existe.</p>
           </div>
         ) : (
           <div className="space-y-2">
             {versions.map(v => (
-              <div key={v.id} className={`p-3 rounded-lg border ${v.version === currentVersion ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' : v.isArchived ? 'border-slate-200 opacity-60' : 'border-slate-200'}`}>
+              <div key={v.id} className={`p-3 rounded-lg border ${v.version === currentVersion ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5' : v.isArchived ? 'border-slate-200 opacity-60' : 'border-slate-200'}`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-[var(--pagsmile-blue)]">v{v.version}</span>
+                      <span className="text-sm font-bold text-[var(--pinbank-blue)]">v{v.version}</span>
                       {v.version === currentVersion && <Badge className="bg-green-100 text-green-700 text-[10px]">Atual</Badge>}
                       {v.isArchived && <Badge variant="outline" className="text-[10px]">Arquivada</Badge>}
                     </div>
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-0.5">
+                    <p className="text-[10px] text-[var(--pinbank-blue)]/50 mt-0.5">
                       {v.created_date ? moment(v.created_date).format('DD/MM/YY HH:mm') : '-'}
                     </p>
                   </div>

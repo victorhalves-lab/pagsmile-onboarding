@@ -20,12 +20,12 @@ export default function Step4aAtividadePrincipal({ formData, handleChange }) {
     >
       <div className="space-y-6">
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Qual o principal tipo de produto/serviço? <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Qual o principal tipo de produto/serviço? <span className="text-red-500">*</span></Label>
           <Select 
             value={formData.tipoProdutoPrincipal} 
             onValueChange={(val) => handleChange('tipoProdutoPrincipal', val)}
           >
-            <SelectTrigger className="border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)] focus:ring-[var(--pagsmile-green)]">
+            <SelectTrigger className="border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)] focus:ring-[var(--pinbank-blue)]">
               <SelectValue placeholder="Selecione o tipo principal" />
             </SelectTrigger>
             <SelectContent>
@@ -56,7 +56,7 @@ export default function Step4aAtividadePrincipal({ formData, handleChange }) {
           minLength={20}
           rows={5}
           helpText="Mínimo 20 caracteres"
-          className="text-[var(--pagsmile-blue)]"
+          className="text-[var(--pinbank-blue)]"
         />
       </div>
     </FormSection>

@@ -62,7 +62,7 @@ export default function CafLivenessOverlay({ onDifficultyClick, timeoutSeconds =
 
       {/* Bottom bar — timer + help */}
       <div className="flex items-center justify-between mt-3 px-1">
-        <div className="flex items-center gap-1.5 text-[11px] text-[#002443]/40">
+        <div className="flex items-center gap-1.5 text-[11px] text-[#0A0A0A]/40">
           <Clock className="w-3.5 h-3.5" />
           <span>Tempo: {mins}:{secs.toString().padStart(2, '0')}</span>
         </div>

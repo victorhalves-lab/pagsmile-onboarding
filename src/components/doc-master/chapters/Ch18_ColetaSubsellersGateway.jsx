@@ -4,7 +4,7 @@ import { Sec, H1, H2, H3, P, B, C, CodeBlock, Table, Note, Source } from '../Doc
 /**
  * Capítulo 18 — Coleta de Informações de Subsellers via Gateway
  *
- * Fluxo PRÉ-KYC: Pagsmile envia um link para o cliente Gateway preencher uma
+ * Fluxo PRÉ-KYC: Pin Bank envia um link para o cliente Gateway preencher uma
  * lista de subsellers (informações iniciais). O Gateway preenche em massa.
  * NÃO é o questionário KYC completo — é o "pré-cadastro" que alimenta a
  * análise comercial e dispara depois os links de compliance individuais.
@@ -28,16 +28,16 @@ export default function Ch18_ColetaSubsellersGateway() {
     <Sec id="ch-18">
       <H1 num="18">Coleta de Subsellers via Gateway — Fluxo Pré-KYC em Massa</H1>
 
-      <P>Este capítulo documenta um <B>fluxo pré-KYC</B> introduzido para resolver um gargalo comercial: clientes do tipo <B>Gateway/PSP</B> normalmente chegam à Pagsmile com <B>dezenas ou centenas de subsellers</B> para serem cadastrados ao mesmo tempo. Mandar cada um responder o questionário KYC completo (Cap. 10 do Doc KYC) levaria semanas. A solução: gerar um <B>link único</B> em que o Gateway preenche uma <B>lista em massa</B> com informações iniciais de todos os subsellers. Compliance recebe, valida modelo de negócio + volumetria + dados bancários, e SÓ DEPOIS dispara os links individuais de KYC para cada um.</P>
+      <P>Este capítulo documenta um <B>fluxo pré-KYC</B> introduzido para resolver um gargalo comercial: clientes do tipo <B>Gateway/PSP</B> normalmente chegam à Pin Bank com <B>dezenas ou centenas de subsellers</B> para serem cadastrados ao mesmo tempo. Mandar cada um responder o questionário KYC completo (Cap. 10 do Doc KYC) levaria semanas. A solução: gerar um <B>link único</B> em que o Gateway preenche uma <B>lista em massa</B> com informações iniciais de todos os subsellers. Compliance recebe, valida modelo de negócio + volumetria + dados bancários, e SÓ DEPOIS dispara os links individuais de KYC para cada um.</P>
 
       <Note title="O que ESTE fluxo NÃO é" kind="warn">
-        <p>NÃO é o questionário KYC. NÃO substitui o onboarding completo do subseller. NÃO atribui score de risco. É <B>apenas o pré-cadastro</B> que permite ao analista Pagsmile entender o portfólio do Gateway e priorizar quais subsellers entram no pipeline de KYC. O KYC propriamente dito é o fluxo do Cap. 10 (DocSubsellers) — disparado individualmente para cada subseller depois desta triagem inicial.</p>
+        <p>NÃO é o questionário KYC. NÃO substitui o onboarding completo do subseller. NÃO atribui score de risco. É <B>apenas o pré-cadastro</B> que permite ao analista Pin Bank entender o portfólio do Gateway e priorizar quais subsellers entram no pipeline de KYC. O KYC propriamente dito é o fluxo do Cap. 10 (DocSubsellers) — disparado individualmente para cada subseller depois desta triagem inicial.</p>
       </Note>
 
       <H2 num="18.1">Arquitetura — 2 Entidades + 1 Função + 3 Páginas</H2>
 
       <Table headers={['Camada', 'Artefato', 'Função']} rows={[
-        ['Entidade — link', <C key="1">SubsellerInfoCollection</C>, 'Um link gerado pela Pagsmile para um Gateway específico. Tem unique_token de 192 bits + opcional custom_slug. Contadores: submissions_count + total_subsellers_count + last_submission_at.'],
+        ['Entidade — link', <C key="1">SubsellerInfoCollection</C>, 'Um link gerado pela Pin Bank para um Gateway específico. Tem unique_token de 192 bits + opcional custom_slug. Contadores: submissions_count + total_subsellers_count + last_submission_at.'],
         ['Entidade — submissão', <C key="2">SubsellerInfoSubmission</C>, 'Cada submissão que o Gateway envia. Contém o array subsellers[] com nome/CNPJ/modelo/oferta/volumetria/dados bancários de cada um. Status pending → in_review → processed → archived.'],
         ['Função pública', <C key="3">publicSubsellerInfoSubmit</C>, 'Recebe o POST público com token + lista de subsellers. Valida link ativo/não-expirado, sanitiza campos, cria SubsellerInfoSubmission, atualiza contadores na collection.'],
         ['Página admin — gerar', <C key="4">/GestaoSubsellerInfoLinks</C>, 'Onde o admin cria links: escolhe Gateway (nome + CNPJ + contato), gera token + slug, copia link, ativa/desativa.'],
@@ -54,7 +54,7 @@ export default function Ch18_ColetaSubsellersGateway() {
   gateway_contact_name: string,
   unique_token: string,              // 192-bit hex — usado em /SubsellerInfoForm?token=...
   custom_slug: string,               // opcional — para URLs curtas /s/:slug
-  notes: string,                     // notas internas Pagsmile
+  notes: string,                     // notas internas Pin Bank
   is_active: boolean (default true), // desligar = link bloqueia novas submissões
   expires_at: datetime,              // opcional — bloqueia após data
   submissions_count: number,         // quantas vezes o Gateway preencheu
@@ -151,7 +151,7 @@ export default function Ch18_ColetaSubsellersGateway() {
       ]} />
 
       <H3 num="18.5.3">Branding</H3>
-      <P>O Hero do formulário exibe <C>{`Olá, {gateway_name}! 👋`}</C> com gradient azul/verde Pagsmile. <B>Não há suporte a white-label custom</B> (diferente dos links de SUBSELLER_COMPLIANCE do Cap. 10 que permitem logo/cores do Gateway). Justificativa: este é um fluxo pré-KYC interno entre Pagsmile e o Gateway — não é apresentado ao subseller final.</P>
+      <P>O Hero do formulário exibe <C>{`Olá, {gateway_name}! 👋`}</C> com gradient azul/verde Pin Bank. <B>Não há suporte a white-label custom</B> (diferente dos links de SUBSELLER_COMPLIANCE do Cap. 10 que permitem logo/cores do Gateway). Justificativa: este é um fluxo pré-KYC interno entre Pin Bank e o Gateway — não é apresentado ao subseller final.</P>
 
       <H2 num="18.6">Tela Admin — /GestaoSubsellerInfoLinks</H2>
 
@@ -202,7 +202,7 @@ Status | Notas Revisão`}</CodeBlock>
       <H2 num="18.8">Ciclo Completo — Da Geração até o KYC</H2>
 
       <Table headers={['Fase', 'Quem age', 'O que acontece']} rows={[
-        ['1. Comercial fecha Gateway', 'Pagsmile comercial', 'Gateway aceita proposta e quer onboardar X subsellers'],
+        ['1. Comercial fecha Gateway', 'Pin Bank comercial', 'Gateway aceita proposta e quer onboardar X subsellers'],
         ['2. Gera link de coleta', 'Admin em /GestaoSubsellerInfoLinks', 'Cria SubsellerInfoCollection + envia URL por e-mail para gateway_contact_email'],
         ['3. Gateway preenche em massa', 'Pessoa do Gateway em /SubsellerInfoForm?token=...', 'Preenche cards com dados de 10/50/200 subsellers ao longo de dias'],
         ['4. Submit', 'Gateway clica "Enviar"', 'publicSubsellerInfoSubmit cria SubsellerInfoSubmission status="pending"'],
@@ -223,13 +223,13 @@ Status | Notas Revisão`}</CodeBlock>
         ['Cria OnboardingCase?', 'NÃO', 'SIM'],
         ['Atribui score V4 ou V5.2?', 'NÃO', 'SIM'],
         ['Entidades criadas', 'SubsellerInfoSubmission', 'OnboardingCase + Merchant + QuestionnaireResponse + DocumentUpload + ComplianceScore'],
-        ['Branding white-label', 'Não — branding Pagsmile fixo', 'Sim — logo/cor/slug do Gateway opcional'],
+        ['Branding white-label', 'Não — branding Pin Bank fixo', 'Sim — logo/cor/slug do Gateway opcional'],
         ['Tipo de link no OnboardingLink', 'Não usa OnboardingLink', 'linkType = SUBSELLER_COMPLIANCE'],
         ['Próximo passo', 'Disparar KYC individual (Cap. 10)', 'Decisão de risco e ativação'],
       ]} />
 
       <Note title="Por que separar em dois fluxos?" kind="info">
-        <p>Inverter responsabilidades. No Cap. 18, é o <B>Gateway que preenche em massa</B> por questão prática (não dá pra fazer 200 sellers responderem KYC ao mesmo tempo do zero). No Cap. 10, é <B>cada subseller que preenche o seu</B> com a profundidade necessária (BACEN-aderente). A coleta pré-KYC funciona como funil — Pagsmile valida modelos de negócio compatíveis ANTES de queimar créditos BDC/CAF em subsellers que não passariam.</p>
+        <p>Inverter responsabilidades. No Cap. 18, é o <B>Gateway que preenche em massa</B> por questão prática (não dá pra fazer 200 sellers responderem KYC ao mesmo tempo do zero). No Cap. 10, é <B>cada subseller que preenche o seu</B> com a profundidade necessária (BACEN-aderente). A coleta pré-KYC funciona como funil — Pin Bank valida modelos de negócio compatíveis ANTES de queimar créditos BDC/CAF em subsellers que não passariam.</p>
       </Note>
 
       <H2 num="18.10">Métricas Operacionais Sugeridas</H2>

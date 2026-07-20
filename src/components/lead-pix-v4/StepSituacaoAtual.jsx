@@ -7,7 +7,7 @@ import { TEMPO_USO_OPTIONS, CUSTO_PIX_OPTIONS, MOTIVO_BUSCA_OPTIONS } from './pi
 export default function StepSituacaoAtual({ form, updateField }) {
   return (
     <div className="space-y-5">
-      <h2 className="text-lg font-bold text-[#002443]">Situação Atual</h2>
+      <h2 className="text-lg font-bold text-[#0A0A0A]">Situação Atual</h2>
 
       <div>
         <Label className="text-xs">Parceiro/processador PIX atual *</Label>
@@ -47,8 +47,8 @@ export default function StepSituacaoAtual({ form, updateField }) {
               onClick={() => updateField('contaEncerrada', opt)}
               className={`px-4 py-3 rounded-xl text-sm font-bold border-2 transition-all
                 ${form.contaEncerrada === opt
-                  ? opt === 'Sim' ? 'border-red-400 bg-red-50 text-red-700' : 'border-[#2bc196] bg-[#2bc196]/10 text-[#002443]'
-                  : 'border-[#002443]/10 text-[#002443]/50 hover:border-[#002443]/20'
+                  ? opt === 'Sim' ? 'border-red-400 bg-red-50 text-red-700' : 'border-[#1356E2] bg-[#1356E2]/10 text-[#0A0A0A]'
+                  : 'border-[#0A0A0A]/10 text-[#0A0A0A]/50 hover:border-[#0A0A0A]/20'
                 }`}
             >
               {opt}

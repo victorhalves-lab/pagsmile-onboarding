@@ -6,10 +6,10 @@ import { Building2, Check } from 'lucide-react';
 
 export default function MeetingFormBasicInfo({ form, updateField }) {
   return (
-    <Card className="border-[#002443]/5">
+    <Card className="border-[#0A0A0A]/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Building2 className="w-5 h-5 text-[#2bc196]" />
+          <Building2 className="w-5 h-5 text-[#1356E2]" />
           Informações do Cliente
         </CardTitle>
       </CardHeader>
@@ -46,8 +46,8 @@ export default function MeetingFormBasicInfo({ form, updateField }) {
                 <button key={opt.v} type="button" onClick={() => updateField('businessType', opt.v)}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all border ${
                     form.businessType === opt.v
-                      ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-md'
-                      : 'bg-white border-slate-200 text-slate-500 hover:border-[#2bc196]/50'
+                      ? 'bg-[#1356E2] border-[#1356E2] text-white shadow-md'
+                      : 'bg-white border-slate-200 text-slate-500 hover:border-[#1356E2]/50'
                   }`}>
                   {form.businessType === opt.v && <Check className="w-3 h-3" />} {opt.l}
                 </button>

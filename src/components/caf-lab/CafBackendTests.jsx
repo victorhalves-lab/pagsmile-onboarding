@@ -173,7 +173,7 @@ export default function CafBackendTests() {
     <div className="space-y-4">
       {/* Context inputs */}
       <Card className="p-4 bg-slate-50 border-slate-200">
-        <h3 className="text-sm font-bold text-[#002443] mb-3">Contexto dos Testes</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] mb-3">Contexto dos Testes</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
             <Label className="text-xs">CPF (para tokens/enrichment)</Label>
@@ -191,7 +191,7 @@ export default function CafBackendTests() {
                 type="button"
                 onClick={loadLatestCase}
                 disabled={loadingLatest}
-                className="text-[10px] text-[#2bc196] hover:underline disabled:opacity-50"
+                className="text-[10px] text-[#1356E2] hover:underline disabled:opacity-50"
               >
                 {loadingLatest ? 'Carregando...' : '↻ Último caso'}
               </button>
@@ -222,7 +222,7 @@ export default function CafBackendTests() {
           </div>
         </div>
         <div className="mt-3">
-          <Button onClick={runAll} size="sm" className="bg-[#002443] hover:bg-[#002443]/90 text-white">
+          <Button onClick={runAll} size="sm" className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white">
             <Play className="w-3.5 h-3.5 mr-2" /> Rodar Todos (pula os que faltam contexto)
           </Button>
         </div>
@@ -246,7 +246,7 @@ export default function CafBackendTests() {
           <Card key={test.id} className="p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <h4 className="text-sm font-bold text-[#002443]">{test.name}</h4>
+                <h4 className="text-sm font-bold text-[#0A0A0A]">{test.name}</h4>
                 <p className="text-xs text-slate-500 mt-0.5">{test.description}</p>
                 <p className="text-[10px] text-slate-400 mt-1 font-mono">→ {test.function}</p>
                 {missingReasons.length > 0 && (
@@ -258,7 +258,7 @@ export default function CafBackendTests() {
                 disabled={disabled}
                 size="sm"
                 variant={result?.ok ? 'outline' : 'default'}
-                className={result?.ok ? '' : 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white'}
+                className={result?.ok ? '' : 'bg-[#1356E2] hover:bg-[#1356E2]/90 text-white'}
               >
                 {isLoading ? (
                   <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Rodando...</>

@@ -11,7 +11,7 @@ export default function Ch08_FunisCaptacao() {
 
       <P>A plataforma tem <B>5 funis de captação distintos</B>, cada um com público-alvo, formulário e pipeline pós-submit únicos. Todos persistem em <C>Lead</C> (com sourceFlow distinto) e disparam <C>onLeadCreatedEnrich</C> para enriquecimento BDC pré-KYC.</P>
 
-      <H2 num="8.1">Funil 1 — Lead V5 (Pagsmile Questionnaire)</H2>
+      <H2 num="8.1">Funil 1 — Lead V5 (Pin Bank Questionnaire)</H2>
 
       <P>Funil principal de leads. Questionário completo de 12 steps. Persistido em <C>Lead</C> com <C>sourceFlow: "pagsmile_lead_v5_questionnaire"</C>.</P>
 

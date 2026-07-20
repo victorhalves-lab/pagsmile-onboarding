@@ -88,12 +88,12 @@ function DatasetCard({ record }) {
         <st.Icon className={`w-5 h-5 ${st.color} flex-shrink-0`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{meta.label}</span>
+            <span className="text-sm font-bold text-[var(--pinbank-blue)]">{meta.label}</span>
             <Badge className={`${st.bg} ${st.color} text-[9px] border ${st.border}`}>{st.label}</Badge>
             {record.score != null && <Badge className="bg-slate-100 text-slate-600 text-[9px] border-0">Score: {record.score}</Badge>}
             {record.red_flags?.length > 0 && <Badge className="bg-red-100 text-red-700 text-[9px] border-0">{record.red_flags.length} flags</Badge>}
           </div>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">
             {date.toLocaleDateString('pt-BR')} {date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             {record.duration_ms ? ` · ${record.duration_ms}ms` : ''}
           </p>
@@ -133,12 +133,12 @@ function DatasetCard({ record }) {
           {/* Data returned */}
           {fields.length > 0 && (
             <div>
-              <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mb-2">Dados Retornados</p>
+              <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 uppercase tracking-wider mb-2">Dados Retornados</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                 {fields.filter(f => !f.complex).map((f, i) => (
                   <div key={i} className="text-xs p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                    <span className="text-[var(--pagsmile-blue)]/40 text-[10px]">{humanize(f.key)}</span>
-                    <p className="font-medium text-[var(--pagsmile-blue)] mt-0.5 break-words">{f.value}</p>
+                    <span className="text-[var(--pinbank-blue)]/40 text-[10px]">{humanize(f.key)}</span>
+                    <p className="font-medium text-[var(--pinbank-blue)] mt-0.5 break-words">{f.value}</p>
                   </div>
                 ))}
               </div>
@@ -156,7 +156,7 @@ function DatasetCard({ record }) {
           {/* Raw JSON */}
           {hasData && (
             <div>
-              <button onClick={() => setShowJson(!showJson)} className="text-[10px] text-[var(--pagsmile-blue)]/30 hover:text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
+              <button onClick={() => setShowJson(!showJson)} className="text-[10px] text-[var(--pinbank-blue)]/30 hover:text-[var(--pinbank-blue)]/60 flex items-center gap-1">
                 <Eye className="w-3 h-3" />{showJson ? 'Ocultar JSON bruto' : 'Ver JSON bruto completo'}
               </button>
               {showJson && (
@@ -184,13 +184,13 @@ export default function BDCFullAnalysis({ integrationLogs = [], validations = []
   const distinctTypes = new Set(records.map(r => r.service_type || r.validationType)).size;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-blue-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-blue-100"><Database className="w-5 h-5 text-blue-600" /></div>
           <div>
-            <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Big Data Corp — Análise Completa</h3>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-0.5">Bureau de dados: Receita Federal, Juntas Comerciais, Tribunais, Serasa, CEIS/CNEP</p>
+            <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Big Data Corp — Análise Completa</h3>
+            <p className="text-xs text-[var(--pinbank-blue)]/40 mt-0.5">Bureau de dados: Receita Federal, Juntas Comerciais, Tribunais, Serasa, CEIS/CNEP</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Badge className="bg-blue-100 text-blue-700 text-[10px]">{distinctTypes} datasets</Badge>
@@ -203,11 +203,11 @@ export default function BDCFullAnalysis({ integrationLogs = [], validations = []
       {/* Coverage bar */}
       <div className="px-6 py-3 bg-slate-50 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <span className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 uppercase">Cobertura de Dados</span>
+          <span className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 uppercase">Cobertura de Dados</span>
           <div className="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
             <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(okCount / Math.max(records.length, 1)) * 100}%` }} />
           </div>
-          <span className="text-[10px] font-bold text-[var(--pagsmile-blue)]/60">{okCount}/{records.length}</span>
+          <span className="text-[10px] font-bold text-[var(--pinbank-blue)]/60">{okCount}/{records.length}</span>
         </div>
       </div>
 

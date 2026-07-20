@@ -44,9 +44,9 @@ export default function GlobalRevenueSimulator() {
   }, [monthly]);
 
   const breakdown = useMemo(() => [
-    { name: 'Taxa (%)',  value: Number(monthly.grossPct.toFixed(0)),       color: '#2bc196' },
-    { name: 'Fee fixo',  value: Number(monthly.grossFixed.toFixed(0)),     color: '#5cf7cf' },
-    { name: 'Chargeback',value: Number(monthly.cbRevenue.toFixed(0)),      color: '#002443' },
+    { name: 'Taxa (%)',  value: Number(monthly.grossPct.toFixed(0)),       color: '#1356E2' },
+    { name: 'Fee fixo',  value: Number(monthly.grossFixed.toFixed(0)),     color: '#E84B1C' },
+    { name: 'Chargeback',value: Number(monthly.cbRevenue.toFixed(0)),      color: '#0A0A0A' },
     { name: 'Refund',    value: Number(monthly.refundRevenue.toFixed(0)),  color: '#003366' },
   ], [monthly]);
 
@@ -56,10 +56,10 @@ export default function GlobalRevenueSimulator() {
   return (
     <div className="grid lg:grid-cols-5 gap-4">
       {/* Inputs */}
-      <Card className="border-[#002443]/5 lg:col-span-2">
+      <Card className="border-[#0A0A0A]/5 lg:col-span-2">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Calculator className="w-4 h-4 text-[#2bc196]" /> Parâmetros
+            <Calculator className="w-4 h-4 text-[#1356E2]" /> Parâmetros
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -81,13 +81,13 @@ export default function GlobalRevenueSimulator() {
       {/* Resultados */}
       <div className="lg:col-span-3 space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <KPI icon={DollarSign} label="Receita Mensal" value={fmt(monthly.totalGross)} accent="bg-[#2bc196]/10 text-[#2bc196]" />
+          <KPI icon={DollarSign} label="Receita Mensal" value={fmt(monthly.totalGross)} accent="bg-[#1356E2]/10 text-[#1356E2]" />
           <KPI icon={TrendingUp} label="Receita Anual" value={fmt(annual)} accent="bg-blue-100 text-blue-700" />
           <KPI icon={Calculator} label="Transações/mês" value={Math.round(monthly.trxPerMonth).toLocaleString('en-US')} accent="bg-amber-100 text-amber-700" />
           <KPI icon={DollarSign} label="Receita/Trx" value={fmt(monthly.totalGross / Math.max(monthly.trxPerMonth, 1))} accent="bg-slate-100 text-slate-700" />
         </div>
 
-        <Card className="border-[#002443]/5">
+        <Card className="border-[#0A0A0A]/5">
           <CardHeader><CardTitle className="text-sm">Projeção 12 Meses (USD)</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={240}>
@@ -97,16 +97,16 @@ export default function GlobalRevenueSimulator() {
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(v) => fmt(v)} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="taxa"   stackId="a" fill="#2bc196" name="Taxa" />
-                <Bar dataKey="fee"    stackId="a" fill="#5cf7cf" name="Fee fixo" />
-                <Bar dataKey="cb"     stackId="a" fill="#002443" name="Chargeback" />
+                <Bar dataKey="taxa"   stackId="a" fill="#1356E2" name="Taxa" />
+                <Bar dataKey="fee"    stackId="a" fill="#E84B1C" name="Fee fixo" />
+                <Bar dataKey="cb"     stackId="a" fill="#0A0A0A" name="Chargeback" />
                 <Bar dataKey="refund" stackId="a" fill="#003366" name="Refund" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="border-[#002443]/5">
+        <Card className="border-[#0A0A0A]/5">
           <CardHeader><CardTitle className="text-sm">Breakdown Mensal</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
@@ -129,7 +129,7 @@ function SliderField({ label, value, onChange, min, max, step, format }) {
     <div>
       <div className="flex items-center justify-between mb-1">
         <Label className="text-xs">{label}</Label>
-        <span className="text-xs font-mono text-[#2bc196] font-semibold">{format(value)}</span>
+        <span className="text-xs font-mono text-[#1356E2] font-semibold">{format(value)}</span>
       </div>
       <Slider value={[value]} onValueChange={(v) => onChange(v[0])} min={min} max={max} step={step} />
     </div>
@@ -143,7 +143,7 @@ function NumberRow({ children }) {
 function NumberField({ label, value, onChange, step }) {
   return (
     <div>
-      <Label className="text-[10px] uppercase tracking-wider text-[#002443]/50">{label}</Label>
+      <Label className="text-[10px] uppercase tracking-wider text-[#0A0A0A]/50">{label}</Label>
       <Input type="number" step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-9 text-sm" />
     </div>
   );
@@ -151,12 +151,12 @@ function NumberField({ label, value, onChange, step }) {
 
 function KPI({ icon: Icon, label, value, accent }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">{label}</span>
         <div className={`p-1.5 rounded-lg ${accent}`}><Icon className="w-3.5 h-3.5" /></div>
       </div>
-      <div className="text-xl font-bold text-[#002443]">{value}</div>
+      <div className="text-xl font-bold text-[#0A0A0A]">{value}</div>
     </div>
   );
 }

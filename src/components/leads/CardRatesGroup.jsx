@@ -46,8 +46,8 @@ export default function CardRatesGroup({ questions, formData, updateField }) {
       {categories.map((cat) => (
         <div key={cat.prefix} className="space-y-3">
           <div className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-[#2bc196]" />
-            <Label className="text-sm font-bold text-[var(--pagsmile-blue)]">
+            <CreditCard className="w-4 h-4 text-[#1356E2]" />
+            <Label className="text-sm font-bold text-[var(--pinbank-blue)]">
               {cat.label}
             </Label>
           </div>
@@ -56,7 +56,7 @@ export default function CardRatesGroup({ questions, formData, updateField }) {
               const bandeira = extractBandeira(q.text);
               return (
                 <div key={q.id} className="space-y-1">
-                  <Label className="text-xs font-medium text-[var(--pagsmile-blue)]/70">
+                  <Label className="text-xs font-medium text-[var(--pinbank-blue)]/70">
                     {bandeira}
                   </Label>
                   <div className="relative">
@@ -80,7 +80,7 @@ export default function CardRatesGroup({ questions, formData, updateField }) {
                       placeholder="0,00"
                       className="h-10 rounded-lg pr-7 text-sm"
                     />
-                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[var(--pagsmile-blue)]/40 font-medium">
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[var(--pinbank-blue)]/40 font-medium">
                       %
                     </span>
                   </div>

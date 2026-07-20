@@ -21,9 +21,9 @@ function SectionCard({ icon: Icon, title, iconBg, iconColor, children, defaultOp
           <div className={`p-1.5 rounded-lg ${iconBg}`}>
             <Icon className={`w-4 h-4 ${iconColor}`} />
           </div>
-          <span className="text-sm font-bold text-[#002443]">{title}</span>
+          <span className="text-sm font-bold text-[#0A0A0A]">{title}</span>
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
       </button>
       {open && <div className="px-4 pb-4 border-t border-slate-100">{children}</div>}
     </div>
@@ -35,10 +35,10 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
 
   if (!complianceScore) {
     return (
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-8 text-center">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-8 text-center">
         <Brain className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-        <p className="text-sm font-semibold text-[#002443]/60">Análise IA SENTINEL não disponível</p>
-        <p className="text-xs text-[#002443]/40 mt-1">Execute o scoring para gerar análise profunda com findings, red flags e recomendações.</p>
+        <p className="text-sm font-semibold text-[#0A0A0A]/60">Análise IA SENTINEL não disponível</p>
+        <p className="text-xs text-[#0A0A0A]/40 mt-1">Execute o scoring para gerar análise profunda com findings, red flags e recomendações.</p>
       </div>
     );
   }
@@ -51,17 +51,17 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
   const hasVariables = complianceScore.variaveis_aplicadas && Object.keys(complianceScore.variaveis_aplicadas).length > 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 overflow-hidden">
-      <div className="h-1 bg-gradient-to-r from-[#002443] via-[#2bc196] to-[#5cf7cf]" />
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 overflow-hidden">
+      <div className="h-1 bg-gradient-to-r from-[#0A0A0A] via-[#1356E2] to-[#E84B1C]" />
       <div className="p-6 space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#002443] to-[#2bc196]">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#0A0A0A] to-[#1356E2]">
             <Brain className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[#002443]">Análise IA SENTINEL — Profunda</h3>
-            <p className="text-xs text-[#002443]/40">
+            <h3 className="text-base font-bold text-[#0A0A0A]">Análise IA SENTINEL — Profunda</h3>
+            <p className="text-xs text-[#0A0A0A]/40">
               Insights, findings, red flags, pontos positivos e recomendações detalhadas
               {complianceScore.versao_agente && <> • Agent {complianceScore.versao_agente}</>}
             </p>
@@ -72,8 +72,8 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
         {complianceScore.sumario_executivo && (
           <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div className="flex items-center gap-2 mb-2">
-              <Target className="w-4 h-4 text-[#002443]/50" />
-              <span className="text-xs font-bold uppercase tracking-wider text-[#002443]/50">Sumário Executivo</span>
+              <Target className="w-4 h-4 text-[#0A0A0A]/50" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/50">Sumário Executivo</span>
             </div>
             <SentinelTextFormatter text={complianceScore.sumario_executivo} />
           </div>
@@ -214,8 +214,8 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
         {complianceScore.parecer_final && (
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
             <div className="flex items-center gap-2 mb-2">
-              <Eye className="w-4 h-4 text-[#002443]/60" />
-              <span className="text-sm font-bold text-[#002443]">Parecer Final SENTINEL</span>
+              <Eye className="w-4 h-4 text-[#0A0A0A]/60" />
+              <span className="text-sm font-bold text-[#0A0A0A]">Parecer Final SENTINEL</span>
             </div>
             <SentinelTextFormatter text={complianceScore.parecer_final} />
           </div>
@@ -229,12 +229,12 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
               className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
             >
               <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-[#002443]/5">
-                  <Brain className="w-4 h-4 text-[#002443]/60" />
+                <div className="p-1.5 rounded-lg bg-[#0A0A0A]/5">
+                  <Brain className="w-4 h-4 text-[#0A0A0A]/60" />
                 </div>
-                <span className="text-sm font-bold text-[#002443]">Análise Completa da IA (texto integral)</span>
+                <span className="text-sm font-bold text-[#0A0A0A]">Análise Completa da IA (texto integral)</span>
               </div>
-              {expandedFullAnalysis ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+              {expandedFullAnalysis ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
             </button>
             {expandedFullAnalysis && (
               <div className="px-4 pb-4 border-t border-slate-100">
@@ -247,7 +247,7 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
         )}
 
         {/* Metadados */}
-        <div className="flex flex-wrap gap-4 text-[10px] text-[#002443]/40 pt-2 border-t border-slate-100">
+        <div className="flex flex-wrap gap-4 text-[10px] text-[#0A0A0A]/40 pt-2 border-t border-slate-100">
           {complianceScore.versao_agente && <span>Agent: {complianceScore.versao_agente}</span>}
           {complianceScore.framework_version && <span>Framework: {complianceScore.framework_version}</span>}
           {complianceScore.data_analise_fase_1 && <span>Fase 1: {new Date(complianceScore.data_analise_fase_1).toLocaleDateString('pt-BR')}</span>}

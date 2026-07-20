@@ -32,11 +32,11 @@ export default function ComplianceParceiro() {
         <div className="flex items-start justify-between mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Handshake className="w-6 h-6 text-[#2bc196]" />
-              <h1 className="text-2xl font-bold text-[#002443]">Compliance Parceiro</h1>
+              <Handshake className="w-6 h-6 text-[#1356E2]" />
+              <h1 className="text-2xl font-bold text-[#0A0A0A]">Compliance Parceiro</h1>
             </div>
             <p className="text-sm text-slate-500">
-              Casos de clientes Pagsmile atribuídos para a sua análise de compliance.
+              Casos de clientes Pin Bank atribuídos para a sua análise de compliance.
             </p>
             {partners.length > 0 && (
               <div className="text-xs text-slate-400 mt-1">
@@ -85,7 +85,7 @@ export default function ComplianceParceiro() {
         {/* Table */}
         {isLoading ? (
           <div className="flex items-center justify-center py-16 bg-white rounded-lg border border-slate-200">
-            <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+            <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
           </div>
         ) : error ? (
           <Card>

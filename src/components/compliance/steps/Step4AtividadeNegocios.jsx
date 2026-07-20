@@ -144,7 +144,7 @@ export default function Step4AtividadeNegocios({ formData, handleChange, handleA
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label className="text-sm font-medium text-slate-700">Divisão Percentual dos Volumes <span className="text-red-500">*</span></Label>
-              <Button type="button" variant="outline" size="sm" onClick={addDivisao} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
+              <Button type="button" variant="outline" size="sm" onClick={addDivisao} className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]">
                 <Plus className="w-4 h-4 mr-1" /> Adicionar
               </Button>
             </div>
@@ -245,7 +245,7 @@ export default function Step4AtividadeNegocios({ formData, handleChange, handleA
            <div className="space-y-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
              <div className="flex justify-between items-center mb-2">
                <Label className="text-sm font-medium text-slate-700">Top 5 Maiores Clientes/Sellers</Label>
-               <Button type="button" variant="outline" size="sm" onClick={addCliente} disabled={topClientes.length >= 5} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
+               <Button type="button" variant="outline" size="sm" onClick={addCliente} disabled={topClientes.length >= 5} className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]">
                  <Plus className="w-4 h-4 mr-1" /> Adicionar
                </Button>
              </div>

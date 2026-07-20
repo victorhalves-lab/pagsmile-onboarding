@@ -47,12 +47,12 @@ export default function CafMobileProgressBar({ phase, savedResults }) {
               <p className="text-[10px] font-bold uppercase tracking-wider text-purple-600 leading-tight">
                 Passo {info.step} de {TOTAL_STEPS}
               </p>
-              <p className="text-xs font-semibold text-[#002443] leading-tight truncate">
+              <p className="text-xs font-semibold text-[#0A0A0A] leading-tight truncate">
                 {info.label}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-[10px] text-[#002443]/60 shrink-0 bg-slate-50 px-2 py-1 rounded-md">
+          <div className="flex items-center gap-1 text-[10px] text-[#0A0A0A]/60 shrink-0 bg-slate-50 px-2 py-1 rounded-md">
             <Clock className="w-3 h-3" />
             <span className="font-medium">{info.timeLeft}</span>
           </div>

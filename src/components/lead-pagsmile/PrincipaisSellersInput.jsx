@@ -35,14 +35,14 @@ export default function PrincipaisSellersInput({ form, updateField, errors }) {
   return (
     <div className="space-y-3" data-field="principaisSellers">
       <div className="flex items-start gap-2">
-        <div className="w-8 h-8 rounded-lg bg-[#2bc196]/10 flex items-center justify-center flex-shrink-0">
-          <Users className="w-4 h-4 text-[#2bc196]" />
+        <div className="w-8 h-8 rounded-lg bg-[#1356E2]/10 flex items-center justify-center flex-shrink-0">
+          <Users className="w-4 h-4 text-[#1356E2]" />
         </div>
         <div className="flex-1">
-          <label className="text-sm font-semibold text-[#002443] block">
+          <label className="text-sm font-semibold text-[#0A0A0A] block">
             Principais sellers que vão rodar com vocês *
           </label>
-          <p className="text-xs text-[#002443]/60 mt-0.5 flex items-start gap-1">
+          <p className="text-xs text-[#0A0A0A]/60 mt-0.5 flex items-start gap-1">
             <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
             <span>
               Informe de <strong>3 a 5 sellers</strong> (lojas/empresas) que estarão na operação.
@@ -57,7 +57,7 @@ export default function PrincipaisSellersInput({ form, updateField, errors }) {
           const isRequired = idx < REQUIRED_SLOTS;
           return (
             <div key={idx} className="grid grid-cols-[28px_1fr_180px] gap-2 items-center">
-              <div className="text-xs font-bold text-[#002443]/40 tabular-nums">
+              <div className="text-xs font-bold text-[#0A0A0A]/40 tabular-nums">
                 #{idx + 1}
                 {isRequired && <span className="text-red-500 ml-0.5">*</span>}
               </div>

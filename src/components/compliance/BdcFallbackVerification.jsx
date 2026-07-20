@@ -148,8 +148,8 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
           <CheckCircle2 className="w-8 h-8 text-green-600" />
         </div>
-        <h3 className="text-lg font-bold text-[#002443] mb-2">Verificação Concluída!</h3>
-        <p className="text-sm text-[#002443]/60 mb-2">
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-2">Verificação Concluída!</h3>
+        <p className="text-sm text-[#0A0A0A]/60 mb-2">
           Documento analisado e identidade verificada via BigDataCorp.
         </p>
         {result?.facematch?.similarity && (
@@ -169,7 +169,7 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
             bdcResult: result,
             savedResults: { front: true, back: !!docBackFile, liveness: true },
           })}
-          className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-xl"
+          className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white px-8 h-12 rounded-xl"
         >
           Continuar <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
@@ -181,8 +181,8 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
     return (
       <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
         <Loader2 className="w-10 h-10 animate-spin text-blue-500 mx-auto mb-4" />
-        <p className="text-sm font-medium text-[#002443]">Analisando documentos...</p>
-        <p className="text-xs text-[#002443]/50 mt-1">
+        <p className="text-sm font-medium text-[#0A0A0A]">Analisando documentos...</p>
+        <p className="text-xs text-[#0A0A0A]/50 mt-1">
           Executando OCR, validação forense e comparação facial via BigDataCorp.
         </p>
       </div>
@@ -193,10 +193,10 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
     return (
       <div className="bg-white rounded-2xl border border-red-200 p-6 text-center space-y-4">
         <AlertCircle className="w-10 h-10 text-red-500 mx-auto" />
-        <h3 className="text-lg font-bold text-[#002443]">Erro na Verificação</h3>
+        <h3 className="text-lg font-bold text-[#0A0A0A]">Erro na Verificação</h3>
         <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3">{error}</p>
         <Button onClick={() => { setStep('doc_front'); setError(null); }}
-          className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-6 h-11 rounded-xl">
+          className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white px-6 h-11 rounded-xl">
           Tentar Novamente
         </Button>
       </div>
@@ -209,7 +209,7 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-blue-50 mb-3">
           <Icon className="w-7 h-7 text-blue-600" />
         </div>
-        <h3 className="text-lg font-bold text-[#002443] mb-1">{title}</h3>
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-1">{title}</h3>
       </div>
 
       {preview ? (
@@ -225,15 +225,15 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
       ) : (
         <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-8 cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-colors">
           <Upload className="w-8 h-8 text-slate-400 mb-2" />
-          <p className="text-sm font-medium text-[#002443]">Toque para enviar foto</p>
-          <p className="text-xs text-[#002443]/50 mt-1">JPG, PNG ou PDF • Máx 10MB</p>
+          <p className="text-sm font-medium text-[#0A0A0A]">Toque para enviar foto</p>
+          <p className="text-xs text-[#0A0A0A]/50 mt-1">JPG, PNG ou PDF • Máx 10MB</p>
           <input type="file" accept="image/*,application/pdf" capture={type === 'selfie' ? 'user' : 'environment'}
             className="hidden" onChange={(e) => handleFileSelect(e, type)} />
         </label>
       )}
 
       {fileSet && onNext && (
-        <Button onClick={onNext} className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl">
+        <Button onClick={onNext} className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-11 rounded-xl">
           Próximo <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       )}
@@ -276,8 +276,8 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
               <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-purple-50 mb-3">
                 <Camera className="w-7 h-7 text-purple-600" />
               </div>
-              <h3 className="text-lg font-bold text-[#002443] mb-1">🛡️ Prova de Vida</h3>
-              <p className="text-sm text-[#002443]/60">
+              <h3 className="text-lg font-bold text-[#0A0A0A] mb-1">🛡️ Prova de Vida</h3>
+              <p className="text-sm text-[#0A0A0A]/60">
                 Tire uma nova foto olhando diretamente para a câmera. Isso confirma que você é uma pessoa real.
               </p>
             </div>
@@ -291,8 +291,8 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
             ) : (
               <label className="flex flex-col items-center justify-center border-2 border-dashed border-purple-300 rounded-xl p-8 cursor-pointer hover:border-purple-400 hover:bg-purple-50/50 transition-colors">
                 <Camera className="w-8 h-8 text-purple-400 mb-2" />
-                <p className="text-sm font-medium text-[#002443]">Tire uma foto de prova de vida</p>
-                <p className="text-xs text-[#002443]/50 mt-1">Use a câmera frontal • Olhe para a câmera</p>
+                <p className="text-sm font-medium text-[#0A0A0A]">Tire uma foto de prova de vida</p>
+                <p className="text-xs text-[#0A0A0A]/50 mt-1">Use a câmera frontal • Olhe para a câmera</p>
                 <input type="file" accept="image/*" capture="user"
                   className="hidden" onChange={(e) => handleFileSelect(e, 'liveness')} />
               </label>
@@ -301,22 +301,22 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
 
           {livenessFile && (
             <Button onClick={handleSubmit} disabled={processing}
-              className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-12 rounded-xl shadow-lg">
+              className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-12 rounded-xl shadow-lg">
               {processing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Shield className="w-4 h-4 mr-2" />}
               Enviar para Verificação Completa
             </Button>
           )}
 
           <button onClick={handleSubmit} disabled={processing}
-            className="w-full text-xs text-[#002443]/40 hover:text-[#002443]/60 py-2">
+            className="w-full text-xs text-[#0A0A0A]/40 hover:text-[#0A0A0A]/60 py-2">
             Pular prova de vida e enviar apenas com selfie
           </button>
         </div>
       )}
 
       <div className="flex items-start gap-3 bg-slate-50 rounded-xl p-4">
-        <Shield className="w-5 h-5 text-[#002443]/40 shrink-0 mt-0.5" />
-        <p className="text-xs text-[#002443]/50">
+        <Shield className="w-5 h-5 text-[#0A0A0A]/40 shrink-0 mt-0.5" />
+        <p className="text-xs text-[#0A0A0A]/50">
           Verificação segura via BigDataCorp BigID. OCR + validação forense + comparação facial 1:1 + prova de vida.
         </p>
       </div>

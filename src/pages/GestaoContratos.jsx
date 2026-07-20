@@ -79,17 +79,17 @@ export default function GestaoContratos() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">{t('gc.title')}</h1>
-          <p className="text-sm text-[#002443]/60 mt-1">{t('gc.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('gc.title')}</h1>
+          <p className="text-sm text-[#0A0A0A]/60 mt-1">{t('gc.subtitle')}</p>
         </div>
       </div>
 
       {/* Contrato Base / Modelo em Branco */}
-      <Card className="bg-gradient-to-r from-[#002443] to-[#003366] border-0 text-white">
+      <Card className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] border-0 text-white">
         <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-[#2bc196]/20 flex items-center justify-center shrink-0">
-              <FileText className="w-6 h-6 text-[#5cf7cf]" />
+            <div className="w-12 h-12 rounded-xl bg-[#1356E2]/20 flex items-center justify-center shrink-0">
+              <FileText className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h3 className="font-bold text-white text-base">Contrato Base (Modelo em Branco)</h3>
@@ -116,17 +116,17 @@ export default function GestaoContratos() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         {[
-          { label: t('gc.total'), value: stats.total, color: 'text-[#002443]' },
+          { label: t('gc.total'), value: stats.total, color: 'text-[#0A0A0A]' },
           { label: t('gc.pre_generated'), value: stats.preGenerated, color: 'text-amber-600' },
           { label: t('gc.under_review'), value: stats.underReview, color: 'text-blue-600' },
           { label: t('gc.ready'), value: stats.ready, color: 'text-green-600' },
           { label: t('gc.sent'), value: stats.sent, color: 'text-purple-600' },
           { label: t('gc.signed'), value: stats.signed, color: 'text-emerald-600' },
         ].map((s, i) => (
-          <Card key={i} className="bg-white border border-[#002443]/5">
+          <Card key={i} className="bg-white border border-[#0A0A0A]/5">
             <CardContent className="p-4 text-center">
               <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-[#002443]/50 mt-1">{s.label}</p>
+              <p className="text-xs text-[#0A0A0A]/50 mt-1">{s.label}</p>
             </CardContent>
           </Card>
         ))}
@@ -135,7 +135,7 @@ export default function GestaoContratos() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input 
             placeholder={t('gc.search_placeholder')} 
             value={search} 
@@ -162,14 +162,14 @@ export default function GestaoContratos() {
       {/* Contracts List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin w-8 h-8 border-2 border-[#2bc196] border-t-transparent rounded-full" />
+          <div className="animate-spin w-8 h-8 border-2 border-[#1356E2] border-t-transparent rounded-full" />
         </div>
       ) : filtered.length === 0 ? (
-        <Card className="bg-white border border-[#002443]/5">
+        <Card className="bg-white border border-[#0A0A0A]/5">
           <CardContent className="py-16 text-center">
-            <FileText className="w-12 h-12 text-[#002443]/20 mx-auto mb-3" />
-            <p className="text-[#002443]/60 font-medium">{t('gc.no_contracts')}</p>
-            <p className="text-sm text-[#002443]/40 mt-1">{t('gc.no_contracts_hint')}</p>
+            <FileText className="w-12 h-12 text-[#0A0A0A]/20 mx-auto mb-3" />
+            <p className="text-[#0A0A0A]/60 font-medium">{t('gc.no_contracts')}</p>
+            <p className="text-sm text-[#0A0A0A]/40 mt-1">{t('gc.no_contracts_hint')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -182,21 +182,21 @@ export default function GestaoContratos() {
 
             return (
               <Link key={contract.id} to={createPageUrl(`EditorContrato?id=${contract.id}`)}>
-                <Card className="bg-white border border-[#002443]/5 hover:border-[#2bc196]/30 hover:shadow-md transition-all cursor-pointer group">
+                <Card className="bg-white border border-[#0A0A0A]/5 hover:border-[#1356E2]/30 hover:shadow-md transition-all cursor-pointer group">
                   <CardContent className="p-4 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center shrink-0">
-                      <FileText className="w-5 h-5 text-[#2bc196]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#1356E2]/10 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5 text-[#1356E2]" />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-[#002443] truncate">{contract.clientName || t('gc.no_name')}</h3>
+                        <h3 className="font-semibold text-[#0A0A0A] truncate">{contract.clientName || t('gc.no_name')}</h3>
                         <Badge className={`${statusCfg.color} text-xs`}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {statusCfg.label}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-[#002443]/50">
+                      <div className="flex items-center gap-4 mt-1 text-xs text-[#0A0A0A]/50">
                         <span>{contract.codigo || '---'}</span>
                         <span>CNPJ: {contract.clientCnpj || '---'}</span>
                         <span>Criado: {contract.created_date ? new Date(contract.created_date).toLocaleDateString('pt-BR') : '---'}</span>
@@ -216,7 +216,7 @@ export default function GestaoContratos() {
                       </div>
                     </div>
 
-                    <ChevronRight className="w-5 h-5 text-[#002443]/20 group-hover:text-[#2bc196] transition-colors shrink-0" />
+                    <ChevronRight className="w-5 h-5 text-[#0A0A0A]/20 group-hover:text-[#1356E2] transition-colors shrink-0" />
                   </CardContent>
                 </Card>
               </Link>

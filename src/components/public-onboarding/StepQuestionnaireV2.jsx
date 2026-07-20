@@ -75,7 +75,7 @@ export default function StepQuestionnaireV2({
   return (
     <div>
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-        <div className="text-sm font-semibold text-[#002443]">Etapa {stepIdx + 1} de {groups.length}</div>
+        <div className="text-sm font-semibold text-[#0A0A0A]">Etapa {stepIdx + 1} de {groups.length}</div>
         <div className="text-xs text-slate-500">{Math.round(((stepIdx + 1) / groups.length) * 100)}%</div>
       </div>
 
@@ -99,7 +99,7 @@ export default function StepQuestionnaireV2({
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Voltar
         </Button>
-        <Button onClick={next} className="h-10 px-6 rounded-lg bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+        <Button onClick={next} className="h-10 px-6 rounded-lg bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
           {isLast ? (<>Ir para documentos <Check className="w-4 h-4 ml-2" /></>) : (<>Continuar <ArrowRight className="w-4 h-4 ml-2" /></>)}
         </Button>
       </div>

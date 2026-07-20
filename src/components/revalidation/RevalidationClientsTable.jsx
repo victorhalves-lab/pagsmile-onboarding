@@ -39,24 +39,24 @@ export default function RevalidationClientsTable({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-12 text-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196] mx-auto mb-3" />
-        <p className="text-sm text-[#002443]/50">Carregando clientes...</p>
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-12 text-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2] mx-auto mb-3" />
+        <p className="text-sm text-[#0A0A0A]/50">Carregando clientes...</p>
       </div>
     );
   }
 
   if (clients.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-12 text-center">
-        <Building2 className="w-10 h-10 text-[#002443]/15 mx-auto mb-3" />
-        <p className="text-sm text-[#002443]/50">Nenhum cliente encontrado com os filtros aplicados</p>
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-12 text-center">
+        <Building2 className="w-10 h-10 text-[#0A0A0A]/15 mx-auto mb-3" />
+        <p className="text-sm text-[#0A0A0A]/50">Nenhum cliente encontrado com os filtros aplicados</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="bg-[#f4f4f4]">
@@ -85,7 +85,7 @@ export default function RevalidationClientsTable({
             return (
               <TableRow
                 key={c.caseId}
-                className={`cursor-pointer transition-colors ${isSelected ? 'bg-[#2bc196]/5' : 'hover:bg-[#f4f4f4]/60'}`}
+                className={`cursor-pointer transition-colors ${isSelected ? 'bg-[#1356E2]/5' : 'hover:bg-[#f4f4f4]/60'}`}
                 onClick={() => onToggleSelect(c.caseId)}
               >
                 <TableCell onClick={(e) => e.stopPropagation()}>
@@ -102,14 +102,14 @@ export default function RevalidationClientsTable({
                         : <Building2 className="w-3.5 h-3.5 text-purple-600" />}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#002443] truncate max-w-[200px]">{c.fullName}</p>
+                      <p className="text-sm font-medium text-[#0A0A0A] truncate max-w-[200px]">{c.fullName}</p>
                       {c.companyName && c.companyName !== c.fullName && (
-                        <p className="text-[10px] text-[#002443]/40 truncate max-w-[200px]">{c.companyName}</p>
+                        <p className="text-[10px] text-[#0A0A0A]/40 truncate max-w-[200px]">{c.companyName}</p>
                       )}
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-xs font-mono text-[#002443]/70">{c.cpfCnpj}</TableCell>
+                <TableCell className="text-xs font-mono text-[#0A0A0A]/70">{c.cpfCnpj}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="text-[10px]">{c.type}</Badge>
                 </TableCell>
@@ -119,7 +119,7 @@ export default function RevalidationClientsTable({
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-mono font-bold text-[#002443]">
+                  <span className="text-sm font-mono font-bold text-[#0A0A0A]">
                     {c.riskScoreV4 != null ? c.riskScoreV4 : '—'}
                   </span>
                 </TableCell>
@@ -129,17 +129,17 @@ export default function RevalidationClientsTable({
                       {c.subfaixaNome || c.subfaixa}
                     </Badge>
                   ) : (
-                    <span className="text-xs text-[#002443]/30">—</span>
+                    <span className="text-xs text-[#0A0A0A]/30">—</span>
                   )}
                 </TableCell>
                 <TableCell>
                   {lastReval ? (
                     <div>
-                      <p className="text-xs text-[#002443]/70">{new Date(lastReval.created_date).toLocaleDateString('pt-BR')}</p>
-                      <p className="text-[10px] text-[#002443]/40">{new Date(lastReval.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                      <p className="text-xs text-[#0A0A0A]/70">{new Date(lastReval.created_date).toLocaleDateString('pt-BR')}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/40">{new Date(lastReval.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
                     </div>
                   ) : (
-                    <span className="text-[10px] text-[#002443]/30">Nunca</span>
+                    <span className="text-[10px] text-[#0A0A0A]/30">Nunca</span>
                   )}
                 </TableCell>
               </TableRow>

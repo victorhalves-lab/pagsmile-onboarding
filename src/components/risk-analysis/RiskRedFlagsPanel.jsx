@@ -38,10 +38,10 @@ export default function RiskRedFlagsPanel({ onboardingCase, complianceScore }) {
           <Flag className="w-5 h-5 text-red-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-bold text-[#002443]">
+          <h4 className="text-sm font-bold text-[#0A0A0A]">
             {allFlags.length} Alerta(s) Identificado(s)
           </h4>
-          <p className="text-[10px] text-[#002443]/40 mt-0.5">
+          <p className="text-[10px] text-[#0A0A0A]/40 mt-0.5">
             Cada alerta mostra severidade, por que importa, evidências a verificar, ação sugerida e fonte.
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function RiskRedFlagsPanel({ onboardingCase, complianceScore }) {
               {sentinelFlags.length} SENTINEL
             </Badge>
           )}
-          {expanded ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
         </div>
       </button>
 
@@ -79,8 +79,8 @@ export default function RiskRedFlagsPanel({ onboardingCase, complianceScore }) {
 
           {/* Reading guide */}
           <div className="rounded-xl p-3 bg-slate-50/70 border border-slate-200 flex items-start gap-2">
-            <Info className="w-3.5 h-3.5 text-[#002443]/40 shrink-0 mt-0.5" />
-            <p className="text-[11px] text-[#002443]/60 leading-relaxed">
+            <Info className="w-3.5 h-3.5 text-[#0A0A0A]/40 shrink-0 mt-0.5" />
+            <p className="text-[11px] text-[#0A0A0A]/60 leading-relaxed">
               <strong className="text-blue-700">BDC (azul)</strong> e <strong className="text-purple-700">CAF (roxo)</strong> são dados objetivos verificáveis — têm peso direto na decisão automática.{' '}
               <strong className="text-amber-700">SENTINEL (amarelo)</strong> é análise qualitativa da IA baseada no questionário — pode escalar para revisão manual, mas nunca recusa sozinho.
               Clique em cada alerta para ver detalhes.

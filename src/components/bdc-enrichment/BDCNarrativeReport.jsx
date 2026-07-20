@@ -259,7 +259,7 @@ Para CADA item com risco ALTO ou CRÍTICO, escreva um bloco detalhado com:
 
 **1. O que foi encontrado** — Descreva o dado objetivo encontrado, com números e detalhes. Não diga apenas "tem processos", diga "foram encontrados 15 processos judiciais, sendo 3 criminais e 12 cíveis, com valor total de R$ 2.3 milhões".
 
-**2. Por que isso é grave** — Explique em linguagem simples por que este achado é preocupante. Exemplo: "Processos criminais indicam que os sócios podem estar envolvidos em atividades ilegais. Se a empresa for aprovada e houver lavagem de dinheiro, a Pagsmile pode ser responsabilizada como facilitadora."
+**2. Por que isso é grave** — Explique em linguagem simples por que este achado é preocupante. Exemplo: "Processos criminais indicam que os sócios podem estar envolvidos em atividades ilegais. Se a empresa for aprovada e houver lavagem de dinheiro, a Pin Bank pode ser responsabilizada como facilitadora."
 
 **3. Qual o impacto regulatório** — Explique quais normas/regulamentos este achado pode violar (Circular BCB 3.978, Resolução 4.893, normas de PLD/FT, etc.) — mas EXPLICANDO o que cada norma exige em linguagem simples.
 
@@ -390,8 +390,8 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
           <Sparkles className="w-5 h-5 text-indigo-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-bold text-[#002443]">📝 Relatório Completo — Análise BDC em Linguagem Clara</h4>
-          <p className="text-[10px] text-[#002443]/40">
+          <h4 className="text-sm font-bold text-[#0A0A0A]">📝 Relatório Completo — Análise BDC em Linguagem Clara</h4>
+          <p className="text-[10px] text-[#0A0A0A]/40">
             Análise profunda e detalhada de todos os datasets da Big Data Corp — cada dado explicado em linguagem natural
           </p>
         </div>
@@ -408,7 +408,7 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
               Regerar
             </Button>
           )}
-          {expanded ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
         </div>
       </button>
 
@@ -417,8 +417,8 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
           {generating && (
             <div className="flex flex-col items-center justify-center gap-3 py-12">
               <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
-              <p className="text-sm font-medium text-[#002443]/60">Gerando relatório detalhado com IA...</p>
-              <p className="text-xs text-[#002443]/40">Analisando todos os datasets e gerando explicações completas. Pode levar até 30 segundos.</p>
+              <p className="text-sm font-medium text-[#0A0A0A]/60">Gerando relatório detalhado com IA...</p>
+              <p className="text-xs text-[#0A0A0A]/40">Analisando todos os datasets e gerando explicações completas. Pode levar até 30 segundos.</p>
             </div>
           )}
 
@@ -432,27 +432,27 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
           )}
 
           {narrative && !generating && (
-            <div className="prose prose-sm max-w-none text-[#002443]">
+            <div className="prose prose-sm max-w-none text-[#0A0A0A]">
               <ReactMarkdown
                 components={{
                   h2: ({ children }) => (
-                    <h2 className="text-base font-bold text-[#002443] mt-7 mb-3 pb-2 border-b-2 border-indigo-100">
+                    <h2 className="text-base font-bold text-[#0A0A0A] mt-7 mb-3 pb-2 border-b-2 border-indigo-100">
                       {children}
                     </h2>
                   ),
                   h3: ({ children }) => (
-                    <h3 className="text-sm font-bold text-[#002443] mt-5 mb-2 pl-3 border-l-3 border-indigo-300">
+                    <h3 className="text-sm font-bold text-[#0A0A0A] mt-5 mb-2 pl-3 border-l-3 border-indigo-300">
                       {children}
                     </h3>
                   ),
                   p: ({ children }) => (
-                    <p className="text-[13px] text-[#002443]/85 leading-[1.8] my-2">{children}</p>
+                    <p className="text-[13px] text-[#0A0A0A]/85 leading-[1.8] my-2">{children}</p>
                   ),
                   strong: ({ children }) => (
-                    <strong className="text-[#002443] font-bold">{children}</strong>
+                    <strong className="text-[#0A0A0A] font-bold">{children}</strong>
                   ),
                   li: ({ children }) => (
-                    <li className="text-[13px] text-[#002443]/85 leading-[1.8] my-1.5">{children}</li>
+                    <li className="text-[13px] text-[#0A0A0A]/85 leading-[1.8] my-1.5">{children}</li>
                   ),
                   ul: ({ children }) => <ul className="list-disc pl-5 my-3 space-y-1">{children}</ul>,
                   ol: ({ children }) => <ol className="list-decimal pl-5 my-3 space-y-1">{children}</ol>,
@@ -470,12 +470,12 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
                     </div>
                   ),
                   th: ({ children }) => (
-                    <th className="bg-slate-50 px-3 py-2 text-left font-bold text-[#002443] border border-slate-200 text-xs">
+                    <th className="bg-slate-50 px-3 py-2 text-left font-bold text-[#0A0A0A] border border-slate-200 text-xs">
                       {children}
                     </th>
                   ),
                   td: ({ children }) => (
-                    <td className="px-3 py-2 text-[#002443]/80 border border-slate-200 text-xs">
+                    <td className="px-3 py-2 text-[#0A0A0A]/80 border border-slate-200 text-xs">
                       {children}
                     </td>
                   ),
@@ -488,9 +488,9 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
 
           {!narrative && !generating && !error && (
             <div className="text-center py-8">
-              <FileText className="w-10 h-10 text-[#002443]/15 mx-auto mb-4" />
-              <p className="text-sm font-medium text-[#002443]/50 mb-2">Relatório detalhado ainda não gerado</p>
-              <p className="text-xs text-[#002443]/35 mb-4 max-w-md mx-auto">
+              <FileText className="w-10 h-10 text-[#0A0A0A]/15 mx-auto mb-4" />
+              <p className="text-sm font-medium text-[#0A0A0A]/50 mb-2">Relatório detalhado ainda não gerado</p>
+              <p className="text-xs text-[#0A0A0A]/35 mb-4 max-w-md mx-auto">
                 Clique abaixo para gerar uma análise completa e profunda de todos os dados da Big Data Corp, 
                 com explicação de cada dataset, cada achado de risco, e recomendações detalhadas.
               </p>

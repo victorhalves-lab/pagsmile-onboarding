@@ -21,8 +21,8 @@ export default function CafDifficultyModal({ onRetryLiveness, onManualFallback, 
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-50 mb-3">
             <AlertCircle className="w-6 h-6 text-purple-600" />
           </div>
-          <h3 className="text-lg font-bold text-[#002443]">Precisa de ajuda?</h3>
-          <p className="text-sm text-[#002443]/60 mt-1">
+          <h3 className="text-lg font-bold text-[#0A0A0A]">Precisa de ajuda?</h3>
+          <p className="text-sm text-[#0A0A0A]/60 mt-1">
             Sem problemas! Siga este checklist e tente novamente:
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function CafDifficultyModal({ onRetryLiveness, onManualFallback, 
         <div className="flex flex-col gap-2 pt-2">
           <Button
             onClick={onRetryLiveness}
-            className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl"
+            className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-11 rounded-xl"
           >
             <RefreshCw className="w-4 h-4 mr-2" /> Seguir as Dicas e Tentar Novamente
           </Button>
@@ -94,7 +94,7 @@ export default function CafDifficultyModal({ onRetryLiveness, onManualFallback, 
               <div className="relative my-1">
                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
                 <div className="relative flex justify-center">
-                  <span className="bg-white px-3 text-[10px] text-[#002443]/40">ou</span>
+                  <span className="bg-white px-3 text-[10px] text-[#0A0A0A]/40">ou</span>
                 </div>
               </div>
               <Button
@@ -104,14 +104,14 @@ export default function CafDifficultyModal({ onRetryLiveness, onManualFallback, 
               >
                 <Upload className="w-4 h-4 mr-2" /> Enviar Selfie Manualmente
               </Button>
-              <p className="text-[10px] text-[#002443]/40 text-center">
+              <p className="text-[10px] text-[#0A0A0A]/40 text-center">
                 O envio manual requer revisão adicional pela equipe de compliance (pode levar até 24h).
               </p>
             </>
           )}
         </div>
 
-        <p className="text-[10px] text-center text-[#002443]/30">
+        <p className="text-[10px] text-center text-[#0A0A0A]/30">
           Tentativa {attemptCount} de verificação facial
         </p>
       </div>

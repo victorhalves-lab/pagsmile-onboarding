@@ -21,7 +21,7 @@ export default function ComplianceV4Section() {
       <div className="bg-gradient-to-r from-purple-900 to-purple-700 rounded-2xl p-5 text-white">
         <h3 className="text-lg font-bold mb-2">10 Templates de Compliance v4 — Segmentados por Vertical</h3>
         <p className="text-white/80 text-sm leading-relaxed mb-3">
-          A geração v4 introduz questionários de compliance específicos para cada um dos 10 segmentos do Lead Pagsmile v5.
+          A geração v4 introduz questionários de compliance específicos para cada um dos 10 segmentos do Lead Pin Bank v5.
           Cada template é carregado dinamicamente no <code className="bg-white/10 px-1 rounded">ComplianceDinamico</code> com 
           <code className="bg-white/10 px-1 rounded">?model=ComplianceXxxV4</code>. As perguntas vêm da entidade Question vinculada ao
           QuestionnaireTemplate correspondente, agrupadas semanticamente em steps de 4 perguntas pelo DynamicQuestionnaire.
@@ -56,8 +56,8 @@ export default function ComplianceV4Section() {
 
       {/* Mapeamento */}
       <div className="bg-white rounded-xl p-4 border border-slate-200">
-        <h4 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
-          <Layers className="w-4 h-4 text-[#2bc196]" />Mapeamento Segmento Lead v5 → Compliance v4
+        <h4 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
+          <Layers className="w-4 h-4 text-[#1356E2]" />Mapeamento Segmento Lead v5 → Compliance v4
         </h4>
         <div className="space-y-2">
           {V4_TEMPLATES.map((t, i) => (
@@ -65,7 +65,7 @@ export default function ComplianceV4Section() {
               <Badge className={`${t.badge} border-0 text-[10px] shrink-0 w-36 justify-center`}>{t.label}</Badge>
               <ArrowRight className="w-3 h-3 text-slate-300 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-[#002443]/80 font-medium">{t.desc}</p>
+                <p className="text-[11px] text-[#0A0A0A]/80 font-medium">{t.desc}</p>
                 <div className="flex gap-1 mt-1">
                   <Badge className="text-[8px] bg-blue-50 text-blue-600 border-0">Segmento: {t.targetSegment}</Badge>
                   <Badge className={`text-[8px] border-0 ${t.risk.includes('ALTO') ? 'bg-red-50 text-red-600' : t.risk.includes('MÉDIO') ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'}`}>Risco: {t.risk}</Badge>
@@ -104,8 +104,8 @@ export default function ComplianceV4Section() {
             'ComplianceFieldAlerts: alertas visuais para respostas de risco',
             'Auto-save em localStorage + backend (saveComplianceProgress)',
           ].map((f, i) => (
-            <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#002443]/70">
-              <span className="text-[#2bc196] shrink-0 mt-0.5">✓</span>
+            <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#0A0A0A]/70">
+              <span className="text-[#1356E2] shrink-0 mt-0.5">✓</span>
               <span>{f}</span>
             </div>
           ))}
@@ -119,7 +119,7 @@ export default function ComplianceV4Section() {
         </h4>
         <div className="space-y-2">
           {[
-            { step: '1', text: 'Lead preenche questionário Pagsmile v5 e seleciona segmento (ex: "E-commerce")', actor: 'Lead' },
+            { step: '1', text: 'Lead preenche questionário Pin Bank v5 e seleciona segmento (ex: "E-commerce")', actor: 'Lead' },
             { step: '2', text: 'Proposta é enviada e aceita pelo lead', actor: 'Comercial + Lead' },
             { step: '3', text: 'Sistema redireciona para ComplianceDinamico?model=ComplianceEcommerceV4', actor: 'Sistema' },
             { step: '4', text: 'useLeadPrefill carrega dados do Lead v5 e enrichment CNPJ → pré-preenche campos do compliance', actor: 'Sistema' },
@@ -132,7 +132,7 @@ export default function ComplianceV4Section() {
             <div key={i} className="flex items-start gap-2 p-2 bg-white rounded-lg">
               <Badge className="bg-blue-200 text-blue-800 border-0 text-[10px] shrink-0 w-6 justify-center">{s.step}</Badge>
               <div className="flex-1">
-                <p className="text-[11px] text-[#002443]/80">{s.text}</p>
+                <p className="text-[11px] text-[#0A0A0A]/80">{s.text}</p>
                 <Badge className="text-[8px] bg-slate-100 text-slate-500 border-0 mt-0.5">{s.actor}</Badge>
               </div>
             </div>
@@ -167,7 +167,7 @@ export default function ComplianceV4Section() {
             <div key={i} className="flex items-start gap-2 p-2 bg-white rounded-lg">
               <Badge className="bg-pink-200 text-pink-800 border-0 text-[10px] shrink-0 w-6 justify-center">{s.step}</Badge>
               <div className="flex-1">
-                <p className="text-[11px] text-[#002443]/80">{s.text}</p>
+                <p className="text-[11px] text-[#0A0A0A]/80">{s.text}</p>
                 <Badge className="text-[8px] bg-slate-100 text-slate-500 border-0 mt-0.5">{s.actor}</Badge>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function ComplianceV4Section() {
                 <th className="text-center py-1.5 text-blue-700 font-bold">Pessoa Jurídica (PJ)</th>
               </tr>
             </thead>
-            <tbody className="text-[#002443]/70">
+            <tbody className="text-[#0A0A0A]/70">
               {[
                 ['Template', 'subseller_pf (33 perguntas)', 'subseller_v2 (template PJ dinâmico)'],
                 ['Documento identificador', 'CPF', 'CNPJ'],
@@ -204,7 +204,7 @@ export default function ComplianceV4Section() {
                 ['Badge visual', '🟣 PF (roxo)', '🔵 PJ (azul)'],
               ].map((row, i) => (
                 <tr key={i} className="border-b border-amber-100">
-                  <td className="py-1.5 font-semibold text-[#002443]">{row[0]}</td>
+                  <td className="py-1.5 font-semibold text-[#0A0A0A]">{row[0]}</td>
                   <td className="text-center py-1.5">{row[1]}</td>
                   <td className="text-center py-1.5">{row[2]}</td>
                 </tr>
@@ -216,10 +216,10 @@ export default function ComplianceV4Section() {
 
       {/* Perguntas-Chave por Template v4 */}
       <div className="bg-white rounded-xl p-4 border border-slate-200">
-        <h4 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
+        <h4 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
           <Shield className="w-4 h-4 text-purple-600" />Perguntas-Chave Específicas por Template v4 (Diferenciação)
         </h4>
-        <p className="text-[10px] text-[#002443]/50 mb-3">Todos os templates compartilham um tronco comum (identificação, endereço, estrutura societária, PLD/sanções). Abaixo, as perguntas EXCLUSIVAS que diferem por segmento — responsáveis pelo scoring diferenciado e classificação de risco.</p>
+        <p className="text-[10px] text-[#0A0A0A]/50 mb-3">Todos os templates compartilham um tronco comum (identificação, endereço, estrutura societária, PLD/sanções). Abaixo, as perguntas EXCLUSIVAS que diferem por segmento — responsáveis pelo scoring diferenciado e classificação de risco.</p>
         <div className="space-y-3">
           {[
             { tmpl: 'Gateway v4', color: 'border-l-indigo-500', qs: ['Possui licença/autorização do BCB para operar como instituição de pagamento?', 'Qual modelo de split de pagamentos utiliza?', 'Quantos sub-merchants ativos processam por sua plataforma?', 'Implementa KYC de sub-merchants? Descreva o processo.', 'Possui certificação PCI DSS? Qual nível?', 'Qual o % de transações CNP (Card Not Present)?', 'Possui política formal de onboarding e offboarding de sub-merchants?', 'Monitora transações em tempo real para detecção de fraude?', 'Utiliza modelo BaaS? Qual instituição parceira?', 'Taxa de chargeback dos últimos 12 meses? (V28/V29 do motor v4)'] },
@@ -237,7 +237,7 @@ export default function ComplianceV4Section() {
               <Badge className="text-[10px] bg-slate-100 text-slate-700 border-0 mb-1">{t.tmpl}</Badge>
               <div className="space-y-0.5">
                 {t.qs.map((q, j) => (
-                  <p key={j} className="text-[9px] text-[#002443]/60 flex items-start gap-1">
+                  <p key={j} className="text-[9px] text-[#0A0A0A]/60 flex items-start gap-1">
                     <span className="text-purple-400 shrink-0">Q{j+1}.</span>{q}
                   </p>
                 ))}
@@ -249,8 +249,8 @@ export default function ComplianceV4Section() {
 
       {/* Versões anteriores */}
       <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-        <h4 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Gerações Anteriores (ainda disponíveis)</h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-[10px] text-[#002443]/60">
+        <h4 className="text-xs font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-2">Gerações Anteriores (ainda disponíveis)</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-[10px] text-[#0A0A0A]/60">
           <div className="p-2 bg-white rounded-lg border border-slate-100">
             <p className="font-bold">v1 (Legados)</p>
             <p>merchant, gateway, marketplace — Perguntas fixas no código. Seções A-K hardcoded.</p>

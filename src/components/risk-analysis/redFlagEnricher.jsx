@@ -21,7 +21,7 @@ const FLAG_CATALOGUE = [
     severity: 'HIGH',
     dimension: 'financial',
     whyItMatters:
-      'O score de Shell Company da Big Data Corp combina múltiplos sinais de ausência de operação real: zero empregados no eSocial, domínio de internet inativo, capital social mínimo, sem passagens web nos últimos 90 dias e endereço potencialmente virtual. Um score acima de 50% indica que muito provavelmente não existe negócio real por trás da razão social. Isso fere o dever de KYC previsto na Circular BCB 3.978/2020 Art. 16 e expõe a Pagsmile a responsabilização solidária em caso de uso para PLD/FT. Risco operacional: aprovar shell companies vira porta de entrada para lavagem de dinheiro, pix de origem ilícita e chargebacks em massa.',
+      'O score de Shell Company da Big Data Corp combina múltiplos sinais de ausência de operação real: zero empregados no eSocial, domínio de internet inativo, capital social mínimo, sem passagens web nos últimos 90 dias e endereço potencialmente virtual. Um score acima de 50% indica que muito provavelmente não existe negócio real por trás da razão social. Isso fere o dever de KYC previsto na Circular BCB 3.978/2020 Art. 16 e expõe a Pin Bank a responsabilização solidária em caso de uso para PLD/FT. Risco operacional: aprovar shell companies vira porta de entrada para lavagem de dinheiro, pix de origem ilícita e chargebacks em massa.',
     evidenceHints: [
       'ShellCompanyLikelyhood score (fonte: BDC ActivityIndicators)',
       'Quantidade de empregados CLT (fonte: BDC BasicData.Employees)',
@@ -54,7 +54,7 @@ const FLAG_CATALOGUE = [
     severity: 'HIGH',
     dimension: 'financial',
     whyItMatters:
-      'Capital social muito baixo frente ao TPV declarado sugere subcapitalização — a empresa não tem reserva patrimonial para cobrir chargebacks, estornos, contingências trabalhistas ou fiscais. Combinado com shell score elevado, é forte indício de operação não lastreada. Para atuar como gateway/marketplace, a Resolução BCB 4.282/2013 exige lastro proporcional ao volume intermediado. Risco operacional: em caso de inadimplência massiva ou chargeback storm, a Pagsmile assume prejuízo direto.',
+      'Capital social muito baixo frente ao TPV declarado sugere subcapitalização — a empresa não tem reserva patrimonial para cobrir chargebacks, estornos, contingências trabalhistas ou fiscais. Combinado com shell score elevado, é forte indício de operação não lastreada. Para atuar como gateway/marketplace, a Resolução BCB 4.282/2013 exige lastro proporcional ao volume intermediado. Risco operacional: em caso de inadimplência massiva ou chargeback storm, a Pin Bank assume prejuízo direto.',
     evidenceHints: [
       'Valor do capital social (fonte: BDC BasicData.CapitalSocial)',
       'TPV mensal declarado (fonte: Questionário — seção volumetria)',
@@ -86,7 +86,7 @@ const FLAG_CATALOGUE = [
     severity: 'HIGH',
     dimension: 'creditRisk',
     whyItMatters:
-      'Protestos formalizados em cartório indicam títulos vencidos e não pagos cuja cobrança judicial foi encaminhada. Diferente de negativação simples, o protesto tem efeito público e probatório. Sinaliza problemas de liquidez recentes e risco elevado de inadimplência junto a fornecedores — que é exatamente a situação em que uma empresa começa a sacar antecipações para cobrir obrigações vencidas, gerando risco direto para a Pagsmile.',
+      'Protestos formalizados em cartório indicam títulos vencidos e não pagos cuja cobrança judicial foi encaminhada. Diferente de negativação simples, o protesto tem efeito público e probatório. Sinaliza problemas de liquidez recentes e risco elevado de inadimplência junto a fornecedores — que é exatamente a situação em que uma empresa começa a sacar antecipações para cobrir obrigações vencidas, gerando risco direto para a Pin Bank.',
     evidenceHints: [
       'Quantidade de protestos ativos (fonte: BDC KYC.Protests)',
       'Valor total protestado',
@@ -151,7 +151,7 @@ const FLAG_CATALOGUE = [
     severity: 'HIGH',
     dimension: 'identity',
     whyItMatters:
-      'Uma data declarada no questionário (entrada de sócio, início de operação, etc.) que seja posterior à data da análise, ou que seja muito divergente da data registrada na Receita Federal via BDC, indica uma de três situações: (1) erro material de preenchimento — o que já compromete a confiabilidade de todo o questionário e fere o dever de fidedignidade em KYC (Circular BCB 3.978/2020 Art. 16); (2) tentativa deliberada de ocultar histórico real de composição societária ou operação; (3) dado fabricado para burlar trava antifraude. Em qualquer cenário, inviabiliza a validação cruzada com dados oficiais e gera fundamento para escalação manual ou recusa. Risco operacional: aprovar empresa com datas inconsistentes expõe a Pagsmile a responsabilização solidária em caso de fraude, PLD ou sanções aplicadas a sócios ocultos.',
+      'Uma data declarada no questionário (entrada de sócio, início de operação, etc.) que seja posterior à data da análise, ou que seja muito divergente da data registrada na Receita Federal via BDC, indica uma de três situações: (1) erro material de preenchimento — o que já compromete a confiabilidade de todo o questionário e fere o dever de fidedignidade em KYC (Circular BCB 3.978/2020 Art. 16); (2) tentativa deliberada de ocultar histórico real de composição societária ou operação; (3) dado fabricado para burlar trava antifraude. Em qualquer cenário, inviabiliza a validação cruzada com dados oficiais e gera fundamento para escalação manual ou recusa. Risco operacional: aprovar empresa com datas inconsistentes expõe a Pin Bank a responsabilização solidária em caso de fraude, PLD ou sanções aplicadas a sócios ocultos.',
     evidenceHints: [
       'Valor declarado no questionário (campo específico)',
       'Valor confirmado (fonte: BDC RelationshipsV2.PartnersEntryDate ou BasicData.FoundedDate)',
@@ -219,7 +219,7 @@ const FLAG_CATALOGUE = [
     severity: 'HIGH',
     dimension: 'biometria',
     whyItMatters:
-      'O liveness (prova de vida) verifica se a foto/vídeo da selfie é de uma pessoa REAL presente no momento da captura — não uma foto de foto, máscara, deepfake ou vídeo pré-gravado. Reprovação indica possível tentativa de fraude de identidade: o verdadeiro titular do documento não está executando a verificação. Em operações de pagamento, isso é um dos indicadores mais fortes de fraude de onboarding. Em caso de chargeback por fraude de identidade pós-aprovação, a Pagsmile assume o prejuízo sem chance de reversão.',
+      'O liveness (prova de vida) verifica se a foto/vídeo da selfie é de uma pessoa REAL presente no momento da captura — não uma foto de foto, máscara, deepfake ou vídeo pré-gravado. Reprovação indica possível tentativa de fraude de identidade: o verdadeiro titular do documento não está executando a verificação. Em operações de pagamento, isso é um dos indicadores mais fortes de fraude de onboarding. Em caso de chargeback por fraude de identidade pós-aprovação, a Pin Bank assume o prejuízo sem chance de reversão.',
     evidenceHints: [
       'Probabilidade retornada pela CAF (abaixo de 80% é suspeito)',
       'Quantidade de tentativas realizadas',
@@ -281,7 +281,7 @@ const FLAG_CATALOGUE = [
     severity: 'HIGH',
     dimension: 'reputation',
     whyItMatters:
-      'Presença em matérias jornalísticas com sentimento negativo, especialmente sobre temas sensíveis (fraude, lavagem de dinheiro, corrupção, esquemas Ponzi, estelionato) gera risco reputacional imediato para a Pagsmile como processadora. Acima de certo limiar (tipicamente 3+ notícias de veículos distintos) é bloqueante (B07). Além do risco à reputação, há risco regulatório: o BACEN monitora exposição de IPs a nomes negativados em mídia e pode exigir justificativa formal.',
+      'Presença em matérias jornalísticas com sentimento negativo, especialmente sobre temas sensíveis (fraude, lavagem de dinheiro, corrupção, esquemas Ponzi, estelionato) gera risco reputacional imediato para a Pin Bank como processadora. Acima de certo limiar (tipicamente 3+ notícias de veículos distintos) é bloqueante (B07). Além do risco à reputação, há risco regulatório: o BACEN monitora exposição de IPs a nomes negativados em mídia e pode exigir justificativa formal.',
     evidenceHints: [
       'Temas das notícias (fonte: BDC AdverseMedia ou BusinessSanctions)',
       'Quantidade de publicações distintas nos últimos 24 meses',
@@ -315,7 +315,7 @@ const FLAG_CATALOGUE = [
     severity: 'BLOQUEANTE',
     dimension: 'esg',
     whyItMatters:
-      'Empresas constantes na Lista Suja do Ministério do Trabalho e Emprego por condições análogas à escravidão são bloqueio ABSOLUTO (B08). Manter relacionamento comercial com empresa na Lista Suja pode gerar responsabilização solidária trabalhista e violação de compromissos ESG da Pagsmile e de seus adquirentes parceiros. Fundamentação: Portaria MTE 1.293/2017 + Pacto Nacional pela Erradicação do Trabalho Escravo.',
+      'Empresas constantes na Lista Suja do Ministério do Trabalho e Emprego por condições análogas à escravidão são bloqueio ABSOLUTO (B08). Manter relacionamento comercial com empresa na Lista Suja pode gerar responsabilização solidária trabalhista e violação de compromissos ESG da Pin Bank e de seus adquirentes parceiros. Fundamentação: Portaria MTE 1.293/2017 + Pacto Nacional pela Erradicação do Trabalho Escravo.',
     evidenceHints: ['Data da inclusão na lista', 'Número do auto de infração', 'Município/UF da ocorrência'],
     suggestedAction:
       'Recusa imediata. Documentar motivo explicitamente. Aguardar remoção formal da lista + 2 anos de carência antes de reapreciar.',
@@ -326,7 +326,7 @@ const FLAG_CATALOGUE = [
     severity: 'BLOQUEANTE',
     dimension: 'esg',
     whyItMatters:
-      'Embargos ambientais ativos do IBAMA indicam infração ambiental grave (desmatamento, poluição, atividade sem licença). Bloqueio automático (B09) pelo framework V4 em razão de risco ESG e compromissos internacionais da Pagsmile.',
+      'Embargos ambientais ativos do IBAMA indicam infração ambiental grave (desmatamento, poluição, atividade sem licença). Bloqueio automático (B09) pelo framework V4 em razão de risco ESG e compromissos internacionais da Pin Bank.',
     evidenceHints: ['Número do auto', 'Data de lavratura', 'Local/bioma', 'Tipo de infração'],
     suggestedAction: 'Recusa até comprovação de baixa formal do embargo pelo IBAMA.',
   },
@@ -401,7 +401,7 @@ const FLAG_CATALOGUE = [
     severity: 'HIGH',
     dimension: 'compliance',
     whyItMatters:
-      'Respostas no questionário indicam maturidade insuficiente em Prevenção à Lavagem de Dinheiro e Financiamento ao Terrorismo: ausência de Compliance Officer formal, falta de políticas documentadas, sem treinamento de funcionários, sem monitoramento transacional. A Circular BCB 3.978/2020 exige todos esses elementos documentados e operacionais — sua ausência é risco regulatório direto para a Pagsmile como instituição intermediária.',
+      'Respostas no questionário indicam maturidade insuficiente em Prevenção à Lavagem de Dinheiro e Financiamento ao Terrorismo: ausência de Compliance Officer formal, falta de políticas documentadas, sem treinamento de funcionários, sem monitoramento transacional. A Circular BCB 3.978/2020 exige todos esses elementos documentados e operacionais — sua ausência é risco regulatório direto para a Pin Bank como instituição intermediária.',
     evidenceHints: [
       'Respostas das seções de PLD/FT no questionário',
       'Declarações sobre comunicação ao COAF',

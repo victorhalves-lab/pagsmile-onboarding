@@ -19,8 +19,8 @@ export default function ModuleEPEPSancoes({ formData, handleChange }) {
           <UserX className="w-5 h-5 text-rose-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Detalhamento PEP/Sanções</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Informações adicionais sobre exposição</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Detalhamento PEP/Sanções</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Informações adicionais sobre exposição</p>
         </div>
       </div>
 

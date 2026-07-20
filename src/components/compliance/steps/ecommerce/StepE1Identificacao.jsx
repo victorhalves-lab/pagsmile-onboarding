@@ -26,8 +26,8 @@ export default function StepE1Identificacao({ formData, handleChange }) {
           <Building2 className="w-5 h-5 text-orange-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Identificação da Empresa</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Dados básicos do seu e-commerce</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Identificação da Empresa</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Dados básicos do seu e-commerce</p>
         </div>
       </div>
 

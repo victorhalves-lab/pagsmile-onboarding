@@ -151,11 +151,11 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
     <div className="space-y-5">
       {/* Pergunta 1: tem mais de um? */}
       <div className="space-y-2.5">
-        <Label className="text-sm font-semibold text-[#002443]">
+        <Label className="text-sm font-semibold text-[#0A0A0A]">
           Existe mais de um representante legal nesta empresa?
           <span className="text-red-500 ml-1">*</span>
         </Label>
-        <p className="text-xs text-[#002443]/60">
+        <p className="text-xs text-[#0A0A0A]/60">
           Inclua sócios, administradores ou procuradores que tenham poderes para representar legalmente a empresa.
         </p>
         <div className="flex gap-3">
@@ -163,7 +163,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
             type="button"
             variant={state.hasMultiple === true ? 'default' : 'outline'}
             onClick={() => setHasMultiple(true)}
-            className={`flex-1 h-11 font-semibold ${state.hasMultiple === true ? 'brand-select-active bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'brand-select-hover hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+            className={`flex-1 h-11 font-semibold ${state.hasMultiple === true ? 'brand-select-active bg-[#1356E2] hover:bg-[#1356E2]/90 text-white border-[#1356E2]' : 'brand-select-hover hover:border-[#1356E2] hover:text-[#1356E2]'}`}
           >
             Sim
           </Button>
@@ -211,7 +211,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
           )}
 
           {state.list.length === 0 && (
-            <p className="text-xs text-[#002443]/50 italic text-center py-2">
+            <p className="text-xs text-[#0A0A0A]/50 italic text-center py-2">
               Clique em "Adicionar" para incluir os representantes legais.
             </p>
           )}
@@ -234,7 +234,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs text-[#002443]/70">Nome completo *</Label>
+                  <Label className="text-xs text-[#0A0A0A]/70">Nome completo *</Label>
                   <Input
                     value={rep.nome || ''}
                     onChange={(e) => updateRep(idx, 'nome', e.target.value)}
@@ -243,7 +243,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-[#002443]/70">CPF *</Label>
+                  <Label className="text-xs text-[#0A0A0A]/70">CPF *</Label>
                   <Input
                     value={formatCpf(rep.cpf || '')}
                     onChange={(e) => updateRep(idx, 'cpf', e.target.value.replace(/\D/g, ''))}
@@ -252,7 +252,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-[#002443]/70">E-mail</Label>
+                  <Label className="text-xs text-[#0A0A0A]/70">E-mail</Label>
                   <Input
                     type="email"
                     value={rep.email || ''}
@@ -262,7 +262,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-[#002443]/70">Telefone</Label>
+                  <Label className="text-xs text-[#0A0A0A]/70">Telefone</Label>
                   <Input
                     value={formatPhone(rep.phone || '')}
                     onChange={(e) => updateRep(idx, 'phone', e.target.value.replace(/\D/g, ''))}
@@ -271,7 +271,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label className="text-xs text-[#002443]/70">Cargo / Função</Label>
+                  <Label className="text-xs text-[#0A0A0A]/70">Cargo / Função</Label>
                   <Input
                     value={rep.cargo || ''}
                     onChange={(e) => updateRep(idx, 'cargo', e.target.value)}
@@ -288,7 +288,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
             <div className="mt-4 pt-4 border-t border-emerald-200/60 space-y-3">
               <div className="flex items-start gap-2">
                 <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-[#002443]/80 leading-relaxed">
+                <p className="text-xs text-[#0A0A0A]/80 leading-relaxed">
                   <strong>Atenção:</strong> todos os representantes legais precisam concluir a verificação CAF (selfie + documento).
                   Você pode gerar um link individual para cada um e enviar por WhatsApp, email ou qualquer canal.
                 </p>
@@ -312,7 +312,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
                   {generatedLinks.map((link, idx) => (
                     <div key={idx} className="bg-white border border-emerald-200 rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-[#002443]">
+                        <span className="text-xs font-semibold text-[#0A0A0A]">
                           {link.nome} {link.cpf && `— ${formatCpf(link.cpf)}`}
                         </span>
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -333,7 +333,7 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
                         </Button>
                       </div>
                       {link.email && (
-                        <p className="text-[10px] text-[#002443]/50 mt-1.5 flex items-center gap-1">
+                        <p className="text-[10px] text-[#0A0A0A]/50 mt-1.5 flex items-center gap-1">
                           <Mail className="w-3 h-3" /> Envie para: {link.email}
                         </p>
                       )}

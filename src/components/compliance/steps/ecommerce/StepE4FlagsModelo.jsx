@@ -17,8 +17,8 @@ export default function StepE4FlagsModelo({ formData, handleChange }) {
           <Settings className="w-5 h-5 text-amber-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Modelo de Negócio</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Características específicas da operação</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Modelo de Negócio</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Características específicas da operação</p>
         </div>
       </div>
 

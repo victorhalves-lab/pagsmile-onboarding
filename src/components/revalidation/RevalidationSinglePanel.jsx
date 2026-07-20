@@ -90,20 +90,20 @@ export default function RevalidationSinglePanel({ onComplete }) {
   return (
     <div className="space-y-5">
       {/* Search & Select */}
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-5">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-5">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-xl bg-blue-50">
             <Search className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#002443]">Revalidação Unitária</h3>
-            <p className="text-xs text-[#002443]/50">Selecione um cliente para consultar a BDC e recalcular o score</p>
+            <h3 className="text-sm font-bold text-[#0A0A0A]">Revalidação Unitária</h3>
+            <p className="text-xs text-[#0A0A0A]/50">Selecione um cliente para consultar a BDC e recalcular o score</p>
           </div>
         </div>
 
         <div className="space-y-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
             <Input
               placeholder="Buscar por nome, CNPJ/CPF..."
               value={searchTerm}
@@ -114,9 +114,9 @@ export default function RevalidationSinglePanel({ onComplete }) {
 
           <div className="max-h-60 overflow-y-auto border rounded-xl divide-y">
             {loadingCases ? (
-              <div className="p-4 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-[#2bc196]" /></div>
+              <div className="p-4 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-[#1356E2]" /></div>
             ) : filteredCases.length === 0 ? (
-              <div className="p-4 text-center text-xs text-[#002443]/40">Nenhum case encontrado</div>
+              <div className="p-4 text-center text-xs text-[#0A0A0A]/40">Nenhum case encontrado</div>
             ) : (
               filteredCases.slice(0, 30).map(c => {
                 const isSelected = selectedCaseId === c.id;
@@ -125,7 +125,7 @@ export default function RevalidationSinglePanel({ onComplete }) {
                     key={c.id}
                     onClick={() => { setSelectedCaseId(c.id); setResult(null); }}
                     className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
-                      isSelected ? 'bg-[#2bc196]/10 border-l-2 border-l-[#2bc196]' : 'hover:bg-[#f4f4f4]'
+                      isSelected ? 'bg-[#1356E2]/10 border-l-2 border-l-[#1356E2]' : 'hover:bg-[#f4f4f4]'
                     }`}
                   >
                     <div className={`p-1.5 rounded-lg ${c.merchant?.type === 'PF' ? 'bg-blue-100' : 'bg-purple-100'}`}>
@@ -134,12 +134,12 @@ export default function RevalidationSinglePanel({ onComplete }) {
                         : <Building2 className="w-3.5 h-3.5 text-purple-600" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[#002443] truncate">{c.merchant?.fullName}</p>
-                      <p className="text-[10px] text-[#002443]/50">{c.merchant?.cpfCnpj} • {c.status}</p>
+                      <p className="text-sm font-medium text-[#0A0A0A] truncate">{c.merchant?.fullName}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50">{c.merchant?.cpfCnpj} • {c.status}</p>
                     </div>
                     {c.riskScoreV4 != null && (
                       <div className="text-right">
-                        <p className="text-xs font-mono font-bold text-[#002443]">{c.riskScoreV4}</p>
+                        <p className="text-xs font-mono font-bold text-[#0A0A0A]">{c.riskScoreV4}</p>
                         {c.subfaixa && <Badge className={`${getSubfaixaColor(c.subfaixa)} text-[10px] border-0`}>{c.subfaixa}</Badge>}
                       </div>
                     )}
@@ -155,12 +155,12 @@ export default function RevalidationSinglePanel({ onComplete }) {
           <div className="mt-4 p-4 rounded-xl bg-[#f4f4f4] space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-bold text-[#002443]">{selectedCase.merchant?.fullName}</p>
-                <p className="text-xs text-[#002443]/50">{selectedCase.merchant?.cpfCnpj} • {selectedCase.merchant?.type}</p>
+                <p className="text-sm font-bold text-[#0A0A0A]">{selectedCase.merchant?.fullName}</p>
+                <p className="text-xs text-[#0A0A0A]/50">{selectedCase.merchant?.cpfCnpj} • {selectedCase.merchant?.type}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-[#002443]/50">Score Atual</p>
-                <p className="text-lg font-bold text-[#002443]">{selectedCase.riskScoreV4 ?? 'N/A'}</p>
+                <p className="text-xs text-[#0A0A0A]/50">Score Atual</p>
+                <p className="text-lg font-bold text-[#0A0A0A]">{selectedCase.riskScoreV4 ?? 'N/A'}</p>
                 {selectedCase.subfaixa && (
                   <Badge className={`${getSubfaixaColor(selectedCase.subfaixa)} text-xs border-0`}>
                     {selectedCase.subfaixaNome || selectedCase.subfaixa}
@@ -172,7 +172,7 @@ export default function RevalidationSinglePanel({ onComplete }) {
             <Button
               onClick={() => revalidateMutation.mutate(selectedCaseId)}
               disabled={revalidateMutation.isPending}
-              className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl"
+              className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-11 rounded-xl"
             >
               {revalidateMutation.isPending ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Consultando BDC...</>
@@ -187,7 +187,7 @@ export default function RevalidationSinglePanel({ onComplete }) {
       {/* Result */}
       {result && (
         <div className={`bg-white rounded-2xl border p-5 ${
-          result.alert === 'CRITICAL' ? 'border-red-300' : result.alert === 'WARNING' ? 'border-amber-300' : 'border-[#002443]/8'
+          result.alert === 'CRITICAL' ? 'border-red-300' : result.alert === 'WARNING' ? 'border-amber-300' : 'border-[#0A0A0A]/8'
         }`}>
           <div className="flex items-center gap-3 mb-4">
             {result.status === 'success' ? (
@@ -196,7 +196,7 @@ export default function RevalidationSinglePanel({ onComplete }) {
               <XCircle className="w-6 h-6 text-red-500" />
             )}
             <div>
-              <h3 className="text-sm font-bold text-[#002443]">
+              <h3 className="text-sm font-bold text-[#0A0A0A]">
                 {result.status === 'success' ? 'Revalidação Concluída' : 'Erro na Revalidação'}
               </h3>
               {result.error && <p className="text-xs text-red-600">{result.error}</p>}
@@ -208,8 +208,8 @@ export default function RevalidationSinglePanel({ onComplete }) {
               {/* Score comparison */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-3 rounded-xl bg-[#f4f4f4]">
-                  <p className="text-[10px] text-[#002443]/50 uppercase tracking-wide">Score Anterior</p>
-                  <p className="text-2xl font-bold text-[#002443]">{result.oldScore ?? 'N/A'}</p>
+                  <p className="text-[10px] text-[#0A0A0A]/50 uppercase tracking-wide">Score Anterior</p>
+                  <p className="text-2xl font-bold text-[#0A0A0A]">{result.oldScore ?? 'N/A'}</p>
                   {result.oldSubfaixa && <Badge className={`${getSubfaixaColor(result.oldSubfaixa)} text-xs border-0 mt-1`}>{result.oldSubfaixa}</Badge>}
                 </div>
                 <div className="flex flex-col items-center justify-center">
@@ -227,8 +227,8 @@ export default function RevalidationSinglePanel({ onComplete }) {
                   </span>
                 </div>
                 <div className="text-center p-3 rounded-xl bg-[#f4f4f4]">
-                  <p className="text-[10px] text-[#002443]/50 uppercase tracking-wide">Score Novo</p>
-                  <p className="text-2xl font-bold text-[#002443]">{result.newScore ?? 'N/A'}</p>
+                  <p className="text-[10px] text-[#0A0A0A]/50 uppercase tracking-wide">Score Novo</p>
+                  <p className="text-2xl font-bold text-[#0A0A0A]">{result.newScore ?? 'N/A'}</p>
                   {result.newSubfaixa && <Badge className={`${getSubfaixaColor(result.newSubfaixa)} text-xs border-0 mt-1`}>{result.newSubfaixa}</Badge>}
                 </div>
               </div>

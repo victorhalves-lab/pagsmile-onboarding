@@ -74,14 +74,14 @@ export default function RevalidationBulkPanel({ onComplete }) {
   return (
     <div className="space-y-5">
       {/* Configuração */}
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-5">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-5">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-xl bg-amber-50">
             <Zap className="w-5 h-5 text-amber-600" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#002443]">Revalidação em Massa</h3>
-            <p className="text-xs text-[#002443]/50">Consulta a BDC para todos os cases filtrados e recalcula os scores</p>
+            <h3 className="text-sm font-bold text-[#0A0A0A]">Revalidação em Massa</h3>
+            <p className="text-xs text-[#0A0A0A]/50">Consulta a BDC para todos os cases filtrados e recalcula os scores</p>
           </div>
         </div>
 
@@ -126,7 +126,7 @@ export default function RevalidationBulkPanel({ onComplete }) {
             <Button
               onClick={handleStart}
               disabled={bulkMutation.isPending}
-              className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-10 rounded-xl"
+              className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-10 rounded-xl"
             >
               {bulkMutation.isPending ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</>
@@ -149,10 +149,10 @@ export default function RevalidationBulkPanel({ onComplete }) {
 
       {/* Progress */}
       {bulkMutation.isPending && (
-        <div className="bg-white rounded-2xl border border-[#002443]/8 p-6 text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-[#2bc196] mx-auto mb-3" />
-          <p className="text-sm font-medium text-[#002443]">Processando revalidação em massa...</p>
-          <p className="text-xs text-[#002443]/50 mt-1">Cada case é processado com intervalo de 1.5s para respeitar rate limits da BDC</p>
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-6 text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-[#1356E2] mx-auto mb-3" />
+          <p className="text-sm font-medium text-[#0A0A0A]">Processando revalidação em massa...</p>
+          <p className="text-xs text-[#0A0A0A]/50 mt-1">Cada case é processado com intervalo de 1.5s para respeitar rate limits da BDC</p>
         </div>
       )}
 
@@ -162,15 +162,15 @@ export default function RevalidationBulkPanel({ onComplete }) {
           {/* Summary Cards */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
-              { label: 'Processados', value: results.summary.processed, color: 'text-[#002443]' },
+              { label: 'Processados', value: results.summary.processed, color: 'text-[#0A0A0A]' },
               { label: 'Sucesso', value: results.summary.succeeded, color: 'text-green-600' },
               { label: 'Falhas', value: results.summary.failed, color: 'text-red-600' },
               { label: 'Pulados', value: results.summary.skipped, color: 'text-slate-500' },
               { label: 'Tempo Total', value: `${(results.elapsed / 1000).toFixed(1)}s`, color: 'text-blue-600' },
             ].map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-[#002443]/8 p-3">
+              <div key={i} className="bg-white rounded-xl border border-[#0A0A0A]/8 p-3">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="text-[10px] text-[#002443]/50">{s.label}</p>
+                <p className="text-[10px] text-[#0A0A0A]/50">{s.label}</p>
               </div>
             ))}
           </div>
@@ -203,7 +203,7 @@ export default function RevalidationBulkPanel({ onComplete }) {
           })()}
 
           {/* Results table */}
-          <div className="bg-white rounded-2xl border border-[#002443]/8 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-[#f4f4f4]">
@@ -275,7 +275,7 @@ export default function RevalidationBulkPanel({ onComplete }) {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => { setShowConfirm(false); bulkMutation.mutate(); }}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90"
             >
               Confirmar e Executar
             </AlertDialogAction>

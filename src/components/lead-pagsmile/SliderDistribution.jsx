@@ -5,10 +5,10 @@ import React from 'react';
  * Cartão de Crédito / Cartão de Débito / PIX / Boleto
  */
 const PAYMENT_METHODS = [
-  { key: 'credito', label: 'Cartão de Crédito', color: '#2bc196' },
-  { key: 'debito', label: 'Cartão de Débito', color: '#36706c' },
-  { key: 'pix', label: 'PIX', color: '#002443' },
-  { key: 'boleto', label: 'Boleto', color: '#5cf7cf' },
+  { key: 'credito', label: 'Cartão de Crédito', color: '#1356E2' },
+  { key: 'debito', label: 'Cartão de Débito', color: '#E84B1C' },
+  { key: 'pix', label: 'PIX', color: '#0A0A0A' },
+  { key: 'boleto', label: 'Boleto', color: '#E84B1C' },
 ];
 
 export default function SliderDistribution({ values, onChange }) {
@@ -26,7 +26,7 @@ export default function SliderDistribution({ values, onChange }) {
       {PAYMENT_METHODS.map(({ key, label, color }) => (
         <div key={key} className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-[#002443]/80">{label}</span>
+            <span className="text-sm font-medium text-[#0A0A0A]/80">{label}</span>
             <span className="text-sm font-bold" style={{ color }}>{values[key] || 0}%</span>
           </div>
           <div className="flex items-center gap-3">
@@ -47,13 +47,13 @@ export default function SliderDistribution({ values, onChange }) {
               max={100}
               value={values[key] || 0}
               onChange={(e) => handleChange(key, e.target.value)}
-              className="w-16 h-8 text-center text-sm font-mono rounded-lg border border-[#002443]/10 bg-white"
+              className="w-16 h-8 text-center text-sm font-mono rounded-lg border border-[#0A0A0A]/10 bg-white"
             />
           </div>
         </div>
       ))}
 
-      <div className={`flex items-center justify-between p-3 rounded-xl text-sm font-bold ${isValid ? 'bg-[#2bc196]/10 text-[#2bc196]' : 'bg-red-50 text-red-600'}`}>
+      <div className={`flex items-center justify-between p-3 rounded-xl text-sm font-bold ${isValid ? 'bg-[#1356E2]/10 text-[#1356E2]' : 'bg-red-50 text-red-600'}`}>
         <span>Total</span>
         <span>{total}% {isValid ? '✓' : `(faltam ${100 - total}%)`}</span>
       </div>

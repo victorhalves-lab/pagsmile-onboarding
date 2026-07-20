@@ -146,17 +146,17 @@ export default function ClientSelector({ onSelect }) {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-2xl bg-[#2bc196]/10 flex items-center justify-center mx-auto mb-4">
-          <FileText className="w-8 h-8 text-[#2bc196]" />
+        <div className="w-16 h-16 rounded-2xl bg-[#1356E2]/10 flex items-center justify-center mx-auto mb-4">
+          <FileText className="w-8 h-8 text-[#1356E2]" />
         </div>
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">Selecione o Cliente</h1>
-        <p className="text-sm text-[#002443]/50">Clientes com proposta aceita e compliance aprovado prontos para Kick-Off</p>
+        <h1 className="text-2xl font-bold text-[#0A0A0A] mb-2">Selecione o Cliente</h1>
+        <p className="text-sm text-[#0A0A0A]/50">Clientes com proposta aceita e compliance aprovado prontos para Kick-Off</p>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input
             placeholder="Buscar por nome, CNPJ ou código..."
             value={search}
@@ -178,11 +178,11 @@ export default function ClientSelector({ onSelect }) {
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin text-[#2bc196] mb-3" />
-          <p className="text-sm text-[#002443]/40">Carregando propostas e compliance...</p>
+          <Loader2 className="w-8 h-8 animate-spin text-[#1356E2] mb-3" />
+          <p className="text-sm text-[#0A0A0A]/40">Carregando propostas e compliance...</p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-[#002443]/40 text-sm">
+        <div className="text-center py-16 text-[#0A0A0A]/40 text-sm">
           {search
             ? 'Nenhum cliente corresponde à busca.'
             : complianceFilter === 'aprovado'
@@ -191,23 +191,23 @@ export default function ClientSelector({ onSelect }) {
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-xs text-[#002443]/50 font-medium">{filtered.length} cliente(s)</p>
+          <p className="text-xs text-[#0A0A0A]/50 font-medium">{filtered.length} cliente(s)</p>
           {filtered.map(({ proposal, contract, complianceStatus }, i) => {
             const propStatusLabel = PROPOSAL_STATUS_LABEL[proposal.status] || proposal.status;
             return (
               <button
                 key={proposal.id || i}
                 onClick={() => onSelect({ proposal, contract })}
-                className="w-full text-left p-4 bg-white rounded-xl border border-[#002443]/8 hover:border-[#2bc196] hover:shadow-md transition-all group"
+                className="w-full text-left p-4 bg-white rounded-xl border border-[#0A0A0A]/8 hover:border-[#1356E2] hover:shadow-md transition-all group"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center shrink-0">
-                      <Building2 className="w-5 h-5 text-[#002443]/40" />
+                    <div className="w-10 h-10 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center shrink-0">
+                      <Building2 className="w-5 h-5 text-[#0A0A0A]/40" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-[#002443] truncate">{proposal.clienteNome || 'Sem nome'}</p>
-                      <p className="text-[10px] text-[#002443]/50 truncate">
+                      <p className="text-sm font-bold text-[#0A0A0A] truncate">{proposal.clienteNome || 'Sem nome'}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50 truncate">
                         {proposal.clienteCnpj || '—'} • {proposal.codigo || '—'} • {proposal.businessSubCategory || '—'}
                       </p>
                     </div>
@@ -216,7 +216,7 @@ export default function ClientSelector({ onSelect }) {
                     <Badge className="bg-green-50 text-green-700 text-[10px]">Proposta {propStatusLabel}</Badge>
                     <ComplianceBadge status={complianceStatus} />
                     {contract && <Badge className="bg-blue-50 text-blue-600 text-[10px]">Contrato</Badge>}
-                    <Check className="w-4 h-4 text-[#2bc196] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Check className="w-4 h-4 text-[#1356E2] opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
               </button>

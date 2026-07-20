@@ -85,7 +85,7 @@ export default function DocPainelAnalista() {
       <P>Para sellers que têm subsellers, esta aba lista todos os subsellers vinculados com: nome, CNPJ/CPF, score V4, subfaixa, status da decisão, e link para o dossiê completo de cada subseller.</P>
 
       <H2>13.11. Aba Doc Compliance Parceiros (nova)</H2>
-      <P>Para cada caso aprovado, o analista pode acessar a aba dedicada à <strong>extração de Pré-KYC para parceiros bancários</strong>. Nela: (a) gera link de coleta bancária quando o cliente ainda não informou a conta, (b) acompanha status do preenchimento pelo cliente, (c) visualiza a hierarquia seller → subseller quando aplicável, e (d) dispara export XLSX "Pré-KYC Pagsmile" consolidando todos os dados necessários aos bancos parceiros. Detalhes completos na Seção 18.</P>
+      <P>Para cada caso aprovado, o analista pode acessar a aba dedicada à <strong>extração de Pré-KYC para parceiros bancários</strong>. Nela: (a) gera link de coleta bancária quando o cliente ainda não informou a conta, (b) acompanha status do preenchimento pelo cliente, (c) visualiza a hierarquia seller → subseller quando aplicável, e (d) dispara export XLSX "Pré-KYC Pin Bank" consolidando todos os dados necessários aos bancos parceiros. Detalhes completos na Seção 18.</P>
 
       <H2>13.12. Aba Histórico</H2>
       <P>Linha do tempo completa de todas as ações do caso: criação, submissão, cada etapa do pipeline (com duração), decisão automática, revisões manuais, revalidações, e alterações de status. Cada evento mostra: data/hora, ator (sistema ou analista), ação e detalhes.</P>

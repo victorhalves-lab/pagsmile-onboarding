@@ -8,7 +8,7 @@ import React from 'react';
  * value = { [nomeProduto]: percentual, ... }
  */
 
-const COR_FISICO = '#2bc196';
+const COR_FISICO = '#1356E2';
 const COR_DIGITAL = '#1e90c8';
 
 export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
@@ -51,7 +51,7 @@ export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
     return (
       <div key={p.nome} className="space-y-1.5">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-[#002443]/80">{p.nome}</span>
+          <span className="text-sm font-medium text-[#0A0A0A]/80">{p.nome}</span>
           <span className="text-sm font-bold" style={{ color: cor }}>{val}%</span>
         </div>
         <div className="flex items-center gap-3">
@@ -72,7 +72,7 @@ export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
             max={100}
             value={val}
             onChange={(e) => setPct(p.nome, e.target.value)}
-            className="w-16 h-8 text-center text-sm font-mono rounded-lg border border-[#002443]/10 bg-white"
+            className="w-16 h-8 text-center text-sm font-mono rounded-lg border border-[#0A0A0A]/10 bg-white"
           />
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
   return (
     <div className="space-y-5">
       {/* Disclaimer */}
-      <div className="rounded-xl bg-[#5cf7cf]/10 border border-[#2bc196]/20 px-4 py-3 text-xs text-[#002443]/80 leading-relaxed">
+      <div className="rounded-xl bg-[#E84B1C]/10 border border-[#1356E2]/20 px-4 py-3 text-xs text-[#0A0A0A]/80 leading-relaxed">
         💡 <strong>Os percentuais podem ser estimados.</strong> Não precisa ser exato — uma aproximação do peso de cada produto na sua operação já nos ajuda muito.
       </div>
 
@@ -90,7 +90,7 @@ export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
       <button
         type="button"
         onClick={distribuirIgual}
-        className="text-xs font-medium text-[#2bc196] hover:underline"
+        className="text-xs font-medium text-[#1356E2] hover:underline"
       >
         Distribuir igualmente entre {produtos.length} produto{produtos.length > 1 ? 's' : ''}
       </button>
@@ -99,7 +99,7 @@ export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
       {fisicos.length > 0 && (
         <div className="space-y-4">
           {digitais.length > 0 && (
-            <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40">Produtos Físicos</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40">Produtos Físicos</p>
           )}
           {fisicos.map(renderSlider)}
         </div>
@@ -108,7 +108,7 @@ export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
       {digitais.length > 0 && (
         <div className="space-y-4 pt-2">
           {fisicos.length > 0 && (
-            <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 border-t border-[#002443]/10 pt-3">Produtos Digitais</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 border-t border-[#0A0A0A]/10 pt-3">Produtos Digitais</p>
           )}
           {digitais.map(renderSlider)}
         </div>
@@ -117,7 +117,7 @@ export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
       {/* Total */}
       <div
         className={`flex items-center justify-between p-3 rounded-xl text-sm font-bold ${
-          isValid ? 'bg-[#2bc196]/10 text-[#2bc196]' : 'bg-red-50 text-red-600'
+          isValid ? 'bg-[#1356E2]/10 text-[#1356E2]' : 'bg-red-50 text-red-600'
         }`}
       >
         <span>Total</span>

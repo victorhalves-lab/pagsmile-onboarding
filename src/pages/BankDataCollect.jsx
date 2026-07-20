@@ -78,7 +78,7 @@ export default function BankDataCollect() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -99,7 +99,7 @@ export default function BankDataCollect() {
     <div className="min-h-screen flex items-start justify-center p-4 pt-12">
       <Card className="max-w-lg w-full p-6 md:p-8">
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-[#002443]">Dados Bancários — Pagsmile</h1>
+          <h1 className="text-xl font-bold text-[#0A0A0A]">Dados Bancários — Pin Bank</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {info?.companyName ? <>Olá <strong>{info.companyName}</strong>,</> : 'Olá,'} precisamos dos dados bancários da sua conta para concluir o onboarding.
           </p>
@@ -110,9 +110,9 @@ export default function BankDataCollect() {
 
         {success ? (
           <div className="text-center py-8">
-            <CheckCircle2 className="w-14 h-14 text-[#2bc196] mx-auto mb-3" />
+            <CheckCircle2 className="w-14 h-14 text-[#1356E2] mx-auto mb-3" />
             <h3 className="font-semibold text-lg mb-1">Recebemos seus dados!</h3>
-            <p className="text-sm text-muted-foreground">Obrigado. A Pagsmile seguirá com o processo.</p>
+            <p className="text-sm text-muted-foreground">Obrigado. A Pin Bank seguirá com o processo.</p>
             <div className="mt-6 text-xs text-muted-foreground bg-gray-50 rounded p-3 text-left">
               <div><strong>Banco:</strong> {form.banco}</div>
               <div><strong>Agência:</strong> {form.agencia}{form.digitoAgencia ? `-${form.digitoAgencia}` : ''}</div>
@@ -153,7 +153,7 @@ export default function BankDataCollect() {
 
             {error && <p className="text-sm text-red-600">{error}</p>}
 
-            <Button type="submit" disabled={submitting} className="w-full bg-[#2bc196] hover:bg-[#239b78]">
+            <Button type="submit" disabled={submitting} className="w-full bg-[#1356E2] hover:bg-[#239b78]">
               {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando...</> : 'Enviar'}
             </Button>
             <p className="text-[11px] text-muted-foreground text-center">

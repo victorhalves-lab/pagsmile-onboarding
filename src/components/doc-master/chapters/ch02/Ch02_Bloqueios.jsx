@@ -48,7 +48,7 @@ export default function Ch02_Bloqueios() {
 
 function P_Intro() {
   return (
-    <p style={{ color: '#002443', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
+    <p style={{ color: '#0A0A0A', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
       Bloqueios são <strong>vetos regulatórios automáticos</strong> que <strong>não dependem do score V4</strong> — eles forçam decisão imediata mesmo se o score estaria em subfaixa verde. São disparados pela função <code>analyzeBlocks</code> em <code>bdcEnrichCase.js</code>.
     </p>
   );

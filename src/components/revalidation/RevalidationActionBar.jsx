@@ -18,10 +18,10 @@ export default function RevalidationActionBar({
 
   return (
     <>
-      <div className="sticky top-0 z-10 bg-[#002443] text-white rounded-2xl px-5 py-3 flex items-center justify-between shadow-lg animate-in slide-in-from-top-2 duration-300">
+      <div className="sticky top-0 z-10 bg-[#0A0A0A] text-white rounded-2xl px-5 py-3 flex items-center justify-between shadow-lg animate-in slide-in-from-top-2 duration-300">
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium">
-            <strong className="text-[#5cf7cf]">{selectedCount}</strong> cliente{selectedCount > 1 ? 's' : ''} selecionado{selectedCount > 1 ? 's' : ''}
+            <strong className="text-[#E84B1C]">{selectedCount}</strong> cliente{selectedCount > 1 ? 's' : ''} selecionado{selectedCount > 1 ? 's' : ''}
           </span>
           <Button
             variant="ghost"
@@ -37,7 +37,7 @@ export default function RevalidationActionBar({
           <Button
             onClick={() => setShowConfirm(true)}
             disabled={isProcessing}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl h-9 px-4"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl h-9 px-4"
           >
             {isProcessing ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</>
@@ -66,7 +66,7 @@ export default function RevalidationActionBar({
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => { setShowConfirm(false); onRevalidate(); }}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90"
             >
               Confirmar e Revalidar
             </AlertDialogAction>

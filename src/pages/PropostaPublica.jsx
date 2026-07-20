@@ -341,7 +341,7 @@ export default function PropostaPublica() {
           {proposta.status === 'aceita' && complianceUrl && (
             <Button
               onClick={handleGoToCompliance}
-              className="mt-4 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
+              className="mt-4 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white px-8 h-12 rounded-2xl font-bold"
             >
               <Shield className="w-4 h-4 mr-2" />
               {t('pp.start_compliance')}
@@ -351,18 +351,18 @@ export default function PropostaPublica() {
       )}
 
       {/* Premium Hero Header */}
-      <div className="relative overflow-hidden bg-[#002443] rounded-3xl p-8 md:p-12 mb-8 text-center shadow-xl">
-        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#2bc196 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#2bc196] rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none"></div>
+      <div className="relative overflow-hidden bg-[#0A0A0A] rounded-3xl p-8 md:p-12 mb-8 text-center shadow-xl">
+        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1356E2 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#1356E2] rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#E84B1C] rounded-full blur-3xl opacity-10 pointer-events-none"></div>
         
         <div className="relative z-10">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/df6449845_Logo-modo-escuro.png"
-            alt="Pagsmile"
+            alt="Pin Bank"
             className="h-12 mx-auto mb-6"
           />
-          <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] hover:bg-[#2bc196]/30 border-none mb-4 px-4 py-1.5 text-sm">
+          <Badge className="bg-[#1356E2]/20 text-[#E84B1C] hover:bg-[#1356E2]/30 border-none mb-4 px-4 py-1.5 text-sm">
             {t('pp.exclusive_proposal')}
           </Badge>
           <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
@@ -377,8 +377,8 @@ export default function PropostaPublica() {
       {/* Title + Export */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">{t('pp.commercial_proposal')}</h1>
-          <p className="text-[#002443]/60 text-sm">{t('pp.online_payment_rates')}</p>
+          <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('pp.commercial_proposal')}</h1>
+          <p className="text-[#0A0A0A]/60 text-sm">{t('pp.online_payment_rates')}</p>
         </div>
         <div className="flex items-center gap-2">
           <DownloadPdfButton
@@ -394,20 +394,20 @@ export default function PropostaPublica() {
 
       {/* Detalhes do Cliente e Proposta */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card className="border-[#2bc196]/20 bg-[#2bc196]/5">
+        <Card className="border-[#1356E2]/20 bg-[#1356E2]/5">
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-4 h-4 text-[#2bc196]" />
-              <h3 className="font-bold text-sm text-[#002443]">{t('pp.client_data')}</h3>
+              <Shield className="w-4 h-4 text-[#1356E2]" />
+              <h3 className="font-bold text-sm text-[#0A0A0A]">{t('pp.client_data')}</h3>
             </div>
-            <p className="font-bold text-lg text-[#002443]">{proposta.clienteNome}</p>
-            <p className="text-sm text-[#002443]/60">CNPJ: {formatCNPJ(proposta.clienteCnpj)}</p>
+            <p className="font-bold text-lg text-[#0A0A0A]">{proposta.clienteNome}</p>
+            <p className="text-sm text-[#0A0A0A]/60">CNPJ: {formatCNPJ(proposta.clienteCnpj)}</p>
             {proposta.clienteContato && (
-              <p className="text-sm text-[#002443]/60 mt-1">Contato: {proposta.clienteContato}</p>
+              <p className="text-sm text-[#0A0A0A]/60 mt-1">Contato: {proposta.clienteContato}</p>
             )}
             {proposta.clienteMcc && (
-              <div className="mt-3 inline-flex items-center gap-1 bg-white/60 px-2 py-1 rounded text-xs text-[#002443]/80 border border-[#002443]/10">
-                <span className="font-semibold text-[#002443]">MCC:</span> {proposta.clienteMcc}
+              <div className="mt-3 inline-flex items-center gap-1 bg-white/60 px-2 py-1 rounded text-xs text-[#0A0A0A]/80 border border-[#0A0A0A]/10">
+                <span className="font-semibold text-[#0A0A0A]">MCC:</span> {proposta.clienteMcc}
               </div>
             )}
           </CardContent>
@@ -417,12 +417,12 @@ export default function PropostaPublica() {
           <CardContent className="py-4">
              <div className="flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4 text-slate-500" />
-              <h3 className="font-bold text-sm text-[#002443]">{t('pp.proposal_validity')}</h3>
+              <h3 className="font-bold text-sm text-[#0A0A0A]">{t('pp.proposal_validity')}</h3>
             </div>
-            <p className="font-bold text-lg text-[#002443]">
+            <p className="font-bold text-lg text-[#0A0A0A]">
               {proposta.validUntil ? moment(proposta.validUntil).format('DD/MM/YYYY') : '-'}
             </p>
-            <p className="text-sm text-[#002443]/60 mt-2 flex items-center gap-1.5">
+            <p className="text-sm text-[#0A0A0A]/60 mt-2 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5" />
               {t('pp.compliance_subject')}
             </p>
@@ -445,8 +445,8 @@ export default function PropostaPublica() {
       {Array.isArray(rates.cartaoPorMcc) && rates.cartaoPorMcc.length >= 2 ? (
         <Card className="mb-4">
           <CardContent className="py-4">
-            <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-[#2bc196]" />
+            <h3 className="font-bold text-sm text-[#0A0A0A] mb-3 uppercase tracking-wide flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#1356E2]" />
               {t('pp.credit_card_rates')} por MCC
             </h3>
             <TaxasPorBandeiraPublicMulti
@@ -464,8 +464,8 @@ export default function PropostaPublica() {
         <>
           <Card className="mb-4">
             <CardContent className="py-4">
-              <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-[#2bc196]" />
+              <h3 className="font-bold text-sm text-[#0A0A0A] mb-3 uppercase tracking-wide flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[#1356E2]" />
                 {t('pp.credit_card_rates')}
               </h3>
               <TaxasPorBandeiraPublic taxas={rates} hideRange13a21={proposta.hideRange13a21 || false} />
@@ -475,7 +475,7 @@ export default function PropostaPublica() {
           {/* Tabela de Parcelas Detalhada */}
           <Card className="mb-4">
             <CardContent className="py-4">
-              <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide">
+              <h3 className="font-bold text-sm text-[#0A0A0A] mb-3 uppercase tracking-wide">
                 {t('pp.installment_table')}
               </h3>
               <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={!proposta.hideCalculationColumns} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} hideRange13a21={proposta.hideRange13a21 || false} />
@@ -491,32 +491,32 @@ export default function PropostaPublica() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         <Card>
           <CardContent className="py-5 text-center">
-            <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.receiving_term')}</p>
-            <p className="text-xl font-bold text-[#002443] font-mono">{prazo}</p>
+            <p className="text-xs text-[#0A0A0A]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.receiving_term')}</p>
+            <p className="text-xl font-bold text-[#0A0A0A] font-mono">{prazo}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="py-5 text-center">
-            <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.anticipation_rate')}</p>
-            <p className="text-xl font-bold text-[#36706c] font-mono">{taxaRAV}% a.m.</p>
-            <p className="text-[10px] text-[#002443]/50 mt-2">* Sujeito à aprovação de Compliance</p>
+            <p className="text-xs text-[#0A0A0A]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.anticipation_rate')}</p>
+            <p className="text-xl font-bold text-[#E84B1C] font-mono">{taxaRAV}% a.m.</p>
+            <p className="text-[10px] text-[#0A0A0A]/50 mt-2">* Sujeito à aprovação de Compliance</p>
           </CardContent>
         </Card>
-        <Card className="border-[#2bc196]/30 bg-[#2bc196]/5">
+        <Card className="border-[#1356E2]/30 bg-[#1356E2]/5">
           <CardContent className="py-5 text-center">
-            <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">Volume Antecipado</p>
-            <p className="text-xl font-bold text-[#2bc196] font-mono">
+            <p className="text-xs text-[#0A0A0A]/50 mb-2 uppercase font-semibold tracking-wide">Volume Antecipado</p>
+            <p className="text-xl font-bold text-[#1356E2] font-mono">
               {parseFloat(rates.percentualAntecipacao) > 0 ? `${parseFloat(rates.percentualAntecipacao)}%` : '—'}
             </p>
-            <p className="text-[10px] text-[#002443]/40 mt-2">do TPV processado</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 mt-2">do TPV processado</p>
           </CardContent>
         </Card>
       </div>
 
       {parseFloat(rates.percentualAntecipacao) >= 100 && (
-        <div className="mb-8 rounded-xl border border-[#2bc196]/30 bg-[#2bc196]/5 px-4 py-3 flex items-start gap-3">
-          <Info className="w-4 h-4 text-[#36706c] mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-[#002443]/80 leading-relaxed">
+        <div className="mb-8 rounded-xl border border-[#1356E2]/30 bg-[#1356E2]/5 px-4 py-3 flex items-start gap-3">
+          <Info className="w-4 h-4 text-[#E84B1C] mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-[#0A0A0A]/80 leading-relaxed">
             <span className="font-semibold">Importante:</span> caso existam subcontas/subsellers, a antecipação de 100% do TPV dependerá do resultado da análise de Compliance de cada subconta/subseller.
           </p>
         </div>
@@ -562,7 +562,7 @@ export default function PropostaPublica() {
           />
           <Card className="mb-4">
             <CardContent className="py-4">
-              <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide">Taxas por Bandeira (POS)</h3>
+              <h3 className="font-bold text-sm text-[#0A0A0A] mb-3 uppercase tracking-wide">Taxas por Bandeira (POS)</h3>
               <TaxasMaquininhaPublic maquininha={rates.maquininha} />
               <AluguelEquipamentosPublic alugueis={rates.maquininha?.alugueis} />
             </CardContent>
@@ -601,13 +601,13 @@ export default function PropostaPublica() {
       {proposta.status === 'contraproposta' && (
         <div className="text-center py-8">
           <MessageSquare className="w-12 h-12 mx-auto text-blue-500 mb-3" />
-          <h2 className="text-xl font-bold text-[#002443] mb-1">{t('pp.counter_sent_title')}</h2>
-          <p className="text-[#002443]/60">{t('pp.counter_sent_desc')}</p>
+          <h2 className="text-xl font-bold text-[#0A0A0A] mb-1">{t('pp.counter_sent_title')}</h2>
+          <p className="text-[#0A0A0A]/60">{t('pp.counter_sent_desc')}</p>
         </div>
       )}
 
-      <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
-        <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
+      <div className="text-center text-xs text-[#0A0A0A]/30 py-4 border-t border-slate-200">
+        <p>&copy; {new Date().getFullYear()} Pin Bank. Proposta {proposta.codigo}</p>
       </div>
 
       {/* Barra de ação: inclui propostas expiradas — cliente sempre pode aceitar (servidor valida). */}
@@ -617,7 +617,7 @@ export default function PropostaPublica() {
             <Button
               onClick={() => setShowAceiteModal(true)}
               disabled={!proposta?.id || !effectiveToken}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-12 rounded-2xl text-base font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white px-10 h-12 rounded-2xl text-base font-bold w-full md:w-auto shadow-lg shadow-[#1356E2]/20 transition-transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Shield className="w-5 h-5 mr-2" />
               {t('pp.accept_proposal')}
@@ -626,7 +626,7 @@ export default function PropostaPublica() {
               <Button
                 onClick={() => setShowContrapropostaModal(true)}
                 variant="outline"
-                className="flex-1 md:flex-none border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5 h-12 rounded-2xl font-semibold"
+                className="flex-1 md:flex-none border-[#0A0A0A]/20 text-[#0A0A0A] hover:bg-[#0A0A0A]/5 h-12 rounded-2xl font-semibold"
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 {t('pp.negotiate')}

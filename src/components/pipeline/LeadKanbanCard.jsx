@@ -47,10 +47,10 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
           Via Compliance
         </Badge>
       )}
-      <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">
+      <p className="text-sm font-medium text-[var(--pinbank-blue)] truncate">
         {lead.companyName || lead.fullName}
       </p>
-      <p className="text-[10px] text-[var(--pagsmile-blue)]/50 truncate">
+      <p className="text-[10px] text-[var(--pinbank-blue)]/50 truncate">
         {lead.contactName || lead.email || (isVirtual && onbCase ? `Case: ${onbCase.status}` : '')}
       </p>
 
@@ -58,7 +58,7 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
         {lead.priscilaQualityScore != null && (
           <div className="flex items-center gap-1">
             <div className={`w-2 h-2 rounded-full ${getScoreBg(lead.priscilaQualityScore)}`} />
-            <span className="text-xs font-bold text-[var(--pagsmile-blue)]">
+            <span className="text-xs font-bold text-[var(--pinbank-blue)]">
               {lead.priscilaQualityScore}
             </span>
           </div>
@@ -98,7 +98,7 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
       </div>
 
       {lead.tpvMensal > 0 && (
-        <p className="text-xs font-mono text-[var(--pagsmile-green)]">
+        <p className="text-xs font-mono text-[var(--pinbank-blue)]">
           R$ {lead.tpvMensal.toLocaleString('pt-BR')}/mês
         </p>
       )}
@@ -106,7 +106,7 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
       {!isVirtual && <LeadSLAIndicator lead={lead} />}
 
       {lead.lastInteractionDate && (
-        <p className="text-[9px] text-[var(--pagsmile-blue)]/40">
+        <p className="text-[9px] text-[var(--pinbank-blue)]/40">
           {t('kanban.last_contact')} {moment(lead.lastInteractionDate).fromNow()}
         </p>
       )}
@@ -119,7 +119,7 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
           </Button>
           {['questionario_preenchido', 'analisado_priscila'].includes(lead.status) && (
             <Button variant="default" size="sm"
-              className="h-6 px-2 text-[10px] bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
+              className="h-6 px-2 text-[10px] bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white"
               onClick={(e) => { e.stopPropagation(); onAction('contact', lead); }}>
               <Phone className="w-3 h-3 mr-0.5" /> {t('kanban.contact')}
             </Button>

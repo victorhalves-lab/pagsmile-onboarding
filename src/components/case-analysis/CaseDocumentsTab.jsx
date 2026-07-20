@@ -89,13 +89,13 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName, inte
 
       <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
-        <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Documentos Enviados pelo Cliente</h3>
+        <h3 className="text-lg font-bold text-[var(--pinbank-blue)]">Documentos Enviados pelo Cliente</h3>
         <div className="flex items-center gap-2">
           {canRequestPendency && (
             <Button
               size="sm"
               onClick={() => setPendencyModalOpen(true)}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green-dark)] text-white gap-1.5"
+              className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue-dark)] text-white gap-1.5"
             >
               <ClipboardList className="w-4 h-4" />
               Solicitar Pendências
@@ -112,7 +112,7 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName, inte
       {documents.length === 0 ? (
         <div className="text-center py-12">
           <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-          <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum documento enviado</p>
+          <p className="text-[var(--pinbank-blue)]/70 font-medium">Nenhum documento enviado</p>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -120,15 +120,15 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName, inte
             <div key={idx} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white rounded-lg border border-slate-200">
-                  <FileText className="w-6 h-6 text-[var(--pagsmile-blue)]/70" />
+                  <FileText className="w-6 h-6 text-[var(--pinbank-blue)]/70" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[var(--pagsmile-blue)]">{doc.documentName || doc.fileName}</p>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
+                  <p className="font-semibold text-[var(--pinbank-blue)]">{doc.documentName || doc.fileName}</p>
+                  <p className="text-sm text-[var(--pinbank-blue)]/70 font-medium">
                     {doc.fileType} • {doc.fileSize ? `${(doc.fileSize / 1024).toFixed(1)} KB` : '-'}
                   </p>
                   {doc.uploadDate && (
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 font-medium mt-1">
+                    <p className="text-xs text-[var(--pinbank-blue)]/60 font-medium mt-1">
                       Enviado em {new Date(doc.uploadDate).toLocaleDateString('pt-BR')}
                     </p>
                   )}

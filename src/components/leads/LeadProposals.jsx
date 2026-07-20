@@ -44,19 +44,19 @@ export default function LeadProposals({ leadId }) {
       </CardHeader>
       <CardContent>
         {proposals.length === 0 ? (
-          <p className="text-center py-4 text-[var(--pagsmile-blue)]/50 text-sm">Nenhuma proposta vinculada</p>
+          <p className="text-center py-4 text-[var(--pinbank-blue)]/50 text-sm">Nenhuma proposta vinculada</p>
         ) : (
           <div className="space-y-3">
             {proposals.map(p => (
               <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:bg-slate-50">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-[var(--pagsmile-green)]">{p.codigo}</span>
+                    <span className="font-mono text-xs text-[var(--pinbank-blue)]">{p.codigo}</span>
                     <Badge className={`text-[10px] ${STATUS_COLORS[p.status] || 'bg-slate-100'}`}>
                       {p.status}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-[10px] text-[var(--pagsmile-blue)]/50">
+                  <div className="flex items-center gap-3 mt-1 text-[10px] text-[var(--pinbank-blue)]/50">
                     {p.sentDate && (
                       <span className="flex items-center gap-0.5"><Send className="w-2.5 h-2.5" /> {moment(p.sentDate).format('DD/MM')}</span>
                     )}
@@ -71,7 +71,7 @@ export default function LeadProposals({ leadId }) {
                     )}
                   </div>
                   {p.estimatedRevenue > 0 && (
-                    <p className="text-[10px] text-[var(--pagsmile-green)] mt-0.5">
+                    <p className="text-[10px] text-[var(--pinbank-blue)] mt-0.5">
                       Receita estimada: R$ {p.estimatedRevenue.toLocaleString('pt-BR')}
                     </p>
                   )}

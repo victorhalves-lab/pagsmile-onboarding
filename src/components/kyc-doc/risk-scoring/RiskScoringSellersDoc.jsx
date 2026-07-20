@@ -36,8 +36,8 @@ export default function RiskScoringSellersDoc() {
 
         <h2>1.1 Objetivo</h2>
         <p>
-          O modelo de Risk Scoring Pagsmile V4.0 quantifica o risco operacional, regulatório, financeiro e
-          reputacional de cada candidato a Seller que pretende processar pagamentos via gateway Pagsmile,
+          O modelo de Risk Scoring Pin Bank V4.0 quantifica o risco operacional, regulatório, financeiro e
+          reputacional de cada candidato a Seller que pretende processar pagamentos via gateway Pin Bank,
           produzindo uma decisão <strong>determinística, auditável e regulatoriamente defensável</strong>.
           Aplica-se ao onboarding inicial e a toda revalidação periódica obrigatória.
         </p>
@@ -533,7 +533,7 @@ release(t)      = reserve_held(t-90) liberado em t`}
         <dl className="risk-dl">
           <dt>BDC</dt><dd>BigDataCorp — provedor de enriquecimento de dados PJ/PF.</dd>
           <dt>CAF</dt><dd>Combate à Fraude — provedor de KYC/biometria/documentoscopia.</dd>
-          <dt>SENTINEL</dt><dd>Agente IA Pagsmile que faz análise dimensional qualitativa.</dd>
+          <dt>SENTINEL</dt><dd>Agente IA Pin Bank que faz análise dimensional qualitativa.</dd>
           <dt>UBO</dt><dd>Ultimate Beneficial Owner — beneficiário final.</dd>
           <dt>PEP</dt><dd>Pessoa Exposta Politicamente.</dd>
           <dt>PLD/FT</dt><dd>Prevenção à Lavagem de Dinheiro e Financiamento ao Terrorismo (Lei 9.613/98 + Circular BCB 3.978).</dd>

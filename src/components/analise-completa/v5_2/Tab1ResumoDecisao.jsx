@@ -32,15 +32,15 @@ function AlertasPriorizados({ alerts }) {
         {alerts.map((a, idx) => (
           <div key={a.red_flag_id || idx} className={`rounded-lg border p-3 ${SEVERITY_BG[a.severity] || SEVERITY_BG.INFO}`}>
             <div className="flex items-start justify-between gap-2 mb-1">
-              <h4 className="text-sm font-bold text-[#002443]">{a.title || a.red_flag_id}</h4>
+              <h4 className="text-sm font-bold text-[#0A0A0A]">{a.title || a.red_flag_id}</h4>
               {a.severity && (
                 <Badge variant="outline" className="text-[10px] font-mono">{a.severity}</Badge>
               )}
             </div>
             {a.why_it_matters && (
-              <p className="text-xs text-[#002443]/75 mb-2">{a.why_it_matters}</p>
+              <p className="text-xs text-[#0A0A0A]/75 mb-2">{a.why_it_matters}</p>
             )}
-            <div className="flex items-center gap-3 text-[10px] text-[#002443]/55">
+            <div className="flex items-center gap-3 text-[10px] text-[#0A0A0A]/55">
               {a.suggested_action && <span>👉 {a.suggested_action}</span>}
               {a.source && <span className="font-mono">fonte: {a.source}</span>}
               {a.impact_score != null && <span className="font-mono ml-auto">impact: {a.impact_score}</span>}
@@ -67,10 +67,10 @@ function PontosPositivos({ positivos }) {
           <div key={idx} className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
             <h4 className="text-sm font-semibold text-emerald-800">{p.title || `Positivo ${idx + 1}`}</h4>
             {p.description && (
-              <p className="text-xs text-[#002443]/70 mt-0.5">{p.description}</p>
+              <p className="text-xs text-[#0A0A0A]/70 mt-0.5">{p.description}</p>
             )}
             {p.source && (
-              <span className="text-[9px] text-[#002443]/40 font-mono mt-1 inline-block">fonte: {p.source}</span>
+              <span className="text-[9px] text-[#0A0A0A]/40 font-mono mt-1 inline-block">fonte: {p.source}</span>
             )}
           </div>
         ))}
@@ -86,15 +86,15 @@ function MiniParecerSentinel({ sumario, parecer }) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          <FileText className="w-4 h-4 text-[#2bc196]" />
+          <FileText className="w-4 h-4 text-[#1356E2]" />
           Mini-Parecer <Term code="sentinel" inline>SENTINEL</Term> (executivo)
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-[#002443]/85 leading-relaxed whitespace-pre-wrap line-clamp-[12]">
+        <p className="text-sm text-[#0A0A0A]/85 leading-relaxed whitespace-pre-wrap line-clamp-[12]">
           {text}
         </p>
-        <p className="text-[10px] text-[#002443]/40 mt-3 italic">
+        <p className="text-[10px] text-[#0A0A0A]/40 mt-3 italic">
           ↗ Versão completa em "Aba 4 — SENTINEL & Auditoria"
         </p>
       </CardContent>
@@ -127,7 +127,7 @@ function AcoesSugeridas({ recomendacoes, condicoes }) {
           {items.slice(0, 10).map((it, idx) => (
             <li key={idx} className="text-xs flex items-start gap-2">
               <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${it.type === 'cond' ? 'bg-amber-500' : 'bg-blue-500'}`} />
-              <span className="text-[#002443]/85">{it.label}</span>
+              <span className="text-[#0A0A0A]/85">{it.label}</span>
             </li>
           ))}
         </ul>

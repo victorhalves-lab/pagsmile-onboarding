@@ -14,14 +14,14 @@ export default function AccessDenied() {
           <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-red-50">
             <Shield className="w-8 h-8 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-[#002443] mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <h1 className="text-2xl font-bold text-[#0A0A0A] mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Acesso Restrito
           </h1>
-          <p className="text-[#002443]/60 text-sm mb-6" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Esta área é exclusiva para usuários autorizados da plataforma PagSmile. 
+          <p className="text-[#0A0A0A]/60 text-sm mb-6" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Esta área é exclusiva para usuários autorizados da plataforma Pin Bank. 
             Seu e-mail não possui permissão de acesso.
           </p>
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-[#002443]/70 mb-6" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-[#0A0A0A]/70 mb-6" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <p className="font-semibold text-amber-800 mb-2">O que fazer?</p>
             <ul className="list-disc list-inside space-y-1 text-left text-xs">
               <li>Entre em contato com o administrador para solicitar acesso</li>
@@ -32,7 +32,7 @@ export default function AccessDenied() {
           <div className="flex flex-col gap-2">
             <Button
               onClick={() => base44.auth.logout(window.location.origin)}
-              className="w-full bg-[#002443] hover:bg-[#002443]/90 text-white h-11 rounded-xl"
+              className="w-full bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white h-11 rounded-xl"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
               <LogOut className="w-4 h-4 mr-2" />
@@ -41,7 +41,7 @@ export default function AccessDenied() {
             <Button
               variant="ghost"
               onClick={() => window.location.href = '/'}
-              className="w-full text-[#002443]/50 hover:text-[#002443] h-10"
+              className="w-full text-[#0A0A0A]/50 hover:text-[#0A0A0A] h-10"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -50,8 +50,8 @@ export default function AccessDenied() {
           </div>
         </div>
       </div>
-      <p className="text-xs text-[#002443]/30 mt-6" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        © {new Date().getFullYear()} PagSmile — Plataforma de Pagamentos
+      <p className="text-xs text-[#0A0A0A]/30 mt-6" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        © {new Date().getFullYear()} Pin Bank — Plataforma de Pagamentos
       </p>
     </div>
   );

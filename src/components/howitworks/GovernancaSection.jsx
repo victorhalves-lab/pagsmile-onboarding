@@ -11,9 +11,9 @@ import { Shield, Lock, History, UserCheck, Key } from 'lucide-react';
 export default function GovernancaSection() {
   return (
     <div className="space-y-5">
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-5 text-white">
         <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
-          <Shield className="w-5 h-5 text-[#5cf7cf]" /> Três Camadas de Proteção
+          <Shield className="w-5 h-5 text-[#E84B1C]" /> Três Camadas de Proteção
         </h3>
         <p className="text-white/80 text-sm leading-relaxed">
           Controle granular de acesso (AccessProfile) + autenticação multifator obrigatória (TOTP + PIN pessoal)
@@ -29,7 +29,7 @@ export default function GovernancaSection() {
               <UserCheck className="w-4 h-4 text-blue-600" /> AccessProfile (Perfis Granulares)
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 space-y-2 text-xs text-[#002443]/75">
+          <CardContent className="pt-3 space-y-2 text-xs text-[#0A0A0A]/75">
             <p><strong>5 perfis pré-instalados:</strong> Administrador, Analista de Compliance, Analista Comercial, CEO/Diretor, Introducer.</p>
             <p><strong>Default deny:</strong> qualquer página/aba/sub-aba/ação não permitida fica oculta E inacessível via URL direta.</p>
             <p><strong>4 níveis de granularidade:</strong> canView (página) → tabs (canView/canEdit) → subTabs → actions (botões específicos como "Aprovar caso").</p>
@@ -43,7 +43,7 @@ export default function GovernancaSection() {
               <Lock className="w-4 h-4 text-purple-600" /> 2FA Obrigatório (TOTP + PIN)
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 space-y-2 text-xs text-[#002443]/75">
+          <CardContent className="pt-3 space-y-2 text-xs text-[#0A0A0A]/75">
             <p><strong>Enrollment forçado:</strong> todo admin é obrigado a configurar 2FA no primeiro login (TwoFactorEnrollScreen).</p>
             <p><strong>TOTP RFC 6238:</strong> secret 160 bits (Base32, 32 chars), compatível com Google Authenticator/Authy/1Password. Janela ±1 step (30s) para clock drift.</p>
             <p><strong>PIN pessoal:</strong> 6 dígitos hasheados com SHA-256 + salt 128 bits.</p>
@@ -58,7 +58,7 @@ export default function GovernancaSection() {
               <Key className="w-4 h-4 text-amber-600" /> Anti Brute-Force (AdminLoginAttempt)
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 space-y-2 text-xs text-[#002443]/75">
+          <CardContent className="pt-3 space-y-2 text-xs text-[#0A0A0A]/75">
             <p><strong>5 falhas em 15min</strong> → usuário bloqueado por 30min, evento <code>locked_out</code>.</p>
             <p><strong>10 falhas em 1h</strong> → alerta automático ao canal #security do Slack.</p>
             <p><strong>20 falhas de IPs distintos em 24h</strong> → alerta crítico + exigência de rotação de senha.</p>
@@ -72,7 +72,7 @@ export default function GovernancaSection() {
               <History className="w-4 h-4 text-emerald-600" /> Auditoria 100% (5 anos)
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 space-y-2 text-xs text-[#002443]/75">
+          <CardContent className="pt-3 space-y-2 text-xs text-[#0A0A0A]/75">
             <p><strong>AccessAudit:</strong> page_view, tab_view, subtab_view, action_executed, access_denied, profile_changed, login, logout — com IP hash, user-agent, payload de detalhes.</p>
             <p><strong>TwoFactorAudit:</strong> enroll_start/complete, totp_success/fail, pin_success/fail, backup_code_used, admin_reset, locked_out.</p>
             <p><strong>Tela /AuditoriaAcessos:</strong> visualização unificada com filtros + exportação CSV para auditorias regulatórias.</p>

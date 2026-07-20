@@ -18,7 +18,7 @@ export default function Step3aEnderecoPrincipal({ formData, handleChange }) {
             value={formData.cep}
             onChange={(value) => handleChange('cep', value)}
             placeholder="00000-000"
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
         <div className="md:col-span-2">
@@ -28,7 +28,7 @@ export default function Step3aEnderecoPrincipal({ formData, handleChange }) {
             value={formData.logradouro}
             onChange={(value) => handleChange('logradouro', value)}
             placeholder="Rua, Avenida, etc."
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
       </div>
@@ -41,7 +41,7 @@ export default function Step3aEnderecoPrincipal({ formData, handleChange }) {
             value={formData.numero}
             onChange={(value) => handleChange('numero', value)}
             placeholder="Nº"
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
         <div className="md:col-span-2">
@@ -50,7 +50,7 @@ export default function Step3aEnderecoPrincipal({ formData, handleChange }) {
             value={formData.complemento}
             onChange={(value) => handleChange('complemento', value)}
             placeholder="Sala, Bloco, Andar (opcional)"
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function Step3aEnderecoPrincipal({ formData, handleChange }) {
             value={formData.bairro}
             onChange={(value) => handleChange('bairro', value)}
             placeholder="Bairro"
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
         <div className="md:col-span-1">
@@ -73,7 +73,7 @@ export default function Step3aEnderecoPrincipal({ formData, handleChange }) {
             value={formData.cidade}
             onChange={(value) => handleChange('cidade', value)}
             placeholder="Cidade"
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
         <div className="md:col-span-1">
@@ -84,7 +84,7 @@ export default function Step3aEnderecoPrincipal({ formData, handleChange }) {
             onChange={(value) => handleChange('estado', value)}
             placeholder="UF"
             maxLength={2}
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
       </div>

@@ -180,7 +180,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
         <Input
           value={value || ''}
           readOnly
-          className="h-11 bg-emerald-50/50 border-emerald-200/80 cursor-not-allowed text-[#002443]/80 font-medium"
+          className="h-11 bg-emerald-50/50 border-emerald-200/80 cursor-not-allowed text-[#0A0A0A]/80 font-medium"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
           <span className="text-[10px] font-medium text-emerald-600 hidden sm:inline">Automático</span>
@@ -270,7 +270,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
                   variant={value === opt ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleChange(opt)}
-                  className={`h-10 px-4 text-sm font-medium rounded-lg ${value === opt ? 'brand-select-active bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'brand-select-hover hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+                  className={`h-10 px-4 text-sm font-medium rounded-lg ${value === opt ? 'brand-select-active bg-[#1356E2] hover:bg-[#1356E2]/90 text-white border-[#1356E2]' : 'brand-select-hover hover:border-[#1356E2] hover:text-[#1356E2]'}`}
                 >
                   {opt}
                 </Button>
@@ -316,7 +316,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
                     handleChange([...selectedValues, opt]);
                   }
                 }}
-                className={`h-9 px-4 text-sm font-medium rounded-lg ${isSelected ? 'brand-select-active bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'brand-select-hover hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+                className={`h-9 px-4 text-sm font-medium rounded-lg ${isSelected ? 'brand-select-active bg-[#1356E2] hover:bg-[#1356E2]/90 text-white border-[#1356E2]' : 'brand-select-hover hover:border-[#1356E2] hover:text-[#1356E2]'}`}
               >
                 {opt}
               </Button>
@@ -340,7 +340,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
                 onCheckedChange={(checked) => handleChange(checked === true)}
                 className="mt-0.5"
               />
-              <Label htmlFor={`${question.id}_aceite`} className="text-sm leading-relaxed cursor-pointer font-normal text-[#002443]/80">
+              <Label htmlFor={`${question.id}_aceite`} className="text-sm leading-relaxed cursor-pointer font-normal text-[#0A0A0A]/80">
                 {text}
               </Label>
             </div>
@@ -356,7 +356,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
               type="button"
               variant={value === true ? 'default' : 'outline'}
               onClick={() => handleChange(true)}
-              className={`flex-1 h-11 font-semibold ${value === true ? 'brand-select-active bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'brand-select-hover hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+              className={`flex-1 h-11 font-semibold ${value === true ? 'brand-select-active bg-[#1356E2] hover:bg-[#1356E2]/90 text-white border-[#1356E2]' : 'brand-select-hover hover:border-[#1356E2] hover:text-[#1356E2]'}`}
             >
               Sim
             </Button>
@@ -425,7 +425,7 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
       {/* O CnpjAutocompleteField renderiza seu próprio label; declarações incluem label no checkbox */}
       {!isCnpjTrigger && !isDeclaration && (
         <div className="flex items-start gap-2 flex-wrap">
-          <Label className="text-sm font-semibold text-[#002443]">
+          <Label className="text-sm font-semibold text-[#0A0A0A]">
             {question.text}
             {question.isRequired && <span className="text-red-500 ml-1">*</span>}
           </Label>
@@ -560,7 +560,7 @@ export default function DynamicQuestionRenderer({
     <div className="space-y-6">
       {showTitle && stepTitle && (
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-[#002443]">{stepTitle}</h2>
+          <h2 className="text-xl font-bold text-[#0A0A0A]">{stepTitle}</h2>
         </div>
       )}
       

@@ -52,7 +52,7 @@ export default function RiskCasesTable({ scores, cases }) {
         <CardTitle className="text-sm font-bold">Detalhamento por Caso ({filtered.length} casos)</CardTitle>
         <div className="flex flex-wrap gap-2 mt-2">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#002443]/30" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#0A0A0A]/30" />
             <Input placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 h-9 text-xs" />
           </div>
           <Select value={filterSF} onValueChange={setFilterSF}>
@@ -79,7 +79,7 @@ export default function RiskCasesTable({ scores, cases }) {
       <CardContent>
         <div className="space-y-1 max-h-[500px] overflow-y-auto">
           {/* Header */}
-          <div className="grid grid-cols-12 gap-2 px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-[#002443]/40 border-b border-slate-100">
+          <div className="grid grid-cols-12 gap-2 px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 border-b border-slate-100">
             <div className="col-span-1"></div>
             <div className="col-span-2">Segmento</div>
             <div className="col-span-1 text-center">C1</div>
@@ -102,15 +102,15 @@ export default function RiskCasesTable({ scores, cases }) {
                   <div className="col-span-1">
                     {isExpanded ? <ChevronDown className="w-3 h-3 text-slate-400" /> : <ChevronRight className="w-3 h-3 text-slate-400" />}
                   </div>
-                  <div className="col-span-2 text-left capitalize font-medium text-[#002443]/70">{(s.segmento || '').replace(/_/g, ' ')}</div>
+                  <div className="col-span-2 text-left capitalize font-medium text-[#0A0A0A]/70">{(s.segmento || '').replace(/_/g, ' ')}</div>
                   <div className="col-span-1 text-center font-mono text-blue-600">{s.score_base_segmento || 0}</div>
                   <div className="col-span-1 text-center font-mono" style={{ color: (s.score_variaveis || 0) > 0 ? '#ef4444' : '#22c55e' }}>{s.score_variaveis > 0 ? '+' : ''}{s.score_variaveis || 0}</div>
                   <div className="col-span-1 text-center font-mono" style={{ color: (s.score_enriquecimento || 0) > 0 ? '#ef4444' : '#22c55e' }}>{s.score_enriquecimento > 0 ? '+' : ''}{s.score_enriquecimento || 0}</div>
-                  <div className="col-span-1 text-center font-bold text-[#002443]">{s.score_final ?? '—'}</div>
+                  <div className="col-span-1 text-center font-bold text-[#0A0A0A]">{s.score_final ?? '—'}</div>
                   <div className="col-span-1 text-center">
                     <Badge className={`${SF_COLORS[s.subfaixa] || 'bg-slate-100'} border-0 text-[9px] font-bold`}>{s.subfaixa || '—'}</Badge>
                   </div>
-                  <div className="col-span-1 text-center font-mono text-[#002443]/60">{s.rolling_reserve_percent ?? 0}%</div>
+                  <div className="col-span-1 text-center font-mono text-[#0A0A0A]/60">{s.rolling_reserve_percent ?? 0}%</div>
                   <div className="col-span-3 text-left">
                     <Badge className={`${REC_COLORS[s.recomendacao_final] || 'bg-slate-100'} border-0 text-[9px]`}>{s.recomendacao_final || '—'}</Badge>
                   </div>
@@ -119,10 +119,10 @@ export default function RiskCasesTable({ scores, cases }) {
                 {isExpanded && (
                   <div className="px-4 pb-3 pt-1 bg-slate-50 border-t border-slate-100 space-y-2">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px]">
-                      <div><span className="text-[#002443]/40">Case ID:</span> <span className="font-mono">{s.onboarding_case_id}</span></div>
-                      <div><span className="text-[#002443]/40">PIX:</span> {s.is_pix ? 'Sim' : 'Não'}</div>
-                      <div><span className="text-[#002443]/40">Monitoramento:</span> {s.monitoramento_nivel || '—'}</div>
-                      <div><span className="text-[#002443]/40">Automática:</span> {s.decisao_automatica ? 'Sim' : 'Não'}</div>
+                      <div><span className="text-[#0A0A0A]/40">Case ID:</span> <span className="font-mono">{s.onboarding_case_id}</span></div>
+                      <div><span className="text-[#0A0A0A]/40">PIX:</span> {s.is_pix ? 'Sim' : 'Não'}</div>
+                      <div><span className="text-[#0A0A0A]/40">Monitoramento:</span> {s.monitoramento_nivel || '—'}</div>
+                      <div><span className="text-[#0A0A0A]/40">Automática:</span> {s.decisao_automatica ? 'Sim' : 'Não'}</div>
                     </div>
                     {(s.variaveis_positivas?.length > 0 || s.variaveis_negativas?.length > 0) && (
                       <div className="flex flex-wrap gap-1">
@@ -145,7 +145,7 @@ export default function RiskCasesTable({ scores, cases }) {
                       <div className="space-y-1">
                         <p className="text-[9px] font-bold text-amber-700">Condições:</p>
                         {s.condicoes_automaticas.map((c, i) => (
-                          <p key={i} className="text-[10px] text-[#002443]/60">• {c}</p>
+                          <p key={i} className="text-[10px] text-[#0A0A0A]/60">• {c}</p>
                         ))}
                       </div>
                     )}

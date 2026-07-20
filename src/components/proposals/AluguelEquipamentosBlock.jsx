@@ -34,8 +34,8 @@ export default function AluguelEquipamentosBlock({ alugueis, onUpdateAlugueis, r
     });
   };
 
-  const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
-  const inputCls = "bg-white/5 border-white/10 text-white h-12 text-base font-semibold rounded-xl placeholder:text-white/15 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]";
+  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
+  const inputCls = "bg-white/5 border-white/10 text-white h-12 text-base font-semibold rounded-xl placeholder:text-white/15 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
   const inputDisabledCls = readOnly ? 'opacity-60 cursor-not-allowed' : '';
 
   return (
@@ -45,8 +45,8 @@ export default function AluguelEquipamentosBlock({ alugueis, onUpdateAlugueis, r
       {/* POS Comum */}
       <div className="rounded-xl bg-white/[0.02] border border-white/5 p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-            <Receipt className="w-3.5 h-3.5 text-[#2bc196]" />
+          <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+            <Receipt className="w-3.5 h-3.5 text-[#1356E2]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">POS Comum</h3>
@@ -101,10 +101,10 @@ export default function AluguelEquipamentosBlock({ alugueis, onUpdateAlugueis, r
               </div>
               <p className="text-[10px] text-white/40 pb-3">por mês para isenção</p>
             </div>
-            <div className="flex items-start gap-2 px-2 py-2 rounded-lg bg-[#2bc196]/[0.06] border border-[#2bc196]/10">
-              <Info className="w-3 h-3 text-[#2bc196] mt-0.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 px-2 py-2 rounded-lg bg-[#1356E2]/[0.06] border border-[#1356E2]/10">
+              <Info className="w-3 h-3 text-[#1356E2] mt-0.5 flex-shrink-0" />
               <p className="text-[10px] text-white/50 leading-relaxed">
-                Cada POS que faturar igual ou acima do mínimo no mês fica <span className="text-[#2bc196] font-semibold">isenta do aluguel</span> naquele mês. POS abaixo desse volume continuam pagando.
+                Cada POS que faturar igual ou acima do mínimo no mês fica <span className="text-[#1356E2] font-semibold">isenta do aluguel</span> naquele mês. POS abaixo desse volume continuam pagando.
               </p>
             </div>
           </div>
@@ -114,8 +114,8 @@ export default function AluguelEquipamentosBlock({ alugueis, onUpdateAlugueis, r
       {/* Smart POS */}
       <div className="rounded-xl bg-white/[0.02] border border-white/5 p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-            <Smartphone className="w-3.5 h-3.5 text-[#2bc196]" />
+          <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+            <Smartphone className="w-3.5 h-3.5 text-[#1356E2]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Smart POS</h3>

@@ -69,21 +69,21 @@ export default function DocSlot({ token, docType, label, required, multiple, val
   const done = value.length > 0;
 
   return (
-    <div className={`rounded-xl border p-3 transition-all ${done ? 'border-[#2bc196]/40 bg-[#2bc196]/5' : 'border-dashed border-[#002443]/15 bg-white'}`}>
+    <div className={`rounded-xl border p-3 transition-all ${done ? 'border-[#1356E2]/40 bg-[#1356E2]/5' : 'border-dashed border-[#0A0A0A]/15 bg-white'}`}>
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">
           {done ? (
-            <CheckCircle2 className="w-4 h-4 text-[#2bc196] flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#1356E2] flex-shrink-0" />
           ) : (
-            <FileText className="w-4 h-4 text-[#002443]/40 flex-shrink-0" />
+            <FileText className="w-4 h-4 text-[#0A0A0A]/40 flex-shrink-0" />
           )}
           <div className="min-w-0">
-            <div className="text-xs font-semibold text-[#002443] flex items-center gap-1">
+            <div className="text-xs font-semibold text-[#0A0A0A] flex items-center gap-1">
               {label}
               {required && <span className="text-red-500">*</span>}
             </div>
             {multiple && (
-              <div className="text-[10px] text-[#002443]/40">Pode enviar mais de um arquivo</div>
+              <div className="text-[10px] text-[#0A0A0A]/40">Pode enviar mais de um arquivo</div>
             )}
           </div>
         </div>
@@ -112,11 +112,11 @@ export default function DocSlot({ token, docType, label, required, multiple, val
         <div className="space-y-1">
           {value.map((d, idx) => (
             <div key={idx} className="flex items-center justify-between text-[11px] bg-white/60 rounded px-2 py-1">
-              <span className="truncate text-[#002443]/80">{d.file_name}</span>
+              <span className="truncate text-[#0A0A0A]/80">{d.file_name}</span>
               <button
                 type="button"
                 onClick={() => onRemove(idx)}
-                className="text-[#002443]/30 hover:text-red-500 ml-2"
+                className="text-[#0A0A0A]/30 hover:text-red-500 ml-2"
               >
                 <X className="w-3 h-3" />
               </button>

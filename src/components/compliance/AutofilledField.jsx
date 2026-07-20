@@ -27,7 +27,7 @@ export default function AutofilledField({
   return (
     <div className="space-y-2">
       <div className="flex items-start gap-2 flex-wrap">
-        <Label className="text-sm font-semibold text-[#002443]">
+        <Label className="text-sm font-semibold text-[#0A0A0A]">
           {label}
           {isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
@@ -39,7 +39,7 @@ export default function AutofilledField({
         )}
       </div>
       {helpText && (
-        <p className="text-xs text-[#002443]/60">{helpText}</p>
+        <p className="text-xs text-[#0A0A0A]/60">{helpText}</p>
       )}
       <Input
         value={displayValue}

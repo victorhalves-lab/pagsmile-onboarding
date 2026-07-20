@@ -33,21 +33,21 @@ const isPublicPage = publicPages.includes(currentPageName);`}</CodeBlock>
 if (isPublicPage) {
   return (
     <div className="min-h-screen font-sans antialiased bg-[#f4f4f4]">
-      {/* CSS reset com tokens Pagsmile injetado inline (style tag) */}
+      {/* CSS reset com tokens Pin Bank injetado inline (style tag) */}
       <style>{\`
         :root {
-          --pagsmile-green: #2bc196; --pagsmile-blue: #002443;
-          --foreground: #002443; --primary: #2bc196;
-          /* ... força tokens shadcn para Pagsmile em modo público */
+          --pinbank-blue: #1356E2; --pinbank-blue: #0A0A0A;
+          --foreground: #0A0A0A; --primary: #1356E2;
+          /* ... força tokens shadcn para Pin Bank em modo público */
         }
-        body { font-family: var(--font-sans); color: #002443; }
-        h1,h2,h3,h4,h5,h6,p,span,label,div { color: #002443; }
+        body { font-family: var(--font-sans); color: #0A0A0A; }
+        h1,h2,h3,h4,h5,h6,p,span,label,div { color: #0A0A0A; }
         .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
       \`}</style>
 
       {/* Faixas decorativas no topo e na lateral esquerda */}
-      <div className="fixed top-0 left-0 w-full h-2 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
-      <div className="fixed left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
+      <div className="fixed top-0 left-0 w-full h-2 bg-gradient-to-r from-[var(--pinbank-blue)] via-[var(--pinbank-blue)] to-[var(--pinbank-blue-light)] z-[60]" />
+      <div className="fixed left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--pinbank-blue)] via-[var(--pinbank-blue)] to-[var(--pinbank-blue-light)] z-[60]" />
 
       {/* Language selector no canto superior direito */}
       <div className="fixed top-4 right-4 z-[70]">
@@ -60,7 +60,7 @@ if (isPublicPage) {
         </div>
       </main>
 
-      <footer className="py-4 text-center text-xs text-[var(--pagsmile-blue)]/40">
+      <footer className="py-4 text-center text-xs text-[var(--pinbank-blue)]/40">
         <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
       </footer>
     </div>
@@ -130,7 +130,7 @@ if (isCollapsed) {
   return (
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>{content}</TooltipTrigger>
-      <TooltipContent side="right" className="bg-[#002443] text-white border-white/10 text-xs font-medium">
+      <TooltipContent side="right" className="bg-[#0A0A0A] text-white border-white/10 text-xs font-medium">
         {item.label}
       </TooltipContent>
     </Tooltip>
@@ -140,12 +140,12 @@ return content;`}</CodeBlock>
 
       <H3 num="1.6.7">Items "highlight" — destaque verde</H3>
 
-      <P>Items com <C>highlight: true</C> recebem texto verde (<C>text-[#2bc196]</C>) + um pequeno dot pulsante (<C>animate-pulse</C>) à direita. Usado em features novas que merecem chamar atenção: <C>QuestionariosLeads</C>, <C>EscalationsReview</C>, <C>ComplianceParceiro</C>, <C>DocCompParceiros</C>, <C>Governanca</C>, <C>DocumentacaoMaster</C>.</P>
+      <P>Items com <C>highlight: true</C> recebem texto verde (<C>text-[#1356E2]</C>) + um pequeno dot pulsante (<C>animate-pulse</C>) à direita. Usado em features novas que merecem chamar atenção: <C>QuestionariosLeads</C>, <C>EscalationsReview</C>, <C>ComplianceParceiro</C>, <C>DocCompParceiros</C>, <C>Governanca</C>, <C>DocumentacaoMaster</C>.</P>
 
       <H3 num="1.6.8">User Widget no rodapé</H3>
       <CodeBlock language="jsx">{`// layout.jsx — bloco final do sidebar (não-collapsed)
 <div className="flex items-center gap-3 mb-2">
-  <div className="w-8 h-8 rounded-full bg-[#2bc196] flex items-center justify-center text-white">
+  <div className="w-8 h-8 rounded-full bg-[#1356E2] flex items-center justify-center text-white">
     <span className="text-xs font-semibold">{user?.full_name?.charAt(0) || 'U'}</span>
   </div>
   <div className="flex-1 min-w-0">

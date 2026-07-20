@@ -45,21 +45,21 @@ export default function TaxasPorBandeiraPublic({ taxas, hideRange13a21 = false }
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b-2 border-[#2bc196]/20">
-            <th className="text-left py-3 px-4 font-semibold text-[#002443]/70">Faixa</th>
+          <tr className="border-b-2 border-[#1356E2]/20">
+            <th className="text-left py-3 px-4 font-semibold text-[#0A0A0A]/70">Faixa</th>
             {BANDEIRAS.map(b => (
-              <th key={b.id} className="text-center py-3 px-4 font-semibold text-[#002443]">{b.label}</th>
+              <th key={b.id} className="text-center py-3 px-4 font-semibold text-[#0A0A0A]">{b.label}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {visibleFaixas.map(f => (
             <tr key={f.key} className="border-b border-slate-100 hover:bg-slate-50/50">
-              <td className="py-3 px-4 font-medium text-[#002443]/80">{f.label}</td>
+              <td className="py-3 px-4 font-medium text-[#0A0A0A]/80">{f.label}</td>
               {BANDEIRAS.map(b => {
                 const rate = getTaxa(taxas, b.id, f.key);
                 return (
-                  <td key={b.id} className="py-3 px-4 text-center font-bold text-[#2bc196]">
+                  <td key={b.id} className="py-3 px-4 text-center font-bold text-[#1356E2]">
                     {formatVal(rate)}
                   </td>
                 );

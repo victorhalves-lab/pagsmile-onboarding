@@ -4,10 +4,10 @@ import SlideLayout from './SlideLayout';
 import { Link, Palette, Send, ShieldCheck, Users, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 const FLOW_STEPS = [
-  { icon: Palette, title: 'Personalização do Link', desc: 'A Pagsmile gera um link de compliance exclusivo para seu negócio — com suas cores, logo e nome, ou com a identidade Pagsmile.', gradient: 'from-[#2bc196] to-emerald-600' },
-  { icon: Send, title: 'Envio para Sellers', desc: 'Você envia o link para seus sellers/subsellers preencherem as informações de compliance, ou preenche em nome deles.', gradient: 'from-[#002443] to-blue-700' },
+  { icon: Palette, title: 'Personalização do Link', desc: 'A Pin Bank gera um link de compliance exclusivo para seu negócio — com suas cores, logo e nome, ou com a identidade Pin Bank.', gradient: 'from-[#1356E2] to-emerald-600' },
+  { icon: Send, title: 'Envio para Sellers', desc: 'Você envia o link para seus sellers/subsellers preencherem as informações de compliance, ou preenche em nome deles.', gradient: 'from-[#0A0A0A] to-blue-700' },
   { icon: Users, title: 'Preenchimento pelo Seller', desc: 'O seller preenche o questionário de KYC diretamente pelo link, com formulário guiado e upload de documentos.', gradient: 'from-purple-500 to-purple-700' },
-  { icon: ShieldCheck, title: 'Aprovação Pagsmile', desc: 'Cada subseller é analisado e aprovado individualmente pela Pagsmile, garantindo conformidade regulatória total.', gradient: 'from-amber-500 to-orange-600' },
+  { icon: ShieldCheck, title: 'Aprovação Pin Bank', desc: 'Cada subseller é analisado e aprovado individualmente pela Pin Bank, garantindo conformidade regulatória total.', gradient: 'from-amber-500 to-orange-600' },
 ];
 
 const FEATURES = [
@@ -47,7 +47,7 @@ export default function SlideSubsellerLinks({ slideNumber, totalSlides }) {
                 </motion.div>
                 {i < FLOW_STEPS.length - 1 && (
                   <div className="flex items-center">
-                    <ArrowRight className="w-3.5 h-3.5 text-[#2bc196]/40" />
+                    <ArrowRight className="w-3.5 h-3.5 text-[#1356E2]/40" />
                   </div>
                 )}
               </React.Fragment>
@@ -63,7 +63,7 @@ export default function SlideSubsellerLinks({ slideNumber, totalSlides }) {
           transition={{ delay: 0.5, duration: 0.4 }}
           className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-4"
         >
-          <h3 className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider mb-3">Recursos do Link de Sub-Contas</h3>
+          <h3 className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider mb-3">Recursos do Link de Sub-Contas</h3>
           <div className="grid grid-cols-3 gap-2">
             {FEATURES.map((feat, i) => (
               <div key={i} className="flex items-center gap-2 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.04]">

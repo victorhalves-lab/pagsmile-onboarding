@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Nó do fluxograma — diferentes formas por tipo
-export function StartEndNode({ label, color = 'bg-[#2bc196]' }) {
+export function StartEndNode({ label, color = 'bg-[#1356E2]' }) {
   return (
     <div className={`${color} text-white px-5 py-2.5 rounded-full text-xs font-bold text-center shadow-md min-w-[140px]`}>
       {label}
@@ -9,11 +9,11 @@ export function StartEndNode({ label, color = 'bg-[#2bc196]' }) {
   );
 }
 
-export function ProcessNode({ label, sublabel, color = 'bg-white', borderColor = 'border-[#002443]/15' }) {
+export function ProcessNode({ label, sublabel, color = 'bg-white', borderColor = 'border-[#0A0A0A]/15' }) {
   return (
     <div className={`${color} ${borderColor} border-2 px-4 py-2.5 rounded-xl text-center shadow-sm min-w-[160px] max-w-[220px]`}>
-      <p className="text-[11px] font-bold text-[#002443] leading-tight">{label}</p>
-      {sublabel && <p className="text-[9px] text-[#002443]/50 mt-0.5 leading-tight">{sublabel}</p>}
+      <p className="text-[11px] font-bold text-[#0A0A0A] leading-tight">{label}</p>
+      {sublabel && <p className="text-[9px] text-[#0A0A0A]/50 mt-0.5 leading-tight">{sublabel}</p>}
     </div>
   );
 }
@@ -64,7 +64,7 @@ export function SubprocessNode({ label, items }) {
   );
 }
 
-export function Arrow({ direction = 'down', label, color = 'text-[#002443]/30' }) {
+export function Arrow({ direction = 'down', label, color = 'text-[#0A0A0A]/30' }) {
   const arrows = {
     down: '↓',
     right: '→',
@@ -75,16 +75,16 @@ export function Arrow({ direction = 'down', label, color = 'text-[#002443]/30' }
   return (
     <div className="flex flex-col items-center py-0.5">
       <span className={`text-lg ${color} leading-none`}>{arrows[direction]}</span>
-      {label && <span className="text-[8px] text-[#002443]/40 font-medium -mt-0.5">{label}</span>}
+      {label && <span className="text-[8px] text-[#0A0A0A]/40 font-medium -mt-0.5">{label}</span>}
     </div>
   );
 }
 
-export function BranchLabel({ label, color = 'text-[#2bc196]' }) {
+export function BranchLabel({ label, color = 'text-[#1356E2]' }) {
   return <span className={`text-[8px] font-bold ${color} uppercase tracking-wider`}>{label}</span>;
 }
 
-export function ResponsibleBadge({ label, color = 'bg-[#002443]' }) {
+export function ResponsibleBadge({ label, color = 'bg-[#0A0A0A]' }) {
   return (
     <span className={`${color} text-white text-[8px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider`}>
       {label}

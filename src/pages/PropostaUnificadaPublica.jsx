@@ -62,7 +62,7 @@ export default function PropostaUnificadaPublica() {
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]">
-      <div className="w-10 h-10 border-4 border-[#2bc196] border-t-transparent rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-[#1356E2] border-t-transparent rounded-full animate-spin" />
     </div>;
   }
 
@@ -70,8 +70,8 @@ export default function PropostaUnificadaPublica() {
     return <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]">
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md text-center">
         <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-        <h2 className="text-lg font-bold text-[#002443]">Link não encontrado</h2>
-        <p className="text-sm text-[#002443]/60 mt-2">{error || 'O link pode ter expirado ou estar incorreto.'}</p>
+        <h2 className="text-lg font-bold text-[#0A0A0A]">Link não encontrado</h2>
+        <p className="text-sm text-[#0A0A0A]/60 mt-2">{error || 'O link pode ter expirado ou estar incorreto.'}</p>
       </div>
     </div>;
   }
@@ -82,11 +82,11 @@ export default function PropostaUnificadaPublica() {
   return (
     <div className="min-h-screen bg-[#f4f4f4]">
       {/* Header */}
-      <header className="bg-[#002443] text-white">
+      <header className="bg-[#0A0A0A] text-white">
         <div className="max-w-6xl mx-auto px-4 lg:px-8 py-5">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" alt="Pagsmile" className="h-7" />
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" alt="Pin Bank" className="h-7" />
               <div className="h-6 w-px bg-white/20" />
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-white/50">Proposta para</div>
@@ -101,9 +101,9 @@ export default function PropostaUnificadaPublica() {
               )}
               <select value={lang} onChange={e => setLang(e.target.value)}
                 className="bg-white/10 border border-white/20 rounded px-2 py-1 text-white text-xs">
-                <option value="pt" className="text-[#002443]">🇧🇷 PT</option>
-                <option value="en" className="text-[#002443]">🇺🇸 EN</option>
-                <option value="zh" className="text-[#002443]">🇨🇳 ZH</option>
+                <option value="pt" className="text-[#0A0A0A]">🇧🇷 PT</option>
+                <option value="en" className="text-[#0A0A0A]">🇺🇸 EN</option>
+                <option value="zh" className="text-[#0A0A0A]">🇨🇳 ZH</option>
               </select>
             </div>
           </div>
@@ -162,29 +162,29 @@ function TabButton({ active, onClick, icon, label, status }) {
       onClick={onClick}
       className={`flex items-center gap-2 px-5 py-3 rounded-t-lg transition-all border-b-2 ${
         active
-          ? 'bg-[#f4f4f4] text-[#002443] border-[#2bc196]'
+          ? 'bg-[#f4f4f4] text-[#0A0A0A] border-[#1356E2]'
           : 'bg-transparent text-white/70 border-transparent hover:text-white hover:bg-white/5'
       }`}
     >
       {icon}
       <span className="text-sm font-semibold">{label}</span>
-      {accepted && <CheckCircle2 className="w-3.5 h-3.5 text-[#2bc196]" />}
+      {accepted && <CheckCircle2 className="w-3.5 h-3.5 text-[#1356E2]" />}
     </button>
   );
 }
 
 function ProposalEmbed({ url, fallbackTitle }) {
   if (!url) {
-    return <div className="bg-white rounded-2xl p-6 text-center text-[#002443]/60">
+    return <div className="bg-white rounded-2xl p-6 text-center text-[#0A0A0A]/60">
       <p>Proposta não disponível.</p>
     </div>;
   }
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-[#f4f4f4]/80 border-b border-[#002443]/5">
-        <span className="text-xs text-[#002443]/60">{fallbackTitle}</span>
+      <div className="flex items-center justify-between px-4 py-2 bg-[#f4f4f4]/80 border-b border-[#0A0A0A]/5">
+        <span className="text-xs text-[#0A0A0A]/60">{fallbackTitle}</span>
         <a href={url.replace('&embed=1', '').replace('?embed=1', '')} target="_blank" rel="noopener noreferrer"
-          className="text-xs text-[#2bc196] hover:underline flex items-center gap-1">
+          className="text-xs text-[#1356E2] hover:underline flex items-center gap-1">
           Abrir em tela cheia <ExternalLink className="w-3 h-3" />
         </a>
       </div>

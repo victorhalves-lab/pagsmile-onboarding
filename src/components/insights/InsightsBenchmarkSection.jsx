@@ -114,7 +114,7 @@ export default function InsightsBenchmarkSection({ leads, proposals }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard label="MDR Esperado Med." value={`${expectedStats.median}%`} subtitle={`${expectedStats.count} leads`} icon={Percent} />
         <StatCard label="MDR Proposto Med." value={`${proposedStats.median}%`} subtitle={`${proposedStats.count} propostas`} icon={Percent} />
-        <StatCard label="Economia Média" value={`${avgSaving.toFixed(2)}pp`} subtitle="Esperada vs Proposta" icon={ArrowDownRight} accentColor={avgSaving > 0 ? '#2bc196' : '#ef4444'} />
+        <StatCard label="Economia Média" value={`${avgSaving.toFixed(2)}pp`} subtitle="Esperada vs Proposta" icon={ArrowDownRight} accentColor={avgSaving > 0 ? '#1356E2' : '#ef4444'} />
         <StatCard label="Win Rate" value={`${winRate}%`} subtitle={`${accepted}/${sent} propostas`} icon={Swords} />
       </div>
 
@@ -128,19 +128,19 @@ export default function InsightsBenchmarkSection({ leads, proposals }) {
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={comparisonData} barCategoryGap="25%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#002443' }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} unit="%" axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={TT} formatter={v => `${v}%`} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Bar dataKey="esperada" fill="#94a3b8" name="Esperada pelo Lead" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="proposta" fill="#2bc196" name="Proposta Pagsmile" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="proposta" fill="#1356E2" name="Proposta Pin Bank" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
         )}
 
         {processorData.length > 0 && (
-          <HorizontalBarList title="Processador Atual dos Leads" data={processorData} color="#002443" />
+          <HorizontalBarList title="Processador Atual dos Leads" data={processorData} color="#0A0A0A" />
         )}
       </div>
     </div>

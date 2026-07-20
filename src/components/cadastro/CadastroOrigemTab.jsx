@@ -18,19 +18,19 @@ import { Link } from 'react-router-dom';
 
 function Section({ icon: Icon, title, badge, children, accent = 'green' }) {
   const accentColor = {
-    green: 'text-[var(--pagsmile-green)]',
+    green: 'text-[var(--pinbank-blue)]',
     blue: 'text-blue-600',
     purple: 'text-purple-600',
     amber: 'text-amber-600',
     rose: 'text-rose-600',
-  }[accent] || 'text-[var(--pagsmile-green)]';
+  }[accent] || 'text-[var(--pinbank-blue)]';
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
         <Icon className={`w-4 h-4 ${accentColor}`} />
         {title}
-        {badge != null && <Badge className="bg-slate-100 text-[var(--pagsmile-blue)] text-[10px] ml-1">{badge}</Badge>}
+        {badge != null && <Badge className="bg-slate-100 text-[var(--pinbank-blue)] text-[10px] ml-1">{badge}</Badge>}
       </h3>
       {children}
     </div>
@@ -41,8 +41,8 @@ function Row({ label, value, mono = false }) {
   if (value == null || value === '') return null;
   return (
     <div className="flex items-start gap-2 text-xs">
-      <span className="text-[var(--pagsmile-blue)]/50 min-w-[100px]">{label}:</span>
-      <span className={`text-[var(--pagsmile-blue)] font-semibold ${mono ? 'font-mono' : ''}`}>{value}</span>
+      <span className="text-[var(--pinbank-blue)]/50 min-w-[100px]">{label}:</span>
+      <span className={`text-[var(--pinbank-blue)] font-semibold ${mono ? 'font-mono' : ''}`}>{value}</span>
     </div>
   );
 }
@@ -52,7 +52,7 @@ const SOURCE_CONFIG = {
   introducer: { label: 'Introducer/Parceiro', icon: UserPlus, color: 'bg-purple-100 text-purple-700' },
   simplified: { label: 'Form Simplificado', icon: FileText, color: 'bg-amber-100 text-amber-700' },
   std_proposal: { label: 'Proposta Padrão', icon: Sparkles, color: 'bg-emerald-100 text-emerald-700' },
-  pagsmile_lead: { label: 'Lead Pagsmile (V5)', icon: Activity, color: 'bg-rose-100 text-rose-700' },
+  pagsmile_lead: { label: 'Lead Pin Bank (V5)', icon: Activity, color: 'bg-rose-100 text-rose-700' },
 };
 
 export default function CadastroOrigemTab({ merchant, allLeads = [] }) {
@@ -121,7 +121,7 @@ export default function CadastroOrigemTab({ merchant, allLeads = [] }) {
     introducerLeads.forEach(l => events.push({ type: 'introducer', date: l.created_date, label: `Lead capturado via introducer: ${l.introducerName || l.introducerId || ''}`, ref: l }));
     simplifiedLeads.forEach(l => events.push({ type: 'simplified', date: l.created_date, label: `Lead capturado via form simplificado`, ref: l }));
     stdProposalLeads.forEach(l => events.push({ type: 'std_proposal', date: l.created_date, label: `Lead vindo da proposta padrão`, ref: l }));
-    allLeads.forEach(l => events.push({ type: 'pagsmile_lead', date: l.created_date, label: `Lead Pagsmile (V5) preenchido${l.origemLead ? ` — origem: ${l.origemLead}` : ''}`, ref: l }));
+    allLeads.forEach(l => events.push({ type: 'pagsmile_lead', date: l.created_date, label: `Lead Pin Bank (V5) preenchido${l.origemLead ? ` — origem: ${l.origemLead}` : ''}`, ref: l }));
     return events.sort((a, b) => new Date(a.date) - new Date(b.date));
   }, [landingLeads, introducerLeads, simplifiedLeads, stdProposalLeads, allLeads]);
 
@@ -129,10 +129,10 @@ export default function CadastroOrigemTab({ merchant, allLeads = [] }) {
 
   if (!hasAny) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <GitBranch className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhuma origem de captação registrada para este cliente</p>
-        <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-2">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <GitBranch className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhuma origem de captação registrada para este cliente</p>
+        <p className="text-xs text-[var(--pinbank-blue)]/40 mt-2">
           Buscamos em LandingPageLead, IntroducerLead, SimplifiedLead, StandardProposalLead, Lead e LandingPageEvent.
         </p>
       </div>
@@ -145,7 +145,7 @@ export default function CadastroOrigemTab({ merchant, allLeads = [] }) {
       {captureTimeline.length > 0 && (
         <Section icon={GitBranch} title="Timeline de Captação" badge={captureTimeline.length} accent="green">
           <div className="relative">
-            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-[var(--pagsmile-blue)]/8" />
+            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-[var(--pinbank-blue)]/8" />
             <div className="space-y-2">
               {captureTimeline.map((ev, i) => {
                 const cfg = SOURCE_CONFIG[ev.type];
@@ -163,11 +163,11 @@ export default function CadastroOrigemTab({ merchant, allLeads = [] }) {
                           <Badge className={`text-[10px] ${cfg.color}`}>{cfg.label}</Badge>
                           {isFirst && <Badge className="bg-green-100 text-green-700 text-[10px]">Primeira aparição</Badge>}
                         </div>
-                        <p className="text-xs text-[var(--pagsmile-blue)]/80 mt-1">{ev.label}</p>
+                        <p className="text-xs text-[var(--pinbank-blue)]/80 mt-1">{ev.label}</p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <Calendar className="w-3 h-3 text-[var(--pagsmile-blue)]/30 inline" />
-                        <span className="text-[10px] text-[var(--pagsmile-blue)]/40 ml-1">{date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                        <Calendar className="w-3 h-3 text-[var(--pinbank-blue)]/30 inline" />
+                        <span className="text-[10px] text-[var(--pinbank-blue)]/40 ml-1">{date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
                       </div>
                     </div>
                   </div>
@@ -262,14 +262,14 @@ export default function CadastroOrigemTab({ merchant, allLeads = [] }) {
               <div key={e.id} className="flex items-center justify-between p-2 bg-slate-50 rounded text-xs">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <Badge variant="outline" className="text-[9px] font-mono">{e.eventType}</Badge>
-                  {e.landingPageSlug && <span className="text-[var(--pagsmile-blue)]/60 truncate">{e.landingPageSlug}</span>}
-                  {e.elementId && <span className="text-[var(--pagsmile-blue)]/40 truncate">→ {e.elementId}</span>}
+                  {e.landingPageSlug && <span className="text-[var(--pinbank-blue)]/60 truncate">{e.landingPageSlug}</span>}
+                  {e.elementId && <span className="text-[var(--pinbank-blue)]/40 truncate">→ {e.elementId}</span>}
                 </div>
-                <span className="text-[10px] text-[var(--pagsmile-blue)]/40 flex-shrink-0 ml-2">{new Date(e.created_date).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                <span className="text-[10px] text-[var(--pinbank-blue)]/40 flex-shrink-0 ml-2">{new Date(e.created_date).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
               </div>
             ))}
             {landingEvents.length > 50 && (
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40 text-center pt-2">+ {landingEvents.length - 50} eventos mais antigos</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40 text-center pt-2">+ {landingEvents.length - 50} eventos mais antigos</p>
             )}
           </div>
         </Section>

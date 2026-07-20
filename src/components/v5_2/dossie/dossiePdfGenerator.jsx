@@ -17,8 +17,8 @@
 
 import { jsPDF } from 'jspdf';
 
-const COLOR_PRIMARY = [0, 36, 67]; // #002443
-const COLOR_ACCENT = [43, 193, 150]; // #2bc196
+const COLOR_PRIMARY = [0, 36, 67]; // #0A0A0A
+const COLOR_ACCENT = [43, 193, 150]; // #1356E2
 const COLOR_MUTED = [100, 116, 139];
 const COLOR_DANGER = [220, 38, 38];
 
@@ -141,7 +141,7 @@ export function generateDossiePdf(dossie) {
   doc.text('Dossiê Auditável V5.2', PAGE_MARGIN, 18);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('PagSmile · Framework de Compliance V5.2', PAGE_MARGIN, 26);
+  doc.text('Pin Bank · Framework de Compliance V5.2', PAGE_MARGIN, 26);
   doc.setFontSize(8);
   doc.text(`Versão do dossiê: ${dossie_version}`, PAGE_MARGIN, 32);
 

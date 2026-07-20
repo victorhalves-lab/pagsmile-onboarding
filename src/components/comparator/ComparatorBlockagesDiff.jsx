@@ -29,8 +29,8 @@ export default function ComparatorBlockagesDiff({ v4Blocks = [], v5_2Blocks = []
           <AlertOctagon className="w-4 h-4 text-red-600" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[#002443]">Bloqueios ativos — diferença</h3>
-          <p className="text-[11px] text-[#002443]/55">
+          <h3 className="text-sm font-bold text-[#0A0A0A]">Bloqueios ativos — diferença</h3>
+          <p className="text-[11px] text-[#0A0A0A]/55">
             Comparação entre os bloqueios detectados em cada framework
           </p>
         </div>

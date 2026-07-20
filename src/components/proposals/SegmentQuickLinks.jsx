@@ -70,11 +70,11 @@ export default function SegmentQuickLinks({ proposals }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-5">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-bold text-[#002443]">Links Rápidos por Segmento</h2>
-          <p className="text-xs text-[#002443]/50 mt-0.5">Copie o link da proposta padrão de cada segmento para enviar ao cliente</p>
+          <h2 className="text-base font-bold text-[#0A0A0A]">Links Rápidos por Segmento</h2>
+          <p className="text-xs text-[#0A0A0A]/50 mt-0.5">Copie o link da proposta padrão de cada segmento para enviar ao cliente</p>
         </div>
       </div>
 
@@ -90,8 +90,8 @@ export default function SegmentQuickLinks({ proposals }) {
               key={segment}
               className={`relative rounded-xl border p-4 transition-all duration-200 ${
                 prop
-                  ? 'border-[#002443]/8 hover:border-[#2bc196]/30 hover:shadow-md bg-white'
-                  : 'border-dashed border-[#002443]/10 bg-[#f4f4f4]/50'
+                  ? 'border-[#0A0A0A]/8 hover:border-[#1356E2]/30 hover:shadow-md bg-white'
+                  : 'border-dashed border-[#0A0A0A]/10 bg-[#f4f4f4]/50'
               }`}
             >
               <div className="flex items-start gap-3">
@@ -99,8 +99,8 @@ export default function SegmentQuickLinks({ proposals }) {
                   <Icon className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-extrabold text-[#2bc196]">{segment}</p>
-                  <p className="text-[11px] text-[#002443]/50 truncate">Proposta Padrão</p>
+                  <p className="text-base font-extrabold text-[#1356E2]">{segment}</p>
+                  <p className="text-[11px] text-[#0A0A0A]/50 truncate">Proposta Padrão</p>
                 </div>
               </div>
 
@@ -112,7 +112,7 @@ export default function SegmentQuickLinks({ proposals }) {
                     className={`flex-1 h-8 text-xs font-semibold rounded-lg transition-all ${
                       isCopied
                         ? 'bg-green-500 hover:bg-green-500 text-white'
-                        : 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white'
+                        : 'bg-[#1356E2] hover:bg-[#1356E2]/90 text-white'
                     }`}
                   >
                     {isCopied ? <Check className="w-3.5 h-3.5 mr-1.5" /> : <Copy className="w-3.5 h-3.5 mr-1.5" />}
@@ -122,14 +122,14 @@ export default function SegmentQuickLinks({ proposals }) {
                     size="sm"
                     variant="outline"
                     onClick={() => openLink(segment)}
-                    className="h-8 w-8 p-0 rounded-lg border-[#002443]/10"
+                    className="h-8 w-8 p-0 rounded-lg border-[#0A0A0A]/10"
                     title="Abrir proposta"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               ) : (
-                <p className="text-[10px] text-[#002443]/40 mt-3 text-center">Nenhuma proposta ativa</p>
+                <p className="text-[10px] text-[#0A0A0A]/40 mt-3 text-center">Nenhuma proposta ativa</p>
               )}
             </div>
           );

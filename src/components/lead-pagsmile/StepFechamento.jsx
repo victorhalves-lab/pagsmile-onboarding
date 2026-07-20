@@ -8,26 +8,26 @@ export default function StepFechamento({ form, updateField, errors = {} }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-bold text-[#002443]">Expectativas e Fechamento</h2>
+        <h2 className="text-lg font-bold text-[#0A0A0A]">Expectativas e Fechamento</h2>
       </div>
 
       {/* P36 — Urgência */}
       <div className="space-y-2" data-field="urgencia">
-        <label className="text-sm font-semibold text-[#002443]">Quando quer começar a operar? *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Quando quer começar a operar? *</label>
         <ButtonSelector options={URGENCIA_OPTIONS} value={form.urgencia} onChange={(v) => updateField('urgencia', v)} columns={4} />
         {errors?.urgencia && <p className="text-xs text-red-500">Informe quando quer começar</p>}
       </div>
 
       {/* P37 — Crescimento */}
       <div className="space-y-2" data-field="crescimento">
-        <label className="text-sm font-semibold text-[#002443]">Expectativa de crescimento (12 meses) *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Expectativa de crescimento (12 meses) *</label>
         <ButtonSelector options={CRESCIMENTO_OPTIONS} value={form.crescimento} onChange={(v) => updateField('crescimento', v)} columns={4} />
         {errors?.crescimento && <p className="text-xs text-red-500">Informe a expectativa de crescimento</p>}
       </div>
 
       {/* P38 — Como conheceu */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-[#002443]">Como conheceu a Pagsmile?</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Como conheceu a Pin Bank?</label>
         <ButtonSelector
           options={COMO_CONHECEU_OPTIONS}
           value={form.comoConheceu}
@@ -41,7 +41,7 @@ export default function StepFechamento({ form, updateField, errors = {} }) {
 
       {/* P39 — Observações */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-[#002443]">Observações adicionais</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Observações adicionais</label>
         <Textarea
           value={form.observacoes || ''}
           onChange={(e) => updateField('observacoes', e.target.value.slice(0, 1000))}
@@ -49,7 +49,7 @@ export default function StepFechamento({ form, updateField, errors = {} }) {
           className="rounded-xl min-h-[80px]"
           maxLength={1000}
         />
-        <p className="text-[10px] text-[#002443]/40 text-right">{(form.observacoes || '').length}/1000</p>
+        <p className="text-[10px] text-[#0A0A0A]/40 text-right">{(form.observacoes || '').length}/1000</p>
       </div>
     </div>
   );

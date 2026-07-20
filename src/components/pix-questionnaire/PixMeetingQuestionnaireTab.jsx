@@ -63,18 +63,18 @@ export default function PixMeetingQuestionnaireTab() {
   const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3 items-center justify-between">
         <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Buscar por nome, CNPJ, email, protocolo..." className="pl-10 h-10" />
         </div>
         <Link to={createPageUrl('QuestionarioReuniaoPix')}>
-          <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+          <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
             <Plus className="w-4 h-4 mr-1" /> Novo Questionário PIX
           </Button>
         </Link>
@@ -82,16 +82,16 @@ export default function PixMeetingQuestionnaireTab() {
 
       {questionnaires.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <Zap className="w-12 h-12 mx-auto text-[#002443]/30 mb-3" />
-          <p className="text-[#002443]/60 mb-4">Nenhum questionário PIX preenchido</p>
+          <Zap className="w-12 h-12 mx-auto text-[#0A0A0A]/30 mb-3" />
+          <p className="text-[#0A0A0A]/60 mb-4">Nenhum questionário PIX preenchido</p>
           <Link to={createPageUrl('QuestionarioReuniaoPix')}>
-            <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+            <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
               <Plus className="w-4 h-4 mr-1" /> Preencher Questionário PIX
             </Button>
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -109,7 +109,7 @@ export default function PixMeetingQuestionnaireTab() {
               <TableBody>
                 {paginated.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-[#002443]/50">
+                    <TableCell colSpan={8} className="text-center py-8 text-[#0A0A0A]/50">
                       Nenhum resultado encontrado
                     </TableCell>
                   </TableRow>
@@ -117,13 +117,13 @@ export default function PixMeetingQuestionnaireTab() {
                   const sCfg = STATUS_MAP[q.status] || STATUS_MAP.preenchido;
                   return (
                     <TableRow key={q.id} className="hover:bg-[#f4f4f4] transition-colors">
-                      <TableCell><span className="font-mono text-xs text-[#2bc196]">{q.protocolo || '-'}</span></TableCell>
+                      <TableCell><span className="font-mono text-xs text-[#1356E2]">{q.protocolo || '-'}</span></TableCell>
                       <TableCell>
                         <p className="font-medium text-sm">{q.clientFullName}</p>
-                        <p className="text-[10px] text-[#002443]/50">{q.clientCpfCnpj || q.clientEmail}</p>
+                        <p className="text-[10px] text-[#0A0A0A]/50">{q.clientCpfCnpj || q.clientEmail}</p>
                       </TableCell>
                       <TableCell>
-                        <Badge className="bg-[#2bc196]/10 text-[#2bc196] text-xs border-0">PIX</Badge>
+                        <Badge className="bg-[#1356E2]/10 text-[#1356E2] text-xs border-0">PIX</Badge>
                       </TableCell>
                       <TableCell><Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge></TableCell>
                       <TableCell>
@@ -133,7 +133,7 @@ export default function PixMeetingQuestionnaireTab() {
                       </TableCell>
                       <TableCell><span className="text-xs">{q.commercialAgentName}</span></TableCell>
                       <TableCell>
-                        <span className="text-xs text-[#002443]/60">
+                        <span className="text-xs text-[#0A0A0A]/60">
                           {q.created_date ? moment(q.created_date).format('DD/MM/YY HH:mm') : '-'}
                         </span>
                       </TableCell>
@@ -161,9 +161,9 @@ export default function PixMeetingQuestionnaireTab() {
             </Table>
           </div>
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#0A0A0A]/5">
               <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
-              <span className="text-xs text-[#002443]/60">Página {page} de {totalPages}</span>
+              <span className="text-xs text-[#0A0A0A]/60">Página {page} de {totalPages}</span>
               <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
             </div>
           )}

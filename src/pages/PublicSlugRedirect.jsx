@@ -34,7 +34,7 @@ export default function PublicSlugRedirect({ type }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -44,8 +44,8 @@ export default function PublicSlugRedirect({ type }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-md mx-auto text-center px-4">
         <AlertTriangle className="w-16 h-16 text-amber-500 mb-4" />
-        <h2 className="text-xl font-bold text-[#002443] mb-2">Link não encontrado</h2>
-        <p className="text-[#002443]/70">Este link não existe ou foi removido.</p>
+        <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Link não encontrado</h2>
+        <p className="text-[#0A0A0A]/70">Este link não existe ou foi removido.</p>
       </div>
     );
   }

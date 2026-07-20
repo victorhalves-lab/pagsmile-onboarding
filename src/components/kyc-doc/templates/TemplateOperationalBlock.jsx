@@ -21,7 +21,7 @@ export default function TemplateOperationalBlock({ template }) {
         label="Página que renderiza este template"
         value={renderConfig ? (
           <div>
-            <code className="text-[#002443] font-semibold">/{renderConfig.page}</code>
+            <code className="text-[#0A0A0A] font-semibold">/{renderConfig.page}</code>
             <span className="text-[#1a1a1a]/60">
               {' '}— flowType <code>{renderConfig.flowType}</code>, upload em{' '}
               <code>/{renderConfig.uploadPage}</code>
@@ -37,7 +37,7 @@ export default function TemplateOperationalBlock({ template }) {
       <Row
         icon={Package}
         label="Grupo BDC associado (enriquecimento backend)"
-        value={<code className="text-[#2bc196] font-semibold">{bdcGroup}</code>}
+        value={<code className="text-[#1356E2] font-semibold">{bdcGroup}</code>}
       />
       {legalBase && (
         <Row
@@ -103,16 +103,16 @@ const MODEL_TO_BDC_GROUP = {
 };
 
 const MODEL_TO_PREFILL = {
-  ComplianceGatewayV4: 'Lead PagSmile v5 → questionnaireData (segmento = gateway)',
-  ComplianceMarketplaceV4: 'Lead PagSmile v5 (segmento = marketplace)',
-  CompliancePlataformaVerticalV4: 'Lead PagSmile v5 (segmento = plataformas_verticais)',
-  ComplianceEcommerceV4: 'Lead PagSmile v5 (segmento = ecommerce) OU Landing Page',
-  ComplianceSaaSV4: 'Lead PagSmile v5 (segmento = saas)',
-  ComplianceInfoprodutosV4: 'Lead PagSmile v5 (segmento = infoprodutos)',
-  ComplianceDropshippingV4: 'Lead PagSmile v5 (segmento = dropshipping)',
-  ComplianceEducacaoV4: 'Lead PagSmile v5 (segmento = educacao)',
-  ComplianceMerchantLinkV4: 'Lead PagSmile v5 (segmento = link_pagamento)',
-  ComplianceMPEV4: 'Lead PagSmile v5 (segmento = mpe)',
+  ComplianceGatewayV4: 'Lead Pin Bank v5 → questionnaireData (segmento = gateway)',
+  ComplianceMarketplaceV4: 'Lead Pin Bank v5 (segmento = marketplace)',
+  CompliancePlataformaVerticalV4: 'Lead Pin Bank v5 (segmento = plataformas_verticais)',
+  ComplianceEcommerceV4: 'Lead Pin Bank v5 (segmento = ecommerce) OU Landing Page',
+  ComplianceSaaSV4: 'Lead Pin Bank v5 (segmento = saas)',
+  ComplianceInfoprodutosV4: 'Lead Pin Bank v5 (segmento = infoprodutos)',
+  ComplianceDropshippingV4: 'Lead Pin Bank v5 (segmento = dropshipping)',
+  ComplianceEducacaoV4: 'Lead Pin Bank v5 (segmento = educacao)',
+  ComplianceMerchantLinkV4: 'Lead Pin Bank v5 (segmento = link_pagamento)',
+  ComplianceMPEV4: 'Lead Pin Bank v5 (segmento = mpe)',
   CompliancePixMerchantV4: 'Lead PIX v4 (tipoNegocio = merchant)',
   CompliancePixIntermediarioV4: 'Lead PIX v4 (tipoNegocio = intermediario)',
   pix_intermediario_v4: 'Lead PIX v4 (alias lowercase)',

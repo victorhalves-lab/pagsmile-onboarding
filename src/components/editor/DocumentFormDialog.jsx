@@ -211,7 +211,7 @@ export default function DocumentFormDialog({ open, onOpenChange, documentLink, t
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
               <div>
                 <Label>Documento Obrigatório</Label>
-                <p className="text-sm text-[var(--pagsmile-blue)]/70">
+                <p className="text-sm text-[var(--pinbank-blue)]/70">
                   O merchant precisará enviar este documento
                 </p>
               </div>
@@ -228,7 +228,7 @@ export default function DocumentFormDialog({ open, onOpenChange, documentLink, t
               <Button 
                 onClick={handleSaveExisting}
                 disabled={isPending}
-                className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+                className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90"
               >
                 {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {isEditing ? 'Salvar' : 'Adicionar'}
@@ -265,7 +265,7 @@ export default function DocumentFormDialog({ open, onOpenChange, documentLink, t
                     key={format}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
                       newDocData.allowedFormats.includes(format) 
-                        ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/10' 
+                        ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/10' 
                         : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
@@ -321,7 +321,7 @@ export default function DocumentFormDialog({ open, onOpenChange, documentLink, t
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
               <div>
                 <Label>Documento Obrigatório por Padrão</Label>
-                <p className="text-sm text-[var(--pagsmile-blue)]/70">
+                <p className="text-sm text-[var(--pinbank-blue)]/70">
                   Pode ser alterado em cada questionário
                 </p>
               </div>
@@ -338,7 +338,7 @@ export default function DocumentFormDialog({ open, onOpenChange, documentLink, t
               <Button 
                 onClick={handleSaveNew}
                 disabled={isPending}
-                className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+                className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90"
               >
                 {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Criar e Adicionar

@@ -78,8 +78,8 @@ export default function BlockedSubmitDialog({
         <div className="p-5 space-y-4">
           {isRecovering && (
             <div className="text-center py-4">
-              <Loader2 className="w-10 h-10 mx-auto text-[#2bc196] animate-spin mb-3" />
-              <p className="text-sm text-[#002443]/70">
+              <Loader2 className="w-10 h-10 mx-auto text-[#1356E2] animate-spin mb-3" />
+              <p className="text-sm text-[#0A0A0A]/70">
                 Recuperando seu cadastro automaticamente…
               </p>
             </div>
@@ -98,11 +98,11 @@ export default function BlockedSubmitDialog({
           {!isRecovering && !isCaseMissing && (
             <>
               {reason && (
-                <p className="text-sm font-medium text-[#002443]">{reason}</p>
+                <p className="text-sm font-medium text-[#0A0A0A]">{reason}</p>
               )}
               {missingList.length > 0 && (
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                  <p className="text-xs font-bold text-[#002443] mb-2 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-[#0A0A0A] mb-2 flex items-center gap-1.5">
                     <FileX className="w-3.5 h-3.5 text-amber-600" />
                     Documentos pendentes ({missingList.length}):
                   </p>
@@ -110,14 +110,14 @@ export default function BlockedSubmitDialog({
                     {missingList.slice(0, 8).map((label, i) => (
                       <li
                         key={i}
-                        className="flex items-start gap-2 text-xs text-[#002443]/80"
+                        className="flex items-start gap-2 text-xs text-[#0A0A0A]/80"
                       >
                         <span className="text-amber-600 mt-0.5">•</span>
                         <span>{label}</span>
                       </li>
                     ))}
                     {missingList.length > 8 && (
-                      <li className="text-xs text-[#002443]/50 italic pl-3">
+                      <li className="text-xs text-[#0A0A0A]/50 italic pl-3">
                         + {missingList.length - 8} outro(s)
                       </li>
                     )}
@@ -136,7 +136,7 @@ export default function BlockedSubmitDialog({
 
           {/* Technical info — useful for support to find this case quickly */}
           {caseId && !isRecovering && (
-            <div className="text-[10px] text-[#002443]/40 font-mono border-t border-slate-100 pt-2">
+            <div className="text-[10px] text-[#0A0A0A]/40 font-mono border-t border-slate-100 pt-2">
               ID do caso: {caseId.slice(0, 8)}…
             </div>
           )}
@@ -145,7 +145,7 @@ export default function BlockedSubmitDialog({
             {onRetry && !isRecovering && (
               <Button
                 onClick={onRetry}
-                className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+                className="flex-1 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 Tentar novamente

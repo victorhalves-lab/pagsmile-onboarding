@@ -11,14 +11,14 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 rounded-xl bg-[var(--pagsmile-green)]/10">
-          <Users className="w-6 h-6 text-[var(--pagsmile-green)]" />
+        <div className="p-3 rounded-xl bg-[var(--pinbank-blue)]/10">
+          <Users className="w-6 h-6 text-[var(--pinbank-blue)]" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Estrutura Societária
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Informações sobre a estrutura legal e representantes da empresa
           </p>
         </div>
@@ -27,7 +27,7 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
       <div className="grid gap-6">
         {/* Tipo de Empresa */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
             Tipo de Empresa <span className="text-red-500">*</span>
           </Label>
           <Select
@@ -48,12 +48,12 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
         {/* Representante Legal */}
         <div className="p-6 bg-slate-50 rounded-xl border border-slate-200 space-y-6">
           <div className="flex items-center gap-3">
-            <UserCheck className="w-5 h-5 text-[var(--pagsmile-green)]" />
-            <p className="font-semibold text-[var(--pagsmile-blue)]">Representante Legal</p>
+            <UserCheck className="w-5 h-5 text-[var(--pinbank-blue)]" />
+            <p className="font-semibold text-[var(--pinbank-blue)]">Representante Legal</p>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[var(--pagsmile-blue)] font-semibold">
+            <Label className="text-[var(--pinbank-blue)] font-semibold">
               Nome Completo <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -65,7 +65,7 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[var(--pagsmile-blue)] font-semibold">
+            <Label className="text-[var(--pinbank-blue)] font-semibold">
               CPF <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -77,7 +77,7 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[var(--pagsmile-blue)] font-semibold">
+            <Label className="text-[var(--pinbank-blue)] font-semibold">
               E-mail <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -92,7 +92,7 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
 
         {/* UBO */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
             Existe Beneficiário Final (UBO) com mais de 25%? <span className="text-red-500">*</span>
           </Label>
           <div className="flex gap-4">
@@ -101,25 +101,25 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
               onClick={() => handleChange('existeUBO', true)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.existeUBO === true
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
-              <p className="font-semibold text-[var(--pagsmile-blue)]">Sim</p>
+              <p className="font-semibold text-[var(--pinbank-blue)]">Sim</p>
             </button>
             <button
               type="button"
               onClick={() => handleChange('existeUBO', false)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.existeUBO === false
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
-              <p className="font-semibold text-[var(--pagsmile-blue)]">Não</p>
+              <p className="font-semibold text-[var(--pinbank-blue)]">Não</p>
             </button>
           </div>
-          <p className="text-xs text-[var(--pagsmile-blue)]/60">
+          <p className="text-xs text-[var(--pinbank-blue)]/60">
             UBO = Ultimate Beneficial Owner (pessoa física que detém mais de 25% da empresa, direta ou indiretamente)
           </p>
         </div>
@@ -127,11 +127,11 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
         {/* Condicional UBO */}
         {formData.existeUBO === true && (
           <div className="space-y-4 p-6 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-sm font-medium text-[var(--pagsmile-blue)]/80">
+            <p className="text-sm font-medium text-[var(--pinbank-blue)]/80">
               Informe os Beneficiários Finais:
             </p>
             <div className="space-y-2">
-              <Label className="text-[var(--pagsmile-blue)] font-semibold">
+              <Label className="text-[var(--pinbank-blue)] font-semibold">
                 Liste os UBOs (Nome; CPF; %) <span className="text-red-500">*</span>
               </Label>
               <Textarea
@@ -140,7 +140,7 @@ export default function StepL3EstruturaSocietaria({ formData, handleChange }) {
                 placeholder="Ex: João Silva; 123.456.789-00; 30%&#10;Maria Santos; 987.654.321-00; 40%"
                 className="min-h-[120px] bg-white"
               />
-              <p className="text-xs text-[var(--pagsmile-blue)]/60">
+              <p className="text-xs text-[var(--pinbank-blue)]/60">
                 Separe cada beneficiário em uma linha. Formato: Nome; CPF; Percentual
               </p>
             </div>

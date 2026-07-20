@@ -71,7 +71,7 @@ export default function Ch02_ServiceTypes() {
 
 function P_Intro() {
   return (
-    <p style={{ color: '#002443', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
+    <p style={{ color: '#0A0A0A', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
       Cada chamada a CAF ou BigDataCorp gera um <strong>IntegrationLog</strong> append-only. O campo <code>service_type</code> tem ~50 valores enumerados — abaixo a tabela completa.
     </p>
   );

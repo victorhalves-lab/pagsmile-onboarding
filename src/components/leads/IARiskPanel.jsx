@@ -50,19 +50,19 @@ export default function IARiskPanel({ lead }) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-[#002443]" />
+            <Shield className="w-5 h-5 text-[#0A0A0A]" />
             Análise de Risco IA Avançada
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <Shield className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-            <p className="text-[#002443]/60 mb-1">Análise de risco ainda não realizada</p>
-            <p className="text-[10px] text-[#002443]/40 mb-4">Usa IA avançada para score de risco, prioridade e sugestões</p>
+            <Shield className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-3" />
+            <p className="text-[#0A0A0A]/60 mb-1">Análise de risco ainda não realizada</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 mb-4">Usa IA avançada para score de risco, prioridade e sugestões</p>
             <Button
               onClick={() => analyzeMutation.mutate()}
               disabled={analyzeMutation.isPending}
-              className="bg-[#002443] hover:bg-[#002443]/90 text-white"
+              className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white"
             >
               {analyzeMutation.isPending ? (
                 <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Analisando...</>
@@ -70,7 +70,7 @@ export default function IARiskPanel({ lead }) {
                 <><Shield className="w-4 h-4 mr-2" /> Executar Análise de Risco</>
               )}
             </Button>
-            <p className="text-[9px] text-[#002443]/30 mt-2">Usa modelo avançado (consome mais créditos)</p>
+            <p className="text-[9px] text-[#0A0A0A]/30 mt-2">Usa modelo avançado (consome mais créditos)</p>
           </div>
         </CardContent>
       </Card>
@@ -85,12 +85,12 @@ export default function IARiskPanel({ lead }) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-[#002443]" />
+            <Shield className="w-5 h-5 text-[#0A0A0A]" />
             Análise de Risco IA Avançada
           </CardTitle>
           <div className="flex items-center gap-2">
             {lead.iaAnalysisDate && (
-              <span className="text-[10px] text-[#002443]/40">{moment(lead.iaAnalysisDate).format('DD/MM/YY HH:mm')}</span>
+              <span className="text-[10px] text-[#0A0A0A]/40">{moment(lead.iaAnalysisDate).format('DD/MM/YY HH:mm')}</span>
             )}
             <Button variant="ghost" size="sm" onClick={() => analyzeMutation.mutate()} disabled={analyzeMutation.isPending} className="h-7">
               {analyzeMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
@@ -100,7 +100,7 @@ export default function IARiskPanel({ lead }) {
       </CardHeader>
       <CardContent className="space-y-5">
         {/* Score + Decision + Priority */}
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#002443] to-[#36706c]">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C]">
           <div className="text-center">
             <p className="text-4xl font-bold text-white">{lead.iaRiskScore}</p>
             <p className="text-xs text-white/50">/100</p>
@@ -122,15 +122,15 @@ export default function IARiskPanel({ lead }) {
 
         {/* Sugestões para o Vendedor */}
         {lead.iaSuggestions?.length > 0 && (
-          <div className="p-4 rounded-xl bg-[#2bc196]/5 border border-[#2bc196]/20">
-            <h4 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
-              <Target className="w-4 h-4 text-[#2bc196]" /> Sugestões para o Vendedor
+          <div className="p-4 rounded-xl bg-[#1356E2]/5 border border-[#1356E2]/20">
+            <h4 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
+              <Target className="w-4 h-4 text-[#1356E2]" /> Sugestões para o Vendedor
             </h4>
             <ul className="space-y-2">
               {lead.iaSuggestions.map((s, i) => (
                 <li key={i} className="text-sm flex items-start gap-2">
-                  <ArrowRight className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 shrink-0" />
-                  <span className="text-[#002443]/80">{s}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 shrink-0" />
+                  <span className="text-[#0A0A0A]/80">{s}</span>
                 </li>
               ))}
             </ul>

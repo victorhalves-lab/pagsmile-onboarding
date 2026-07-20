@@ -107,7 +107,7 @@ function CollapsibleSection({ title, badge, children, defaultOpen = false }) {
     <div className="border border-slate-200 rounded-xl overflow-hidden">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-3 hover:bg-slate-50/50 transition-colors text-left">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-[#002443]">{title}</span>
+          <span className="text-xs font-bold text-[#0A0A0A]">{title}</span>
           {badge && <Badge variant="outline" className="text-[10px]">{badge}</Badge>}
         </div>
         {open ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
@@ -147,9 +147,9 @@ export default function RiskScoringV4Section() {
       </div>
 
       {/* Fórmula */}
-      <div className="bg-white rounded-xl p-4 border-2 border-[#002443]/20">
-        <h4 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
-          <Layers className="w-4 h-4 text-[#2bc196]" /> Fórmula: 3 Camadas Aditivas
+      <div className="bg-white rounded-xl p-4 border-2 border-[#0A0A0A]/20">
+        <h4 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
+          <Layers className="w-4 h-4 text-[#1356E2]" /> Fórmula: 3 Camadas Aditivas
         </h4>
         <div className="bg-slate-50 rounded-lg p-4 font-mono text-sm text-center mb-3">
           <span className="text-blue-600 font-bold">Score Final</span> = <span className="text-emerald-600">max(0, min(849,</span> <span className="text-purple-600">C1</span> + <span className="text-amber-600">C2</span> + <span className="text-cyan-600">C3</span><span className="text-emerald-600">))</span>
@@ -157,15 +157,15 @@ export default function RiskScoringV4Section() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
             <Badge className="bg-purple-200 text-purple-800 border-0 text-[10px] mb-1">C1 — Score Base Segmento</Badge>
-            <p className="text-[10px] text-[#002443]/70">Valor fixo por segmento (35-205 pts). PIX: score fixo. Cartão + addon PIX se misto.</p>
+            <p className="text-[10px] text-[#0A0A0A]/70">Valor fixo por segmento (35-205 pts). PIX: score fixo. Cartão + addon PIX se misto.</p>
           </div>
           <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
             <Badge className="bg-amber-200 text-amber-800 border-0 text-[10px] mb-1">C2 — Variáveis (V01-V53)</Badge>
-            <p className="text-[10px] text-[#002443]/70">Soma das variáveis ativas. Positivas (redutoras, até -100) e Negativas (penalizadoras, até +200). Aplicadas condicionalmente por segmento.</p>
+            <p className="text-[10px] text-[#0A0A0A]/70">Soma das variáveis ativas. Positivas (redutoras, até -100) e Negativas (penalizadoras, até +200). Aplicadas condicionalmente por segmento.</p>
           </div>
           <div className="p-3 bg-cyan-50 rounded-lg border border-cyan-100">
             <Badge className="bg-cyan-200 text-cyan-800 border-0 text-[10px] mb-1">C3 — Enriquecimento (E01-E11)</Badge>
-            <p className="text-[10px] text-[#002443]/70">Dados de BDC/CAF. Confronta declarado vs encontrado. Bônus máximo -150 se tudo confirma.</p>
+            <p className="text-[10px] text-[#0A0A0A]/70">Dados de BDC/CAF. Confronta declarado vs encontrado. Bônus máximo -150 se tudo confirma.</p>
           </div>
         </div>
         <div className="mt-3 bg-red-50 rounded-lg p-3 border border-red-100">
@@ -179,14 +179,14 @@ export default function RiskScoringV4Section() {
           {SEGMENTS.map((s, i) => (
             <div key={i} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
               <div className="flex items-center gap-2">
-                <Badge className="bg-[#002443] text-white border-0 text-[10px] w-8 justify-center">{s.base}</Badge>
-                <span className="text-[11px] text-[#002443]/80 font-medium">{s.name}</span>
+                <Badge className="bg-[#0A0A0A] text-white border-0 text-[10px] w-8 justify-center">{s.base}</Badge>
+                <span className="text-[11px] text-[#0A0A0A]/80 font-medium">{s.name}</span>
               </div>
               <Badge className={`text-[8px] border-0 ${s.risk.includes('Muito Alto') || s.risk.includes('Alto') ? 'bg-red-50 text-red-600' : s.risk.includes('Médio') ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'}`}>{s.risk}</Badge>
             </div>
           ))}
         </div>
-        <p className="text-[9px] text-[#002443]/40 mt-2">* PIX Merchant (fixo 80) e PIX Intermediário (fixo 205) não usam cartao + pix_addon. Demais segmentos: cartao + 30 se PIX habilitado.</p>
+        <p className="text-[9px] text-[#0A0A0A]/40 mt-2">* PIX Merchant (fixo 80) e PIX Intermediário (fixo 205) não usam cartao + pix_addon. Demais segmentos: cartao + 30 se PIX habilitado.</p>
       </CollapsibleSection>
 
       {/* Variáveis */}
@@ -194,7 +194,7 @@ export default function RiskScoringV4Section() {
         <div className="space-y-3 mt-2">
           {VARIAVEIS_CATEGORIAS.map((cat, i) => (
             <div key={i}>
-              <h5 className="text-[10px] font-bold text-[#002443]/50 uppercase tracking-wider mb-1.5 flex items-center gap-2">
+              <h5 className="text-[10px] font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-1.5 flex items-center gap-2">
                 <div className={`w-2.5 h-2.5 rounded-full ${cat.color.replace('border-l-', 'bg-')}`} />{cat.cat}
               </h5>
               <div className="space-y-1">
@@ -202,7 +202,7 @@ export default function RiskScoringV4Section() {
                   <div key={j} className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 text-[10px]">
                     <Badge className="bg-slate-200 text-slate-700 border-0 text-[8px] font-mono shrink-0 mt-0.5 w-8 justify-center">{v.id}</Badge>
                     <Badge className={`text-[8px] border-0 shrink-0 mt-0.5 w-10 justify-center ${v.positive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{v.pts}</Badge>
-                    <span className="text-[#002443]/70 flex-1">{v.desc}</span>
+                    <span className="text-[#0A0A0A]/70 flex-1">{v.desc}</span>
                     <Badge className="text-[7px] bg-slate-50 text-slate-400 border-0 shrink-0">{v.segs}</Badge>
                   </div>
                 ))}
@@ -221,7 +221,7 @@ export default function RiskScoringV4Section() {
           {BLOQUEIOS.map((b, i) => (
             <div key={i} className="flex items-center gap-2 p-2 bg-white rounded-lg">
               <Badge className="bg-red-200 text-red-800 border-0 text-[10px] font-mono shrink-0 w-8 justify-center">{b.id}</Badge>
-              <span className="text-[11px] text-[#002443]/80 flex-1">{b.desc}</span>
+              <span className="text-[11px] text-[#0A0A0A]/80 flex-1">{b.desc}</span>
               <Badge className="text-[8px] bg-slate-100 text-slate-500 border-0 font-mono">{b.check}</Badge>
             </div>
           ))}
@@ -230,8 +230,8 @@ export default function RiskScoringV4Section() {
 
       {/* Subfaixas */}
       <div className="bg-white rounded-xl p-4 border border-slate-200">
-        <h4 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
-          <BarChart3 className="w-4 h-4 text-[#2bc196]" /> 8 Subfaixas de Decisão
+        <h4 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 text-[#1356E2]" /> 8 Subfaixas de Decisão
         </h4>
         <div className="space-y-2">
           {SUBFAIXAS.map((sf, i) => (
@@ -239,13 +239,13 @@ export default function RiskScoringV4Section() {
               <Badge className={`${sf.color} border-0 text-[10px] shrink-0 w-8 justify-center`}>{sf.id}</Badge>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[11px] font-bold text-[#002443]">{sf.nome}</span>
+                  <span className="text-[11px] font-bold text-[#0A0A0A]">{sf.nome}</span>
                   <Badge variant="outline" className="text-[8px] font-mono">{sf.range}</Badge>
                   <Badge className="text-[8px] bg-blue-50 text-blue-600 border-0">RR: {sf.rr}</Badge>
                   <Badge className={`text-[8px] border-0 ${sf.auto ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}`}>{sf.auto ? 'Automática' : 'Manual'}</Badge>
                   <Badge className="text-[8px] bg-slate-100 text-slate-500 border-0">{sf.mon}</Badge>
                 </div>
-                <p className="text-[9px] text-[#002443]/50 mt-0.5">{sf.desc}</p>
+                <p className="text-[9px] text-[#0A0A0A]/50 mt-0.5">{sf.desc}</p>
               </div>
             </div>
           ))}
@@ -268,7 +268,7 @@ export default function RiskScoringV4Section() {
           ].map((m, i) => (
             <div key={i} className="p-2 bg-white rounded-lg border border-blue-100">
               <Badge className="bg-blue-200 text-blue-800 border-0 text-[8px] mb-1">{m.nivel}</Badge>
-              <p className="text-[9px] text-[#002443]/60">{m.desc}</p>
+              <p className="text-[9px] text-[#0A0A0A]/60">{m.desc}</p>
             </div>
           ))}
         </div>
@@ -296,7 +296,7 @@ export default function RiskScoringV4Section() {
             <div key={i} className="flex items-start gap-2 p-2 bg-white rounded-lg">
               <Badge className="bg-emerald-200 text-emerald-800 border-0 text-[10px] shrink-0 w-6 justify-center">{s.step}</Badge>
               <div className="flex-1">
-                <p className="text-[11px] text-[#002443]/80">{s.text}</p>
+                <p className="text-[11px] text-[#0A0A0A]/80">{s.text}</p>
                 <Badge className="text-[8px] bg-slate-100 text-slate-500 border-0 mt-0.5">{s.actor}</Badge>
               </div>
             </div>
@@ -306,8 +306,8 @@ export default function RiskScoringV4Section() {
 
       {/* Condições automáticas */}
       <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-        <h4 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Condições Automáticas Aplicadas pelo Motor</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-[10px] text-[#002443]/60">
+        <h4 className="text-xs font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-2">Condições Automáticas Aplicadas pelo Motor</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-[10px] text-[#0A0A0A]/60">
           {[
             'RR 5% mínimo se Chargeback > 2% (proteção financeira)',
             'KYC merchants em 60 dias (se V44 ativo)',
@@ -329,8 +329,8 @@ export default function RiskScoringV4Section() {
 
       {/* Backend & Entidades */}
       <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-        <h4 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Implementação Técnica</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[9px] text-[#002443]/60">
+        <h4 className="text-xs font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-2">Implementação Técnica</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[9px] text-[#0A0A0A]/60">
           {[
             { name: 'calculateRiskScoreV4', desc: 'Backend function: motor completo (400+ linhas)' },
             { name: 'analyzeOnboarding', desc: 'SENTINEL: chama v4 antes da análise qualitativa' },
@@ -342,8 +342,8 @@ export default function RiskScoringV4Section() {
             { name: 'ScoreGauge + SubfaixaBadge', desc: 'Componentes visuais de exibição' },
           ].map((c, i) => (
             <div key={i} className="p-2 bg-white rounded-lg border border-slate-100">
-              <Badge className="bg-[#002443] text-white font-mono text-[7px] border-0 mb-1">{c.name}</Badge>
-              <p className="text-[8px] text-[#002443]/50">{c.desc}</p>
+              <Badge className="bg-[#0A0A0A] text-white font-mono text-[7px] border-0 mb-1">{c.name}</Badge>
+              <p className="text-[8px] text-[#0A0A0A]/50">{c.desc}</p>
             </div>
           ))}
         </div>

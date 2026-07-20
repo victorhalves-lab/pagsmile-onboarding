@@ -8,14 +8,14 @@ export default function StepL1bEndereco({ formData, handleChange }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 rounded-xl bg-[var(--pagsmile-green)]/10">
-          <MapPin className="w-6 h-6 text-[var(--pagsmile-green)]" />
+        <div className="p-3 rounded-xl bg-[var(--pinbank-blue)]/10">
+          <MapPin className="w-6 h-6 text-[var(--pinbank-blue)]" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Endereço e Contato
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Localização e presença online
           </p>
         </div>
@@ -23,7 +23,7 @@ export default function StepL1bEndereco({ formData, handleChange }) {
 
       <div className="grid gap-5">
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">Endereço Comercial Completo</Label>
+          <Label className="text-[var(--pinbank-blue)] font-semibold">Endereço Comercial Completo</Label>
           <Textarea
             value={formData.enderecoComercial || ''}
             onChange={(e) => handleChange('enderecoComercial', e.target.value)}
@@ -33,8 +33,8 @@ export default function StepL1bEndereco({ formData, handleChange }) {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
-            Website / Domínio Principal <span className="text-[var(--pagsmile-blue)]/50 text-sm">(opcional)</span>
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
+            Website / Domínio Principal <span className="text-[var(--pinbank-blue)]/50 text-sm">(opcional)</span>
           </Label>
           <Input
             value={formData.website || ''}

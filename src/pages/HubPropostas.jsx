@@ -14,9 +14,9 @@ import DownloadDocumentos from './DownloadDocumentos';
  */
 const TABS = [
   { id: 'brasil', label: 'Propostas Brasil', icon: Flag,     accent: 'from-yellow-400 to-green-500' },
-  { id: 'global', label: 'Propostas Global', icon: Globe2,   accent: 'from-[#2bc196] to-[#5cf7cf]' },
-  { id: 'juntas', label: 'Propostas Unificadas', icon: Handshake,accent: 'from-[#002443] to-[#003366]' },
-  { id: 'download', label: 'Download de Documentos', icon: Download, accent: 'from-[#002443] to-[#2bc196]' },
+  { id: 'global', label: 'Propostas Global', icon: Globe2,   accent: 'from-[#1356E2] to-[#E84B1C]' },
+  { id: 'juntas', label: 'Propostas Unificadas', icon: Handshake,accent: 'from-[#0A0A0A] to-[#003366]' },
+  { id: 'download', label: 'Download de Documentos', icon: Download, accent: 'from-[#0A0A0A] to-[#1356E2]' },
 ];
 
 export default function HubPropostas() {
@@ -25,7 +25,7 @@ export default function HubPropostas() {
   return (
     <div className="space-y-6">
       {/* Switch principal */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-2 inline-flex gap-1">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-2 inline-flex gap-1">
         {TABS.map(t => {
           const Icon = t.icon;
           const isActive = tab === t.id;
@@ -36,7 +36,7 @@ export default function HubPropostas() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 isActive
                   ? `bg-gradient-to-r ${t.accent} text-white shadow`
-                  : 'text-[#002443]/60 hover:bg-[#f4f4f4]'
+                  : 'text-[#0A0A0A]/60 hover:bg-[#f4f4f4]'
               }`}
             >
               <Icon className="w-4 h-4" />

@@ -4,8 +4,8 @@ import SlideLayout from './SlideLayout';
 import { Headphones, AlertTriangle, Clock, ArrowRight } from 'lucide-react';
 
 const STEPS = [
-  { num: '1', title: 'Abertura do Chamado', desc: 'Via portal, e-mail ou canal dedicado com severidade informada.', gradient: 'from-[#2bc196] to-emerald-600' },
-  { num: '2', title: 'Triagem & Classificação', desc: 'Classificação de severidade e acionamento do SLA correspondente.', gradient: 'from-[#002443] to-blue-700' },
+  { num: '1', title: 'Abertura do Chamado', desc: 'Via portal, e-mail ou canal dedicado com severidade informada.', gradient: 'from-[#1356E2] to-emerald-600' },
+  { num: '2', title: 'Triagem & Classificação', desc: 'Classificação de severidade e acionamento do SLA correspondente.', gradient: 'from-[#0A0A0A] to-blue-700' },
   { num: '3', title: 'Diagnóstico & Resolução', desc: 'Análise técnica, correção ou workaround dentro do prazo.', gradient: 'from-purple-500 to-purple-700' },
   { num: '4', title: 'Comunicação & Fechamento', desc: 'Notificação ao cliente, validação e registro completo.', gradient: 'from-amber-500 to-orange-600' },
 ];
@@ -36,7 +36,7 @@ export default function SlideSupport({ slideNumber, totalSlides }) {
               </motion.div>
               {i < STEPS.length - 1 && (
                 <div className="flex items-center">
-                  <ArrowRight className="w-3.5 h-3.5 text-[#2bc196]/40" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[#1356E2]/40" />
                 </div>
               )}
             </React.Fragment>
@@ -46,7 +46,7 @@ export default function SlideSupport({ slideNumber, totalSlides }) {
         {/* Info cards */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: Headphones, title: 'Canais de Suporte', desc: 'Portal dedicado, e-mail e canal Slack/Teams direto com o time técnico.', color: 'text-[#2bc196]', bg: 'bg-[#2bc196]/10' },
+            { icon: Headphones, title: 'Canais de Suporte', desc: 'Portal dedicado, e-mail e canal Slack/Teams direto com o time técnico.', color: 'text-[#1356E2]', bg: 'bg-[#1356E2]/10' },
             { icon: AlertTriangle, title: 'Escalonamento', desc: 'Incidentes críticos escalonados automaticamente para engenharia 24/7.', color: 'text-amber-400', bg: 'bg-amber-500/10' },
             { icon: Clock, title: 'Horários', desc: 'Crítico: 24/7. Demais: 09h-18h BRT, seg-sex.', color: 'text-blue-400', bg: 'bg-blue-500/10' },
           ].map((item, i) => {

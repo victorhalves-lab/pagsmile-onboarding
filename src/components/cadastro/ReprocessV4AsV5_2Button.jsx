@@ -78,7 +78,7 @@ export default function ReprocessV4AsV5_2Button({ latestCase, isAdmin, merchantI
         <Button
           variant="outline"
           onClick={() => setOpen(true)}
-          className="gap-2 text-xs border-[#2bc196]/30 text-[#36706c] hover:bg-[#2bc196]/10"
+          className="gap-2 text-xs border-[#1356E2]/30 text-[#E84B1C] hover:bg-[#1356E2]/10"
           title={
             existingMirror
               ? 'Já existe um mirror V5.2 — clique para criar/atualizar novamente'
@@ -93,7 +93,7 @@ export default function ReprocessV4AsV5_2Button({ latestCase, isAdmin, merchantI
           <Button
             variant="outline"
             onClick={() => navigate(`/ComparatorV4V5_2?v4=${latestCase.id}`)}
-            className="gap-2 text-xs border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5"
+            className="gap-2 text-xs border-[#0A0A0A]/20 text-[#0A0A0A] hover:bg-[#0A0A0A]/5"
             title="Ver V4 e V5.2 lado a lado (auditoria)"
           >
             <Scale className="w-3.5 h-3.5" /> Comparar V4 ↔ V5.2
@@ -105,18 +105,18 @@ export default function ReprocessV4AsV5_2Button({ latestCase, isAdmin, merchantI
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <Rocket className="w-5 h-5 text-[#2bc196]" />
+              <Rocket className="w-5 h-5 text-[#1356E2]" />
               Reprocessar caso como V5.2 (BETA)
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
-              <div className="space-y-3 text-sm text-[#002443]/80">
+              <div className="space-y-3 text-sm text-[#0A0A0A]/80">
                 <p>
                   Esta ação cria um <strong>caso V5.2 paralelo</strong> a partir do caso V4 atual.
                   O caso V4 original <strong>NÃO é modificado</strong> — fica preservado como histórico.
                 </p>
                 <div className="bg-slate-50 rounded-lg p-3 space-y-1 text-xs">
                   <p><strong>O que será feito:</strong></p>
-                  <ul className="list-disc list-inside space-y-0.5 text-[#002443]/70">
+                  <ul className="list-disc list-inside space-y-0.5 text-[#0A0A0A]/70">
                     <li>Criar novo <code className="text-[10px] bg-white px-1 rounded">OnboardingCase</code> com <code className="text-[10px] bg-white px-1 rounded">framework_version='v5.2'</code></li>
                     <li>Copiar todas as respostas do questionário</li>
                     <li>Disparar o pipeline V5.2 (scoring tier-aware)</li>
@@ -134,7 +134,7 @@ export default function ReprocessV4AsV5_2Button({ latestCase, isAdmin, merchantI
             <AlertDialogAction
               onClick={(e) => { e.preventDefault(); handleConfirm(); }}
               disabled={loading}
-              className="bg-[#2bc196] hover:bg-[#36706c] text-white"
+              className="bg-[#1356E2] hover:bg-[#E84B1C] text-white"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processando…</>

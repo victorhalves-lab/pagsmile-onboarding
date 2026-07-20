@@ -12,8 +12,8 @@ export default function StepTaxasAtuais({ form, updateField, errors = {} }) {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-bold text-[#002443]">Comprovantes de Outros Processadores</h2>
-          <p className="text-xs text-[#002443]/50 mt-1">
+          <h2 className="text-lg font-bold text-[#0A0A0A]">Comprovantes de Outros Processadores</h2>
+          <p className="text-xs text-[#0A0A0A]/50 mt-1">
             Mesmo não processando hoje, se você tem propostas de outros players em mãos, pode anexá-las aqui.
           </p>
         </div>
@@ -31,7 +31,7 @@ export default function StepTaxasAtuais({ form, updateField, errors = {} }) {
   const temCartao = (dist.credito || 0) > 0 || (dist.debito || 0) > 0;
 
   const fieldLabel = (label, fieldName) => (
-    <label className={`text-xs font-semibold ${errors[fieldName] ? 'text-red-500' : 'text-[#002443]'}`}>
+    <label className={`text-xs font-semibold ${errors[fieldName] ? 'text-red-500' : 'text-[#0A0A0A]'}`}>
       {label} *
     </label>
   );
@@ -39,13 +39,13 @@ export default function StepTaxasAtuais({ form, updateField, errors = {} }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-bold text-[#002443]">Suas Taxas Atuais</h2>
+        <h2 className="text-lg font-bold text-[#0A0A0A]">Suas Taxas Atuais</h2>
       </div>
 
       {/* Texto motivacional */}
-      <div className="flex items-start gap-3 bg-[#2bc196]/10 border border-[#2bc196]/20 rounded-xl p-4">
-        <Info className="w-5 h-5 text-[#2bc196] flex-shrink-0 mt-0.5" />
-        <p className="text-sm text-[#002443]/80">
+      <div className="flex items-start gap-3 bg-[#1356E2]/10 border border-[#1356E2]/20 rounded-xl p-4">
+        <Info className="w-5 h-5 text-[#1356E2] flex-shrink-0 mt-0.5" />
+        <p className="text-sm text-[#0A0A0A]/80">
           <strong>Informe suas taxas atuais</strong> para que possamos montar uma proposta mais competitiva e garantir condições melhores do que você paga hoje. Todos os campos são obrigatórios.
         </p>
       </div>

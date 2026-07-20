@@ -49,7 +49,7 @@ export default function FlowContrato() {
         <ProcessNode label="Cláusulas customizadas (opcional)" sublabel="Texto livre + sugestões internas do time" actor="Comercial" />
         <ArrowDown />
 
-        <ProcessNode label="Preencher assinaturas" sublabel="Representante Pagsmile + Cliente + 2 testemunhas (nomes + CPFs)" actor="Comercial" />
+        <ProcessNode label="Preencher assinaturas" sublabel="Representante Pin Bank + Cliente + 2 testemunhas (nomes + CPFs)" actor="Comercial" />
         <ArrowDown />
 
         <DecisionNode label="Contrato completo?" />

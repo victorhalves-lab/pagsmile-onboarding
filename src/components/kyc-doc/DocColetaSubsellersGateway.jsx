@@ -12,7 +12,7 @@ export default function DocColetaSubsellersGateway() {
     <S>
       <H1>22. Coleta de Subsellers via Gateway — Fluxo Pré-KYC em Massa</H1>
 
-      <P>Quando um cliente Gateway/PSP chega à Pagsmile com <Bold>dezenas ou centenas de subsellers</Bold> para onboardar, não faz sentido pedir que cada um responda o KYC completo (Seção 10) imediatamente. Este fluxo introduz uma <Bold>etapa de pré-cadastro em massa</Bold>: geramos um link único para o Gateway, ele preenche a lista de subsellers (informações iniciais — modelo de negócio, oferta, volumetria, dados bancários), e SÓ DEPOIS de a Pagsmile triar essa lista é que disparamos os links de KYC individuais.</P>
+      <P>Quando um cliente Gateway/PSP chega à Pin Bank com <Bold>dezenas ou centenas de subsellers</Bold> para onboardar, não faz sentido pedir que cada um responda o KYC completo (Seção 10) imediatamente. Este fluxo introduz uma <Bold>etapa de pré-cadastro em massa</Bold>: geramos um link único para o Gateway, ele preenche a lista de subsellers (informações iniciais — modelo de negócio, oferta, volumetria, dados bancários), e SÓ DEPOIS de a Pin Bank triar essa lista é que disparamos os links de KYC individuais.</P>
 
       <InfoBox title="Isso NÃO é o KYC do subseller" color="amber">
         <p>Não substitui o questionário V4/V5.2 do Cap. 10. Não atribui score. Não cria OnboardingCase. É <Bold>apenas o pré-cadastro</Bold> que alimenta a triagem inicial do analista. O KYC propriamente dito (BDC + CAF + SENTINEL + Risk Scoring) só é disparado depois, via links individuais SUBSELLER_COMPLIANCE (Cap. 10).</p>
@@ -20,7 +20,7 @@ export default function DocColetaSubsellersGateway() {
 
       <H2>22.1. Arquitetura — 2 Entidades + 1 Função + 3 Páginas</H2>
       <Table headers={['Artefato', 'Função']} rows={[
-        ['Entidade SubsellerInfoCollection', 'Um link gerado pela Pagsmile para um Gateway. Tem unique_token, contadores (submissions_count + total_subsellers_count), is_active e expires_at opcional'],
+        ['Entidade SubsellerInfoCollection', 'Um link gerado pela Pin Bank para um Gateway. Tem unique_token, contadores (submissions_count + total_subsellers_count), is_active e expires_at opcional'],
         ['Entidade SubsellerInfoSubmission', 'Cada vez que o Gateway envia uma lista — guarda subsellers[] + status (pending/in_review/processed/archived) + review_notes/reviewed_by/reviewed_at'],
         ['Função publicSubsellerInfoSubmit', 'Endpoint público que recebe o POST do formulário, valida link, sanitiza campos, cria SubsellerInfoSubmission, atualiza contadores'],
         ['/GestaoSubsellerInfoLinks', 'Admin gera links: nome do Gateway, contato, slug opcional, expiração opcional. Mostra KPIs e lista todos os links com toggle ativo/desativado'],
@@ -46,7 +46,7 @@ export default function DocColetaSubsellersGateway() {
 
       <H2>22.4. Ciclo Operacional Completo</H2>
       <Table headers={['Fase', 'Onde acontece', 'Quem age']} rows={[
-        ['1. Comercial fecha Gateway', '— (offline)', 'Comercial Pagsmile'],
+        ['1. Comercial fecha Gateway', '— (offline)', 'Comercial Pin Bank'],
         ['2. Gera link de coleta', '/GestaoSubsellerInfoLinks', 'Admin'],
         ['3. Envia URL por e-mail', '— (manual ou template)', 'Admin'],
         ['4. Gateway preenche em massa', '/SubsellerInfoForm?token=...', 'Pessoa do Gateway (1 pessoa por todos)'],
@@ -87,7 +87,7 @@ export default function DocColetaSubsellersGateway() {
         ['Validação BDC/CAF', 'Não', 'Pipeline completo'],
         ['Cria OnboardingCase?', 'Não', 'Sim'],
         ['Score de risco?', 'Não', 'Sim (V4 ou V5.2)'],
-        ['Branding white-label', 'Não — Pagsmile fixo', 'Sim — opcional logo/cor do Gateway'],
+        ['Branding white-label', 'Não — Pin Bank fixo', 'Sim — opcional logo/cor do Gateway'],
         ['Tipo de OnboardingLink', '— (usa entidade própria)', 'SUBSELLER_COMPLIANCE'],
       ]} />
 

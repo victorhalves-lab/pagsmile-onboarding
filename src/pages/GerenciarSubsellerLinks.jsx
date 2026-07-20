@@ -117,8 +117,8 @@ export default function GerenciarSubsellerLinks() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">{t('sl.title')}</h1>
-        <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">{t('sl.subtitle')}</p>
+        <h1 className="text-2xl font-bold text-[var(--pinbank-blue)]">{t('sl.title')}</h1>
+        <p className="text-sm text-[var(--pinbank-blue)]/60 mt-1">{t('sl.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -153,14 +153,14 @@ export default function GerenciarSubsellerLinks() {
                       onClick={() => setSelectedMerchant(m)}
                       className={`w-full text-left p-3 rounded-xl border transition-all ${
                         selectedMerchant?.id === m.id 
-                          ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' 
+                          ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5' 
                           : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
-                      <p className="text-sm font-semibold text-[var(--pagsmile-blue)] truncate">
+                      <p className="text-sm font-semibold text-[var(--pinbank-blue)] truncate">
                         {m.fullName || m.companyName}
                       </p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/50 mt-0.5">{m.cpfCnpj}</p>
+                      <p className="text-xs text-[var(--pinbank-blue)]/50 mt-0.5">{m.cpfCnpj}</p>
                     </button>
                   ))}
                 </div>
@@ -185,10 +185,10 @@ export default function GerenciarSubsellerLinks() {
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">
+                      <h3 className="text-lg font-bold text-[var(--pinbank-blue)]">
                         {selectedMerchant.fullName || selectedMerchant.companyName}
                       </h3>
-                      <p className="text-sm text-[var(--pagsmile-blue)]/50">{selectedMerchant.cpfCnpj}</p>
+                      <p className="text-sm text-[var(--pinbank-blue)]/50">{selectedMerchant.cpfCnpj}</p>
                       <div className="flex gap-3 mt-3">
                         <Badge className="bg-emerald-100 text-emerald-700">{t('sl.approved')}</Badge>
                         <Badge variant="outline" className="gap-1">
@@ -198,7 +198,7 @@ export default function GerenciarSubsellerLinks() {
                     </div>
                     <Button 
                       onClick={() => setShowGenerateModal(true)}
-                      className="bg-[var(--pagsmile-green)] text-white"
+                      className="bg-[var(--pinbank-blue)] text-white"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       {t('sl.generate_link')}
@@ -243,7 +243,7 @@ export default function GerenciarSubsellerLinks() {
                                   )}
                                   {/* [V5.2 Fase 6.5.2] Badge framework — V5.2 destaca, V4 fica discreto */}
                                   {link.framework_version === 'v5.2' ? (
-                                    <Badge className="bg-[#2bc196]/15 text-[#2bc196] border border-[#2bc196]/30 text-[10px] gap-1">
+                                    <Badge className="bg-[#1356E2]/15 text-[#1356E2] border border-[#1356E2]/30 text-[10px] gap-1">
                                       <Rocket className="w-2.5 h-2.5" /> V5.2
                                     </Badge>
                                   ) : (
@@ -275,11 +275,11 @@ export default function GerenciarSubsellerLinks() {
                               </div>
                               <div className="flex items-center gap-3">
                                 <div className="text-center px-2">
-                                  <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{link.submissionCount || 0}</p>
+                                  <p className="text-lg font-bold text-[var(--pinbank-blue)]">{link.submissionCount || 0}</p>
                                   <p className="text-[10px] text-slate-400">{t('sl.submissions')}</p>
                                 </div>
                                 <div className="text-center px-2">
-                                  <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{link.completedCount || 0}</p>
+                                  <p className="text-lg font-bold text-[var(--pinbank-blue)]">{link.completedCount || 0}</p>
                                   <p className="text-[10px] text-slate-400">{t('sl.completed')}</p>
                                 </div>
                                 <div className="flex flex-col items-center gap-1">
@@ -305,7 +305,7 @@ export default function GerenciarSubsellerLinks() {
                                   onClick={() => copyLink(link)}
                                 >
                                   {copiedCode === link.uniqueCode ? (
-                                    <Check className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                                    <Check className="w-4 h-4 text-[var(--pinbank-blue)]" />
                                   ) : (
                                     <Copy className="w-4 h-4" />
                                   )}
@@ -350,8 +350,8 @@ export default function GerenciarSubsellerLinks() {
                       {subsellers.map(sub => (
                         <div key={sub.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-xl">
                           <div>
-                            <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">{sub.fullName}</p>
-                            <p className="text-xs text-[var(--pagsmile-blue)]/50">{sub.cpfCnpj}</p>
+                            <p className="text-sm font-semibold text-[var(--pinbank-blue)]">{sub.fullName}</p>
+                            <p className="text-xs text-[var(--pinbank-blue)]/50">{sub.cpfCnpj}</p>
                           </div>
                           <Badge className={
                             sub.onboardingStatus === 'Aprovado' ? 'bg-emerald-100 text-emerald-700' :

@@ -76,10 +76,10 @@ export default function V5_2_Status() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-8 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-8 shadow-lg">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-xl bg-white/10">
-            <Rocket className="w-7 h-7 text-[#5cf7cf]" />
+            <Rocket className="w-7 h-7 text-[#E84B1C]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Framework V5.2 — Status & Controles</h1>
@@ -94,12 +94,12 @@ export default function V5_2_Status() {
       <ServerFlagPanel />
 
       {/* Feature Flag UI legada (localStorage — só UI) */}
-      <Card className="border-2 border-[#2bc196]/20">
+      <Card className="border-2 border-[#1356E2]/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <FlaskConical className="w-5 h-5 text-[#2bc196]" />
+                <FlaskConical className="w-5 h-5 text-[#1356E2]" />
                 Feature Flag: <code className="text-sm bg-[#f4f4f4] px-2 py-1 rounded">risk_analysis_v2</code>
               </CardTitle>
               <CardDescription className="mt-2">
@@ -110,7 +110,7 @@ export default function V5_2_Status() {
             <Switch
               checked={flagV2Enabled}
               onCheckedChange={handleToggleFlag}
-              className="data-[state=checked]:bg-[#2bc196]"
+              className="data-[state=checked]:bg-[#1356E2]"
             />
           </div>
         </CardHeader>
@@ -126,7 +126,7 @@ export default function V5_2_Status() {
       </Card>
 
       <Tabs defaultValue="entidades" className="w-full">
-        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
+        <TabsList className="bg-[#f4f4f4] border border-[#0A0A0A]/5">
           <TabsTrigger value="entidades">Entidades V5.2</TabsTrigger>
           <TabsTrigger value="seed">Seed Master Data</TabsTrigger>
           <TabsTrigger value="engine">Engine V5.2 (Dry-Run)</TabsTrigger>
@@ -184,7 +184,7 @@ export default function V5_2_Status() {
                   variant="outline"
                   onClick={() => runSeed('preview')}
                   disabled={seedRunning}
-                  className="border-[#002443]/20"
+                  className="border-[#0A0A0A]/20"
                 >
                   {seedRunning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Eye className="w-4 h-4 mr-2" />}
                   Preview (dry-run)
@@ -192,7 +192,7 @@ export default function V5_2_Status() {
                 <Button
                   onClick={() => runSeed('apply')}
                   disabled={seedRunning || !seedResult}
-                  className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+                  className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
                 >
                   {seedRunning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
                   Aplicar
@@ -223,13 +223,13 @@ export default function V5_2_Status() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {DIMENSOES_ANALITICAS.map((d) => (
-                <div key={d.id} className="p-3 rounded-xl border border-[#002443]/5 bg-white">
+                <div key={d.id} className="p-3 rounded-xl border border-[#0A0A0A]/5 bg-white">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-mono text-[#002443]/40">#{d.ordem}</span>
-                    <span className="font-bold text-sm text-[#002443]">{d.nome}</span>
-                    {d.novo_v5_2 && <Badge className="bg-[#2bc196] text-white text-[10px] border-0">NOVO V5.2</Badge>}
+                    <span className="text-xs font-mono text-[#0A0A0A]/40">#{d.ordem}</span>
+                    <span className="font-bold text-sm text-[#0A0A0A]">{d.nome}</span>
+                    {d.novo_v5_2 && <Badge className="bg-[#1356E2] text-white text-[10px] border-0">NOVO V5.2</Badge>}
                   </div>
-                  <p className="text-[11px] text-[#002443]/50 font-mono">{d.id}</p>
+                  <p className="text-[11px] text-[#0A0A0A]/50 font-mono">{d.id}</p>
                   {d.condicional_capability && (
                     <p className="text-[10px] text-amber-700 mt-1">⚡ Só renderiza se capability <strong>{d.condicional_capability}</strong> ativa</p>
                   )}
@@ -250,10 +250,10 @@ export default function V5_2_Status() {
               {BLOQUEIOS_ABSOLUTOS.map((code) => {
                 const seeded = absolutosSeed.find(b => b.codigo === code);
                 return (
-                  <div key={code} className="flex items-center justify-between p-3 rounded-xl border border-[#002443]/5 bg-white">
+                  <div key={code} className="flex items-center justify-between p-3 rounded-xl border border-[#0A0A0A]/5 bg-white">
                     <div className="flex items-center gap-3">
-                      <code className="font-mono text-sm text-[#002443] bg-red-50 px-2 py-1 rounded">{code}</code>
-                      <span className="text-sm text-[#002443]/70">{seeded?.titulo || '(não seeded ainda)'}</span>
+                      <code className="font-mono text-sm text-[#0A0A0A] bg-red-50 px-2 py-1 rounded">{code}</code>
+                      <span className="text-sm text-[#0A0A0A]/70">{seeded?.titulo || '(não seeded ainda)'}</span>
                     </div>
                     {seeded ? (
                       <Badge className="bg-emerald-100 text-emerald-700 border-0">
@@ -283,21 +283,21 @@ export default function V5_2_Status() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {V5_2_SEGMENTS.map((seg) => (
-                <div key={seg.id} className="p-3 rounded-xl border border-[#002443]/5 bg-white">
+                <div key={seg.id} className="p-3 rounded-xl border border-[#0A0A0A]/5 bg-white">
                   <div className="flex items-start gap-2">
                     <span className="text-2xl">{seg.icon}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-bold text-sm text-[#002443]">{seg.label}</p>
+                        <p className="font-bold text-sm text-[#0A0A0A]">{seg.label}</p>
                         {seg.isNewInV5_2 && (
-                          <Badge className="bg-[#2bc196] text-white border-0 text-[9px]">NOVO V5.2</Badge>
+                          <Badge className="bg-[#1356E2] text-white border-0 text-[9px]">NOVO V5.2</Badge>
                         )}
                         {seg.fixedTier && (
                           <Badge className="bg-amber-100 text-amber-700 border-0 text-[9px]">TIER FIXO</Badge>
                         )}
                       </div>
-                      <p className="font-mono text-[10px] text-[#002443]/40 mt-0.5">{seg.id}</p>
-                      <p className="text-xs text-[#002443]/60 mt-1 leading-relaxed">{seg.description}</p>
+                      <p className="font-mono text-[10px] text-[#0A0A0A]/40 mt-0.5">{seg.id}</p>
+                      <p className="text-xs text-[#0A0A0A]/60 mt-1 leading-relaxed">{seg.description}</p>
                       <div className="flex items-center gap-1 mt-2 flex-wrap">
                         <Badge variant="outline" className="text-[9px]">{seg.group}</Badge>
                         <Badge variant="outline" className="text-[9px]">{seg.defaultTier}</Badge>
@@ -322,7 +322,7 @@ export default function V5_2_Status() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FlaskConical className="w-5 h-5 text-[#2bc196]" />
+                <FlaskConical className="w-5 h-5 text-[#1356E2]" />
                 Sandbox de Questionário V5.2
               </CardTitle>
               <CardDescription>
@@ -332,7 +332,7 @@ export default function V5_2_Status() {
             </CardHeader>
             <CardContent>
               <Link to="/V5_2_Sandbox">
-                <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+                <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Abrir Sandbox
                 </Button>
@@ -367,7 +367,7 @@ function QuestionsV5_2Panel() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ListChecks className="w-5 h-5 text-[#2bc196]" />
+          <ListChecks className="w-5 h-5 text-[#1356E2]" />
           Catálogo de Perguntas V5.2 (Fase 5.2)
         </CardTitle>
         <CardDescription>
@@ -378,11 +378,11 @@ function QuestionsV5_2Panel() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => run('preview')} disabled={running} className="border-[#002443]/20">
+          <Button variant="outline" onClick={() => run('preview')} disabled={running} className="border-[#0A0A0A]/20">
             {running ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Eye className="w-4 h-4 mr-2" />}
             Preview (dry-run)
           </Button>
-          <Button onClick={() => run('apply')} disabled={running || !result} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+          <Button onClick={() => run('apply')} disabled={running || !result} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
             {running ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
             Aplicar
           </Button>
@@ -391,12 +391,12 @@ function QuestionsV5_2Panel() {
         {result?.summary && (
           <div className="space-y-3">
             <div className="bg-[#f4f4f4] rounded-xl p-4">
-              <p className="text-sm font-bold text-[#002443] mb-2">
+              <p className="text-sm font-bold text-[#0A0A0A] mb-2">
                 {result.mode === 'preview' ? '🔍 Preview (sem escrita)' : '✅ Aplicado'}
               </p>
-              <p className="text-xs text-[#002443]/70">{result.message}</p>
+              <p className="text-xs text-[#0A0A0A]/70">{result.message}</p>
               {result.catalog_size !== undefined && (
-                <p className="text-xs text-[#002443]/60 mt-1">
+                <p className="text-xs text-[#0A0A0A]/60 mt-1">
                   Catálogo atual: <strong>{result.catalog_size}</strong> perguntas
                 </p>
               )}
@@ -444,21 +444,21 @@ function StatusCard({ icon: Icon, title, total, v52, loading, hint }) {
     <Card>
       <CardContent className="p-5">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-[#2bc196]" />
+          <div className="w-10 h-10 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+            <Icon className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <p className="text-xs text-[#002443]/50 uppercase tracking-wide font-bold">{title}</p>
+            <p className="text-xs text-[#0A0A0A]/50 uppercase tracking-wide font-bold">{title}</p>
             {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin text-[#002443]/30 mt-1" />
+              <Loader2 className="w-5 h-5 animate-spin text-[#0A0A0A]/30 mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-[#002443]">{total}</p>
+              <p className="text-2xl font-bold text-[#0A0A0A]">{total}</p>
             )}
           </div>
         </div>
-        <div className="text-xs text-[#002443]/60">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 mr-2">{v52} V5.2</Badge>
-          <span className="text-[#002443]/40">{hint}</span>
+        <div className="text-xs text-[#0A0A0A]/60">
+          <Badge className="bg-[#1356E2]/10 text-[#1356E2] border-0 mr-2">{v52} V5.2</Badge>
+          <span className="text-[#0A0A0A]/40">{hint}</span>
         </div>
       </CardContent>
     </Card>
@@ -471,19 +471,19 @@ function SeedResultPanel({ result }) {
   return (
     <div className="space-y-3">
       <div className="bg-[#f4f4f4] rounded-xl p-4">
-        <p className="text-sm font-bold text-[#002443] mb-2">
+        <p className="text-sm font-bold text-[#0A0A0A] mb-2">
           {result.mode === 'preview' ? '🔍 Preview (sem escrita)' : '✅ Aplicado'}
         </p>
-        <p className="text-xs text-[#002443]/70">{result.message}</p>
+        <p className="text-xs text-[#0A0A0A]/70">{result.message}</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {['capabilities', 'bloqueios', 'datasets'].map(section => (
-          <div key={section} className="p-4 border border-[#002443]/5 rounded-xl bg-white">
-            <p className="font-bold text-sm text-[#002443] capitalize mb-2">{section}</p>
+          <div key={section} className="p-4 border border-[#0A0A0A]/5 rounded-xl bg-white">
+            <p className="font-bold text-sm text-[#0A0A0A] capitalize mb-2">{section}</p>
             <div className="space-y-1 text-xs">
               <p className="text-emerald-700">+ {summary[section].inserted} inserted</p>
               <p className="text-amber-700">↻ {summary[section].updated} updated</p>
-              <p className="text-[#002443]/40">= {summary[section].skipped} skipped</p>
+              <p className="text-[#0A0A0A]/40">= {summary[section].skipped} skipped</p>
             </div>
           </div>
         ))}

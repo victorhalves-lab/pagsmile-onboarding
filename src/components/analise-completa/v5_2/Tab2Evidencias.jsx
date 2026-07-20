@@ -33,7 +33,7 @@ function CrossValTable16({ cvResults }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-xs text-[#002443]/50 italic text-center py-6">
+          <p className="text-xs text-[#0A0A0A]/50 italic text-center py-6">
             Cross-validation ainda não calculada para este caso.
           </p>
         </CardContent>
@@ -53,12 +53,12 @@ function CrossValTable16({ cvResults }) {
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-[#002443]/10">
-                <th className="text-left py-2 px-2 font-semibold text-[#002443]/60 text-[10px] uppercase">Campo</th>
-                <th className="text-left py-2 px-2 font-semibold text-[#002443]/60 text-[10px] uppercase">Declarado</th>
-                <th className="text-left py-2 px-2 font-semibold text-[#002443]/60 text-[10px] uppercase">BDC</th>
-                <th className="text-center py-2 px-2 font-semibold text-[#002443]/60 text-[10px] uppercase">Status</th>
-                <th className="text-right py-2 px-2 font-semibold text-[#002443]/60 text-[10px] uppercase">Peso</th>
+              <tr className="border-b border-[#0A0A0A]/10">
+                <th className="text-left py-2 px-2 font-semibold text-[#0A0A0A]/60 text-[10px] uppercase">Campo</th>
+                <th className="text-left py-2 px-2 font-semibold text-[#0A0A0A]/60 text-[10px] uppercase">Declarado</th>
+                <th className="text-left py-2 px-2 font-semibold text-[#0A0A0A]/60 text-[10px] uppercase">BDC</th>
+                <th className="text-center py-2 px-2 font-semibold text-[#0A0A0A]/60 text-[10px] uppercase">Status</th>
+                <th className="text-right py-2 px-2 font-semibold text-[#0A0A0A]/60 text-[10px] uppercase">Peso</th>
               </tr>
             </thead>
             <tbody>
@@ -66,12 +66,12 @@ function CrossValTable16({ cvResults }) {
                 const sty = STATUS_STYLE[f.status] || STATUS_STYLE.unknown;
                 const { Icon } = sty;
                 return (
-                  <tr key={f.field_id || idx} className="border-b border-[#002443]/5 hover:bg-slate-50/50">
-                    <td className="py-2 px-2 font-medium text-[#002443]">{f.label || f.field_id}</td>
-                    <td className="py-2 px-2 text-[#002443]/70 font-mono text-[11px]">
+                  <tr key={f.field_id || idx} className="border-b border-[#0A0A0A]/5 hover:bg-slate-50/50">
+                    <td className="py-2 px-2 font-medium text-[#0A0A0A]">{f.label || f.field_id}</td>
+                    <td className="py-2 px-2 text-[#0A0A0A]/70 font-mono text-[11px]">
                       {f.declared_value != null ? String(f.declared_value) : '—'}
                     </td>
-                    <td className="py-2 px-2 text-[#002443]/70 font-mono text-[11px]">
+                    <td className="py-2 px-2 text-[#0A0A0A]/70 font-mono text-[11px]">
                       {f.bdc_value != null ? String(f.bdc_value) : '—'}
                     </td>
                     <td className="py-2 px-2 text-center">
@@ -91,7 +91,7 @@ function CrossValTable16({ cvResults }) {
                         </span>
                       )}
                     </td>
-                    <td className="py-2 px-2 text-right font-mono text-[10px] text-[#002443]/50">
+                    <td className="py-2 px-2 text-right font-mono text-[10px] text-[#0A0A0A]/50">
                       {f.peso_v5_1 ?? '—'}
                     </td>
                   </tr>
@@ -149,7 +149,7 @@ function PatchFinanceiroPanel({ status, dimensoes }) {
           if (!dim) {
             return (
               <div key={key} className="flex items-center justify-between p-2 rounded border border-slate-200 bg-slate-50/50">
-                <span className="text-xs text-[#002443]/60">{label}</span>
+                <span className="text-xs text-[#0A0A0A]/60">{label}</span>
                 <Badge variant="outline" className="text-[10px]">Sem dados</Badge>
               </div>
             );
@@ -158,9 +158,9 @@ function PatchFinanceiroPanel({ status, dimensoes }) {
           return (
             <div key={key} className={`flex items-center justify-between p-2 rounded border ${blocked ? 'border-red-200 bg-red-50/50' : 'border-emerald-200 bg-emerald-50/30'}`}>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-[#002443]">{label}</p>
+                <p className="text-xs font-semibold text-[#0A0A0A]">{label}</p>
                 {(dim.valor_declarado != null || dim.valor_observado != null) && (
-                  <p className="text-[10px] text-[#002443]/55 font-mono mt-0.5">
+                  <p className="text-[10px] text-[#0A0A0A]/55 font-mono mt-0.5">
                     decl: {dim.valor_declarado ?? '—'} • bdc: {dim.valor_observado ?? '—'}
                     {dim.divergencia_pct != null && ` • Δ ${(dim.divergencia_pct * 100).toFixed(1)}%`}
                   </p>
@@ -202,7 +202,7 @@ function BloqueiosDetalhados({ bloqueios }) {
             </TermBlock>
           ))}
         </div>
-        <p className="text-[10px] text-[#002443]/40 mt-3 italic">
+        <p className="text-[10px] text-[#0A0A0A]/40 mt-3 italic">
           ↗ Fichas DOC5 (severidade, datasets, exceção) disponíveis na aba V5.2 do cadastro.
         </p>
       </CardContent>

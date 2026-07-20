@@ -134,11 +134,11 @@ export default function ReassignComplianceModal({
     <AlertDialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
       <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2 text-[#002443]">
-            <Shield className="w-5 h-5 text-[#2bc196]" />
+          <AlertDialogTitle className="flex items-center gap-2 text-[#0A0A0A]">
+            <Shield className="w-5 h-5 text-[#1356E2]" />
             Reenviar Compliance
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-[#002443]/60">
+          <AlertDialogDescription className="text-[#0A0A0A]/60">
             Altere o segmento do cliente se necessário e copie o link de compliance correto para enviar.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -146,21 +146,21 @@ export default function ReassignComplianceModal({
         <div className="space-y-4 py-2">
           {/* Client info */}
           <div className="bg-slate-50 rounded-xl p-3 space-y-1">
-            <p className="text-sm font-semibold text-[#002443]">{lead.fullName || lead.razaoSocial || lead.email}</p>
-            <p className="text-xs text-[#002443]/50">{lead.cpfCnpj || lead.cnpj || lead.email}</p>
+            <p className="text-sm font-semibold text-[#0A0A0A]">{lead.fullName || lead.razaoSocial || lead.email}</p>
+            <p className="text-xs text-[#0A0A0A]/50">{lead.cpfCnpj || lead.cnpj || lead.email}</p>
           </div>
 
           {/* Current segment */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#002443]/60 w-24 shrink-0">Segmento atual:</span>
-            <Badge className="bg-[#002443]/5 text-[#002443] border-0">
+            <span className="text-xs text-[#0A0A0A]/60 w-24 shrink-0">Segmento atual:</span>
+            <Badge className="bg-[#0A0A0A]/5 text-[#0A0A0A] border-0">
               {currentSegment ? getSegmentLabel(currentSegment) : 'Não definido'}
             </Badge>
           </div>
 
           {/* New segment selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#002443]/60 w-24 shrink-0">Novo segmento:</span>
+            <span className="text-xs text-[#0A0A0A]/60 w-24 shrink-0">Novo segmento:</span>
             <Select value={newSegment} onValueChange={setNewSegment}>
               <SelectTrigger className="flex-1">
                 <SelectValue placeholder="Selecione o segmento correto" />
@@ -179,16 +179,16 @@ export default function ReassignComplianceModal({
           {segmentChanged && (
             <div className="flex items-center justify-center gap-2 py-1">
               <Badge className="bg-red-50 text-red-600 border-red-200">{getSegmentLabel(currentSegment)}</Badge>
-              <ArrowRight className="w-4 h-4 text-[#002443]/40" />
+              <ArrowRight className="w-4 h-4 text-[#0A0A0A]/40" />
               <Badge className="bg-green-50 text-green-700 border-green-200">{getSegmentLabel(newSegment)}</Badge>
             </div>
           )}
 
           {/* Generated compliance link */}
           <div className="space-y-2">
-            <span className="text-xs font-medium text-[#002443]/60">Link de compliance:</span>
+            <span className="text-xs font-medium text-[#0A0A0A]/60">Link de compliance:</span>
             <div className="bg-slate-50 rounded-lg p-3 flex items-center gap-2">
-              <code className="text-[10px] text-[#002443]/70 flex-1 break-all leading-relaxed">{complianceLink}</code>
+              <code className="text-[10px] text-[#0A0A0A]/70 flex-1 break-all leading-relaxed">{complianceLink}</code>
               <Button variant="ghost" size="sm" className="shrink-0 h-7" onClick={handleCopyLink}>
                 {copied ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
               </Button>
@@ -197,7 +197,7 @@ export default function ReassignComplianceModal({
         </div>
 
         <AlertDialogFooter className="gap-2">
-          <AlertDialogCancel className="text-[#002443]/60">Cancelar</AlertDialogCancel>
+          <AlertDialogCancel className="text-[#0A0A0A]/60">Cancelar</AlertDialogCancel>
           <Button
             variant="outline"
             size="sm"
@@ -209,7 +209,7 @@ export default function ReassignComplianceModal({
           <Button
             onClick={handleSaveAndCopy}
             disabled={updateMutation.isPending}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-1"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-1"
           >
             {updateMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />

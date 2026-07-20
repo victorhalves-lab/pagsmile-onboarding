@@ -4,12 +4,12 @@ import { PageDetail } from './HowItWorksShared';
 export default function SidebarPagesSection() {
   return (
     <div className="space-y-4">
-      <p className="text-sm text-[#002443]/70 mb-4 leading-relaxed">
+      <p className="text-sm text-[#0A0A0A]/70 mb-4 leading-relaxed">
         A seguir, cada página do sistema, suas funcionalidades, sub-abas e detalhamento microscópico de tudo o que se pode fazer dentro de cada uma.
       </p>
 
       {/* ═══════ HOME ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-6">🏠 Home</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-6">🏠 Home</h3>
       <PageDetail name="Home" description="Página principal com visão 360° do estado operacional. É o ponto de partida para qualquer ação." access="Admin"
         funcionalidades={[
           "Hero Section com saudação personalizada (Bom dia/Boa tarde/Boa noite + nome do usuário)",
@@ -26,7 +26,7 @@ export default function SidebarPagesSection() {
       />
 
       {/* ═══════ LEADS & PROPOSTAS ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">📬 Leads & Propostas</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-8">📬 Leads & Propostas</h3>
 
       <PageDetail name="Links de Questionários" description="Central de geração e gestão de links públicos para coleta de dados de leads." access="Admin"
         funcionalidades={[
@@ -121,7 +121,7 @@ export default function SidebarPagesSection() {
           "SEÇÃO LINKS RÁPIDOS POR SEGMENTO (topo da página): 6 cards com botão 'Copiar Link' e 'Abrir Proposta' para cada segmento — E-commerce, Educação, Infoprodutos, SaaS, Gateway, Marketplace",
           "Cada card identifica automaticamente a proposta padrão ativa (isDefaultForSegment=true) de cada segmento e gera o link público",
           "Se não houver proposta ativa para um segmento, exibe 'Nenhuma proposta ativa'",
-          "6 propostas padrão pré-criadas no sistema, uma por segmento, com taxas oficiais Pagsmile e tokens públicos prontos para uso",
+          "6 propostas padrão pré-criadas no sistema, uma por segmento, com taxas oficiais Pin Bank e tokens públicos prontos para uso",
           "Hero Header com total de propostas e botão 'Nova Proposta Padrão'",
           "Filtros: busca por nome/código/segmento + filtro de status (Rascunho, Ativa, Inativa) + filtro de segmento",
           "Tabela com 7 colunas: Código, Nome, Segmento, Modelo (Merchant/Gateway/Marketplace), Status, Criada, Ações",
@@ -132,7 +132,7 @@ export default function SidebarPagesSection() {
           "Auto-preenchimento de taxas: ao selecionar segmento, todas as taxas são preenchidas automaticamente com valores padrão (MDR por bandeira, PIX, Boleto R$2,99, Setup R$5.000, Alerta Pré-Chargeback R$55)",
           "Parceiro adquirente é selecionado apenas para simulação de rentabilidade — NÃO aparece na proposta pública",
           "Link público exclusivo para compartilhamento com cliente",
-          "Proposta Pública (PropostaPadraoPublica): Hero premium com logo Pagsmile + badge segmento, taxas por bandeira (TaxasPorBandeiraPublic), PIX, Boleto, Fees, Antecipação, TPV Mínimo, Tabela de Parcelas por Bandeira (ParcelasTableDetalhada) com simulador, CTA para questionário personalizado, Export Buttons (PDF/Print)"
+          "Proposta Pública (PropostaPadraoPublica): Hero premium com logo Pin Bank + badge segmento, taxas por bandeira (TaxasPorBandeiraPublic), PIX, Boleto, Fees, Antecipação, TPV Mínimo, Tabela de Parcelas por Bandeira (ParcelasTableDetalhada) com simulador, CTA para questionário personalizado, Export Buttons (PDF/Print)"
         ]}
         subAbas={[
           "Links Rápidos por Segmento: seção de cards no topo com 'Copiar Link' instantâneo por segmento",
@@ -239,7 +239,7 @@ export default function SidebarPagesSection() {
       />
 
       {/* ═══════ COMPLIANCE ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">🛡️ Compliance</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-8">🛡️ Compliance</h3>
 
       <PageDetail name="Dashboard de Compliance" description="Dashboard executivo com 25+ KPIs, gráficos, Risk Scoring v4 e tabela de casos." access="Admin"
         funcionalidades={[
@@ -354,7 +354,7 @@ export default function SidebarPagesSection() {
       />
 
       {/* ═══════ CONTRATOS ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">📝 Contratos</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-8">📝 Contratos</h3>
 
       <PageDetail name="Gestão de Contratos" description="Lista e gestão de contratos pré-gerados e finalizados." access="Admin"
         funcionalidades={[
@@ -379,12 +379,12 @@ export default function SidebarPagesSection() {
           "ModulosForm: seleção de módulos contratados",
           "PrecosForm: taxas de cartão, PIX, boleto, fees, antecipação, TPV mínimo",
           "SLAsForm: SLA de disponibilidade, suporte, reserva de risco",
-          "AssinaturaForm: dados do representante Pagsmile, testemunhas, datas"
+          "AssinaturaForm: dados do representante Pin Bank, testemunhas, datas"
         ]}
       />
 
       {/* ═══════ FERRAMENTAS ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">🔧 Ferramentas</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-8">🔧 Ferramentas</h3>
 
       <PageDetail name="Gerar Link" description="Geração de link de onboarding com configuração detalhada." access="Admin"
         funcionalidades={[
@@ -428,7 +428,7 @@ export default function SidebarPagesSection() {
       />
 
       {/* ═══════ INTEGRAÇÕES ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">🔌 Integrações</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-8">🔌 Integrações</h3>
 
       <PageDetail name="CAF & BigDataCorp" description="Configuração e monitoramento de integrações externas de validação." access="Admin"
         funcionalidades={[
@@ -451,7 +451,7 @@ export default function SidebarPagesSection() {
       />
 
       {/* ═══════ ADMINISTRAÇÃO ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">⚙️ Administração</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-8">⚙️ Administração</h3>
 
       <PageDetail name="Configurações" description="Configurações gerais do sistema." access="Admin"
         funcionalidades={[
@@ -530,7 +530,7 @@ export default function SidebarPagesSection() {
       />
 
       {/* ═══════ PÁGINAS PÚBLICAS ═══════ */}
-      <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">🌐 Páginas Públicas (Cliente)</h3>
+      <h3 className="text-base font-bold text-[#0A0A0A] border-b border-slate-200 pb-2 mt-8">🌐 Páginas Públicas (Cliente)</h3>
 
       <PageDetail name="Proposta Pública" description="Página de visualização da proposta comercial pelo cliente." access="Público"
         funcionalidades={[
@@ -554,7 +554,7 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Questionário Pagsmile v5 (QuestionarioLeadsPagsmile)" description="Questionário público de leads com 10 segmentos granulares, 46 perguntas + 18 condicionais, 16 flags silenciosas e scoring automático 0-100." access="Público"
+      <PageDetail name="Questionário Pin Bank v5 (QuestionarioLeadsPagsmile)" description="Questionário público de leads com 10 segmentos granulares, 46 perguntas + 18 condicionais, 16 flags silenciosas e scoring automático 0-100." access="Público"
         funcionalidades={[
           "10 segmentos: Gateway, Marketplace, Plataforma Vertical, E-commerce, Dropshipping, Infoprodutos, SaaS, Educação, Link Pagamento, MPE",
           "10 etapas: Segmento → Dados Empresa → Modelo Negócio (condicional) → Volumetria → Distribuição → Taxas Atuais → Compliance/Risco → Endereço → Porte → Fechamento",
@@ -596,7 +596,7 @@ export default function SidebarPagesSection() {
       <PageDetail name="Introducer Landing Page" description="Landing page co-branded para parceiros de indicação." access="Público"
         funcionalidades={[
           "Acesso via /parceiro/:slug (ex: /parceiro/meu-parceiro)",
-          "Header com logo do parceiro + logo Pagsmile",
+          "Header com logo do parceiro + logo Pin Bank",
           "Tabela de taxas por segmento configurada pelo Introducer (SegmentRatesTable)",
           "Calculadora de taxas interativa (RateCalculator): simula custo de transação cartão e PIX com antecipação",
           "Disclaimer de compliance (ComplianceDisclaimer)",
@@ -611,7 +611,7 @@ export default function SidebarPagesSection() {
       <PageDetail name="Proposta Padrão Pública (PropostaPadraoPublica)" description="Página pública de visualização da proposta padrão por segmento — sem dados de cliente, apenas taxas." access="Público"
         funcionalidades={[
           "Acesso via token único na URL (?token=xxx)",
-          "Hero Header premium com logo Pagsmile, badge do segmento e título 'Condições Comerciais'",
+          "Hero Header premium com logo Pin Bank, badge do segmento e título 'Condições Comerciais'",
           "Dados da empresa exibidos apenas se preenchidos (seção condicional)",
           "Cards de Segmento e Informações com disclaimers de compliance",
           "Taxas de Cartão de Crédito por bandeira (TaxasPorBandeiraPublic): Visa, Mastercard, Elo, Amex, Outras × 4 faixas",
@@ -652,7 +652,7 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Questionário Pagsmile v5 (QuestionarioLeadsPagsmile)" description="Questionário público de leads com 10 segmentos granulares, 46 perguntas + 18 condicionais, 16 flags silenciosas e scoring automático 0-100." access="Público"
+      <PageDetail name="Questionário Pin Bank v5 (QuestionarioLeadsPagsmile)" description="Questionário público de leads com 10 segmentos granulares, 46 perguntas + 18 condicionais, 16 flags silenciosas e scoring automático 0-100." access="Público"
         funcionalidades={[
           "10 segmentos: Gateway, Marketplace, Plataforma Vertical, E-commerce, Dropshipping, Infoprodutos, SaaS, Educação, Link Pagamento, MPE",
           "10 etapas: Segmento → Dados Empresa → Modelo Negócio (condicional) → Volumetria → Distribuição → Taxas Atuais → Compliance/Risco → Endereço → Porte → Fechamento",

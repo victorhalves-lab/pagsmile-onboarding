@@ -18,8 +18,8 @@ export default function StepE5PLDFT({ formData, handleChange }) {
           <ShieldCheck className="w-5 h-5 text-teal-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">PLD/FT</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Prevenção à lavagem de dinheiro</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">PLD/FT</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Prevenção à lavagem de dinheiro</p>
         </div>
       </div>
 

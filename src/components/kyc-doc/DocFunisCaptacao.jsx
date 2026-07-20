@@ -5,7 +5,7 @@ import { S, H1, H2, H3, P, Li, Bold, Table, InfoBox } from './DocHelpers';
  * Seção 19 — Funis de Captação de Leads (Pré-KYC)
  * Documenta MICROSCOPICAMENTE os dois questionários públicos que alimentam
  * a entidade Lead antes do KYC/KYB acontecer:
- *  - Lead Pagsmile V5 (cartão, 12 etapas)
+ *  - Lead Pin Bank V5 (cartão, 12 etapas)
  *  - Lead PIX V4 (PIX, 7 etapas)
  *  - Fechamento Landing (consolidação rápida)
  *
@@ -34,12 +34,12 @@ export default function DocFunisCaptacao() {
 
       <H2>19.1. Mapa dos 3 Funis Ativos</H2>
       <Table headers={['Funil', 'Rota pública', 'Etapas', 'Quando usar', 'Resultado']} rows={[
-        ['Lead Pagsmile V5', '/QuestionarioLeadsPagsmile?ref=:code', '12', 'Cliente que processa CARTÃO. Pode ser introducer, link direto ou orgânico.', 'Lead com businessSubCategory ∈ {gateway, marketplace, plataformas_verticais, ecommerce, dropshipping, infoprodutos, saas, educacao, link_pagamento, mpe}'],
+        ['Lead Pin Bank V5', '/QuestionarioLeadsPagsmile?ref=:code', '12', 'Cliente que processa CARTÃO. Pode ser introducer, link direto ou orgânico.', 'Lead com businessSubCategory ∈ {gateway, marketplace, plataformas_verticais, ecommerce, dropshipping, infoprodutos, saas, educacao, link_pagamento, mpe}'],
         ['Lead PIX V4', '/LeadPixV4?ref=:code', '7', 'Cliente que processa apenas PIX. Fluxo enxuto sem perguntas de cartão.', 'Lead com businessSubCategory ∈ {pix_merchant, pix_intermediario}'],
         ['Fechamento Landing', '/FechamentoLandingPage?token=:t', '3', 'Cliente vindo de landing page de proposta padrão — preencheu mínimo, agora consolida.', 'Lead + Proposal acoplado, segue direto para KYC.'],
       ]} />
 
-      <H2>19.2. Lead Pagsmile V5 — As 12 Etapas Microscópicas</H2>
+      <H2>19.2. Lead Pin Bank V5 — As 12 Etapas Microscópicas</H2>
       <P>Hospedado em <code>pages/QuestionarioLeadsPagsmile.jsx</code>. Cada etapa é um componente focado em <code>components/lead-pagsmile/Step*.jsx</code>. A ordem abaixo é a ordem real renderizada no <code>switch</code> de <code>step</code> (índices 0..11), e é também a ordem dos blocos <code>if (step === N)</code> em <code>leadV5Validators.js</code>. Mudanças nessa ordem requerem atualização sincronizada nos dois arquivos.</P>
 
       <Table headers={['#', 'Etapa', 'Componente', 'Campos coletados', 'Validações de bloqueio (não passa sem)']} rows={[
@@ -130,7 +130,7 @@ export default function DocFunisCaptacao() {
       <H2>19.5. Submit — Função Pública publicLeadSubmit</H2>
       <P>O frontend chama <code>callPublicFunction('publicLeadSubmit', payload)</code> — fluxo SDK-free para evitar problemas de auth em rotas públicas. Payload tem campo <code>kind</code>:</P>
       <Table headers={['kind', 'Quando', 'Comportamento backend']} rows={[
-        ['lead', 'Sem introducer (orgânico ou link direto Pagsmile).', 'Cria Lead. Dispara onLeadCreatedEnrich.'],
+        ['lead', 'Sem introducer (orgânico ou link direto Pin Bank).', 'Cria Lead. Dispara onLeadCreatedEnrich.'],
         ['introducer_lead', 'onboardingLink.introducerId presente.', 'Cria IntroducerLead + Lead vinculado via introducerId/introducerReferralCode/introducerName. Notifica introducer.'],
       ]} />
 
@@ -139,7 +139,7 @@ export default function DocFunisCaptacao() {
         ['Identificação', 'email, fullName, cpfCnpj, phone, companyName, contactName, contactRole, website'],
         ['Status & origem', 'status="questionario_preenchido", origemLead, onboardingLinkCode, businessSubCategory'],
         ['Volumetria', 'tpvMensal, ticketMedio, transacoesMes, expectativaCrescimento'],
-        ['Score Pagsmile', 'leadQualifierScore (final), leadQualifierLevel ∈ {EXCELENTE, BOM, REGULAR, FRACO}'],
+        ['Score Pin Bank', 'leadQualifierScore (final), leadQualifierLevel ∈ {EXCELENTE, BOM, REGULAR, FRACO}'],
         ['Score BDC', 'bdcLeadScore, bdcScoreLevel, bdcFlags, bdcCrossValidation, bdcEnrichmentDate'],
         ['Snapshot', 'questionnaireData (JSON com TODAS as respostas + _silentFlags + _declarativeScore + _bdcScore + _leadScore + _cnpjEnrichment)'],
         ['Expectativa', 'expectedRates { mdr1x, mdr2a6x, mdr7a12x, antecipacao, feeTransacao, antifraude, taxa3ds, pix }'],

@@ -91,16 +91,16 @@ export default function QuestionarioSimplificadoPublico() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-[#2bc196]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-8 h-8 text-[#2bc196]" />
+          <div className="w-16 h-16 bg-[#1356E2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-8 h-8 text-[#1356E2]" />
           </div>
-          <h2 className="text-xl font-bold text-[#002443] mb-2">Questionário Enviado!</h2>
-          <p className="text-[#002443]/70 text-sm mb-4">
+          <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Questionário Enviado!</h2>
+          <p className="text-[#0A0A0A]/70 text-sm mb-4">
             Agradecemos por preencher o questionário. Nossa equipe entrará em contato em breve com uma proposta personalizada.
           </p>
           <div className="bg-slate-50 rounded-lg p-3">
-            <p className="text-xs text-[#002443]/50">Seu protocolo</p>
-            <p className="font-mono font-bold text-[#2bc196]">{protocolo}</p>
+            <p className="text-xs text-[#0A0A0A]/50">Seu protocolo</p>
+            <p className="font-mono font-bold text-[#1356E2]">{protocolo}</p>
           </div>
         </div>
       </div>
@@ -113,10 +113,10 @@ export default function QuestionarioSimplificadoPublico() {
       <div className="text-center mb-8">
         <img 
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
-          alt="Pagsmile" className="h-8 mx-auto mb-4" 
+          alt="Pin Bank" className="h-8 mx-auto mb-4" 
         />
-        <h1 className="text-2xl font-bold text-[#002443]">Questionário Simplificado</h1>
-        <p className="text-[#002443]/60 text-sm mt-1">Preencha as informações abaixo para receber uma proposta personalizada</p>
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Questionário Simplificado</h1>
+        <p className="text-[#0A0A0A]/60 text-sm mt-1">Preencha as informações abaixo para receber uma proposta personalizada</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -171,7 +171,7 @@ export default function QuestionarioSimplificadoPublico() {
             <div className="flex items-center justify-between">
               <div>
                 <Label>Você utiliza antecipação?</Label>
-                <p className="text-xs text-[#002443]/50">Se sim, preencha as taxas abaixo</p>
+                <p className="text-xs text-[#0A0A0A]/50">Se sim, preencha as taxas abaixo</p>
               </div>
               <Switch checked={formData.usa_antecipacao} onCheckedChange={(v) => updateField('usa_antecipacao', v)} />
             </div>
@@ -236,7 +236,7 @@ export default function QuestionarioSimplificadoPublico() {
             <div className="flex items-center justify-between">
               <div>
                 <Label>Paga FEE fixo por transação?</Label>
-                <p className="text-xs text-[#002443]/50">Custo fixo por transação processada</p>
+                <p className="text-xs text-[#0A0A0A]/50">Custo fixo por transação processada</p>
               </div>
               <Switch checked={formData.usa_fee_transacao} onCheckedChange={(v) => updateField('usa_fee_transacao', v)} />
             </div>
@@ -251,13 +251,13 @@ export default function QuestionarioSimplificadoPublico() {
         </Section>
 
         {/* Security note */}
-        <div className="flex items-center gap-2 text-xs text-[#002443]/50 justify-center">
+        <div className="flex items-center gap-2 text-xs text-[#0A0A0A]/50 justify-center">
           <Shield className="w-4 h-4" />
           <span>Seus dados estão protegidos e serão usados apenas para elaboração da proposta</span>
         </div>
 
         {/* Submit */}
-        <Button type="submit" disabled={submitting} className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold text-base">
+        <Button type="submit" disabled={submitting} className="w-full h-12 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white font-bold text-base">
           {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
           ENVIAR QUESTIONÁRIO
         </Button>
@@ -270,7 +270,7 @@ function Section({ icon: Icon, title, subtitle, color, children }) {
   const colors = {
     purple: 'bg-purple-100 text-purple-600',
     blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-[#2bc196]/10 text-[#2bc196]',
+    green: 'bg-[#1356E2]/10 text-[#1356E2]',
     amber: 'bg-amber-100 text-amber-600',
     teal: 'bg-teal-100 text-teal-600',
     indigo: 'bg-indigo-100 text-indigo-600',
@@ -283,8 +283,8 @@ function Section({ icon: Icon, title, subtitle, color, children }) {
           <Icon className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-semibold text-[#002443]">{title}</h3>
-          {subtitle && <p className="text-xs text-[#002443]/60">{subtitle}</p>}
+          <h3 className="font-semibold text-[#0A0A0A]">{title}</h3>
+          {subtitle && <p className="text-xs text-[#0A0A0A]/60">{subtitle}</p>}
         </div>
       </div>
       {children}

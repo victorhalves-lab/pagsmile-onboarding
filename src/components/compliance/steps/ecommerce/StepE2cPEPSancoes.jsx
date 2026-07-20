@@ -17,8 +17,8 @@ export default function StepE2cPEPSancoes({ formData, handleChange }) {
           <ShieldAlert className="w-5 h-5 text-red-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">PEP e Sanções</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Verificação de exposição política e restrições</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">PEP e Sanções</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Verificação de exposição política e restrições</p>
         </div>
       </div>
 

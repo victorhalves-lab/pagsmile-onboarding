@@ -66,22 +66,22 @@ export default function GestaoPropostasPadrao() {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-white/10"><Tag className="w-6 h-6 text-[#5cf7cf]" /></div>
+            <div className="p-3 rounded-xl bg-white/10"><Tag className="w-6 h-6 text-[#E84B1C]" /></div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('gsp.title')}</h1>
               <p className="text-white/60 text-sm mt-1">{t('gsp.found', { count: filtered.length })}</p>
             </div>
           </div>
-          <Button onClick={() => navigate('/CriarPropostaPadrao')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
+          <Button onClick={() => navigate('/CriarPropostaPadrao')} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 rounded-xl shadow-md">
             <Plus className="w-4 h-4" /> {t('gsp.new')}
           </Button>
         </div>
@@ -96,7 +96,7 @@ export default function GestaoPropostasPadrao() {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('gsp.search_placeholder')} className="pl-10 h-10" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -119,7 +119,7 @@ export default function GestaoPropostasPadrao() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -136,26 +136,26 @@ export default function GestaoPropostasPadrao() {
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-12">
-                    <FileText className="w-12 h-12 mx-auto text-[#002443]/30 mb-3" />
-                    <p className="text-[#002443]/60">{t('gsp.no_proposals')}</p>
-                    <Button variant="link" onClick={() => navigate('/CriarPropostaPadrao')} className="mt-2 text-[#2bc196]">{t('gsp.create_first')}</Button>
+                    <FileText className="w-12 h-12 mx-auto text-[#0A0A0A]/30 mb-3" />
+                    <p className="text-[#0A0A0A]/60">{t('gsp.no_proposals')}</p>
+                    <Button variant="link" onClick={() => navigate('/CriarPropostaPadrao')} className="mt-2 text-[#1356E2]">{t('gsp.create_first')}</Button>
                   </TableCell>
                 </TableRow>
               ) : filtered.map(p => {
                 const sCfg = STATUS_CONFIG[p.status] || STATUS_CONFIG.rascunho;
                 return (
                   <TableRow key={p.id} className="hover:bg-[#f4f4f4] transition-colors">
-                    <TableCell><span className="font-mono text-sm text-[#2bc196]">{p.codigo || '-'}</span></TableCell>
+                    <TableCell><span className="font-mono text-sm text-[#1356E2]">{p.codigo || '-'}</span></TableCell>
                     <TableCell className="font-medium text-sm">{p.templateName}</TableCell>
-                    <TableCell><Badge className="bg-[#2bc196]/10 text-[#002443] border-0">{p.segment}</Badge></TableCell>
+                    <TableCell><Badge className="bg-[#1356E2]/10 text-[#0A0A0A] border-0">{p.segment}</Badge></TableCell>
                     <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
-                    <TableCell className="text-xs text-[#002443]/60">{moment(p.created_date).format('DD/MM/YYYY')}</TableCell>
+                    <TableCell className="text-xs text-[#0A0A0A]/60">{moment(p.created_date).format('DD/MM/YYYY')}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="sm" onClick={() => navigate(`/PropostaPadraoDetalhes?id=${p.id}`)} title="Ver detalhes"><Eye className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="sm" onClick={() => navigate(`/CriarPropostaPadrao?edit=${p.id}`)} title="Editar"><Pencil className="w-4 h-4" /></Button>
                         {p.tokenPublico && p.status === 'ativa' && (
-                          <Button variant="ghost" size="sm" onClick={() => copyLink(p)} title="Copiar link público"><Link2 className="w-4 h-4 text-[#2bc196]" /></Button>
+                          <Button variant="ghost" size="sm" onClick={() => copyLink(p)} title="Copiar link público"><Link2 className="w-4 h-4 text-[#1356E2]" /></Button>
                         )}
                         <Button variant="ghost" size="sm" onClick={() => setDeleteId(p.id)} className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></Button>
                       </div>

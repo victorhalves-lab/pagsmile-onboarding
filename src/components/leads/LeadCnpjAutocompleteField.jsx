@@ -79,7 +79,7 @@ export default function LeadCnpjAutocompleteField({
   return (
     <div className="space-y-2">
       <div className="flex items-start gap-2">
-        <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+        <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
           CNPJ <span className="text-red-500 ml-1">*</span>
         </Label>
         {data && isActive && (
@@ -96,12 +96,12 @@ export default function LeadCnpjAutocompleteField({
         )}
       </div>
 
-      <p className="text-xs text-[var(--pagsmile-blue)]/60">
+      <p className="text-xs text-[var(--pinbank-blue)]/60">
         Ao digitar os 14 dígitos, o sistema preencherá automaticamente a Razão Social, Nome Fantasia e outros campos.
       </p>
 
       <div className="relative">
-        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
         <Input
           value={displayValue}
           onChange={handleChange}
@@ -114,7 +114,7 @@ export default function LeadCnpjAutocompleteField({
           maxLength={18}
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />
         )}
         {data && isActive && !isLoading && (
           <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />

@@ -9,14 +9,14 @@ export default function GlobalHowItWorks() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-6">
         <div className="flex items-start gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-[#2bc196]/15 to-[#5cf7cf]/15">
-            <BookOpen className="w-5 h-5 text-[#2bc196]" />
+          <div className="p-3 rounded-xl bg-gradient-to-br from-[#1356E2]/15 to-[#E84B1C]/15">
+            <BookOpen className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#002443]">Como Funciona — Propostas Global</h2>
-            <p className="text-xs text-[#002443]/60 mt-1">
+            <h2 className="text-lg font-bold text-[#0A0A0A]">Como Funciona — Propostas Global</h2>
+            <p className="text-xs text-[#0A0A0A]/60 mt-1">
               Guia operacional do módulo internacional (USD · Interchange · Trilíngue EN/PT/ZH)
             </p>
           </div>
@@ -54,11 +54,11 @@ export default function GlobalHowItWorks() {
       {/* Composição da taxa */}
       <Section title="Composição da Taxa (Interchange++)" icon={DollarSign}>
         <div className="grid md:grid-cols-3 gap-3">
-          <Card title="Custo Base" subtitle="0,5% padrão" desc="Margem fixa Pagsmile que cobre custos operacionais mínimos do processamento internacional." />
+          <Card title="Custo Base" subtitle="0,5% padrão" desc="Margem fixa Pin Bank que cobre custos operacionais mínimos do processamento internacional." />
           <Card title="Interchange" subtitle="Variável" desc="Taxa real cobrada pela bandeira (Visa/Mastercard) ao emissor — depende do tipo de cartão (consumer/commercial/credit/debit) e do programa (basic/preferred/signature/world/world elite)." />
-          <Card title="Markup" subtitle="A negociar" desc="Margem comercial da Pagsmile. Definida pela equipe conforme volume, risco e estratégia de aquisição." />
+          <Card title="Markup" subtitle="A negociar" desc="Margem comercial da Pin Bank. Definida pela equipe conforme volume, risco e estratégia de aquisição." />
         </div>
-        <p className="mt-3 text-xs text-[#002443]/60">
+        <p className="mt-3 text-xs text-[#0A0A0A]/60">
           <strong>Taxa final</strong> = Custo Base + Interchange (% + fixo) + Markup. Visualizada em tempo real na tela
           <code> Criar Proposta</code>. A tabela completa de Interchange Card Not Present é consultável em <code>Interchange</code>.
         </p>
@@ -94,7 +94,7 @@ export default function GlobalHowItWorks() {
 
       {/* Diferenças vs Brasil */}
       <Section title="Diferenças vs Trilho Brasil" icon={Globe2}>
-        <ul className="list-disc pl-5 space-y-1 text-sm text-[#002443]/80">
+        <ul className="list-disc pl-5 space-y-1 text-sm text-[#0A0A0A]/80">
           <li><strong>Moeda:</strong> USD (não BRL). Sem conversão automática.</li>
           <li><strong>Lógica de taxa:</strong> Interchange++ (não MDR fechado por segmento).</li>
           <li><strong>Compliance:</strong> KYC internacional com UBOs/Directors/Sanctions — sem BDC, sem CAF, sem segmentos brasileiros.</li>
@@ -106,7 +106,7 @@ export default function GlobalHowItWorks() {
 
       {/* Próximos passos */}
       <Section title="Próximas Evoluções (Roadmap)" icon={ArrowRight}>
-        <ul className="list-disc pl-5 space-y-1 text-sm text-[#002443]/80">
+        <ul className="list-disc pl-5 space-y-1 text-sm text-[#0A0A0A]/80">
           <li>Sanctions screening automático (OFAC/UN/EU/UK) dos UBOs.</li>
           <li>Versionamento de propostas com histórico de contrapropostas.</li>
           <li>E-mail automático (envio, aceite, contraproposta) trilíngue.</li>
@@ -120,12 +120,12 @@ export default function GlobalHowItWorks() {
 
 function Section({ title, icon: Icon, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-6">
       <div className="flex items-center gap-2 mb-4">
-        <Icon className="w-4 h-4 text-[#2bc196]" />
-        <h3 className="text-sm font-bold text-[#002443] uppercase tracking-wider">{title}</h3>
+        <Icon className="w-4 h-4 text-[#1356E2]" />
+        <h3 className="text-sm font-bold text-[#0A0A0A] uppercase tracking-wider">{title}</h3>
       </div>
-      <div className="text-sm text-[#002443]/80 space-y-2">{children}</div>
+      <div className="text-sm text-[#0A0A0A]/80 space-y-2">{children}</div>
     </div>
   );
 }
@@ -133,13 +133,13 @@ function Section({ title, icon: Icon, children }) {
 function FlowStep({ n, icon: Icon, title, desc }) {
   return (
     <div className="flex items-start gap-3 py-2">
-      <div className="w-8 h-8 rounded-full bg-[#2bc196] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">{n}</div>
+      <div className="w-8 h-8 rounded-full bg-[#1356E2] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">{n}</div>
       <div className="flex-1">
         <div className="flex items-center gap-1.5">
-          <Icon className="w-3.5 h-3.5 text-[#2bc196]" />
-          <span className="text-sm font-semibold text-[#002443]">{title}</span>
+          <Icon className="w-3.5 h-3.5 text-[#1356E2]" />
+          <span className="text-sm font-semibold text-[#0A0A0A]">{title}</span>
         </div>
-        <p className="text-xs text-[#002443]/60 mt-0.5">{desc}</p>
+        <p className="text-xs text-[#0A0A0A]/60 mt-0.5">{desc}</p>
       </div>
     </div>
   );
@@ -147,10 +147,10 @@ function FlowStep({ n, icon: Icon, title, desc }) {
 
 function Card({ title, subtitle, desc }) {
   return (
-    <div className="bg-[#f4f4f4]/50 rounded-xl border border-[#002443]/5 p-4">
-      <div className="text-sm font-bold text-[#002443]">{title}</div>
-      <div className="text-[10px] uppercase tracking-wider text-[#2bc196] font-semibold mt-0.5">{subtitle}</div>
-      <p className="text-xs text-[#002443]/70 mt-2 leading-relaxed">{desc}</p>
+    <div className="bg-[#f4f4f4]/50 rounded-xl border border-[#0A0A0A]/5 p-4">
+      <div className="text-sm font-bold text-[#0A0A0A]">{title}</div>
+      <div className="text-[10px] uppercase tracking-wider text-[#1356E2] font-semibold mt-0.5">{subtitle}</div>
+      <p className="text-xs text-[#0A0A0A]/70 mt-2 leading-relaxed">{desc}</p>
     </div>
   );
 }
@@ -158,10 +158,10 @@ function Card({ title, subtitle, desc }) {
 function PageRow({ icon: Icon, label, desc }) {
   return (
     <div className="flex items-start gap-2 p-2 rounded-lg hover:bg-[#f4f4f4]/40">
-      <Icon className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 flex-shrink-0" />
+      <Icon className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 flex-shrink-0" />
       <div>
-        <div className="text-xs font-semibold text-[#002443]">{label}</div>
-        <div className="text-[11px] text-[#002443]/60">{desc}</div>
+        <div className="text-xs font-semibold text-[#0A0A0A]">{label}</div>
+        <div className="text-[11px] text-[#0A0A0A]/60">{desc}</div>
       </div>
     </div>
   );

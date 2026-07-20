@@ -38,7 +38,7 @@ export default function DocSubsellers({ templates, questionsByTemplate }) {
       <P>O admin gera links do tipo <code>SUBSELLER_COMPLIANCE</code> em <strong>/GerenciarSubsellerLinks</strong>. O modal <code>GenerateLinkModal</code> permite escolher:</P>
       <ul className="list-disc ml-6 space-y-1 mb-4">
         <Li><Bold>Merchant principal (seller):</Bold> apenas merchants já aprovados (<code>onboardingStatus = "Aprovado"</code>) podem gerar links de subseller. A função <code>generateSubsellerLink</code> valida isso e bloqueia se o seller estiver pendente.</Li>
-        <Li><Bold>Branding:</Bold> Padrão PagSmile OU Personalizado (white-label) com logo do seller, cor primária, cor secundária e slug amigável.</Li>
+        <Li><Bold>Branding:</Bold> Padrão Pin Bank OU Personalizado (white-label) com logo do seller, cor primária, cor secundária e slug amigável.</Li>
         <Li><Bold>Expiração:</Bold> opcional (null = sem expiração).</Li>
       </ul>
       <P>O link gerado tem formato: <code>{window.location.origin}/SubsellerQuestionnaire?ref=SUB_XXXXXXXXXXX</code> (ou <code>/s/slug-personalizado</code> quando branding custom). Cada link contém: <code>parentMerchantId</code>, branding opcional (logo, cores), código único, template padrão vinculado, e contadores de cliques/submissões.</P>

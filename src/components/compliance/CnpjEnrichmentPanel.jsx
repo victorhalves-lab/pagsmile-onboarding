@@ -28,11 +28,11 @@ function EnrichmentItem({ icon: Icon, label, value, flag, positive }) {
   return (
     <div className="flex items-start gap-2 py-1.5">
       <Icon className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${
-        flag ? 'text-amber-500' : positive ? 'text-emerald-500' : 'text-[#002443]/40'
+        flag ? 'text-amber-500' : positive ? 'text-emerald-500' : 'text-[#0A0A0A]/40'
       }`} />
       <div className="flex-1 min-w-0">
-        <span className="text-[11px] text-[#002443]/60">{label}: </span>
-        <span className={`text-[11px] font-medium ${flag ? 'text-amber-700' : 'text-[#002443]'}`}>
+        <span className="text-[11px] text-[#0A0A0A]/60">{label}: </span>
+        <span className={`text-[11px] font-medium ${flag ? 'text-amber-700' : 'text-[#0A0A0A]'}`}>
           {value}
         </span>
         {flag && (
@@ -47,8 +47,8 @@ export default function CnpjEnrichmentPanel({ enrichmentResult, isLoading }) {
   if (isLoading) {
     return (
       <div className="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2">
-        <Loader2 className="w-4 h-4 animate-spin text-[#2bc196]" />
-        <span className="text-xs text-[#002443]/60">Analisando dados de enriquecimento...</span>
+        <Loader2 className="w-4 h-4 animate-spin text-[#1356E2]" />
+        <span className="text-xs text-[#0A0A0A]/60">Analisando dados de enriquecimento...</span>
       </div>
     );
   }
@@ -64,11 +64,11 @@ export default function CnpjEnrichmentPanel({ enrichmentResult, isLoading }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Shield className="w-4 h-4 text-[#002443]/50" />
-          <span className="text-xs font-semibold text-[#002443]">Análise de Enriquecimento</span>
+          <Shield className="w-4 h-4 text-[#0A0A0A]/50" />
+          <span className="text-xs font-semibold text-[#0A0A0A]">Análise de Enriquecimento</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold text-[#002443]">
+          <span className="text-[11px] font-bold text-[#0A0A0A]">
             {overallScore.score}/100
           </span>
           <RiskBadge level={overallScore.riskLevel} />
@@ -110,7 +110,7 @@ export default function CnpjEnrichmentPanel({ enrichmentResult, isLoading }) {
           label="QSA" 
           value={`${enrichment.qsaAnalysis.totalSocios} sócio(s)${
             enrichment.qsaAnalysis.crossMatches.length > 0 
-              ? ` — ${enrichment.qsaAnalysis.crossMatches.length} na base PagSmile` 
+              ? ` — ${enrichment.qsaAnalysis.crossMatches.length} na base Pin Bank` 
               : ''
           }`}
           flag={enrichment.qsaAnalysis.flag}

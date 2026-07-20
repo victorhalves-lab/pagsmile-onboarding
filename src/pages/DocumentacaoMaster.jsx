@@ -101,14 +101,14 @@ export default function DocumentacaoMaster() {
         `}</style>
 
         {/* Header */}
-        <div className="no-print bg-gradient-to-r from-[#002443] to-[#003366] text-white py-6 px-6 shadow-md">
+        <div className="no-print bg-gradient-to-r from-[#0A0A0A] to-[#003366] text-white py-6 px-6 shadow-md">
           <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-3">
             <div>
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#5cf7cf] mb-1">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#E84B1C] mb-1">
                 <FileText className="w-3.5 h-3.5" />
                 <span>Documentação Master</span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-black">PagSmile — Documentação Microscópica Completa</h1>
+              <h1 className="text-2xl md:text-3xl font-black">Pin Bank — Documentação Microscópica Completa</h1>
               <p className="text-[12.5px] text-white/70 mt-1 max-w-3xl">
                 12 capítulos. Cada constante, threshold, peso, regex, endpoint e fluxo extraído do código fonte real.
                 Exportável em PDF (impressão otimizada) e DOCX (editável) por capítulo ou completo.
@@ -116,7 +116,7 @@ export default function DocumentacaoMaster() {
             </div>
             <div className="flex gap-2">
               {!activeChapter ? (
-                <Button onClick={handleExportPdfAll} className="bg-[#2bc196] hover:bg-[#36706c] text-white">
+                <Button onClick={handleExportPdfAll} className="bg-[#1356E2] hover:bg-[#E84B1C] text-white">
                   <Printer className="w-4 h-4 mr-1.5" /> Exportar Tudo (PDF)
                 </Button>
               ) : (
@@ -126,7 +126,7 @@ export default function DocumentacaoMaster() {
                   </Button>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button onClick={handleExportPdfChapter} className="bg-[#2bc196] hover:bg-[#36706c] text-white">
+                      <Button onClick={handleExportPdfChapter} className="bg-[#1356E2] hover:bg-[#E84B1C] text-white">
                         <Printer className="w-4 h-4 mr-1.5" /> PDF
                       </Button>
                     </TooltipTrigger>
@@ -134,7 +134,7 @@ export default function DocumentacaoMaster() {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button onClick={handleExportDocxChapter} className="bg-white text-[#002443] hover:bg-white/90">
+                      <Button onClick={handleExportDocxChapter} className="bg-white text-[#0A0A0A] hover:bg-white/90">
                         <FileType className="w-4 h-4 mr-1.5" /> DOCX
                       </Button>
                     </TooltipTrigger>
@@ -152,7 +152,7 @@ export default function DocumentacaoMaster() {
             <>
               <div className="no-print mb-5 max-w-2xl">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
                   <Input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -169,19 +169,19 @@ export default function DocumentacaoMaster() {
                     <button
                       key={c.id}
                       onClick={() => { setActiveChapter(c.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className="group flex items-start gap-3 p-4 bg-white rounded-lg border border-[#e8e8e8] hover:border-[#2bc196] hover:shadow-md transition-all text-left"
+                      className="group flex items-start gap-3 p-4 bg-white rounded-lg border border-[#e8e8e8] hover:border-[#1356E2] hover:shadow-md transition-all text-left"
                     >
-                      <div className="flex-shrink-0 w-10 h-10 rounded-md bg-[#2bc196]/10 flex items-center justify-center group-hover:bg-[#2bc196]/20 transition-colors">
-                        <Icon className="w-5 h-5 text-[#2bc196]" />
+                      <div className="flex-shrink-0 w-10 h-10 rounded-md bg-[#1356E2]/10 flex items-center justify-center group-hover:bg-[#1356E2]/20 transition-colors">
+                        <Icon className="w-5 h-5 text-[#1356E2]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline gap-2 mb-0.5">
-                          <span className="text-[10px] font-mono font-bold text-[#2bc196] uppercase tracking-wider">Cap. {c.num}</span>
+                          <span className="text-[10px] font-mono font-bold text-[#1356E2] uppercase tracking-wider">Cap. {c.num}</span>
                         </div>
-                        <h3 className="text-[14px] font-bold text-[#002443] leading-tight mb-1">{c.title}</h3>
+                        <h3 className="text-[14px] font-bold text-[#0A0A0A] leading-tight mb-1">{c.title}</h3>
                         <p className="text-[12px] text-[#1a1a1a]/70 leading-snug">{c.summary}</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-[#002443]/30 group-hover:text-[#2bc196] flex-shrink-0 mt-1 transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-[#0A0A0A]/30 group-hover:text-[#1356E2] flex-shrink-0 mt-1 transition-colors" />
                     </button>
                   );
                 })}
@@ -201,8 +201,8 @@ export default function DocumentacaoMaster() {
                 ].map((s, i) => (
                   <div key={i} className="bg-white rounded-md border border-[#e8e8e8] p-3">
                     <div className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/50 font-semibold">{s.label}</div>
-                    <div className="text-2xl font-black text-[#002443] mt-0.5">{s.value}</div>
-                    <div className="text-[11px] text-[#2bc196]">{s.sub}</div>
+                    <div className="text-2xl font-black text-[#0A0A0A] mt-0.5">{s.value}</div>
+                    <div className="text-[11px] text-[#1356E2]">{s.sub}</div>
                   </div>
                 ))}
               </div>
@@ -221,13 +221,13 @@ export default function DocumentacaoMaster() {
                   <div className="no-print mt-4">
                     <button
                       onClick={() => { setActiveChapter(next.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className="w-full p-4 bg-white rounded-lg border border-[#e8e8e8] hover:border-[#2bc196] hover:shadow-md transition-all flex items-center gap-3 text-left"
+                      className="w-full p-4 bg-white rounded-lg border border-[#e8e8e8] hover:border-[#1356E2] hover:shadow-md transition-all flex items-center gap-3 text-left"
                     >
                       <div className="flex-1">
-                        <div className="text-[10px] uppercase tracking-wider text-[#2bc196] font-bold">Próximo capítulo →</div>
-                        <div className="text-[14px] font-bold text-[#002443]">Cap. {next.num} — {next.title}</div>
+                        <div className="text-[10px] uppercase tracking-wider text-[#1356E2] font-bold">Próximo capítulo →</div>
+                        <div className="text-[14px] font-bold text-[#0A0A0A]">Cap. {next.num} — {next.title}</div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-[#2bc196]" />
+                      <ChevronRight className="w-5 h-5 text-[#1356E2]" />
                     </button>
                   </div>
                 );

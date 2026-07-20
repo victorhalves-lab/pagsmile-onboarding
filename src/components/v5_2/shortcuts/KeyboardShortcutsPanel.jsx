@@ -25,11 +25,11 @@ export default function KeyboardShortcutsPanel({ open, onOpenChange }) {
         data-shortcut-panel="true"
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#002443]">
-            <Keyboard className="w-5 h-5 text-[#2bc196]" />
+          <DialogTitle className="flex items-center gap-2 text-[#0A0A0A]">
+            <Keyboard className="w-5 h-5 text-[#1356E2]" />
             Atalhos de Teclado · V5.2
           </DialogTitle>
-          <DialogDescription className="text-[#002443]/60">
+          <DialogDescription className="text-[#0A0A0A]/60">
             {EXPECTED_SHORTCUT_COUNT} atalhos disponíveis na tela de análise V5.2.
             Pressione <Kbd>Esc</Kbd> para fechar.
           </DialogDescription>
@@ -41,8 +41,8 @@ export default function KeyboardShortcutsPanel({ open, onOpenChange }) {
           ))}
         </div>
 
-        <div className="mt-4 pt-3 border-t border-[#002443]/8 flex items-center gap-2 text-[11px] text-[#002443]/50">
-          <Sparkles className="w-3.5 h-3.5 text-[#2bc196]" />
+        <div className="mt-4 pt-3 border-t border-[#0A0A0A]/8 flex items-center gap-2 text-[11px] text-[#0A0A0A]/50">
+          <Sparkles className="w-3.5 h-3.5 text-[#1356E2]" />
           <span>
             Atalhos são ignorados quando você está digitando em um campo de texto.
             Sequências (ex: <Kbd>G</Kbd> <Kbd>C</Kbd>) precisam ser pressionadas em até 1s.
@@ -56,22 +56,22 @@ export default function KeyboardShortcutsPanel({ open, onOpenChange }) {
 function CategoryBlock({ title, items }) {
   return (
     <div>
-      <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40 mb-2">
+      <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-2">
         {title}
       </h3>
       <div className="space-y-1">
         {items.map(item => (
           <div
             key={item.id}
-            className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-[#2bc196]/5 transition-colors"
+            className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-[#1356E2]/5 transition-colors"
           >
-            <span className="text-sm text-[#002443]">{item.label}</span>
+            <span className="text-sm text-[#0A0A0A]">{item.label}</span>
             <div className="flex items-center gap-1">
               {item.keys.map((k, idx) => (
                 <React.Fragment key={idx}>
                   <Kbd>{formatKey(k)}</Kbd>
                   {idx < item.keys.length - 1 && (
-                    <span className="text-[#002443]/30 text-xs px-0.5">depois</span>
+                    <span className="text-[#0A0A0A]/30 text-xs px-0.5">depois</span>
                   )}
                 </React.Fragment>
               ))}
@@ -85,7 +85,7 @@ function CategoryBlock({ title, items }) {
 
 function Kbd({ children }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-2 rounded border border-[#002443]/15 bg-white text-[11px] font-mono font-semibold text-[#002443] shadow-[0_1px_0_rgba(0,36,67,0.1)]">
+    <kbd className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-2 rounded border border-[#0A0A0A]/15 bg-white text-[11px] font-mono font-semibold text-[#0A0A0A] shadow-[0_1px_0_rgba(0,36,67,0.1)]">
       {children}
     </kbd>
   );

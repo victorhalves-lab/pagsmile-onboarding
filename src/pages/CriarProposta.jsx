@@ -445,16 +445,16 @@ export default function CriarProposta() {
   };
 
   return (
-    <div className="min-h-screen bg-[#002443] font-sans">
+    <div className="min-h-screen bg-[#0A0A0A] font-sans">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-20 bg-[#002443] border-b border-white/5">
+      <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-20 bg-[#0A0A0A] border-b border-white/5">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-white/50 hover:text-white hover:bg-white/5 rounded-xl">
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
             <h1 className="text-lg font-bold text-white">{editId ? t('criar_prop.edit_title') : t('criar_prop.new_title')}</h1>
-            <p className="text-xs text-[#2bc196]/60">{t('criar_prop.subtitle')}</p>
+            <p className="text-xs text-[#1356E2]/60">{t('criar_prop.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -464,7 +464,7 @@ export default function CriarProposta() {
           <Button variant="ghost" onClick={handleSalvarRascunho} disabled={saving} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} {t('criar_prop.draft')}
           </Button>
-          <Button onClick={handleGerarProposta} disabled={saving} className="bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] font-bold rounded-xl shadow-lg shadow-[#2bc196]/20 px-6">
+          <Button onClick={handleGerarProposta} disabled={saving} className="bg-[#1356E2] hover:bg-[#E84B1C] text-[#0A0A0A] font-bold rounded-xl shadow-lg shadow-[#1356E2]/20 px-6">
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} {t('criar_prop.generate')}
           </Button>
         </div>

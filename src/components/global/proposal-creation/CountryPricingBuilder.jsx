@@ -111,11 +111,11 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
     <div className="space-y-3">
       {/* Adicionar país */}
       <div className="flex items-center gap-2 bg-[#f4f4f4]/50 rounded-xl p-3">
-        <Globe2 className="w-4 h-4 text-[#2bc196]" />
+        <Globe2 className="w-4 h-4 text-[#1356E2]" />
         <select
           value={selectedCountry}
           onChange={e => setSelectedCountry(e.target.value)}
-          className="flex-1 h-9 rounded-md border border-[#002443]/10 px-2 text-sm bg-white"
+          className="flex-1 h-9 rounded-md border border-[#0A0A0A]/10 px-2 text-sm bg-white"
         >
           <option value="">Selecionar país para adicionar...</option>
           {availableCountries
@@ -130,7 +130,7 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
 
       {/* Países adicionados */}
       {value.length === 0 && (
-        <div className="text-center text-xs text-[#002443]/50 py-8 border border-dashed border-[#002443]/15 rounded-xl">
+        <div className="text-center text-xs text-[#0A0A0A]/50 py-8 border border-dashed border-[#0A0A0A]/15 rounded-xl">
           Nenhum país adicionado. Selecione acima para começar a construir a proposta por mercado.
         </div>
       )}
@@ -141,9 +141,9 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
         const meta = COUNTRIES.find(c => c.code === country.country);
 
         return (
-          <div key={country.country} className="bg-white border border-[#002443]/8 rounded-2xl overflow-hidden">
+          <div key={country.country} className="bg-white border border-[#0A0A0A]/8 rounded-2xl overflow-hidden">
             {/* Header país */}
-            <div className="bg-[#002443] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-[#0A0A0A] text-white px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-base">{meta?.flag || '🌐'}</span>
                 <span className="text-sm font-bold">{country.country_name}</span>
@@ -167,8 +167,8 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
             )}
 
             {/* Catálogo de canais disponíveis */}
-            <div className="p-3 border-b border-[#002443]/5">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">
+            <div className="p-3 border-b border-[#0A0A0A]/5">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">
                 Canais disponíveis ({countryChannels.length})
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -182,8 +182,8 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
                       disabled={added}
                       className={`text-[11px] px-2 py-1 rounded-full border transition-all ${
                         added
-                          ? 'bg-[#2bc196]/10 border-[#2bc196]/30 text-[#2bc196]/70 cursor-default'
-                          : 'bg-white border-[#002443]/15 text-[#002443]/70 hover:border-[#2bc196] hover:text-[#2bc196]'
+                          ? 'bg-[#1356E2]/10 border-[#1356E2]/30 text-[#1356E2]/70 cursor-default'
+                          : 'bg-white border-[#0A0A0A]/15 text-[#0A0A0A]/70 hover:border-[#1356E2] hover:text-[#1356E2]'
                       }`}
                     >
                       {added && '✓ '}{ch.provider} · {ch.payment_method}
@@ -191,7 +191,7 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
                   );
                 })}
                 {countryChannels.length > 12 && (
-                  <span className="text-[10px] text-[#002443]/50 self-center">+{countryChannels.length - 12} mais</span>
+                  <span className="text-[10px] text-[#0A0A0A]/50 self-center">+{countryChannels.length - 12} mais</span>
                 )}
               </div>
               <Button variant="ghost" size="sm" onClick={() => addCustomMethod(country.country)} className="mt-2 text-xs">
@@ -202,14 +202,14 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
             {/* Métodos selecionados */}
             <div className="p-3 space-y-2">
               {country.methods.length === 0 && (
-                <div className="text-[11px] text-[#002443]/50 text-center py-3">Nenhum método selecionado. Clique nos canais acima.</div>
+                <div className="text-[11px] text-[#0A0A0A]/50 text-center py-3">Nenhum método selecionado. Clique nos canais acima.</div>
               )}
               {country.methods.map((m, idx) => (
                 <div key={idx} className="bg-[#f4f4f4]/50 rounded-lg p-2.5 grid grid-cols-12 gap-2 items-center">
                   <div className="col-span-3">
                     <Input value={m.method_label} onChange={e => updateMethod(country.country, idx, { method_label: e.target.value })}
                       className="h-8 text-xs" placeholder="Método" />
-                    <div className="text-[9px] text-[#002443]/40 mt-0.5">{methodLabel(m.method_category, 'pt')}</div>
+                    <div className="text-[9px] text-[#0A0A0A]/40 mt-0.5">{methodLabel(m.method_category, 'pt')}</div>
                   </div>
                   <div className="col-span-3">
                     <Input value={m.description} onChange={e => updateMethod(country.country, idx, { description: e.target.value })}
@@ -218,7 +218,7 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
                   <div className="col-span-2 flex gap-1 items-center">
                     <Input type="number" step="0.01" value={m.rate_pct} onChange={e => updateMethod(country.country, idx, { rate_pct: parseFloat(e.target.value) || 0 })}
                       className="h-8 text-xs" placeholder="%" />
-                    <span className="text-xs text-[#002443]/40">%</span>
+                    <span className="text-xs text-[#0A0A0A]/40">%</span>
                   </div>
                   <div className="col-span-2 flex gap-1 items-center">
                     <Input type="number" step="0.01" value={m.fixed} onChange={e => updateMethod(country.country, idx, { fixed: parseFloat(e.target.value) || 0 })}
@@ -243,10 +243,10 @@ export default function CountryPricingBuilder({ value = [], onChange, declaredIn
             {/* Impostos automáticos */}
             {country.taxes && country.taxes.length > 0 && (
               <div className="px-3 pb-3">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-1">Impostos aplicáveis</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Impostos aplicáveis</div>
                 <div className="flex flex-wrap gap-1.5">
                   {country.taxes.map((t, i) => (
-                    <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-[#002443]/8 text-[#002443]/80">
+                    <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-[#0A0A0A]/8 text-[#0A0A0A]/80">
                       {t.tax_type} {t.percentage}%
                     </span>
                   ))}

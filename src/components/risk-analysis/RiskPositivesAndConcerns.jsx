@@ -117,7 +117,7 @@ function EnrichedItem({ text, tone }) {
           {/* Source tag (top-right style) */}
           {source && (
             <div className="mt-1.5 flex items-center gap-1">
-              <Link2 className="w-2.5 h-2.5 text-[#002443]/30" />
+              <Link2 className="w-2.5 h-2.5 text-[#0A0A0A]/30" />
               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${source.tone}`}>
                 {source.label}
               </span>

@@ -19,7 +19,7 @@ const GLOSSARY = [
   { term: 'UBO', full: 'Ultimate Beneficial Owner (Beneficiário Final)', definition: 'A pessoa física que, em última instância, controla ou se beneficia economicamente de uma empresa. Mesmo que uma empresa seja dona de outra empresa, é necessário "subir" a cadeia societária até encontrar as pessoas físicas que controlam tudo. Reguladores exigem identificação do UBO para prevenir uso de estruturas societárias complexas para ocultar identidades.' },
   { term: 'Dívida Ativa', full: 'Inscrição em Dívida Ativa', definition: 'Quando uma pessoa ou empresa deve impostos ou taxas ao governo (federal, estadual ou municipal) e não paga, o débito é inscrito na "Dívida Ativa". Isso gera restrições como impossibilidade de obter certidões negativas, participar de licitações e, em casos graves, penhora de bens. É diferente de dívida com bancos/empresas privadas.' },
   { term: 'Rolling Reserve', full: 'Reserva Rotativa', definition: 'Percentual de cada transação processada que é retido pela adquirente/processadora como garantia contra chargebacks e fraudes. Por exemplo, Rolling Reserve de 10% significa que a cada R$ 100 processados, R$ 10 ficam retidos por um período (geralmente 180 dias). É aplicado a merchants de maior risco como proteção financeira.' },
-  { term: 'Subfaixa', full: 'Subfaixa de Decisão (Framework v4)', definition: 'Classificação do nível de risco de um merchant no Framework v4 da Pagsmile. Vai de 1A (Verde Express — menor risco) até 5 (Bloqueio Total). Cada subfaixa determina: se a aprovação é automática ou manual, qual o Rolling Reserve aplicado, qual o nível de monitoramento, e quais condições são impostas.' },
+  { term: 'Subfaixa', full: 'Subfaixa de Decisão (Framework v4)', definition: 'Classificação do nível de risco de um merchant no Framework v4 da Pin Bank. Vai de 1A (Verde Express — menor risco) até 5 (Bloqueio Total). Cada subfaixa determina: se a aprovação é automática ou manual, qual o Rolling Reserve aplicado, qual o nível de monitoramento, e quais condições são impostas.' },
   { term: 'CEIS/CNEP', full: 'Cadastro de Empresas Inidôneas e Suspensas / Cadastro Nacional de Empresas Punidas', definition: 'Listas mantidas pela Controladoria-Geral da União (CGU) que registram empresas que foram punidas pelo governo por irregularidades em contratos públicos, licitações ou práticas ilícitas. Estar nessas listas é um bloqueio grave para compliance.' },
   { term: 'Adverse Media', full: 'Mídia Adversa', definition: 'Notícias negativas encontradas sobre uma empresa ou pessoa em fontes de mídia (jornais, sites, TV). Pode incluir: escândalos de corrupção, envolvimento em fraudes, problemas regulatórios, processos criminais noticiados. Mídia adversa é um indicador de risco reputacional que pode afetar a decisão de onboarding.' },
   { term: 'Documentoscopy', full: 'Documentoscopia', definition: 'Análise técnica de documentos (RG, CNH, comprovantes) para verificar se são autênticos ou falsificados. Usa técnicas como análise de tipografia, marcas de segurança, consistência de dados e comparação com padrões oficiais. Realizada pela CAF (Combate à Fraude) no fluxo de verificação.' },
@@ -48,16 +48,16 @@ export default function BDCGlossary() {
           <BookOpen className="w-5 h-5 text-blue-600" />
         </div>
         <div className="flex-1">
-          <h4 className="text-sm font-bold text-[#002443]">📖 Glossário de Termos — Compliance & BDC</h4>
-          <p className="text-[10px] text-[#002443]/40">{GLOSSARY.length} termos explicados em linguagem simples</p>
+          <h4 className="text-sm font-bold text-[#0A0A0A]">📖 Glossário de Termos — Compliance & BDC</h4>
+          <p className="text-[10px] text-[#0A0A0A]/40">{GLOSSARY.length} termos explicados em linguagem simples</p>
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
       </button>
 
       {open && (
         <div className="border-t border-slate-100 p-4">
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
             <Input
               placeholder="Buscar termo..."
               value={search}
@@ -71,7 +71,7 @@ export default function BDCGlossary() {
               <GlossaryItem key={i} item={g} />
             ))}
             {filtered.length === 0 && (
-              <p className="text-sm text-[#002443]/40 text-center py-4">Nenhum termo encontrado</p>
+              <p className="text-sm text-[#0A0A0A]/40 text-center py-4">Nenhum termo encontrado</p>
             )}
           </div>
         </div>
@@ -92,12 +92,12 @@ function GlossaryItem({ item }) {
         <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md shrink-0">
           {item.term}
         </span>
-        <span className="text-xs text-[#002443]/60 flex-1 truncate">{item.full}</span>
-        {expanded ? <ChevronUp className="w-3.5 h-3.5 text-[#002443]/30" /> : <ChevronDown className="w-3.5 h-3.5 text-[#002443]/30" />}
+        <span className="text-xs text-[#0A0A0A]/60 flex-1 truncate">{item.full}</span>
+        {expanded ? <ChevronUp className="w-3.5 h-3.5 text-[#0A0A0A]/30" /> : <ChevronDown className="w-3.5 h-3.5 text-[#0A0A0A]/30" />}
       </button>
       {expanded && (
         <div className="px-4 pb-3 pt-0">
-          <p className="text-[12px] text-[#002443]/75 leading-relaxed">{item.definition}</p>
+          <p className="text-[12px] text-[#0A0A0A]/75 leading-relaxed">{item.definition}</p>
         </div>
       )}
     </div>

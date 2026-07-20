@@ -28,18 +28,18 @@ function MCCBlock({ mccItem }) {
       <table className="w-full text-xs">
         <thead>
           <tr className="bg-[#f4f4f4]/50">
-            <th className="text-left py-1.5 px-2 text-[#002443]/40 font-semibold w-24">Bandeira</th>
+            <th className="text-left py-1.5 px-2 text-[#0A0A0A]/40 font-semibold w-24">Bandeira</th>
             {FAIXA_COLS.map(f => (
-              <th key={f.key} className="text-center py-1.5 px-2 text-[#002443]/40 font-semibold">{f.label}</th>
+              <th key={f.key} className="text-center py-1.5 px-2 text-[#0A0A0A]/40 font-semibold">{f.label}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {bandeiras.map(b => (
-            <tr key={b} className="border-t border-[#002443]/[0.03]">
-              <td className="py-1.5 px-2 font-semibold text-[#002443] text-xs">{BANDEIRA_LABELS[b] || b}</td>
+            <tr key={b} className="border-t border-[#0A0A0A]/[0.03]">
+              <td className="py-1.5 px-2 font-semibold text-[#0A0A0A] text-xs">{BANDEIRA_LABELS[b] || b}</td>
               {FAIXA_COLS.map(f => (
-                <td key={f.key} className="text-center py-1.5 px-2 text-[#002443] text-xs">
+                <td key={f.key} className="text-center py-1.5 px-2 text-[#0A0A0A] text-xs">
                   {formatRate(mccItem.rates[b]?.[f.key])}
                 </td>
               ))}
@@ -55,7 +55,7 @@ export default function PartnerMDRTable({ mdrByMcc = [], compact = false }) {
   const [expandedMcc, setExpandedMcc] = useState(null);
 
   if (!mdrByMcc.length) {
-    return <p className="text-xs text-[#002443]/30 py-4 text-center">Nenhuma taxa por MCC cadastrada</p>;
+    return <p className="text-xs text-[#0A0A0A]/30 py-4 text-center">Nenhuma taxa por MCC cadastrada</p>;
   }
 
   if (compact) {
@@ -68,11 +68,11 @@ export default function PartnerMDRTable({ mdrByMcc = [], compact = false }) {
               className="flex items-center gap-2 w-full text-left py-1.5 px-2 rounded-lg hover:bg-[#f4f4f4] transition-colors"
             >
               {expandedMcc === idx 
-                ? <ChevronDown className="w-3 h-3 text-[#002443]/30" /> 
-                : <ChevronRight className="w-3 h-3 text-[#002443]/30" />
+                ? <ChevronDown className="w-3 h-3 text-[#0A0A0A]/30" /> 
+                : <ChevronRight className="w-3 h-3 text-[#0A0A0A]/30" />
               }
-              <Badge variant="outline" className="text-[10px] border-[#002443]/10 font-mono">{item.mccCode}</Badge>
-              <span className="text-xs text-[#002443]/70">{item.mccDescription}</span>
+              <Badge variant="outline" className="text-[10px] border-[#0A0A0A]/10 font-mono">{item.mccCode}</Badge>
+              <span className="text-xs text-[#0A0A0A]/70">{item.mccDescription}</span>
             </button>
             {expandedMcc === idx && (
               <div className="ml-5 mt-1 mb-2">
@@ -88,10 +88,10 @@ export default function PartnerMDRTable({ mdrByMcc = [], compact = false }) {
   return (
     <div className="space-y-4">
       {mdrByMcc.map((item, idx) => (
-        <div key={idx} className="rounded-xl border border-[#002443]/5 overflow-hidden">
+        <div key={idx} className="rounded-xl border border-[#0A0A0A]/5 overflow-hidden">
           <div className="bg-[#f4f4f4] px-3 py-2 flex items-center gap-2">
-            <Badge className="bg-[#002443]/10 text-[#002443] border-0 text-[10px] font-mono">{item.mccCode}</Badge>
-            <span className="text-xs font-semibold text-[#002443]">{item.mccDescription}</span>
+            <Badge className="bg-[#0A0A0A]/10 text-[#0A0A0A] border-0 text-[10px] font-mono">{item.mccCode}</Badge>
+            <span className="text-xs font-semibold text-[#0A0A0A]">{item.mccDescription}</span>
           </div>
           <div className="p-2">
             <MCCBlock mccItem={item} />

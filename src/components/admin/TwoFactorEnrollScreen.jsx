@@ -82,7 +82,7 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
   };
 
   const downloadBackup = () => {
-    const content = `PAGSMILE — CÓDIGOS DE BACKUP 2FA\nUsuário: ${userEmail}\nGerado: ${new Date().toLocaleString('pt-BR')}\n\n${backupCodes.join('\n')}\n\nCada código pode ser usado UMA ÚNICA VEZ caso você perca acesso ao app autenticador.\nGuarde em local seguro (cofre, gerenciador de senhas).`;
+    const content = `PIN BANK — CÓDIGOS DE BACKUP 2FA\nUsuário: ${userEmail}\nGerado: ${new Date().toLocaleString('pt-BR')}\n\n${backupCodes.join('\n')}\n\nCada código pode ser usado UMA ÚNICA VEZ caso você perca acesso ao app autenticador.\nGuarde em local seguro (cofre, gerenciador de senhas).`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -91,11 +91,11 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#002443] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-[#2bc196]/20 flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-[#2bc196]" />
+          <div className="w-16 h-16 rounded-2xl bg-[#1356E2]/20 flex items-center justify-center mx-auto mb-4">
+            <Shield className="w-8 h-8 text-[#1356E2]" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Configurar Autenticação em 3 Fatores</h1>
           <p className="text-white/50 text-sm">Passo obrigatório no primeiro acesso.</p>
@@ -104,7 +104,7 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
         {/* Progress */}
         <div className="flex items-center justify-center gap-2 mb-6">
           {[1, 2, 3].map(n => (
-            <div key={n} className={`h-1.5 w-16 rounded-full transition-all ${step >= n ? 'bg-[#2bc196]' : 'bg-white/10'}`} />
+            <div key={n} className={`h-1.5 w-16 rounded-full transition-all ${step >= n ? 'bg-[#1356E2]' : 'bg-white/10'}`} />
           ))}
         </div>
 
@@ -113,7 +113,7 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
           {step === 1 && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-white mb-2">
-                <Smartphone className="w-5 h-5 text-[#2bc196]" />
+                <Smartphone className="w-5 h-5 text-[#1356E2]" />
                 <h2 className="font-semibold">Passo 1 — Google Authenticator</h2>
               </div>
               <p className="text-xs text-white/60">
@@ -130,9 +130,9 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
                   <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                     <p className="text-[10px] text-white/40 uppercase tracking-wider mb-1">Não consegue escanear? Use este código:</p>
                     <div className="flex items-center gap-2">
-                      <code className="text-xs text-[#2bc196] font-mono flex-1 break-all">{secret}</code>
+                      <code className="text-xs text-[#1356E2] font-mono flex-1 break-all">{secret}</code>
                       <button onClick={copySecret} className="text-white/50 hover:text-white p-1">
-                        {copiedSecret ? <CheckCircle2 className="w-4 h-4 text-[#2bc196]" /> : <Copy className="w-4 h-4" />}
+                        {copiedSecret ? <CheckCircle2 className="w-4 h-4 text-[#1356E2]" /> : <Copy className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
@@ -143,12 +143,12 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
                       value={totpCode}
                       onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
                       placeholder="000000"
-                      className="bg-white/10 border-white/10 text-white text-center text-2xl tracking-[0.5em] h-14 rounded-xl focus:border-[#2bc196] focus:ring-[#2bc196]"
+                      className="bg-white/10 border-white/10 text-white text-center text-2xl tracking-[0.5em] h-14 rounded-xl focus:border-[#1356E2] focus:ring-[#1356E2]"
                       autoFocus
                     />
                   </div>
                   {error && <p className="text-red-400 text-sm">{error}</p>}
-                  <Button onClick={handleStep1} disabled={loading || totpCode.length !== 6} className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90">
+                  <Button onClick={handleStep1} disabled={loading || totpCode.length !== 6} className="w-full h-12 bg-[#1356E2] hover:bg-[#1356E2]/90">
                     {loading ? 'Verificando...' : 'Próximo →'}
                   </Button>
                 </>
@@ -160,7 +160,7 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
           {step === 2 && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-white mb-2">
-                <KeyRound className="w-5 h-5 text-[#2bc196]" />
+                <KeyRound className="w-5 h-5 text-[#1356E2]" />
                 <h2 className="font-semibold">Passo 2 — Criar PIN Pessoal</h2>
               </div>
               <p className="text-xs text-white/60">
@@ -191,7 +191,7 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
                 <Button variant="outline" onClick={() => { setError(''); setStep(1); }} className="flex-1 h-12 border-white/20 text-white bg-transparent hover:bg-white/5">
                   ← Voltar
                 </Button>
-                <Button onClick={handleFinalize} disabled={loading || pin.length !== 6 || pinConfirm.length !== 6} className="flex-1 h-12 bg-[#2bc196] hover:bg-[#2bc196]/90">
+                <Button onClick={handleFinalize} disabled={loading || pin.length !== 6 || pinConfirm.length !== 6} className="flex-1 h-12 bg-[#1356E2] hover:bg-[#1356E2]/90">
                   {loading ? 'Salvando...' : 'Finalizar'}
                 </Button>
               </div>
@@ -202,7 +202,7 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
           {step === 3 && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-white mb-2">
-                <Download className="w-5 h-5 text-[#2bc196]" />
+                <Download className="w-5 h-5 text-[#1356E2]" />
                 <h2 className="font-semibold">Passo 3 — Códigos de Backup</h2>
               </div>
               <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 flex gap-2">
@@ -213,13 +213,13 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
               </div>
               <div className="bg-white/5 border border-white/10 rounded-lg p-4 grid grid-cols-2 gap-2 font-mono text-sm">
                 {backupCodes.map((code, i) => (
-                  <div key={i} className="text-[#2bc196] bg-black/20 px-2 py-1.5 rounded text-center">{code}</div>
+                  <div key={i} className="text-[#1356E2] bg-black/20 px-2 py-1.5 rounded text-center">{code}</div>
                 ))}
               </div>
               <Button onClick={downloadBackup} variant="outline" className="w-full h-11 border-white/20 text-white bg-transparent hover:bg-white/5">
                 <Download className="w-4 h-4 mr-2" /> Baixar códigos (.txt)
               </Button>
-              <Button onClick={onComplete} className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90">
+              <Button onClick={onComplete} className="w-full h-12 bg-[#1356E2] hover:bg-[#1356E2]/90">
                 Concluí, guardei em local seguro →
               </Button>
             </div>
@@ -227,7 +227,7 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
         </div>
 
         <p className="text-center text-white/30 text-xs mt-6">
-          &copy; {new Date().getFullYear()} Pagsmile — Acesso restrito
+          &copy; {new Date().getFullYear()} Pin Bank — Acesso restrito
         </p>
       </div>
     </div>

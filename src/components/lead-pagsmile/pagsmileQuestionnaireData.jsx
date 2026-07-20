@@ -1,5 +1,5 @@
 // ============================================================
-// QUESTIONÁRIO DE LEADS PAGSMILE v5.0 — DADOS CENTRALIZADOS
+// QUESTIONÁRIO DE LEADS PIN BANK v5.0 — DADOS CENTRALIZADOS
 // V5.2: 15 segmentos (10 legados + 5 novos) | adapta-se à
 // fonte da verdade canônica em lib/v5_2/segments.js
 // ============================================================

@@ -88,7 +88,7 @@ export default function DossieV5_2Button({ caseId, merchantName, variant = 'defa
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
-            <ShieldCheck className="w-4 h-4 text-[#2bc196]" />
+            <ShieldCheck className="w-4 h-4 text-[#1356E2]" />
           )}
           {variant !== 'compact' && (
             <span>{isLoading ? 'Gerando…' : 'Dossiê Auditável'}</span>
@@ -96,7 +96,7 @@ export default function DossieV5_2Button({ caseId, merchantName, variant = 'defa
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-[#002443]/60">
+        <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-[#0A0A0A]/60">
           Exportar dossiê V5.2
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -104,25 +104,25 @@ export default function DossieV5_2Button({ caseId, merchantName, variant = 'defa
           <FileBadge className="w-4 h-4 mr-2 text-red-500" />
           <div className="flex-1">
             <div className="text-xs font-semibold">PDF Regulatório</div>
-            <div className="text-[10px] text-[#002443]/50">Layout para entrega externa</div>
+            <div className="text-[10px] text-[#0A0A0A]/50">Layout para entrega externa</div>
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport('xlsx')} disabled={isLoading} className="cursor-pointer">
           <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" />
           <div className="flex-1">
             <div className="text-xs font-semibold">XLSX Auditoria</div>
-            <div className="text-[10px] text-[#002443]/50">Planilha multi-aba para auditoria</div>
+            <div className="text-[10px] text-[#0A0A0A]/50">Planilha multi-aba para auditoria</div>
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport('json')} disabled={isLoading} className="cursor-pointer">
           <FileJson className="w-4 h-4 mr-2 text-blue-500" />
           <div className="flex-1">
             <div className="text-xs font-semibold">JSON Imutável</div>
-            <div className="text-[10px] text-[#002443]/50">Auditoria + verificação programática</div>
+            <div className="text-[10px] text-[#0A0A0A]/50">Auditoria + verificação programática</div>
           </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <div className="px-2 py-1.5 text-[9px] text-[#002443]/40 leading-tight">
+        <div className="px-2 py-1.5 text-[9px] text-[#0A0A0A]/40 leading-tight">
           <p className="font-semibold mb-0.5">Integridade SHA-256</p>
           <p>Circ. BCB 3.978 Art. 17 + Resol. BCB 403/2024</p>
         </div>

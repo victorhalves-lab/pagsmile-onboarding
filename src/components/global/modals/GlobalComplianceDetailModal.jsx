@@ -20,7 +20,7 @@ export default function GlobalComplianceDetailModal({ complianceId, onClose }) {
     <Dialog open={!!complianceId} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-lg text-[#002443]">
+          <DialogTitle className="text-lg text-[#0A0A0A]">
             {isLoading ? 'Carregando...' : (c?.legal_business_name || 'KYC')}
           </DialogTitle>
         </DialogHeader>
@@ -52,12 +52,12 @@ export default function GlobalComplianceDetailModal({ complianceId, onClose }) {
             <Section title="UBOs">
               <div className="md:col-span-2 space-y-2">
                 {(c.ubos || []).length === 0
-                  ? <span className="text-[#002443]/50">—</span>
+                  ? <span className="text-[#0A0A0A]/50">—</span>
                   : (c.ubos || []).map((u, i) => (
-                      <div key={i} className="bg-white rounded-lg p-2 border border-[#002443]/5">
-                        <div className="font-medium text-[#002443]">{u.name} <span className="text-[#002443]/50 text-xs">({u.nationality})</span></div>
-                        <div className="text-xs text-[#002443]/60">{u.address}</div>
-                        <div className="text-xs text-[#2bc196] mt-1">{u.ownership_percentage}% ownership</div>
+                      <div key={i} className="bg-white rounded-lg p-2 border border-[#0A0A0A]/5">
+                        <div className="font-medium text-[#0A0A0A]">{u.name} <span className="text-[#0A0A0A]/50 text-xs">({u.nationality})</span></div>
+                        <div className="text-xs text-[#0A0A0A]/60">{u.address}</div>
+                        <div className="text-xs text-[#1356E2] mt-1">{u.ownership_percentage}% ownership</div>
                       </div>
                   ))}
               </div>
@@ -66,10 +66,10 @@ export default function GlobalComplianceDetailModal({ complianceId, onClose }) {
             <Section title="Diretores">
               <div className="md:col-span-2 flex flex-wrap gap-2">
                 {(c.directors || []).length === 0
-                  ? <span className="text-[#002443]/50">—</span>
+                  ? <span className="text-[#0A0A0A]/50">—</span>
                   : (c.directors || []).map((d, i) => (
-                      <span key={i} className="text-xs bg-[#002443]/5 text-[#002443] px-2 py-1 rounded-md">
-                        {d.first_name} {d.last_name} <span className="text-[#002443]/50">· {d.job_title}</span>
+                      <span key={i} className="text-xs bg-[#0A0A0A]/5 text-[#0A0A0A] px-2 py-1 rounded-md">
+                        {d.first_name} {d.last_name} <span className="text-[#0A0A0A]/50">· {d.job_title}</span>
                       </span>
                   ))}
               </div>
@@ -80,7 +80,7 @@ export default function GlobalComplianceDetailModal({ complianceId, onClose }) {
               <Field label="PEP" value={c.q_pep ? '✅ Sim' : '❌ Não'} />
               <Field label="País sancionado" value={c.q_sanctioned_country ? '✅ Sim' : '❌ Não'} />
               <Field label="Propriedade sancionada" value={c.q_sanctioned_ownership ? '✅ Sim' : '❌ Não'} />
-              <Field label="Tratativas Pagsmile" value={c.q_pagsmile_dealings ? '✅ Sim' : '❌ Não'} />
+              <Field label="Tratativas Pin Bank" value={c.q_pagsmile_dealings ? '✅ Sim' : '❌ Não'} />
               <Field label="Value Exchange" value={c.q_value_exchange ? '✅ Sim' : '❌ Não'} />
             </Section>
 
@@ -109,7 +109,7 @@ export default function GlobalComplianceDetailModal({ complianceId, onClose }) {
 function Section({ title, children }) {
   return (
     <div>
-      <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">{title}</h4>
+      <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">{title}</h4>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-[#f4f4f4]/40 rounded-xl p-3">
         {children}
       </div>
@@ -120,8 +120,8 @@ function Section({ title, children }) {
 function Field({ label, value, className = '' }) {
   return (
     <div className={className}>
-      <div className="text-[10px] uppercase tracking-wider text-[#002443]/50">{label}</div>
-      <div className="text-[#002443] mt-0.5 break-words">{value || '—'}</div>
+      <div className="text-[10px] uppercase tracking-wider text-[#0A0A0A]/50">{label}</div>
+      <div className="text-[#0A0A0A] mt-0.5 break-words">{value || '—'}</div>
     </div>
   );
 }
@@ -129,10 +129,10 @@ function Field({ label, value, className = '' }) {
 function DocLink({ label, url }) {
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wider text-[#002443]/50">{label}</div>
+      <div className="text-[10px] uppercase tracking-wider text-[#0A0A0A]/50">{label}</div>
       {url
-        ? <a href={url} target="_blank" rel="noreferrer" className="text-[#2bc196] underline text-xs">Abrir</a>
-        : <span className="text-[#002443]/30 text-xs">—</span>}
+        ? <a href={url} target="_blank" rel="noreferrer" className="text-[#1356E2] underline text-xs">Abrir</a>
+        : <span className="text-[#0A0A0A]/30 text-xs">—</span>}
     </div>
   );
 }

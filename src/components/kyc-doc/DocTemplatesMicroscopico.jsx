@@ -40,14 +40,14 @@ export default function DocTemplatesMicroscopico({ templates = [], questionsByTe
   return (
     <div className="max-w-[1200px] mx-auto p-6">
       {/* Header */}
-      <div className="mb-6 pb-5 border-b-2 border-[#2bc196]">
+      <div className="mb-6 pb-5 border-b-2 border-[#1356E2]">
         <div className="flex items-center gap-2 mb-2">
-          <BookOpen className="w-5 h-5 text-[#2bc196]" />
-          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#2bc196]">
+          <BookOpen className="w-5 h-5 text-[#1356E2]" />
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#1356E2]">
             Visão Microscópica
           </span>
         </div>
-        <h1 className="text-2xl font-black text-[#002443] mb-2">
+        <h1 className="text-2xl font-black text-[#0A0A0A] mb-2">
           Templates de Questionários por Segmento
         </h1>
         <p className="text-[13px] text-[#1a1a1a]/70 leading-relaxed max-w-3xl">
@@ -119,8 +119,8 @@ function renderGroup(title, templates, questionsByTemplate) {
   return (
     <div className="mb-8">
       <div className="flex items-center gap-2 mb-4">
-        <FileCheck2 className="w-4 h-4 text-[#2bc196]" />
-        <h2 className="text-sm font-bold text-[#002443] uppercase tracking-wider">{title}</h2>
+        <FileCheck2 className="w-4 h-4 text-[#1356E2]" />
+        <h2 className="text-sm font-bold text-[#0A0A0A] uppercase tracking-wider">{title}</h2>
         <span className="text-[11px] text-[#1a1a1a]/40">({templates.length})</span>
         <div className="flex-1 h-px bg-[#e8e8e8]" />
       </div>
@@ -142,7 +142,7 @@ function FilterChip({ label, active, onClick }) {
       size="sm"
       onClick={onClick}
       className={`h-7 text-[11px] px-2.5 rounded-full border ${active
-        ? 'bg-[#002443] text-white border-[#002443] hover:bg-[#002443]/90 hover:text-white'
+        ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] hover:bg-[#0A0A0A]/90 hover:text-white'
         : 'bg-white text-[#1a1a1a]/60 border-[#e8e8e8] hover:bg-[#f4f4f4]'}`}
     >
       {label}
@@ -154,7 +154,7 @@ function GlobalMetric({ label, value }) {
   return (
     <div className="bg-white border border-[#e8e8e8] rounded-lg px-3 py-2">
       <p className="text-[9px] uppercase tracking-wider text-[#1a1a1a]/50 font-semibold">{label}</p>
-      <p className="text-lg font-black text-[#002443]">{value}</p>
+      <p className="text-lg font-black text-[#0A0A0A]">{value}</p>
     </div>
   );
 }

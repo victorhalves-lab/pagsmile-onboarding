@@ -13,7 +13,7 @@ import ProfileSectionGroup from '@/components/admin/profiles/ProfileSectionGroup
 import SidebarPreview from '@/components/admin/profiles/SidebarPreview';
 import { toast } from 'sonner';
 
-const COLORS = ['#ef4444','#f59e0b','#2bc196','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#64748b'];
+const COLORS = ['#ef4444','#f59e0b','#1356E2','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#64748b'];
 const ICONS = ['Shield','ShieldCheck','Crown','Briefcase','Users','Handshake','DollarSign','Eye','Inbox','Stamp','Database','BarChart3','Wrench','Plug','Settings','BookOpen'];
 
 export default function EditorPerfil() {
@@ -26,7 +26,7 @@ export default function EditorPerfil() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [profile, setProfile] = useState({
-    name: '', slug: '', description: '', color: '#2bc196', icon: 'Shield',
+    name: '', slug: '', description: '', color: '#1356E2', icon: 'Shield',
     isSystem: false, isActive: true, requiresAdminCode: true, homePage: 'Home',
     pagePermissions: []
   });
@@ -92,14 +92,14 @@ export default function EditorPerfil() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443] flex items-center gap-2">
-              <Shield className="w-6 h-6 text-[#2bc196]" />
+            <h1 className="text-2xl font-bold text-[#0A0A0A] flex items-center gap-2">
+              <Shield className="w-6 h-6 text-[#1356E2]" />
               {isNew ? 'Novo Perfil' : `Editar: ${profile.name}`}
             </h1>
-            <p className="text-sm text-[#002443]/60 mt-1">Configure quais páginas, abas, sub-abas e ações este perfil pode acessar.</p>
+            <p className="text-sm text-[#0A0A0A]/60 mt-1">Configure quais páginas, abas, sub-abas e ações este perfil pode acessar.</p>
           </div>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+        <Button onClick={handleSave} disabled={saving} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
           <Save className="w-4 h-4 mr-2" /> {saving ? 'Salvando...' : 'Salvar Perfil'}
         </Button>
       </div>
@@ -109,7 +109,7 @@ export default function EditorPerfil() {
         <div className="col-span-12 lg:col-span-8 space-y-4">
           {/* Metadados */}
           <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
-            <h2 className="font-semibold text-[#002443] text-sm">Informações Gerais</h2>
+            <h2 className="font-semibold text-[#0A0A0A] text-sm">Informações Gerais</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-xs">Nome</Label>
@@ -174,7 +174,7 @@ export default function EditorPerfil() {
           {/* Lista de páginas */}
           <div className="bg-white border border-slate-200 rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-[#002443] text-sm">Permissões por Página</h2>
+              <h2 className="font-semibold text-[#0A0A0A] text-sm">Permissões por Página</h2>
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar página..." className="pl-9 w-64" />

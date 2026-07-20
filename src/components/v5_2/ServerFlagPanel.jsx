@@ -84,12 +84,12 @@ export default function ServerFlagPanel() {
                 checked={enabled}
                 onCheckedChange={toggle}
                 disabled={saving}
-                className="data-[state=checked]:bg-[#2bc196]"
+                className="data-[state=checked]:bg-[#1356E2]"
               />
             )}
             <Badge className={enabled
-              ? 'bg-[#2bc196] text-white border-0'
-              : 'bg-[#002443]/10 text-[#002443]/60 border-0'
+              ? 'bg-[#1356E2] text-white border-0'
+              : 'bg-[#0A0A0A]/10 text-[#0A0A0A]/60 border-0'
             }>
               {enabled ? 'ATIVO' : 'INATIVO (default)'}
             </Badge>
@@ -99,15 +99,15 @@ export default function ServerFlagPanel() {
 
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div className="p-3 rounded-xl bg-white border border-[#002443]/5">
-            <p className="text-[10px] uppercase text-[#002443]/40 font-bold mb-1">Última alteração</p>
-            <p className="text-[#002443]/70 font-mono">
+          <div className="p-3 rounded-xl bg-white border border-[#0A0A0A]/5">
+            <p className="text-[10px] uppercase text-[#0A0A0A]/40 font-bold mb-1">Última alteração</p>
+            <p className="text-[#0A0A0A]/70 font-mono">
               {meta.updatedAt ? new Date(meta.updatedAt).toLocaleString('pt-BR') : '—'}
             </p>
           </div>
-          <div className="p-3 rounded-xl bg-white border border-[#002443]/5">
-            <p className="text-[10px] uppercase text-[#002443]/40 font-bold mb-1">Por</p>
-            <p className="text-[#002443]/70 truncate">{meta.updatedBy || '—'}</p>
+          <div className="p-3 rounded-xl bg-white border border-[#0A0A0A]/5">
+            <p className="text-[10px] uppercase text-[#0A0A0A]/40 font-bold mb-1">Por</p>
+            <p className="text-[#0A0A0A]/70 truncate">{meta.updatedBy || '—'}</p>
           </div>
         </div>
 

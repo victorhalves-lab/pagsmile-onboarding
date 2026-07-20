@@ -187,7 +187,7 @@ export default function GestaoDocumentos() {
   const getFileIcon = (fileType) => {
     if (fileType?.includes('image')) return <Image className="w-5 h-5 text-purple-500" />;
     if (fileType?.includes('pdf')) return <FileText className="w-5 h-5 text-red-500" />;
-    return <File className="w-5 h-5 text-[var(--pagsmile-blue)]/70" />;
+    return <File className="w-5 h-5 text-[var(--pinbank-blue)]/70" />;
   };
 
   const getMerchantStatusColor = (stats) => {
@@ -199,11 +199,11 @@ export default function GestaoDocumentos() {
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <FileText className="w-6 h-6 text-[#5cf7cf]" />
+              <FileText className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('gd.title')}</h1>
@@ -220,7 +220,7 @@ export default function GestaoDocumentos() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { key: 'all', label: t('gd.merchants'), value: globalStats.merchants, color: 'text-[#002443]', border: 'border-[#2bc196]', ring: 'ring-[#2bc196]/20' },
+          { key: 'all', label: t('gd.merchants'), value: globalStats.merchants, color: 'text-[#0A0A0A]', border: 'border-[#1356E2]', ring: 'ring-[#1356E2]/20' },
           { key: 'all2', label: t('gd.total_docs'), value: globalStats.total, color: 'text-blue-600', border: 'border-blue-500', ring: 'ring-blue-500/20' },
           { key: 'Pendente', label: t('gd.pending'), value: globalStats.pendente, color: 'text-yellow-600', border: 'border-yellow-500', ring: 'ring-yellow-500/20' },
           { key: 'Validado', label: t('gd.validated'), value: globalStats.validado, color: 'text-green-600', border: 'border-green-500', ring: 'ring-green-500/20' },
@@ -230,20 +230,20 @@ export default function GestaoDocumentos() {
             key={s.key}
             onClick={() => setStatusFilter(s.key === 'all2' ? 'all' : s.key)}
             className={`bg-white rounded-2xl border p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5 ${
-              (statusFilter === s.key || (statusFilter === 'all' && s.key === 'all')) ? `${s.border} ring-2 ${s.ring}` : 'border-[#002443]/5'
+              (statusFilter === s.key || (statusFilter === 'all' && s.key === 'all')) ? `${s.border} ring-2 ${s.ring}` : 'border-[#0A0A0A]/5'
             }`}
           >
             <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="text-xs text-[#282828]/50">{s.label}</p>
+            <p className="text-xs text-[#0A0A0A]/50">{s.label}</p>
           </button>
         ))}
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+            <Filter className="w-4 h-4 text-[var(--pinbank-blue)]/50" />
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-48">
@@ -269,7 +269,7 @@ export default function GestaoDocumentos() {
           </div>
           
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/50" />
             <Input
               placeholder={t('gd.search_placeholder')}
               value={searchTerm}
@@ -284,12 +284,12 @@ export default function GestaoDocumentos() {
       <div className="space-y-4">
         {isLoading ? (
           <div className="flex items-center justify-center py-12 bg-white rounded-xl border">
-            <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
           </div>
         ) : filteredMerchants.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border">
-            <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-            <p className="text-[var(--pagsmile-blue)]/70">{t('gd.no_merchant')}</p>
+            <FileCheck className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/40 mb-4" />
+            <p className="text-[var(--pinbank-blue)]/70">{t('gd.no_merchant')}</p>
           </div>
         ) : (
           <Accordion type="multiple" className="space-y-3">
@@ -310,10 +310,10 @@ export default function GestaoDocumentos() {
                         )}
                       </div>
                       <div className="text-left">
-                        <p className="font-semibold text-[#002443]">
+                        <p className="font-semibold text-[#0A0A0A]">
                           {item.merchant?.fullName || t('gd.unknown_merchant')}
                         </p>
-                        <p className="text-sm text-[#282828]/50">
+                        <p className="text-sm text-[#0A0A0A]/50">
                           {item.merchant?.cpfCnpj || '-'} 
                           {item.merchant?.type && <span className="ml-2">• {item.merchant.type}</span>}
                         </p>
@@ -327,7 +327,7 @@ export default function GestaoDocumentos() {
                           value={item.stats.total > 0 ? (item.stats.validado / item.stats.total) * 100 : 0} 
                           className="h-2 w-20"
                         />
-                        <span className="text-[10px] text-[#282828]/40 font-medium whitespace-nowrap">
+                        <span className="text-[10px] text-[#0A0A0A]/40 font-medium whitespace-nowrap">
                           {item.stats.validado}/{item.stats.total}
                         </span>
                       </div>
@@ -355,7 +355,7 @@ export default function GestaoDocumentos() {
                 </AccordionTrigger>
                 
                 <AccordionContent className="px-4 pb-4">
-                  <div className="border-t border-[#002443]/5 pt-4 space-y-2">
+                  <div className="border-t border-[#0A0A0A]/5 pt-4 space-y-2">
                     {item.documents.map((doc) => {
                       const statusColor = 
                         doc.validationStatus === 'Validado' ? 'border-l-green-500' :
@@ -367,12 +367,12 @@ export default function GestaoDocumentos() {
                           className={`flex items-center justify-between p-3 bg-[#f4f4f4] rounded-xl hover:bg-[#f4f4f4]/80 transition-colors border-l-[3px] ${statusColor}`}
                         >
                           <div className="flex items-center gap-3 cursor-pointer" onClick={() => openViewer(doc)}>
-                            <div className="p-2 bg-white rounded-lg border border-[#002443]/5">
+                            <div className="p-2 bg-white rounded-lg border border-[#0A0A0A]/5">
                               {getFileIcon(doc.fileType)}
                             </div>
                             <div>
-                              <p className="font-medium text-[#002443] text-sm">{doc.documentName || t('gd.document')}</p>
-                              <p className="text-xs text-[#282828]/40">
+                              <p className="font-medium text-[#0A0A0A] text-sm">{doc.documentName || t('gd.document')}</p>
+                              <p className="text-xs text-[#0A0A0A]/40">
                                 {doc.fileName} • {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString('pt-BR') : 
                                  doc.created_date ? new Date(doc.created_date).toLocaleDateString('pt-BR') : '-'}
                               </p>
@@ -383,7 +383,7 @@ export default function GestaoDocumentos() {
                             {getStatusBadge(doc.validationStatus)}
                             
                             <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="sm" onClick={() => openViewer(doc)} className="text-[#002443]/50 hover:text-[#002443]">
+                              <Button variant="ghost" size="sm" onClick={() => openViewer(doc)} className="text-[#0A0A0A]/50 hover:text-[#0A0A0A]">
                                 <Eye className="w-4 h-4" />
                               </Button>
                               {(!doc.validationStatus || doc.validationStatus === 'Pendente') && (

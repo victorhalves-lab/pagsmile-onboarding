@@ -204,11 +204,11 @@ export default function GestaoRevalidacao() {
   return (
     <div className="space-y-5">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <History className="w-6 h-6 text-[#5cf7cf]" />
+              <History className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Revalidação de Compliance</h1>
@@ -228,7 +228,7 @@ export default function GestaoRevalidacao() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: 'Total Clientes', value: stats.total, icon: Users, color: 'text-[#002443]' },
+          { label: 'Total Clientes', value: stats.total, icon: Users, color: 'text-[#0A0A0A]' },
           { label: 'Aprovados', value: stats.approved, icon: CheckCircle2, color: 'text-green-600' },
           { label: 'Revisão Manual', value: stats.manual, icon: Clock, color: 'text-amber-600' },
           { label: 'Já Revalidados', value: stats.revalidated, icon: RefreshCw, color: 'text-blue-600' },
@@ -237,12 +237,12 @@ export default function GestaoRevalidacao() {
         ].map((s, i) => {
           const Icon = s.icon;
           return (
-            <Card key={i} className={`rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-all ${s.alert ? 'border-orange-300 bg-orange-50/30' : ''}`}>
+            <Card key={i} className={`rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-all ${s.alert ? 'border-orange-300 bg-orange-50/30' : ''}`}>
               <CardContent className="pt-4 flex items-start gap-3">
                 <Icon className={`w-5 h-5 mt-0.5 ${s.color} opacity-60`} />
                 <div>
                   <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-                  <p className="text-[10px] text-[#002443]/50">{s.label}</p>
+                  <p className="text-[10px] text-[#0A0A0A]/50">{s.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -260,25 +260,25 @@ export default function GestaoRevalidacao() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-white border border-[#002443]/8 rounded-xl p-1">
-          <TabsTrigger value="clients" className="rounded-lg data-[state=active]:bg-[#2bc196] data-[state=active]:text-white gap-2">
+        <TabsList className="bg-white border border-[#0A0A0A]/8 rounded-xl p-1">
+          <TabsTrigger value="clients" className="rounded-lg data-[state=active]:bg-[#1356E2] data-[state=active]:text-white gap-2">
             <Users className="w-4 h-4" /> Clientes ({filteredClients.length})
           </TabsTrigger>
-          <TabsTrigger value="history" className="rounded-lg data-[state=active]:bg-[#2bc196] data-[state=active]:text-white gap-2">
+          <TabsTrigger value="history" className="rounded-lg data-[state=active]:bg-[#1356E2] data-[state=active]:text-white gap-2">
             <History className="w-4 h-4" /> Histórico ({validations.length})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="clients" className="mt-4 space-y-4">
           {/* Filters */}
-          <div className="bg-white rounded-2xl border border-[#002443]/8 p-4">
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Filter className="w-4 h-4 text-[#002443]/40" />
-              <span className="text-xs font-bold text-[#002443]/60 uppercase tracking-wide">Filtros</span>
+              <Filter className="w-4 h-4 text-[#0A0A0A]/40" />
+              <span className="text-xs font-bold text-[#0A0A0A]/60 uppercase tracking-wide">Filtros</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
                 <Input
                   placeholder="Buscar nome, CNPJ/CPF..."
                   value={searchTerm}
@@ -353,16 +353,16 @@ function RevalidationHistoryTab({ validations }) {
 
   if (validations.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-8 text-center">
-        <History className="w-10 h-10 text-[#002443]/20 mx-auto mb-3" />
-        <p className="text-sm text-[#002443]/50">Nenhuma revalidação realizada ainda</p>
-        <p className="text-xs text-[#002443]/30 mt-1">Selecione clientes na aba "Clientes" e clique em "Revalidar Agora"</p>
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-8 text-center">
+        <History className="w-10 h-10 text-[#0A0A0A]/20 mx-auto mb-3" />
+        <p className="text-sm text-[#0A0A0A]/50">Nenhuma revalidação realizada ainda</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">Selecione clientes na aba "Clientes" e clique em "Revalidar Agora"</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 divide-y">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 divide-y">
       {validations.map((v) => {
         const data = v.resultData || {};
         const delta = data.scoreDelta || 0;
@@ -375,24 +375,24 @@ function RevalidationHistoryTab({ validations }) {
                <RefreshCw className="w-4 h-4 text-slate-500" />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[#002443] truncate">
+              <p className="text-sm font-medium text-[#0A0A0A] truncate">
                 Case: {v.onboardingCaseId?.substring(0, 12)}...
               </p>
-              <p className="text-xs text-[#002443]/50">
+              <p className="text-xs text-[#0A0A0A]/50">
                 {v.created_date ? new Date(v.created_date).toLocaleString('pt-BR') : ''}
                 {' • '}{data.datasetsQueried || '?'} datasets
               </p>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-xs text-[#002443]/50">Score</p>
+                <p className="text-xs text-[#0A0A0A]/50">Score</p>
                 <p className="text-sm font-mono">
                   {data.oldScore ?? '?'} → <strong>{data.newScore ?? '?'}</strong>
                 </p>
               </div>
               {data.subfaixaChanged ? (
                 <div className="text-right">
-                  <p className="text-xs text-[#002443]/50">Subfaixa</p>
+                  <p className="text-xs text-[#0A0A0A]/50">Subfaixa</p>
                   <div className="flex items-center gap-1">
                     <Badge className={`${SUBFAIXA_COLORS[data.oldSubfaixa] || ''} text-[10px] border-0`}>{data.oldSubfaixa}</Badge>
                     <span className="text-xs">→</span>

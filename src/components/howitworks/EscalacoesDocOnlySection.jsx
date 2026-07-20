@@ -14,9 +14,9 @@ import { AlertTriangle, FileUp, RotateCcw, Shield } from 'lucide-react';
 export default function EscalacoesDocOnlySection() {
   return (
     <div className="space-y-5">
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-5 text-white">
         <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
-          <Shield className="w-5 h-5 text-[#5cf7cf]" /> Governança Operacional do Compliance
+          <Shield className="w-5 h-5 text-[#E84B1C]" /> Governança Operacional do Compliance
         </h3>
         <p className="text-white/80 text-sm leading-relaxed">
           Três telas de operação que mantêm o compliance saudável: monitorar escalações desnecessárias,
@@ -32,7 +32,7 @@ export default function EscalacoesDocOnlySection() {
               <AlertTriangle className="w-4 h-4 text-amber-600" /> /EscalationsReview
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 space-y-2 text-xs text-[#002443]/75">
+          <CardContent className="pt-3 space-y-2 text-xs text-[#0A0A0A]/75">
             <p>Lista casos com <code>status="Manual"</code> mas subfaixa V4 ∈ &#123;1A, 1B, 2A, 2B, 3A, 3B&#125; — escalações <strong>questionáveis</strong>.</p>
             <p><strong>Origens (escalationSource):</strong></p>
             <ul className="ml-3 space-y-0.5">
@@ -53,7 +53,7 @@ export default function EscalacoesDocOnlySection() {
               <FileUp className="w-4 h-4 text-blue-600" /> Link de Docs Exclusivos
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 space-y-2 text-xs text-[#002443]/75">
+          <CardContent className="pt-3 space-y-2 text-xs text-[#0A0A0A]/75">
             <p>Cliente envia documentos <strong>sem refazer biometria CAF</strong> — útil para revalidação anual ou docs adicionais pós-aprovação.</p>
             <p><strong>Geração:</strong> botão FileUp em <code>ComplianceCasesCardsGrid</code> → modal <code>DocOnlyLinkModal</code> → <code>generateDocOnlyLink</code> cria token cripto-seguro 256 bits e grava em <code>OnboardingCase.docLinkToken</code>.</p>
             <p><strong>Bloqueios:</strong> 409 se já <code>docCompleted</code>; 400 se template sem <code>requiredDocuments</code>.</p>
@@ -69,7 +69,7 @@ export default function EscalacoesDocOnlySection() {
               <RotateCcw className="w-4 h-4 text-purple-600" /> /BulkReprocess
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 space-y-2 text-xs text-[#002443]/75">
+          <CardContent className="pt-3 space-y-2 text-xs text-[#0A0A0A]/75">
             <p>Reexecuta o pipeline de compliance em <strong>múltiplos casos</strong> de uma vez quando regras V4 mudam, datasets BDC ficam disponíveis ou framework é atualizado.</p>
             <p><strong>2 modos:</strong></p>
             <ul className="ml-3 space-y-0.5">

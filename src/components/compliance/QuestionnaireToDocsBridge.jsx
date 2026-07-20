@@ -27,8 +27,8 @@ export default function QuestionnaireToDocsBridge({
   const [isSendingResume, setIsSendingResume] = useState(false);
   const [resumeSent, setResumeSent] = useState(false);
 
-  const bPrimary = branding?.primaryColor || '#2bc196';
-  const bSecondary = branding?.secondaryColor || '#002443';
+  const bPrimary = branding?.primaryColor || '#1356E2';
+  const bSecondary = branding?.secondaryColor || '#0A0A0A';
   const hasBranding = !!branding?.name;
 
   const handleSendResume = async () => {
@@ -42,7 +42,7 @@ export default function QuestionnaireToDocsBridge({
         toEmail: clientEmail,
         toName: clientName || '',
         resumeUrl: resumeUrl || window.location.href,
-        brandName: branding?.name || 'Pagsmile',
+        brandName: branding?.name || 'Pin Bank',
       });
       if (res?.ok) {
         setResumeSent(true);

@@ -19,16 +19,16 @@ function CheckItem({ label, description, status, detail }) {
   const Icon = c.icon;
 
   return (
-    <div className={`rounded-xl border border-[var(--pagsmile-blue)]/8 p-4 ${c.bg}`}>
+    <div className={`rounded-xl border border-[var(--pinbank-blue)]/8 p-4 ${c.bg}`}>
       <div className="flex items-start gap-3">
         <Icon className={`w-5 h-5 ${c.color} flex-shrink-0 mt-0.5`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-[var(--pagsmile-blue)]">{label}</span>
+            <span className="text-sm font-semibold text-[var(--pinbank-blue)]">{label}</span>
             <Badge className={`text-[10px] ${c.badge}`}>{c.label}</Badge>
           </div>
-          <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-0.5">{description}</p>
-          {detail && <p className="text-xs text-[var(--pagsmile-blue)]/80 mt-1 font-medium">{detail}</p>}
+          <p className="text-xs text-[var(--pinbank-blue)]/60 mt-0.5">{description}</p>
+          {detail && <p className="text-xs text-[var(--pinbank-blue)]/80 mt-1 font-medium">{detail}</p>}
         </div>
       </div>
     </div>
@@ -60,8 +60,8 @@ function OwnershipChart({ validations = [] }) {
   const is100 = Math.abs(totalParticipation - 100) < 0.5;
   
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
         <Users className="w-4 h-4 text-purple-600" />
         Organograma Societário — Beneficiários Finais
         <Badge className={`text-[10px] ${is100 ? 'bg-green-100 text-green-700' : totalParticipation > 0 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
@@ -73,14 +73,14 @@ function OwnershipChart({ validations = [] }) {
           {owners.map((o, i) => (
             <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">{o.name}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{o.role} {o.doc ? `• ${o.doc}` : ''}</p>
+                <p className="text-sm font-medium text-[var(--pinbank-blue)] truncate">{o.name}</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50">{o.role} {o.doc ? `• ${o.doc}` : ''}</p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-[var(--pagsmile-green)] rounded-full" style={{ width: `${Math.min(o.participation, 100)}%` }} />
+                  <div className="h-full bg-[var(--pinbank-blue)] rounded-full" style={{ width: `${Math.min(o.participation, 100)}%` }} />
                 </div>
-                <span className="text-xs font-bold text-[var(--pagsmile-blue)] w-12 text-right">{o.participation ? `${o.participation.toFixed(1)}%` : '—'}</span>
+                <span className="text-xs font-bold text-[var(--pinbank-blue)] w-12 text-right">{o.participation ? `${o.participation.toFixed(1)}%` : '—'}</span>
               </div>
             </div>
           ))}
@@ -94,7 +94,7 @@ function OwnershipChart({ validations = [] }) {
           )}
         </div>
       ) : (
-        <p className="text-xs text-[var(--pagsmile-blue)]/40 text-center py-4">
+        <p className="text-xs text-[var(--pinbank-blue)]/40 text-center py-4">
           Dados de QSA não disponíveis. Execute o enriquecimento BDC para carregar a estrutura societária.
         </p>
       )}
@@ -130,8 +130,8 @@ function BiometryPanel({ validations = [], integrationLogs = [], faceMatchThresh
   const matchAboveThreshold = similarityPct != null ? parseFloat(similarityPct) >= faceMatchThreshold : isMatch;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
         <Fingerprint className="w-4 h-4 text-purple-600" />
         Documentoscopia × Biometria
         <Badge variant="outline" className="text-[10px]">Threshold: {faceMatchThreshold}%</Badge>
@@ -223,9 +223,9 @@ export default function CadastroRegulatoryPanel({ merchant, latestCase, validati
 
   return (
     <div className="space-y-4 mt-4">
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-        <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-4 flex items-center gap-2">
-          <Scale className="w-4 h-4 text-[var(--pagsmile-green)]" />
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+        <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-4 flex items-center gap-2">
+          <Scale className="w-4 h-4 text-[var(--pinbank-blue)]" />
           Checklist Regulatório
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

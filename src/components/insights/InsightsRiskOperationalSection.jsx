@@ -58,8 +58,8 @@ export default function InsightsRiskOperationalSection({ leads }) {
   });
   const chargebackData = Object.entries(chargebackMap).map(([name, value]) => ({ name, value }));
   const chargebackColors = {
-    '<1% (saudável)': '#2bc196', '1-2% (atenção)': '#f59e0b', '>2% (crítico)': '#ef4444',
-    'Não sei': '#94a3b8', 'N/A - não processo cartão': '#002443'
+    '<1% (saudável)': '#1356E2', '1-2% (atenção)': '#f59e0b', '>2% (crítico)': '#ef4444',
+    'Não sei': '#94a3b8', 'N/A - não processo cartão': '#0A0A0A'
   };
 
   // MED PIX
@@ -77,7 +77,7 @@ export default function InsightsRiskOperationalSection({ leads }) {
     if (val) encerradoMap[val] = (encerradoMap[val] || 0) + 1;
   });
   const encerradoData = Object.entries(encerradoMap).map(([name, value]) => ({ name, value }));
-  const encerradoColors = { 'Nunca': '#2bc196', 'Sim, 1 vez': '#f59e0b', 'Sim, mais de 1 vez': '#ef4444' };
+  const encerradoColors = { 'Nunca': '#1356E2', 'Sim, 1 vez': '#f59e0b', 'Sim, mais de 1 vez': '#ef4444' };
 
   // Idade das empresas (via CNPJ enrichment)
   const idadeMap = { '<6 meses': 0, '6m-1 ano': 0, '1-3 anos': 0, '3-5 anos': 0, '5-10 anos': 0, '>10 anos': 0 };
@@ -146,9 +146,9 @@ export default function InsightsRiskOperationalSection({ leads }) {
   if (!hasData) {
     return (
       <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center mt-2">
-        <ShieldAlert className="w-10 h-10 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-sm text-[#002443]/50">Nenhum dado de risco operacional disponível ainda.</p>
-        <p className="text-xs text-[#002443]/30 mt-1">Os dados aparecem quando leads preenchem o questionário Pagsmile v5.</p>
+        <ShieldAlert className="w-10 h-10 mx-auto text-[#0A0A0A]/20 mb-3" />
+        <p className="text-sm text-[#0A0A0A]/50">Nenhum dado de risco operacional disponível ainda.</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">Os dados aparecem quando leads preenchem o questionário Pin Bank v5.</p>
       </div>
     );
   }
@@ -170,20 +170,20 @@ export default function InsightsRiskOperationalSection({ leads }) {
       {/* Chargeback + MED PIX + Encerramento */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {chargebackData.length > 0 && <DonutChart title="Faixa de Chargeback" data={chargebackData} colorMap={chargebackColors} />}
-        {medPixData.length > 0 && <DonutChart title="MED PIX (Fraude)" data={medPixData} colorMap={{ '<0,3%': '#2bc196', '0,3-0,5%': '#36706c', '0,5-1%': '#f59e0b', '>1%': '#ef4444' }} />}
+        {medPixData.length > 0 && <DonutChart title="MED PIX (Fraude)" data={medPixData} colorMap={{ '<0,3%': '#1356E2', '0,3-0,5%': '#E84B1C', '0,5-1%': '#f59e0b', '>1%': '#ef4444' }} />}
         {encerradoData.length > 0 && <DonutChart title="Encerramento de Contas" data={encerradoData} colorMap={encerradoColors} />}
       </div>
 
       {/* CNPJ Enrichment: Idade + Porte + Capital */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {idadeData.length > 0 && <DonutChart title="Idade da Empresa" data={idadeData} />}
-        {porteData.length > 0 && <DonutChart title="Porte (Receita Federal)" data={porteData} colorMap={{ 'Microempresa (ME)': '#2bc196', 'Empresa Pequeno Porte (EPP)': '#f59e0b', 'Demais': '#002443' }} />}
+        {porteData.length > 0 && <DonutChart title="Porte (Receita Federal)" data={porteData} colorMap={{ 'Microempresa (ME)': '#1356E2', 'Empresa Pequeno Porte (EPP)': '#f59e0b', 'Demais': '#0A0A0A' }} />}
         {capitalData.length > 0 && <DonutChart title="Capital Social" data={capitalData} />}
       </div>
 
       {/* CNAEs mais frequentes */}
       {cnaeData.length > 0 && (
-        <HorizontalBarList title="CNAEs Mais Frequentes (Receita Federal)" data={cnaeData} color="#002443" />
+        <HorizontalBarList title="CNAEs Mais Frequentes (Receita Federal)" data={cnaeData} color="#0A0A0A" />
       )}
     </div>
   );

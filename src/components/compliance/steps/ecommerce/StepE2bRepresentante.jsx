@@ -11,8 +11,8 @@ export default function StepE2bRepresentante({ formData, handleChange }) {
           <UserCircle className="w-5 h-5 text-indigo-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Representante Legal</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Dados do administrador principal</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Representante Legal</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Dados do administrador principal</p>
         </div>
       </div>
 

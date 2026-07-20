@@ -31,19 +31,19 @@ export default function LeadBDCInsights({ lead }) {
       {/* Score header */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <Shield className="w-4 h-4 text-[#002443]/40" />
-          <span className="text-xs font-bold text-[#002443]/60 uppercase tracking-wider">Score BDC</span>
+          <Shield className="w-4 h-4 text-[#0A0A0A]/40" />
+          <span className="text-xs font-bold text-[#0A0A0A]/60 uppercase tracking-wider">Score BDC</span>
         </div>
         {bdcScore != null && (
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-[#002443]">{bdcScore}</span>
+            <span className="text-lg font-bold text-[#0A0A0A]">{bdcScore}</span>
             <Badge className={`text-[10px] ${levelColors[bdcLevel] || 'bg-slate-100 text-slate-700'}`}>
               {bdcLevel || 'N/D'}
             </Badge>
           </div>
         )}
         {lead?.leadQualifierScore != null && (
-          <span className="text-[10px] text-[#002443]/40 ml-auto">
+          <span className="text-[10px] text-[#0A0A0A]/40 ml-auto">
             Declaratório: {lead.leadQualifierScore}
           </span>
         )}
@@ -73,17 +73,17 @@ export default function LeadBDCInsights({ lead }) {
       {/* Cross-validation */}
       {crossVal?.checks?.length > 0 && (
         <div className="space-y-1">
-          <span className="text-[10px] font-bold text-[#002443]/40 uppercase">Cross-validation</span>
+          <span className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase">Cross-validation</span>
           <div className="grid grid-cols-2 gap-1">
             {crossVal.checks.slice(0, 8).map((check, i) => (
               <div key={i} className="flex items-center gap-1.5 text-[11px]">
                 {statusIcons[check.status]}
-                <span className="text-[#002443]/70 truncate">{check.label}</span>
+                <span className="text-[#0A0A0A]/70 truncate">{check.label}</span>
               </div>
             ))}
           </div>
           {crossVal.total > 0 && (
-            <p className="text-[10px] text-[#002443]/40">
+            <p className="text-[10px] text-[#0A0A0A]/40">
               {crossVal.ok}/{crossVal.total} ✓ {crossVal.alerts > 0 ? `| ${crossVal.alerts} ⚠️` : ''} {crossVal.dangers > 0 ? `| ${crossVal.dangers} 🔴` : ''}
             </p>
           )}
@@ -92,8 +92,8 @@ export default function LeadBDCInsights({ lead }) {
 
       {/* Deep Due Diligence */}
       {dueReport && (
-        <div className="p-2 rounded-lg bg-[#002443]/5 border border-[#002443]/10">
-          <span className="text-[10px] font-bold text-[#002443]/60 uppercase">Due Diligence BDC</span>
+        <div className="p-2 rounded-lg bg-[#0A0A0A]/5 border border-[#0A0A0A]/10">
+          <span className="text-[10px] font-bold text-[#0A0A0A]/60 uppercase">Due Diligence BDC</span>
           {dueReport.kyc && (
             <div className="flex flex-wrap gap-1 mt-1">
               {dueReport.kyc.companySanctions && <Badge className="bg-red-100 text-red-700 text-[9px]">SANÇÕES</Badge>}
@@ -112,9 +112,9 @@ export default function LeadBDCInsights({ lead }) {
 
 function Indicator({ icon, label, value, risk }) {
   return (
-    <div className="p-2 rounded-lg bg-white border border-[#002443]/5">
-      <div className="flex items-center gap-1 text-[#002443]/40 mb-0.5">{icon}<span className="text-[9px] font-medium">{label}</span></div>
-      <p className={`text-xs font-bold ${risk === false ? 'text-red-600' : 'text-[#002443]'}`}>{value}</p>
+    <div className="p-2 rounded-lg bg-white border border-[#0A0A0A]/5">
+      <div className="flex items-center gap-1 text-[#0A0A0A]/40 mb-0.5">{icon}<span className="text-[9px] font-medium">{label}</span></div>
+      <p className={`text-xs font-bold ${risk === false ? 'text-red-600' : 'text-[#0A0A0A]'}`}>{value}</p>
     </div>
   );
 }

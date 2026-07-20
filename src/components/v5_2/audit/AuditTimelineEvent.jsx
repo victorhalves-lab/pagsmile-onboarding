@@ -59,23 +59,23 @@ export default function AuditTimelineEvent({ snapshot, diff, isFirst, isLast, se
       {/* Card do evento */}
       <div className={`flex-1 mb-4 border rounded-xl p-4 transition-all ${
         selected
-          ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-md'
+          ? 'border-[#1356E2] bg-[#1356E2]/5 shadow-md'
           : 'border-slate-200 bg-white hover:border-slate-300'
       }`}>
         <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-bold text-[#002443]">{meta.label}</span>
+              <span className="text-sm font-bold text-[#0A0A0A]">{meta.label}</span>
               {diff?.isInitial && (
                 <Badge variant="secondary" className="text-[10px] h-4 px-1.5">snapshot inicial</Badge>
               )}
               {hasChanges && (
-                <Badge className="bg-[#2bc196] text-white text-[10px] h-4 px-1.5">
+                <Badge className="bg-[#1356E2] text-white text-[10px] h-4 px-1.5">
                   {totalChanges} {totalChanges === 1 ? 'mudança' : 'mudanças'}
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-3 mt-1 text-[11px] text-[#002443]/55">
+            <div className="flex items-center gap-3 mt-1 text-[11px] text-[#0A0A0A]/55">
               <span className="inline-flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {fmtDate(snapshot.created_date)}
@@ -146,8 +146,8 @@ export default function AuditTimelineEvent({ snapshot, diff, isFirst, isLast, se
 function KeyVal({ label, value }) {
   return (
     <div>
-      <div className="text-[9px] uppercase tracking-wider text-[#002443]/40 font-semibold">{label}</div>
-      <div className="text-[12px] text-[#002443] font-mono truncate">{value ?? '—'}</div>
+      <div className="text-[9px] uppercase tracking-wider text-[#0A0A0A]/40 font-semibold">{label}</div>
+      <div className="text-[12px] text-[#0A0A0A] font-mono truncate">{value ?? '—'}</div>
     </div>
   );
 }

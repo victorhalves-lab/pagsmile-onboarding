@@ -9,7 +9,7 @@ import { Loader2, Eye, Users, MousePointer, Rocket, TrendingUp, Monitor, Smartph
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { format, subDays, parseISO, startOfDay } from 'date-fns';
 
-const PIE_COLORS = ['#2bc196', '#002443', '#f59e0b'];
+const PIE_COLORS = ['#1356E2', '#0A0A0A', '#f59e0b'];
 
 function getDeviceIcon(type) {
   if (type === 'mobile') return Smartphone;
@@ -141,20 +141,20 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#002443]">
-            <BarChart3 className="w-5 h-5 text-[#2bc196]" />
+          <DialogTitle className="flex items-center gap-2 text-[#0A0A0A]">
+            <BarChart3 className="w-5 h-5 text-[#1356E2]" />
             Analytics — {introducer?.companyName || introducer?.name}
           </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
           </div>
         ) : !stats ? (
           <div className="text-center py-16">
-            <Eye className="w-10 h-10 mx-auto mb-3 text-[#002443]/15" />
-            <p className="text-sm text-[#002443]/50">Nenhum dado registrado ainda para esta landing page.</p>
+            <Eye className="w-10 h-10 mx-auto mb-3 text-[#0A0A0A]/15" />
+            <p className="text-sm text-[#0A0A0A]/50">Nenhum dado registrado ainda para esta landing page.</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -168,15 +168,15 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
             </div>
 
             {/* Acessos por dia */}
-            <div className="bg-white border border-[#002443]/5 rounded-xl p-4">
-              <h4 className="text-sm font-bold text-[#002443] mb-3">Acessos nos últimos 30 dias</h4>
+            <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-4">
+              <h4 className="text-sm font-bold text-[#0A0A0A] mb-3">Acessos nos últimos 30 dias</h4>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={stats.last30}>
                     <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={4} />
                     <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
                     <Tooltip />
-                    <Line type="monotone" dataKey="acessos" stroke="#2bc196" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="acessos" stroke="#1356E2" strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -184,8 +184,8 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Funil */}
-              <div className="bg-white border border-[#002443]/5 rounded-xl p-4">
-                <h4 className="text-sm font-bold text-[#002443] mb-3">Funil de Conversão</h4>
+              <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-4">
+                <h4 className="text-sm font-bold text-[#0A0A0A] mb-3">Funil de Conversão</h4>
                 <div className="space-y-2">
                   {stats.funnel.map((step, i) => {
                     const maxVal = stats.funnel[0].value || 1;
@@ -193,17 +193,17 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
                     return (
                       <div key={step.step}>
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-[#002443]/70 font-medium">{step.step}</span>
-                          <span className="font-bold text-[#002443]">{step.value}</span>
+                          <span className="text-[#0A0A0A]/70 font-medium">{step.step}</span>
+                          <span className="font-bold text-[#0A0A0A]">{step.value}</span>
                         </div>
                         <div className="h-5 bg-[#f4f4f4] rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#2bc196] to-[#002443] rounded-full transition-all"
+                            className="h-full bg-gradient-to-r from-[#1356E2] to-[#0A0A0A] rounded-full transition-all"
                             style={{ width: `${Math.max(pct, 2)}%` }}
                           />
                         </div>
                         {i < stats.funnel.length - 1 && stats.funnel[i].value > 0 && (
-                          <p className="text-[10px] text-right text-[#002443]/30 mt-0.5">
+                          <p className="text-[10px] text-right text-[#0A0A0A]/30 mt-0.5">
                             {stats.funnel[i + 1].value > 0
                               ? `${((stats.funnel[i + 1].value / stats.funnel[i].value) * 100).toFixed(0)}% avançou`
                               : '—'}
@@ -216,8 +216,8 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
               </div>
 
               {/* Segmentos mais vistos */}
-              <div className="bg-white border border-[#002443]/5 rounded-xl p-4">
-                <h4 className="text-sm font-bold text-[#002443] mb-3">Segmentos mais vistos</h4>
+              <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-4">
+                <h4 className="text-sm font-bold text-[#0A0A0A] mb-3">Segmentos mais vistos</h4>
                 {stats.segmentRanking.length > 0 ? (
                   <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
@@ -225,20 +225,20 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
                         <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
                         <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={100} />
                         <Tooltip />
-                        <Bar dataKey="views" fill="#2bc196" radius={[0, 4, 4, 0]} />
+                        <Bar dataKey="views" fill="#1356E2" radius={[0, 4, 4, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <p className="text-xs text-[#002443]/40 text-center py-8">Sem dados</p>
+                  <p className="text-xs text-[#0A0A0A]/40 text-center py-8">Sem dados</p>
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Devices */}
-              <div className="bg-white border border-[#002443]/5 rounded-xl p-4">
-                <h4 className="text-sm font-bold text-[#002443] mb-3">Dispositivos</h4>
+              <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-4">
+                <h4 className="text-sm font-bold text-[#0A0A0A] mb-3">Dispositivos</h4>
                 {stats.devices.length > 0 ? (
                   <div className="h-40 flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
@@ -251,30 +251,30 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <p className="text-xs text-[#002443]/40 text-center py-8">Sem dados</p>
+                  <p className="text-xs text-[#0A0A0A]/40 text-center py-8">Sem dados</p>
                 )}
               </div>
 
               {/* CTA por segmento */}
-              <div className="bg-white border border-[#002443]/5 rounded-xl p-4">
-                <h4 className="text-sm font-bold text-[#002443] mb-3">CTAs "Contratar" por Segmento</h4>
+              <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-4">
+                <h4 className="text-sm font-bold text-[#0A0A0A] mb-3">CTAs "Contratar" por Segmento</h4>
                 {stats.ctaSegmentRanking.length > 0 ? (
                   <div className="space-y-2">
                     {stats.ctaSegmentRanking.slice(0, 6).map((item, i) => (
                       <div key={item.name} className="flex items-center justify-between">
-                        <span className="text-xs text-[#002443]/70 truncate flex-1">{item.name}</span>
-                        <Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px] border-0 ml-2">{item.clicks}</Badge>
+                        <span className="text-xs text-[#0A0A0A]/70 truncate flex-1">{item.name}</span>
+                        <Badge className="bg-[#1356E2]/10 text-[#1356E2] text-[10px] border-0 ml-2">{item.clicks}</Badge>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#002443]/40 text-center py-8">Sem dados</p>
+                  <p className="text-xs text-[#0A0A0A]/40 text-center py-8">Sem dados</p>
                 )}
               </div>
 
               {/* Métricas extras */}
-              <div className="bg-white border border-[#002443]/5 rounded-xl p-4 space-y-3">
-                <h4 className="text-sm font-bold text-[#002443] mb-1">Engajamento</h4>
+              <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-4 space-y-3">
+                <h4 className="text-sm font-bold text-[#0A0A0A] mb-1">Engajamento</h4>
                 <MiniStat label="Usaram Calculadora" value={`${stats.calcPercentage}%`} sub={`${stats.calcSessions} sessões`} />
                 <MiniStat label="Cliques Info Segmento" value={stats.segInfoClicks} />
                 <MiniStat label="CTA Contratar" value={stats.ctaContratarTotal} />
@@ -283,12 +283,12 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
             </div>
 
             {/* Eventos recentes */}
-            <div className="bg-white border border-[#002443]/5 rounded-xl p-4">
-              <h4 className="text-sm font-bold text-[#002443] mb-3">Eventos Recentes</h4>
+            <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-4">
+              <h4 className="text-sm font-bold text-[#0A0A0A] mb-3">Eventos Recentes</h4>
               <div className="max-h-48 overflow-y-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="text-[#002443]/40 border-b">
+                    <tr className="text-[#0A0A0A]/40 border-b">
                       <th className="text-left py-1.5 font-medium">Data</th>
                       <th className="text-left py-1.5 font-medium">Evento</th>
                       <th className="text-left py-1.5 font-medium">Segmento</th>
@@ -297,13 +297,13 @@ export default function LandingAnalyticsModal({ open, onClose, introducer }) {
                   </thead>
                   <tbody>
                     {stats.recent.map((ev, i) => (
-                      <tr key={ev.id || i} className="border-b border-[#002443]/[0.03]">
-                        <td className="py-1.5 text-[#002443]/60">{ev.created_date ? format(new Date(ev.created_date), 'dd/MM HH:mm') : '—'}</td>
+                      <tr key={ev.id || i} className="border-b border-[#0A0A0A]/[0.03]">
+                        <td className="py-1.5 text-[#0A0A0A]/60">{ev.created_date ? format(new Date(ev.created_date), 'dd/MM HH:mm') : '—'}</td>
                         <td className="py-1.5">
-                          <Badge className="text-[10px] border-0 bg-[#002443]/5 text-[#002443]">{eventLabels[ev.eventType] || ev.eventType}</Badge>
+                          <Badge className="text-[10px] border-0 bg-[#0A0A0A]/5 text-[#0A0A0A]">{eventLabels[ev.eventType] || ev.eventType}</Badge>
                         </td>
-                        <td className="py-1.5 text-[#002443]/60">{ev.segmentName || '—'}</td>
-                        <td className="py-1.5 text-[#002443]/60 capitalize">{ev.deviceType || '—'}</td>
+                        <td className="py-1.5 text-[#0A0A0A]/60">{ev.segmentName || '—'}</td>
+                        <td className="py-1.5 text-[#0A0A0A]/60 capitalize">{ev.deviceType || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -327,14 +327,14 @@ function KpiCard({ icon: Icon, label, value, color }) {
     green: 'text-green-600', teal: 'text-teal-600',
   };
   return (
-    <div className="bg-white border border-[#002443]/5 rounded-xl p-3">
+    <div className="bg-white border border-[#0A0A0A]/5 rounded-xl p-3">
       <div className="flex items-center gap-2">
         <div className={`p-1.5 rounded-lg ${bgMap[color]}`}>
           <Icon className={`w-3.5 h-3.5 ${iconMap[color]}`} />
         </div>
         <div>
-          <p className="text-lg font-bold text-[#002443] leading-tight">{value}</p>
-          <p className="text-[10px] text-[#002443]/45">{label}</p>
+          <p className="text-lg font-bold text-[#0A0A0A] leading-tight">{value}</p>
+          <p className="text-[10px] text-[#0A0A0A]/45">{label}</p>
         </div>
       </div>
     </div>
@@ -344,10 +344,10 @@ function KpiCard({ icon: Icon, label, value, color }) {
 function MiniStat({ label, value, sub }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-xs text-[#002443]/60">{label}</span>
+      <span className="text-xs text-[#0A0A0A]/60">{label}</span>
       <div className="text-right">
-        <span className="text-sm font-bold text-[#002443]">{value}</span>
-        {sub && <p className="text-[10px] text-[#002443]/35">{sub}</p>}
+        <span className="text-sm font-bold text-[#0A0A0A]">{value}</span>
+        {sub && <p className="text-[10px] text-[#0A0A0A]/35">{sub}</p>}
       </div>
     </div>
   );

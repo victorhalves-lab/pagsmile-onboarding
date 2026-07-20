@@ -32,26 +32,26 @@ export default function ProximoPassoComplianceModal({ open, complianceUrl, onGoN
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose?.(); }}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#2bc196]/15 mx-auto mb-3">
-            <CheckCircle2 className="w-8 h-8 text-[#2bc196]" />
+          <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#1356E2]/15 mx-auto mb-3">
+            <CheckCircle2 className="w-8 h-8 text-[#1356E2]" />
           </div>
-          <DialogTitle className="text-center text-xl text-[#002443]">
+          <DialogTitle className="text-center text-xl text-[#0A0A0A]">
             Proposta aceita com sucesso! 🎉
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 py-2">
           {/* Próximo Passo */}
-          <div className="rounded-xl border-2 border-[#2bc196]/30 bg-[#2bc196]/5 p-5">
+          <div className="rounded-xl border-2 border-[#1356E2]/30 bg-[#1356E2]/5 p-5">
             <div className="flex items-start gap-3 mb-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2bc196] text-white font-bold text-sm shrink-0">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#1356E2] text-white font-bold text-sm shrink-0">
                 2
               </div>
               <div>
-                <h3 className="font-bold text-[#002443] text-base mb-1">
+                <h3 className="font-bold text-[#0A0A0A] text-base mb-1">
                   Próximo passo: Compliance
                 </h3>
-                <p className="text-sm text-[#002443]/75 leading-relaxed">
+                <p className="text-sm text-[#0A0A0A]/75 leading-relaxed">
                   Para que sua conta seja aprovada, você precisa preencher o nosso
                   processo de Compliance. É rápido e essencial para liberar sua operação.
                 </p>
@@ -59,12 +59,12 @@ export default function ProximoPassoComplianceModal({ open, complianceUrl, onGoN
             </div>
 
             {/* Link destacado */}
-            <div className="bg-white rounded-lg border border-[#2bc196]/20 p-3 mb-3">
-              <div className="flex items-center gap-2 text-xs text-[#002443]/60 uppercase font-semibold mb-1.5">
+            <div className="bg-white rounded-lg border border-[#1356E2]/20 p-3 mb-3">
+              <div className="flex items-center gap-2 text-xs text-[#0A0A0A]/60 uppercase font-semibold mb-1.5">
                 <FileText className="w-3.5 h-3.5" />
                 Link do Compliance
               </div>
-              <p className="text-xs text-[#002443] break-all font-mono leading-relaxed">
+              <p className="text-xs text-[#0A0A0A] break-all font-mono leading-relaxed">
                 {complianceUrl}
               </p>
             </div>
@@ -74,17 +74,17 @@ export default function ProximoPassoComplianceModal({ open, complianceUrl, onGoN
               <Button
                 onClick={handleCopy}
                 variant="outline"
-                className="flex-1 border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5 h-11 rounded-xl font-semibold"
+                className="flex-1 border-[#0A0A0A]/20 text-[#0A0A0A] hover:bg-[#0A0A0A]/5 h-11 rounded-xl font-semibold"
               >
                 {copied ? (
-                  <><Check className="w-4 h-4 mr-2 text-[#2bc196]" /> Link copiado!</>
+                  <><Check className="w-4 h-4 mr-2 text-[#1356E2]" /> Link copiado!</>
                 ) : (
                   <><Copy className="w-4 h-4 mr-2" /> Copiar link para fazer depois</>
                 )}
               </Button>
               <Button
                 onClick={onGoNow}
-                className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl font-bold"
+                className="flex-1 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-11 rounded-xl font-bold"
               >
                 Continuar
                 <Shield className="w-4 h-4 ml-2" />
@@ -93,7 +93,7 @@ export default function ProximoPassoComplianceModal({ open, complianceUrl, onGoN
           </div>
 
           {/* Aviso para depois */}
-          <div className="flex items-start gap-2.5 text-xs text-[#002443]/65 bg-amber-50/60 border border-amber-200/60 rounded-lg p-3">
+          <div className="flex items-start gap-2.5 text-xs text-[#0A0A0A]/65 bg-amber-50/60 border border-amber-200/60 rounded-lg p-3">
             <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong>Copie o link</strong> para retomar o Compliance mais tarde, ou

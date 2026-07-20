@@ -173,8 +173,8 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196] mb-3" />
-        <p className="text-[#002443]/40 text-sm">Carregando respostas...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2] mb-3" />
+        <p className="text-[#0A0A0A]/40 text-sm">Carregando respostas...</p>
       </div>
     );
   }
@@ -182,9 +182,9 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
   if (rawResponses.length === 0) {
     return (
       <div className="text-center py-16">
-        <FileCheck className="w-12 h-12 mx-auto text-[#002443]/15 mb-4" />
-        <p className="text-[#002443]/50 font-medium">Nenhuma resposta registrada</p>
-        <p className="text-sm text-[#002443]/30 mt-1">O questionário ainda não foi preenchido</p>
+        <FileCheck className="w-12 h-12 mx-auto text-[#0A0A0A]/15 mb-4" />
+        <p className="text-[#0A0A0A]/50 font-medium">Nenhuma resposta registrada</p>
+        <p className="text-sm text-[#0A0A0A]/30 mt-1">O questionário ainda não foi preenchido</p>
       </div>
     );
   }
@@ -221,21 +221,21 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
   return (
     <div className="space-y-5">
       {/* Stats bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-[#002443]/[0.03] to-[#2bc196]/[0.05] rounded-xl p-4 border border-[#002443]/5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-[#0A0A0A]/[0.03] to-[#1356E2]/[0.05] rounded-xl p-4 border border-[#0A0A0A]/5">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-[#2bc196]" />
-            <span className="text-sm font-semibold text-[#002443]">
+            <CheckCircle2 className="w-4 h-4 text-[#1356E2]" />
+            <span className="text-sm font-semibold text-[#0A0A0A]">
               {totalAnswered} de {totalQuestions} respondidas
             </span>
           </div>
           <div className="w-32">
             <Progress value={completionPercent} className="h-2" />
           </div>
-          <span className="text-xs font-bold text-[#2bc196]">{completionPercent}%</span>
+          <span className="text-xs font-bold text-[#1356E2]">{completionPercent}%</span>
         </div>
         <div className="flex items-center gap-2">
-          <Badge className="bg-[#002443]/5 text-[#002443]/70 border-0 text-xs">
+          <Badge className="bg-[#0A0A0A]/5 text-[#0A0A0A]/70 border-0 text-xs">
             {sections.length} seções
           </Badge>
           {rawResponses.length !== deduplicateResponses(rawResponses).length && (
@@ -249,7 +249,7 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
             size="sm"
             onClick={handleExportPdf}
             disabled={downloadingPdf}
-            className="text-[#002443]/70 border-[#002443]/10 hover:bg-[#2bc196]/5 hover:border-[#2bc196]/30 hover:text-[#2bc196] text-xs rounded-lg ml-2"
+            className="text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:bg-[#1356E2]/5 hover:border-[#1356E2]/30 hover:text-[#1356E2] text-xs rounded-lg ml-2"
           >
             {downloadingPdf ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1.5" />}
             Exportar PDF
@@ -259,12 +259,12 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
         <Input
           placeholder="Buscar pergunta ou resposta..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9 bg-white border-[#002443]/8 focus:border-[#2bc196]/40"
+          className="pl-9 bg-white border-[#0A0A0A]/8 focus:border-[#1356E2]/40"
         />
       </div>
 
@@ -278,8 +278,8 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
       {/* Section content header */}
       {currentSection && (
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-bold text-[#002443]">{currentSection}</h4>
-          <span className="text-xs text-[#002443]/40">
+          <h4 className="text-sm font-bold text-[#0A0A0A]">{currentSection}</h4>
+          <span className="text-xs text-[#0A0A0A]/40">
             {filteredResponses.filter(r => getDisplayValue(r) !== null).length} de {filteredResponses.length} preenchidas
           </span>
         </div>
@@ -299,8 +299,8 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
 
       {filteredResponses.length === 0 && searchTerm && (
         <div className="text-center py-8">
-          <Search className="w-8 h-8 mx-auto text-[#002443]/15 mb-2" />
-          <p className="text-sm text-[#002443]/40">Nenhum resultado para "{searchTerm}"</p>
+          <Search className="w-8 h-8 mx-auto text-[#0A0A0A]/15 mb-2" />
+          <p className="text-sm text-[#0A0A0A]/40">Nenhum resultado para "{searchTerm}"</p>
         </div>
       )}
     </div>

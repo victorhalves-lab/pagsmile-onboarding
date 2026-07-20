@@ -10,13 +10,13 @@ export default function StepContato({ form, updateField, errors }) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-[#002443]">Contato</h2>
-        <p className="text-xs text-[#002443]/50 mt-1">Dados para comunicação comercial</p>
+        <h2 className="text-lg font-bold text-[#0A0A0A]">Contato</h2>
+        <p className="text-xs text-[#0A0A0A]/50 mt-1">Dados para comunicação comercial</p>
       </div>
 
       {/* P6 — E-mail */}
       <div className="space-y-1" data-field="email">
-        <label className="text-sm font-semibold text-[#002443]">E-mail de Contato *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">E-mail de Contato *</label>
         <EmailInput
           value={form.email || ''}
           onChange={(v) => updateField('email', v)}
@@ -28,7 +28,7 @@ export default function StepContato({ form, updateField, errors }) {
 
       {/* P7 — Telefone */}
       <div className="space-y-1" data-field="phone">
-        <label className="text-sm font-semibold text-[#002443]">Celular / WhatsApp *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Celular / WhatsApp *</label>
         <PhoneInput
           value={form.phone || ''}
           onChange={(v) => updateField('phone', v)}
@@ -39,7 +39,7 @@ export default function StepContato({ form, updateField, errors }) {
 
       {/* P8 — Nome do Contato */}
       <div className="space-y-1" data-field="contactName">
-        <label className="text-sm font-semibold text-[#002443]">Nome do Contato *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Nome do Contato *</label>
         <Input
           value={form.contactName || ''}
           onChange={(e) => updateField('contactName', e.target.value)}
@@ -51,7 +51,7 @@ export default function StepContato({ form, updateField, errors }) {
 
       {/* P9 — Cargo */}
       <div className="space-y-2" data-field="cargo">
-        <label className="text-sm font-semibold text-[#002443]">Cargo *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Cargo *</label>
         <ButtonSelector
           options={CARGO_OPTIONS}
           value={form.cargo}

@@ -18,15 +18,15 @@ export default function ScoreGauge({ score, subfaixa, subfaixaNome }) {
   const faixa = FAIXAS.find(f => clamped <= f.max) || FAIXAS[FAIXAS.length - 1];
 
   return (
-    <div className="p-5 bg-white rounded-xl border border-[var(--pagsmile-blue)]/8">
+    <div className="p-5 bg-white rounded-xl border border-[var(--pinbank-blue)]/8">
       <div className="flex items-end justify-between mb-3">
         <div>
-          <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/40 uppercase tracking-wider">Score Final V4</p>
+          <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/40 uppercase tracking-wider">Score Final V4</p>
           <p className="text-4xl font-black" style={{ color: faixa.color }}>{score}</p>
         </div>
         <div className="text-right">
           <p className="text-lg font-bold" style={{ color: faixa.color }}>{subfaixa || faixa.label}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">{subfaixaNome || faixa.nome}</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/50">{subfaixaNome || faixa.nome}</p>
         </div>
       </div>
 
@@ -45,7 +45,7 @@ export default function ScoreGauge({ score, subfaixa, subfaixaNome }) {
       </div>
 
       {/* Scale labels */}
-      <div className="flex justify-between text-[8px] text-[var(--pagsmile-blue)]/30 font-bold">
+      <div className="flex justify-between text-[8px] text-[var(--pinbank-blue)]/30 font-bold">
         <span>0</span>
         <span>200</span>
         <span>400</span>

@@ -22,22 +22,22 @@ export default function AluguelEquipamentosPublic({ alugueis }) {
   if (!posComumValor && !smartPosValor) return null;
 
   return (
-    <div className="mt-5 pt-5 border-t border-[#2bc196]/15">
-      <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide">Aluguel de Equipamentos</h3>
+    <div className="mt-5 pt-5 border-t border-[#1356E2]/15">
+      <h3 className="font-bold text-sm text-[#0A0A0A] mb-3 uppercase tracking-wide">Aluguel de Equipamentos</h3>
 
       <div className="space-y-3">
         {posComumValor && (
           <div className="bg-white/60 rounded-lg p-3 border border-slate-100">
             <div className="flex items-center gap-2 mb-1.5">
-              <Receipt className="w-4 h-4 text-[#2bc196]" />
-              <span className="font-bold text-sm text-[#002443]">POS Comum</span>
+              <Receipt className="w-4 h-4 text-[#1356E2]" />
+              <span className="font-bold text-sm text-[#0A0A0A]">POS Comum</span>
             </div>
-            <p className="text-base font-bold text-[#002443] ml-6">
-              R$ {posComumValor} <span className="text-xs font-normal text-[#002443]/50">/ mês por equipamento</span>
+            <p className="text-base font-bold text-[#0A0A0A] ml-6">
+              R$ {posComumValor} <span className="text-xs font-normal text-[#0A0A0A]/50">/ mês por equipamento</span>
             </p>
             {posComum.isencaoAtiva && fatMinIsencao && (
-              <div className="mt-2 ml-6 flex items-start gap-1.5 text-xs text-[#002443]/70 leading-relaxed">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 flex-shrink-0" />
+              <div className="mt-2 ml-6 flex items-start gap-1.5 text-xs text-[#0A0A0A]/70 leading-relaxed">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 flex-shrink-0" />
                 <p>
                   <span className="font-semibold">Isenção:</span> equipamentos POS Comum que faturarem R$ {fatMinIsencao} ou mais por mês ficam isentos do aluguel naquele mês.
                 </p>
@@ -49,11 +49,11 @@ export default function AluguelEquipamentosPublic({ alugueis }) {
         {smartPosValor && (
           <div className="bg-white/60 rounded-lg p-3 border border-slate-100">
             <div className="flex items-center gap-2 mb-1.5">
-              <Smartphone className="w-4 h-4 text-[#2bc196]" />
-              <span className="font-bold text-sm text-[#002443]">Smart POS</span>
+              <Smartphone className="w-4 h-4 text-[#1356E2]" />
+              <span className="font-bold text-sm text-[#0A0A0A]">Smart POS</span>
             </div>
-            <p className="text-base font-bold text-[#002443] ml-6">
-              R$ {smartPosValor} <span className="text-xs font-normal text-[#002443]/50">/ mês por equipamento</span>
+            <p className="text-base font-bold text-[#0A0A0A] ml-6">
+              R$ {smartPosValor} <span className="text-xs font-normal text-[#0A0A0A]/50">/ mês por equipamento</span>
             </p>
           </div>
         )}

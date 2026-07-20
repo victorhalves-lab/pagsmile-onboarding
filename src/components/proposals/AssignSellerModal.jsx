@@ -61,15 +61,15 @@ export default function AssignSellerModal({ open, onClose, proposal, onAssigned 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-[#002443]">Atribuir Vendedor</DialogTitle>
-          <p className="text-xs text-[#002443]/50">
-            Proposta: <span className="font-mono text-[#2bc196]">{proposal?.codigo || proposal?.id}</span>
+          <DialogTitle className="text-[#0A0A0A]">Atribuir Vendedor</DialogTitle>
+          <p className="text-xs text-[#0A0A0A]/50">
+            Proposta: <span className="font-mono text-[#1356E2]">{proposal?.codigo || proposal?.id}</span>
             {proposal?.clienteNome && <> • {proposal.clienteNome}</>}
           </p>
         </DialogHeader>
 
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -80,12 +80,12 @@ export default function AssignSellerModal({ open, onClose, proposal, onAssigned 
 
         {isLoading ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+            <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
           </div>
         ) : (
           <div className="space-y-1 max-h-72 overflow-y-auto">
             {filtered.length === 0 ? (
-              <p className="text-sm text-[#002443]/40 text-center py-4">Nenhum usuário encontrado</p>
+              <p className="text-sm text-[#0A0A0A]/40 text-center py-4">Nenhum usuário encontrado</p>
             ) : (
               filtered.map(user => {
                 const isCurrentSeller = proposal?.responsavelId === user.id;
@@ -96,19 +96,19 @@ export default function AssignSellerModal({ open, onClose, proposal, onAssigned 
                     disabled={saving || isCurrentSeller}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
                       isCurrentSeller
-                        ? 'bg-[#2bc196]/10 border border-[#2bc196]/20'
+                        ? 'bg-[#1356E2]/10 border border-[#1356E2]/20'
                         : 'hover:bg-[#f4f4f4] border border-transparent'
                     }`}
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center text-white text-xs font-bold shrink-0">
                       {(user.full_name || user.email || '?')[0]?.toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#002443] truncate">{user.full_name || 'Sem nome'}</p>
-                      <p className="text-[10px] text-[#002443]/40 truncate">{user.email}</p>
+                      <p className="text-sm font-semibold text-[#0A0A0A] truncate">{user.full_name || 'Sem nome'}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/40 truncate">{user.email}</p>
                     </div>
                     {isCurrentSeller && (
-                      <Check className="w-4 h-4 text-[#2bc196] shrink-0" />
+                      <Check className="w-4 h-4 text-[#1356E2] shrink-0" />
                     )}
                   </button>
                 );

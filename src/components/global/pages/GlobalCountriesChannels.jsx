@@ -110,22 +110,22 @@ export default function GlobalCountriesChannels() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-5">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-[#2bc196]/10">
-              <Database className="w-5 h-5 text-[#2bc196]" />
+            <div className="p-3 rounded-xl bg-[#1356E2]/10">
+              <Database className="w-5 h-5 text-[#1356E2]" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#002443]">Catálogo de Canais por País</h2>
-              <p className="text-xs text-[#002443]/60 mt-0.5">
+              <h2 className="text-lg font-bold text-[#0A0A0A]">Catálogo de Canais por País</h2>
+              <p className="text-xs text-[#0A0A0A]/60 mt-0.5">
                 {items.length} canais · {countries.length} países · {fees.length} regras de imposto
               </p>
             </div>
           </div>
           <div className="flex gap-2">
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
-            <Button variant="outline" size="sm" onClick={handleSeedFullCatalog} disabled={seedingFull} className="gap-1.5 border-[#2bc196] text-[#2bc196] hover:bg-[#2bc196]/10">
+            <Button variant="outline" size="sm" onClick={handleSeedFullCatalog} disabled={seedingFull} className="gap-1.5 border-[#1356E2] text-[#1356E2] hover:bg-[#1356E2]/10">
               <Sparkles className={`w-4 h-4 ${seedingFull ? 'animate-pulse' : ''}`} />
               Carregar Catálogo Completo
             </Button>
@@ -142,9 +142,9 @@ export default function GlobalCountriesChannels() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4 flex flex-wrap gap-3 items-center">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4 flex flex-wrap gap-3 items-center">
         <div className="flex-1 min-w-[200px] relative">
-          <Search className="w-4 h-4 text-[#002443]/40 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#0A0A0A]/40 absolute left-3 top-1/2 -translate-y-1/2" />
           <Input placeholder="Provider, método, banco, loja..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10" />
         </div>
         <Select value={countryFilter} onValueChange={setCountryFilter}>
@@ -177,9 +177,9 @@ export default function GlobalCountriesChannels() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-[#f4f4f4] text-[#002443]/70 text-xs uppercase">
+          <thead className="bg-[#f4f4f4] text-[#0A0A0A]/70 text-xs uppercase">
             <tr>
               <th className="text-left px-4 py-3">País</th>
               <th className="text-left px-4 py-3">Provider</th>
@@ -191,35 +191,35 @@ export default function GlobalCountriesChannels() {
               <th className="text-right px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#002443]/5">
+          <tbody className="divide-y divide-[#0A0A0A]/5">
             {filtered.map(c => (
               <tr key={c.id} className="hover:bg-[#f4f4f4]/40">
                 <td className="px-4 py-3">
-                  <div className="font-mono text-xs text-[#002443]/60">{c.country}</div>
-                  <div className="text-xs font-medium text-[#002443]">{c.country_name}</div>
+                  <div className="font-mono text-xs text-[#0A0A0A]/60">{c.country}</div>
+                  <div className="text-xs font-medium text-[#0A0A0A]">{c.country_name}</div>
                 </td>
                 <td className="px-4 py-3">
-                  <div className="font-semibold text-[#002443]">{c.provider}</div>
-                  <div className="text-[10px] text-[#002443]/50">{c.integration_type}</div>
+                  <div className="font-semibold text-[#0A0A0A]">{c.provider}</div>
+                  <div className="text-[10px] text-[#0A0A0A]/50">{c.integration_type}</div>
                 </td>
                 <td className="px-4 py-3">
-                  <div className="text-[#002443]">{c.payment_method}</div>
-                  <div className="text-[10px] text-[#2bc196] uppercase">{c.method_category}</div>
+                  <div className="text-[#0A0A0A]">{c.payment_method}</div>
+                  <div className="text-[10px] text-[#1356E2] uppercase">{c.method_category}</div>
                 </td>
                 <td className="px-4 py-3 max-w-[280px]">
-                  <div className="text-xs text-[#002443]/70 truncate" title={c.collection_points}>{c.collection_points || '—'}</div>
-                  {c.transaction_limits && <div className="text-[10px] text-[#002443]/50 mt-0.5 truncate">{c.transaction_limits}</div>}
+                  <div className="text-xs text-[#0A0A0A]/70 truncate" title={c.collection_points}>{c.collection_points || '—'}</div>
+                  {c.transaction_limits && <div className="text-[10px] text-[#0A0A0A]/50 mt-0.5 truncate">{c.transaction_limits}</div>}
                 </td>
                 <td className="px-4 py-3 text-center">
                   <Badge className={c.usage_status === 'PRIMARY' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
                     {c.usage_status}
                   </Badge>
-                  <div className="text-[10px] text-[#002443]/50 mt-1">{c.operational_status}</div>
+                  <div className="text-[10px] text-[#0A0A0A]/50 mt-1">{c.operational_status}</div>
                 </td>
                 <td className="px-4 py-3 text-center">
                   {(c.allowed_hr_industries || []).length > 0 ? (
                     <div className="text-[10px] text-amber-700">{c.allowed_hr_industries.length}</div>
-                  ) : <span className="text-[#002443]/30">—</span>}
+                  ) : <span className="text-[#0A0A0A]/30">—</span>}
                 </td>
                 <td className="px-4 py-3 text-center">
                   {c.requires_onboarding
@@ -237,8 +237,8 @@ export default function GlobalCountriesChannels() {
               </tr>
             ))}
             {!isLoading && filtered.length === 0 && (
-              <tr><td colSpan={8} className="px-4 py-12 text-center text-[#002443]/50">
-                <Globe2 className="w-8 h-8 mx-auto mb-2 text-[#002443]/30" />
+              <tr><td colSpan={8} className="px-4 py-12 text-center text-[#0A0A0A]/50">
+                <Globe2 className="w-8 h-8 mx-auto mb-2 text-[#0A0A0A]/30" />
                 {items.length === 0 ? 'Nenhum canal cadastrado. Importe o XLSX para começar.' : 'Nenhum canal corresponde aos filtros.'}
               </td></tr>
             )}

@@ -100,13 +100,13 @@ export default function DraftsTab() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">
+          <p className="text-sm text-[var(--pinbank-blue)]/60">
             {filteredSessions.length} rascunho(s) em andamento
           </p>
         </div>
         <div className="flex gap-2 items-center w-full sm:w-auto">
           <div className="relative flex-1 sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/50" />
             <Input
               placeholder="Buscar por nome, e-mail ou token..."
               value={searchTerm}
@@ -121,16 +121,16 @@ export default function DraftsTab() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
           </div>
         ) : paginated.length === 0 ? (
           <div className="text-center py-12">
-            <Inbox className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-4" />
-            <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum rascunho encontrado</p>
-            <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">
+            <Inbox className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/30 mb-4" />
+            <p className="text-[var(--pinbank-blue)]/70 font-medium">Nenhum rascunho encontrado</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/50 mt-1">
               Rascunhos aparecem quando clientes iniciam o questionário sem finalizar
             </p>
           </div>
@@ -182,10 +182,10 @@ export default function DraftsTab() {
                           <FileEdit className="w-4 h-4 text-amber-600" />
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-[var(--pagsmile-blue)] truncate">
+                          <p className="font-medium text-[var(--pinbank-blue)] truncate">
                             {displayName || 'Sem nome'}
                           </p>
-                          <p className="text-xs text-[var(--pagsmile-blue)]/60 truncate">
+                          <p className="text-xs text-[var(--pinbank-blue)]/60 truncate">
                             {displayEmail || 'E-mail não informado'}
                           </p>
                         </div>
@@ -202,21 +202,21 @@ export default function DraftsTab() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+                      <span className="text-sm font-semibold text-[var(--pinbank-blue)]">
                         {s.currentStep || 1}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1.5 text-sm text-[var(--pagsmile-blue)]/70">
+                      <div className="flex items-center gap-1.5 text-sm text-[var(--pinbank-blue)]/70">
                         <Clock className="w-3.5 h-3.5" />
                         {getTimeSince(s.lastAccessDate || s.updated_date)}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <p className="text-sm text-[var(--pagsmile-blue)]">
+                      <p className="text-sm text-[var(--pinbank-blue)]">
                         {s.created_date ? new Date(s.created_date).toLocaleDateString('pt-BR') : '-'}
                       </p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/50">
+                      <p className="text-xs text-[var(--pinbank-blue)]/50">
                         {s.created_date ? new Date(s.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
                       </p>
                     </TableCell>
@@ -235,7 +235,7 @@ export default function DraftsTab() {
                           variant="ghost"
                           size="sm"
                           onClick={() => window.open(getResumeUrl(s.sessionToken), '_blank')}
-                          className="text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10 gap-1.5 text-xs"
+                          className="text-[var(--pinbank-blue)] hover:text-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/10 gap-1.5 text-xs"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
                           Abrir
@@ -252,14 +252,14 @@ export default function DraftsTab() {
         {/* Pagination */}
         {filteredSessions.length > itemsPerPage && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-[var(--pagsmile-blue)]/70">
+            <p className="text-sm text-[var(--pinbank-blue)]/70">
               Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredSessions.length)} de {filteredSessions.length}
             </p>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-[var(--pagsmile-blue)]/80">
+              <span className="text-sm text-[var(--pinbank-blue)]/80">
                 {currentPage} de {totalPages || 1}
               </span>
               <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>

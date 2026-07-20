@@ -173,7 +173,7 @@ export default function SubsellerInfoForm() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -185,8 +185,8 @@ export default function SubsellerInfoForm() {
           <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
             <Building2 className="w-6 h-6 text-red-500" />
           </div>
-          <h1 className="text-xl font-bold text-[#002443] mb-2">Link indisponível</h1>
-          <p className="text-sm text-[#002443]/60">{error}</p>
+          <h1 className="text-xl font-bold text-[#0A0A0A] mb-2">Link indisponível</h1>
+          <p className="text-sm text-[#0A0A0A]/60">{error}</p>
         </CardContent></Card>
       </div>
     );
@@ -200,16 +200,16 @@ export default function SubsellerInfoForm() {
   if (done) {
     return (
       <div className="max-w-2xl mx-auto mt-16">
-        <Card className="border-[#2bc196]/30">
+        <Card className="border-[#1356E2]/30">
           <CardContent className="p-10 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#2bc196]/10 flex items-center justify-center mx-auto mb-5">
-              <CheckCircle2 className="w-8 h-8 text-[#2bc196]" />
+            <div className="w-16 h-16 rounded-2xl bg-[#1356E2]/10 flex items-center justify-center mx-auto mb-5">
+              <CheckCircle2 className="w-8 h-8 text-[#1356E2]" />
             </div>
-            <h1 className="text-2xl font-bold text-[#002443] mb-2">Envio recebido! 🎉</h1>
-            <p className="text-sm text-[#002443]/60 mb-6">
+            <h1 className="text-2xl font-bold text-[#0A0A0A] mb-2">Envio recebido! 🎉</h1>
+            <p className="text-sm text-[#0A0A0A]/60 mb-6">
               Recebemos sua lista de subsellers para análise. Nosso time entrará em contato em breve.
             </p>
-            <p className="text-xs text-[#002443]/40">
+            <p className="text-xs text-[#0A0A0A]/40">
               Você pode preencher novos subsellers a qualquer momento usando o mesmo link.
             </p>
             <Button onClick={() => { setDone(false); setRows(Array.from({ length: INITIAL_ROWS }, emptySubseller)); }}
@@ -225,11 +225,11 @@ export default function SubsellerInfoForm() {
   return (
     <div className="max-w-7xl mx-auto pb-32">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002443] via-[#003366] to-[#002443] p-8 md:p-12 mb-8 shadow-2xl">
-        <div className="absolute top-0 right-0 w-72 h-72 bg-[#2bc196]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#5cf7cf]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0A0A0A] via-[#003366] to-[#0A0A0A] p-8 md:p-12 mb-8 shadow-2xl">
+        <div className="absolute top-0 right-0 w-72 h-72 bg-[#1356E2]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#E84B1C]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2bc196]/20 text-[#5cf7cf] text-xs font-bold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1356E2]/20 text-[#E84B1C] text-xs font-bold mb-4">
             <Sparkles className="w-3.5 h-3.5" /> Cadastro de Subsellers
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
@@ -246,9 +246,9 @@ export default function SubsellerInfoForm() {
       <Card className="mb-6">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Users className="w-4 h-4 text-[#2bc196]" />
-            <h2 className="text-sm font-bold text-[#002443]">Quem está preenchendo?</h2>
-            <span className="text-[10px] text-[#002443]/40">(opcional)</span>
+            <Users className="w-4 h-4 text-[#1356E2]" />
+            <h2 className="text-sm font-bold text-[#0A0A0A]">Quem está preenchendo?</h2>
+            <span className="text-[10px] text-[#0A0A0A]/40">(opcional)</span>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -264,15 +264,15 @@ export default function SubsellerInfoForm() {
       </Card>
 
       {/* Stats bar */}
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-[#002443]/5 shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-[#2bc196]" />
+            <div className="w-8 h-8 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-[#1356E2]" />
             </div>
             <div>
-              <div className="text-xs text-[#002443]/50">Subsellers preenchidos</div>
-              <div className="text-lg font-bold text-[#002443]">{validRowsCount} <span className="text-xs font-normal text-[#002443]/40">/ {rows.length} cards</span></div>
+              <div className="text-xs text-[#0A0A0A]/50">Subsellers preenchidos</div>
+              <div className="text-lg font-bold text-[#0A0A0A]">{validRowsCount} <span className="text-xs font-normal text-[#0A0A0A]/40">/ {rows.length} cards</span></div>
             </div>
           </div>
         </div>
@@ -293,27 +293,27 @@ export default function SubsellerInfoForm() {
             {/* Divisor entre subsellers */}
             {idx > 0 && (
               <div className="flex items-center gap-4 mb-6 -mt-4" aria-hidden="true">
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#002443]/15 to-transparent" />
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#f4f4f4] border border-[#002443]/8">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#2bc196]" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#0A0A0A]/15 to-transparent" />
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#f4f4f4] border border-[#0A0A0A]/8">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#1356E2]" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">
                     Próximo subseller
                   </span>
                 </div>
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#002443]/15 to-transparent" />
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#0A0A0A]/15 to-transparent" />
               </div>
             )}
 
             {/* Banner numerado por cima do card */}
             <div className="flex items-center gap-3 mb-3 px-1">
-              <div className="text-3xl md:text-4xl font-black text-[#002443]/15 leading-none tabular-nums">
+              <div className="text-3xl md:text-4xl font-black text-[#0A0A0A]/15 leading-none tabular-nums">
                 #{String(idx + 1).padStart(2, '0')}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2bc196]">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1356E2]">
                   Subseller {idx + 1} de {rows.length}
                 </div>
-                <div className="text-xs text-[#002443]/50 truncate">
+                <div className="text-xs text-[#0A0A0A]/50 truncate">
                   {row.company_name?.trim() || 'Aguardando preenchimento...'}
                 </div>
               </div>
@@ -342,7 +342,7 @@ export default function SubsellerInfoForm() {
       {/* Fixed bottom CTA */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
         <Button size="lg" onClick={handleSubmit} disabled={submitting || validRowsCount === 0}
-          className="shadow-2xl shadow-[#2bc196]/30">
+          className="shadow-2xl shadow-[#1356E2]/30">
           {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Send className="w-5 h-5 mr-2" />}
           Enviar {validRowsCount > 0 ? `${validRowsCount} subseller${validRowsCount > 1 ? 's' : ''}` : ''}
         </Button>

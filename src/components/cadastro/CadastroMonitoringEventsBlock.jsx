@@ -62,7 +62,7 @@ export default function CadastroMonitoringEventsBlock({ document, onboardingCase
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-6">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-6">
         <Skeleton className="h-6 w-48 mb-4" />
         <Skeleton className="h-24 w-full" />
       </div>
@@ -70,19 +70,19 @@ export default function CadastroMonitoringEventsBlock({ document, onboardingCase
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-6">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-[var(--pagsmile-green)]" />
-          <h3 className="text-base font-semibold text-[var(--pagsmile-blue)]">Monitoramento Contínuo BDC</h3>
-          <Badge variant="outline" className="text-[10px] border-[var(--pagsmile-green)]/30 text-[var(--pagsmile-green)]">Circ. BCB 3.978 Art. 16</Badge>
+          <Activity className="w-5 h-5 text-[var(--pinbank-blue)]" />
+          <h3 className="text-base font-semibold text-[var(--pinbank-blue)]">Monitoramento Contínuo BDC</h3>
+          <Badge variant="outline" className="text-[10px] border-[var(--pinbank-blue)]/30 text-[var(--pinbank-blue)]">Circ. BCB 3.978 Art. 16</Badge>
         </div>
         <Badge className="bg-slate-100 text-slate-700 text-xs">{events.length} evento(s)</Badge>
       </div>
 
       {events.length === 0 ? (
-        <div className="text-center py-8 text-sm text-[var(--pagsmile-blue)]/50">
-          <CheckCircle2 className="w-10 h-10 mx-auto mb-2 text-[var(--pagsmile-green)]/40" />
+        <div className="text-center py-8 text-sm text-[var(--pinbank-blue)]/50">
+          <CheckCircle2 className="w-10 h-10 mx-auto mb-2 text-[var(--pinbank-blue)]/40" />
           Nenhum evento de monitoramento recebido para este documento.
           <p className="text-xs mt-1 opacity-70">Eventos chegam via webhook BDC quando há mudança em sanções, QSA, SCR, processos, etc.</p>
         </div>

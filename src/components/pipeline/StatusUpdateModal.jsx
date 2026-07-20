@@ -70,7 +70,7 @@ export default function StatusUpdateModal({ open, onClose, lead }) {
           <DialogTitle>Atualizar Status</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-2">
-          <p className="text-sm text-[var(--pagsmile-blue)]/70">
+          <p className="text-sm text-[var(--pinbank-blue)]/70">
             Lead: <strong>{lead.companyName || lead.fullName}</strong>
           </p>
           <div className="space-y-2">
@@ -99,7 +99,7 @@ export default function StatusUpdateModal({ open, onClose, lead }) {
           <Button
             onClick={() => mutation.mutate()}
             disabled={!newStatus || newStatus === lead.status || mutation.isPending}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90"
           >
             {mutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Atualizar

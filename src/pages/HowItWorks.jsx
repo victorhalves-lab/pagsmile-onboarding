@@ -29,7 +29,7 @@ import EndToEndFlowsSection from '../components/howitworks/EndToEndFlowsSection'
 import DadosInsightsSection from '../components/howitworks/DadosInsightsSection';
 import SentinelDeepDiveSection from '../components/howitworks/SentinelDeepDiveSection';
 import NotificacoesAutomacoesSection from '../components/howitworks/NotificacoesAutomacoesSection';
-import PagsmileLeadV5Section from '../components/howitworks/PagsmileLeadV5Section';
+import PinBankLeadV5Section from '../components/howitworks/PinBankLeadV5Section';
 import ComplianceV4Section from '../components/howitworks/ComplianceV4Section';
 import LeadPixV4Section from '../components/howitworks/LeadPixV4Section';
 import RiskScoringV4Section from '../components/howitworks/RiskScoringV4Section';
@@ -49,12 +49,12 @@ export default function HowItWorks() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-3">
-          <div className="p-3 bg-[#2bc196]/10 rounded-2xl">
-            <BookOpen className="w-7 h-7 text-[#2bc196]" />
+          <div className="p-3 bg-[#1356E2]/10 rounded-2xl">
+            <BookOpen className="w-7 h-7 text-[#1356E2]" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-[#002443]">{t('hiw.title')}</h1>
-            <p className="text-[#002443]/60 text-sm">{t('hiw.subtitle')}</p>
+            <h1 className="text-3xl font-extrabold text-[#0A0A0A]">{t('hiw.title')}</h1>
+            <p className="text-[#0A0A0A]/60 text-sm">{t('hiw.subtitle')}</p>
           </div>
         </div>
         {language !== 'pt' && (
@@ -63,7 +63,7 @@ export default function HowItWorks() {
           </div>
         )}
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">24 Seções</Badge>
+          <Badge className="bg-[#1356E2]/10 text-[#1356E2] border-0">24 Seções</Badge>
           <Badge className="bg-blue-50 text-blue-700 border-0">60+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">50+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
@@ -85,7 +85,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       <Section id="visao" title="1. Visão Estratégica da Solução" icon={Target} badge="Objetivo" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-6">
-          <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-6 text-white">
+          <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-6 text-white">
             <h3 className="text-xl font-bold mb-3">Objetivo Principal</h3>
             <p className="text-white/90 leading-relaxed text-sm mb-4">
               Simplificar e automatizar o ciclo completo de onboarding, compliance, gestão comercial, propostas e contratos para o setor financeiro de pagamentos,
@@ -98,13 +98,13 @@ export default function HowItWorks() {
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Leads & Qualificação', desc: 'Captação via 6 tipos de questionário (incl. Pagsmile v5 com 10 segmentos + PIX v4 com bifurcação), qualificação por IA PRISCILA e Lead Qualifier, 27 flags silenciosas (16 Lead + 11 PIX), pipeline Kanban' },
+                { label: 'Leads & Qualificação', desc: 'Captação via 6 tipos de questionário (incl. Pin Bank v5 com 10 segmentos + PIX v4 com bifurcação), qualificação por IA PRISCILA e Lead Qualifier, 27 flags silenciosas (16 Lead + 11 PIX), pipeline Kanban' },
                 { label: 'Propostas (3 tipos)', desc: 'Personalizada, Padrão por Segmento (taxas fixas), PIX — com link público, aceite digital e versionamento' },
                 { label: 'Compliance KYC/KYB + Risk Scoring v4', desc: '10 templates v4 por segmento + 9 fluxos legado, Motor v4 determinístico (3 camadas, 60 variáveis, 10 bloqueios, 8 subfaixas), IA SENTINEL 3 fases, CAF + BigDataCorp' },
                 { label: 'Analytics & Insights', desc: '20 abas analíticas incluindo Inteligência de Mercado, Risco Operacional e Jornada de Compliance' },
               ].map((item, i) => (
                 <div key={i} className="bg-white/10 rounded-xl p-3">
-                  <p className="text-xs font-bold text-[#5cf7cf]">{item.label}</p>
+                  <p className="text-xs font-bold text-[#E84B1C]">{item.label}</p>
                   <p className="text-[10px] text-white/60 mt-0.5">{item.desc}</p>
                 </div>
               ))}
@@ -153,10 +153,10 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 5.5. QUESTIONÁRIO PAGSMILE v5 — LEAD SEGMENTADO */}
+      {/* 5.5. QUESTIONÁRIO PIN BANK v5 — LEAD SEGMENTADO */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="pagsmile-v5" title="5.5. Questionário Pagsmile v5 — Lead Segmentado (10 Verticais)" icon={Target} badge="46 perguntas + 18 condicionais + 16 flags" expandedSections={expandedSections} toggleSection={toggleSection}>
-        <PagsmileLeadV5Section />
+      <Section id="pagsmile-v5" title="5.5. Questionário Pin Bank v5 — Lead Segmentado (10 Verticais)" icon={Target} badge="46 perguntas + 18 condicionais + 16 flags" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <PinBankLeadV5Section />
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
@@ -171,14 +171,14 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       <Section id="questionarios-leads" title="5.7. Questionários de Leads — Outros 4 Templates" icon={Inbox} badge="v2.0 + PIX + Simplificado + Reunião" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
-          <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
+          <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-5 text-white">
             <h3 className="text-lg font-bold mb-2">4 Questionários de Leads Adicionais</h3>
             <p className="text-white/80 text-sm leading-relaxed mb-3">
-              Além do Pagsmile v5 (principal), existem 4 outros formatos para cenários específicos: Lead Completo v2.0 com autocomplete, PIX Only, Simplificado pós-reunião e Reunião com Robô IA.
+              Além do Pin Bank v5 (principal), existem 4 outros formatos para cenários específicos: Lead Completo v2.0 com autocomplete, PIX Only, Simplificado pós-reunião e Reunião com Robô IA.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-2xl font-extrabold text-[#5cf7cf]">45</p>
+                <p className="text-2xl font-extrabold text-[#E84B1C]">45</p>
                 <p className="text-[10px] text-white/60">Campos Lead Completo v2</p>
                 <p className="text-[10px] text-white/40">10 etapas • Autocomplete</p>
               </div>
@@ -222,14 +222,14 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       <Section id="questionarios" title="6.6. Compliance Legado — 3 Templates v1/v2 (Merchant, Gateway, Marketplace)" icon={ClipboardList} badge="305+ Perguntas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
-          <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
+          <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-5 text-white">
             <h3 className="text-lg font-bold mb-2">3 Templates Hardcoded (v1/v2)</h3>
             <p className="text-white/80 text-sm leading-relaxed mb-3">
               Templates com perguntas fixas no código (Seções A–K). Ainda disponíveis para backwards compatibility. Compartilham as Seções A–J (tronco comum) e se diferenciam na seção K.
             </p>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-2xl font-extrabold text-[#5cf7cf]">84</p>
+                <p className="text-2xl font-extrabold text-[#E84B1C]">84</p>
                 <p className="text-[10px] text-white/60">Perguntas Merchant</p>
                 <p className="text-[10px] text-white/40">12 seções • 13 docs</p>
               </div>
@@ -283,7 +283,7 @@ export default function HowItWorks() {
       <Section id="entidades" title="11. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           {[
-            { category: "Core do Onboarding", color: "border-l-[#2bc196]", entities: [
+            { category: "Core do Onboarding", color: "border-l-[#1356E2]", entities: [
               { name: "Merchant", desc: "PF/PJ: CNPJ, nome, e-mail, telefone, status (5), score, serviços, parentMerchantId (subseller)" },
               { name: "OnboardingCase", desc: "Caso: merchantId, templateId, status (6), scores 3 fases, riskScoreV4, subfaixa (1A-5), subfaixaNome, rollingReservePercent, monitoramentoNivel, condicoesAutomaticas[], bloqueiosAtivos[], iaDecision, analista, prioridade, SLA, red flags" },
               { name: "OnboardingLink", desc: "Link: uniqueCode, templateId, agente, UTMs, expiração, métricas, complianceType, linkType" },
@@ -334,14 +334,14 @@ export default function HowItWorks() {
             ]},
           ].map((cat, i) => (
             <div key={i}>
-              <h4 className="font-bold text-[#002443] text-sm mb-2 flex items-center gap-2">
+              <h4 className="font-bold text-[#0A0A0A] text-sm mb-2 flex items-center gap-2">
                 <div className={`w-3 h-3 rounded-full ${cat.color.replace('border-l-', 'bg-')}`} />{cat.category}
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                 {cat.entities.map((e, j) => (
                   <div key={j} className={`p-3 border-l-4 ${cat.color} bg-slate-50 rounded-r-lg`}>
-                    <Badge className="bg-[#002443] text-white font-mono text-xs border-0 mb-1.5">{e.name}</Badge>
-                    <p className="text-xs text-[#002443]/70 leading-relaxed">{e.desc}</p>
+                    <Badge className="bg-[#0A0A0A] text-white font-mono text-xs border-0 mb-1.5">{e.name}</Badge>
+                    <p className="text-xs text-[#0A0A0A]/70 leading-relaxed">{e.desc}</p>
                   </div>
                 ))}
               </div>
@@ -365,8 +365,8 @@ export default function HowItWorks() {
                 <CardTitle className="text-base">{p.name}</CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
-                <ul className="space-y-1.5 text-xs text-[#002443]/70">
-                  {p.items.map((s, j) => <li key={j} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />{s}</li>)}
+                <ul className="space-y-1.5 text-xs text-[#0A0A0A]/70">
+                  {p.items.map((s, j) => <li key={j} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-[#1356E2] mt-0.5 shrink-0" />{s}</li>)}
                 </ul>
               </CardContent>
             </Card>
@@ -376,7 +376,7 @@ export default function HowItWorks() {
           <Card className="border-amber-200">
             <CardHeader className="bg-amber-50/50 pb-3"><CardTitle className="text-base">PRISCILA + Lead Qualifier</CardTitle></CardHeader>
             <CardContent className="pt-4">
-              <ul className="space-y-1.5 text-xs text-[#002443]/70">
+              <ul className="space-y-1.5 text-xs text-[#0A0A0A]/70">
                 {["PRISCILA: score 0-100, risco (BAIXO/MEDIO/ALTO/CRITICO)", "Decisão: AUTO_APROVAR, COM_FLAG, REVISÃO, REJEITAR", "Lead Qualifier: EXCELENTE → INSUFICIENTE", "Análise de maturidade do negócio", "Sugestões para time comercial", "Análise de Risco Avançada (iaRiskScore, iaDecision)"].map((s, j) => <li key={j} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-amber-400 mt-0.5 shrink-0" />{s}</li>)}
               </ul>
             </CardContent>
@@ -384,7 +384,7 @@ export default function HowItWorks() {
           <Card className="border-slate-200">
             <CardHeader className="bg-slate-50/50 pb-3"><CardTitle className="text-base">Slack + E-mail</CardTitle></CardHeader>
             <CardContent className="pt-4">
-              <ul className="space-y-1.5 text-xs text-[#002443]/70">
+              <ul className="space-y-1.5 text-xs text-[#0A0A0A]/70">
                 {["Slack Bot: notificações de novos leads, propostas aceitas/visualizadas, alertas SLA", "E-mail: follow-up automático, templates de mensagem configuráveis", "Integração via backend functions (notifyNewLead, sendFollowUpEmail, etc.)"].map((s, j) => <li key={j} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-slate-400 mt-0.5 shrink-0" />{s}</li>)}
               </ul>
             </CardContent>
@@ -436,8 +436,8 @@ export default function HowItWorks() {
             { name: "onLeadCreatedEnrich", desc: "Automação: enriquece lead automaticamente ao criar" },
           ].map((fn, i) => (
             <div key={i} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <Badge className="bg-[#002443] text-white font-mono text-[10px] border-0 mb-1">{fn.name}</Badge>
-              <p className="text-[10px] text-[#002443]/60 leading-relaxed">{fn.desc}</p>
+              <Badge className="bg-[#0A0A0A] text-white font-mono text-[10px] border-0 mb-1">{fn.name}</Badge>
+              <p className="text-[10px] text-[#0A0A0A]/60 leading-relaxed">{fn.desc}</p>
             </div>
           ))}
         </div>
@@ -449,8 +449,8 @@ export default function HowItWorks() {
       <Section id="personas" title="14. Personas e Jornadas" icon={Users} badge="5 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[
-            { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente Cartão + PIX)", desc: "Empresa que deseja se credenciar",
-              pages: ["Questionário Lead: Pagsmile v5 (10 segmentos), PIX v4 (Merchant/Intermediário), v2.0 (autocomplete), Simplificado", "Proposta Pública: Personalizada, Padrão por Segmento, PIX — com aceite/contraproposta/recusa", "Compliance: 10 templates v4 (DynamicQuestionnaire) + 9 legados + upload docs + biometria CAF", "Contrato Público: visualização + assinatura digital", "Landing Page Introducer: taxas por segmento + calculadora + questionário integrado"],
+            { icon: Building2, color: "bg-[#1356E2]", name: "Merchant (Cliente Cartão + PIX)", desc: "Empresa que deseja se credenciar",
+              pages: ["Questionário Lead: Pin Bank v5 (10 segmentos), PIX v4 (Merchant/Intermediário), v2.0 (autocomplete), Simplificado", "Proposta Pública: Personalizada, Padrão por Segmento, PIX — com aceite/contraproposta/recusa", "Compliance: 10 templates v4 (DynamicQuestionnaire) + 9 legados + upload docs + biometria CAF", "Contrato Público: visualização + assinatura digital", "Landing Page Introducer: taxas por segmento + calculadora + questionário integrado"],
               ux: ["Mobile-first responsivo", "Auto-save localStorage + backend", "Autocomplete CNPJ BrasilAPI (14+ campos)", "Autocomplete CEP ViaCEP", "Feedback visual tempo real (flags, scores, alertas)", "Sessão retomável via ComplianceResume (token)"] },
             { icon: Building2, color: "bg-emerald-600", name: "Merchant PIX (Direto ou Intermediário)", desc: "Empresa focada exclusivamente em PIX",
               pages: ["Lead PIX v4: bifurcação Merchant Direto / Intermediário, 25 perguntas, 11 flags, score 0-100", "Proposta PIX: taxa PIX (% ou fixo) + TPV mínimo garantido (3 meses)", "Compliance PIX v4: questionário específico para PIX (CompliancePixV4)", "Risk Scoring v4: segmento pix_merchant (base 80) ou pix_intermediario (base 205)", "Contrato PIX: módulos PIX habilitados + Rolling Reserve da subfaixa"],
@@ -458,7 +458,7 @@ export default function HowItWorks() {
             { icon: Users, color: "bg-[#3B82F6]", name: "Time Comercial", desc: "Agentes e gestores de vendas",
               pages: ["Home: visão 360° + quick actions", "Links Questionários: 4 tipos + Introducer", "Questionários Recebidos: 6 sub-abas", "Pipeline Kanban: 7 colunas", "Propostas: 3 tipos (Personalizada, Padrão, PIX)", "Contratos: pré-gerado por IA", "Questionário Reunião + Robô IA"],
               ux: ["Pipeline com drag-and-drop", "Qualificação IA automática", "3 tipos de proposta", "Versionamento de propostas"] },
-            { icon: Shield, color: "bg-[#002443]", name: "Time Compliance (Admin)", desc: "Analistas e auditores",
+            { icon: Shield, color: "bg-[#0A0A0A]", name: "Time Compliance (Admin)", desc: "Analistas e auditores",
               pages: ["Dashboard 20+ KPIs + gráficos", "Links Compliance: 9 tipos", "Casos de Compliance: análise detalhada", "Gestão Documentos + Revalidação", "Templates + Regras + Integrações", "Helena IA + Auditoria + Configurações"],
               ux: ["IA SENTINEL 3 fases", "Regras automáticas", "Auditoria 100%", "Revalidação programável"] },
             { icon: UserPlus, color: "bg-purple-600", name: "Introducer (Parceiro)", desc: "Parceiro de indicação de clientes",
@@ -471,18 +471,18 @@ export default function HowItWorks() {
                   <div className={`w-10 h-10 ${persona.color} rounded-xl flex items-center justify-center`}><persona.icon className="w-5 h-5 text-white" /></div>
                   <div>
                     <CardTitle className="text-sm">{persona.name}</CardTitle>
-                    <p className="text-[10px] text-[#002443]/50">{persona.desc}</p>
+                    <p className="text-[10px] text-[#0A0A0A]/50">{persona.desc}</p>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <p className="text-[10px] font-bold text-[#002443]/40 uppercase mb-1">Páginas</p>
-                  {persona.pages.map((p, j) => <p key={j} className="text-[10px] text-[#002443]/60 flex items-start gap-1"><ArrowRight className="w-2.5 h-2.5 text-[#2bc196] mt-0.5 shrink-0" />{p}</p>)}
+                  <p className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase mb-1">Páginas</p>
+                  {persona.pages.map((p, j) => <p key={j} className="text-[10px] text-[#0A0A0A]/60 flex items-start gap-1"><ArrowRight className="w-2.5 h-2.5 text-[#1356E2] mt-0.5 shrink-0" />{p}</p>)}
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-[#002443]/40 uppercase mb-1">UX</p>
-                  {persona.ux.map((u, j) => <p key={j} className="text-[10px] text-[#002443]/60 flex items-start gap-1"><CheckCircle2 className="w-2.5 h-2.5 text-[#2bc196] mt-0.5 shrink-0" />{u}</p>)}
+                  <p className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase mb-1">UX</p>
+                  {persona.ux.map((u, j) => <p key={j} className="text-[10px] text-[#0A0A0A]/60 flex items-start gap-1"><CheckCircle2 className="w-2.5 h-2.5 text-[#1356E2] mt-0.5 shrink-0" />{u}</p>)}
                 </div>
               </CardContent>
             </Card>
@@ -526,12 +526,12 @@ export default function HowItWorks() {
       </Section>
 
       {/* Footer */}
-      <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
+      <div className="mt-8 p-6 bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          Documentação Completa e Microscópica — Pagsmile v9.0 (Data-First v7) • {new Date().toLocaleDateString()}
+          Documentação Completa e Microscópica — Pin Bank v9.0 (Data-First v7) • {new Date().toLocaleDateString()}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          24 Seções • 60+ Páginas • 50+ Entidades em 11 Domínios • 10 Fluxogramas • 7 Jornadas E2E • Data-First v7 (V4+CAF decidem, SENTINEL relator) • 21 Abas Analytics • 6 Funis de Lead (Pagsmile v5 + PIX v4 + Fechamento + Reunião + Robô IA + Simplificado) • 11 Templates Compliance v4 Cartão + 2 PIX + 2 Subseller (PF/PJ) + Legados • 175+ Backend Functions • 16 Flags Lead V5 + 11 Flags PIX V4 • Risk Scoring v4: 13 Dimensões com Pesos % + 8 Subfaixas + 10 Bloqueios + Veto Biométrico CAF + Safety Net • 5 Perfis AccessProfile + 2FA TOTP+PIN + AccessAudit/TwoFactorAudit/AdminLoginAttempt (5 anos retenção) • Parceiros Externos de Compliance (3 níveis visibilidade) + Doc Pré-KYC para BaaS + Doc-Only Link + Bulk Reprocess + Escalações Questionáveis
+          24 Seções • 60+ Páginas • 50+ Entidades em 11 Domínios • 10 Fluxogramas • 7 Jornadas E2E • Data-First v7 (V4+CAF decidem, SENTINEL relator) • 21 Abas Analytics • 6 Funis de Lead (Pin Bank v5 + PIX v4 + Fechamento + Reunião + Robô IA + Simplificado) • 11 Templates Compliance v4 Cartão + 2 PIX + 2 Subseller (PF/PJ) + Legados • 175+ Backend Functions • 16 Flags Lead V5 + 11 Flags PIX V4 • Risk Scoring v4: 13 Dimensões com Pesos % + 8 Subfaixas + 10 Bloqueios + Veto Biométrico CAF + Safety Net • 5 Perfis AccessProfile + 2FA TOTP+PIN + AccessAudit/TwoFactorAudit/AdminLoginAttempt (5 anos retenção) • Parceiros Externos de Compliance (3 níveis visibilidade) + Doc Pré-KYC para BaaS + Doc-Only Link + Bulk Reprocess + Escalações Questionáveis
         </p>
       </div>
     </div>

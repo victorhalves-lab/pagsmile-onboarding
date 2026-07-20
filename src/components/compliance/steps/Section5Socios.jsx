@@ -48,7 +48,7 @@ export default function Section5Socios({ formData, handleChange, handleArrayChan
           variant="outline"
           size="sm"
           onClick={addSocio}
-          className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]"
+          className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]"
         >
           <Plus className="w-4 h-4 mr-2" />
           Adicionar Pessoa

@@ -70,12 +70,12 @@ export default function ConfiguracaoParceiros() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#002443]">{t('cp.title')}</h1>
-          <p className="text-sm text-[#002443]/50 mt-0.5">
+          <h1 className="text-xl font-bold text-[#0A0A0A]">{t('cp.title')}</h1>
+          <p className="text-sm text-[#0A0A0A]/50 mt-0.5">
             {t('cp.subtitle')}
           </p>
         </div>
-        <Button onClick={handleNew} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+        <Button onClick={handleNew} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
           <Plus className="w-4 h-4 mr-2" /> {t('cp.new_partner')}
         </Button>
       </div>
@@ -83,16 +83,16 @@ export default function ConfiguracaoParceiros() {
       {/* Lista de Parceiros */}
       {isLoading ? (
         <div className="flex justify-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+          <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
         </div>
       ) : partners.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
-            <Handshake className="w-7 h-7 text-[#002443]/20" />
+            <Handshake className="w-7 h-7 text-[#0A0A0A]/20" />
           </div>
-          <p className="text-sm font-semibold text-[#002443]/60">{t('cp.no_partners')}</p>
-          <p className="text-xs text-[#002443]/30 mt-1">{t('cp.no_partners_hint')}</p>
-          <Button onClick={handleNew} className="mt-4 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+          <p className="text-sm font-semibold text-[#0A0A0A]/60">{t('cp.no_partners')}</p>
+          <p className="text-xs text-[#0A0A0A]/30 mt-1">{t('cp.no_partners_hint')}</p>
+          <Button onClick={handleNew} className="mt-4 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" /> {t('cp.first_partner')}
           </Button>
         </div>

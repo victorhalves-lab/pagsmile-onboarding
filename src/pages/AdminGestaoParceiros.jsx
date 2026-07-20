@@ -35,18 +35,18 @@ export default function AdminGestaoParceiros() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Handshake className="w-6 h-6 text-[#2bc196]" />
-            <h1 className="text-2xl font-bold text-[#002443]">Parceiros de Compliance</h1>
+            <Handshake className="w-6 h-6 text-[#1356E2]" />
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">Parceiros de Compliance</h1>
           </div>
           <p className="text-sm text-slate-500">Cadastre e gerencie parceiros externos e seus usuários.</p>
         </div>
-        <Button onClick={() => { setSelected(null); setFormOpen(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+        <Button onClick={() => { setSelected(null); setFormOpen(true); }} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
           <Plus className="w-4 h-4 mr-2" /> Novo Parceiro
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-16"><Loader2 className="w-6 h-6 animate-spin inline text-[#2bc196]" /></div>
+        <div className="text-center py-16"><Loader2 className="w-6 h-6 animate-spin inline text-[#1356E2]" /></div>
       ) : partners.length === 0 ? (
         <Card>
           <CardContent className="py-16 text-center">
@@ -62,7 +62,7 @@ export default function AdminGestaoParceiros() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-[#002443]">{p.name}</h3>
+                      <h3 className="font-semibold text-[#0A0A0A]">{p.name}</h3>
                       <Badge className={p.isActive ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-600'}>
                         {p.isActive ? 'Ativo' : 'Inativo'}
                       </Badge>

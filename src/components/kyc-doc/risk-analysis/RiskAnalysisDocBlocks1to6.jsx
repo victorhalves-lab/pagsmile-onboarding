@@ -157,7 +157,7 @@ export default function RiskAnalysisDocBlocks1to6() {
 
         <DocH3>2.2 — Régua visual de 8 subfaixas</DocH3>
         <DocP>
-          Barra horizontal com 8 segmentos coloridos (1A→5). A subfaixa atual ganha um anel ring-[#002443] +
+          Barra horizontal com 8 segmentos coloridos (1A→5). A subfaixa atual ganha um anel ring-[#0A0A0A] +
           scale-105 destacando a posição.
         </DocP>
         <DocTable

@@ -92,13 +92,13 @@ const pillars = [
 export default function GovernanceFramework() {
   return (
     <div className="space-y-4">
-      <Card className="p-5 bg-gradient-to-br from-[#002443] to-[#003366] text-white">
+      <Card className="p-5 bg-gradient-to-br from-[#0A0A0A] to-[#003366] text-white">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-[#2bc196]/20 flex items-center justify-center flex-shrink-0">
-            <Shield className="w-6 h-6 text-[#2bc196]" />
+          <div className="w-12 h-12 rounded-xl bg-[#1356E2]/20 flex items-center justify-center flex-shrink-0">
+            <Shield className="w-6 h-6 text-[#1356E2]" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Framework de Governança Pagsmile</h2>
+            <h2 className="text-lg font-bold text-white">Framework de Governança Pin Bank</h2>
             <p className="text-sm text-white/70 mt-1">Sete pilares que garantem rastreabilidade, segurança, conformidade regulatória e segregação de funções em toda a operação.</p>
           </div>
         </div>
@@ -113,12 +113,12 @@ export default function GovernanceFramework() {
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${p.color}`}>
                   <Icon className="w-5 h-5" />
                 </div>
-                <h3 className="font-semibold text-[#002443]">{p.title}</h3>
+                <h3 className="font-semibold text-[#0A0A0A]">{p.title}</h3>
               </div>
               <ul className="space-y-2">
                 {p.items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-[#002443]/80">
-                    <CheckCircle2 className="w-4 h-4 text-[#2bc196] flex-shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-2 text-sm text-[#0A0A0A]/80">
+                    <CheckCircle2 className="w-4 h-4 text-[#1356E2] flex-shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </li>
                 ))}

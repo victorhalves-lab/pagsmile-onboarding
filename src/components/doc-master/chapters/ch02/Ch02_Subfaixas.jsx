@@ -53,7 +53,7 @@ export default function Ch02_Subfaixas() {
 
 function P_Intro() {
   return (
-    <p style={{ color: '#002443', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
+    <p style={{ color: '#0A0A0A', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
       Subfaixa é o <strong>output principal</strong> do framework V4 e determina automaticamente: decisão, rolling reserve, nível de monitoramento e condições contratuais. Ela é função única do <code>score_final</code> calculado em <code>bdcEnrichCase</code>.
     </p>
   );

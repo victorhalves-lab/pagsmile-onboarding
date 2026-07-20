@@ -64,11 +64,11 @@ export default function DocsAndCafLinkModal({ open, onOpenChange, caseData, merc
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
             <div className="p-2 bg-gradient-to-br from-emerald-100 to-indigo-100 rounded-lg">
-              <Link2 className="w-5 h-5 text-[#002443]" />
+              <Link2 className="w-5 h-5 text-[#0A0A0A]" />
             </div>
-            <DialogTitle className="text-[#002443]">Gerar Link Completo (Docs + CAF)</DialogTitle>
+            <DialogTitle className="text-[#0A0A0A]">Gerar Link Completo (Docs + CAF)</DialogTitle>
           </div>
-          <DialogDescription className="text-[#002443]/70">
+          <DialogDescription className="text-[#0A0A0A]/70">
             Fluxo completo: cliente faz upload dos documentos e depois faz a verificação de identidade (RG/CNH + selfie + liveness).
           </DialogDescription>
         </DialogHeader>
@@ -77,12 +77,12 @@ export default function DocsAndCafLinkModal({ open, onOpenChange, caseData, merc
           {/* Case info */}
           <div className="bg-slate-50 rounded-lg p-3 space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-[#002443]/60">Cliente:</span>
-              <span className="text-xs font-semibold text-[#002443] truncate max-w-[250px]">{merchant?.fullName || '-'}</span>
+              <span className="text-xs text-[#0A0A0A]/60">Cliente:</span>
+              <span className="text-xs font-semibold text-[#0A0A0A] truncate max-w-[250px]">{merchant?.fullName || '-'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-[#002443]/60">CPF/CNPJ:</span>
-              <span className="text-xs font-mono text-[#002443]">{merchant?.cpfCnpj || '-'}</span>
+              <span className="text-xs text-[#0A0A0A]/60">CPF/CNPJ:</span>
+              <span className="text-xs font-mono text-[#0A0A0A]">{merchant?.cpfCnpj || '-'}</span>
             </div>
           </div>
 
@@ -92,21 +92,21 @@ export default function DocsAndCafLinkModal({ open, onOpenChange, caseData, merc
               <div className={`p-2 rounded-lg ${docsDone ? 'bg-green-100' : 'bg-emerald-50'}`}>
                 <FileUp className={`w-4 h-4 ${docsDone ? 'text-green-600' : 'text-emerald-600'}`} />
               </div>
-              <span className="text-[10px] text-[#002443]/60">Documentos</span>
+              <span className="text-[10px] text-[#0A0A0A]/60">Documentos</span>
             </div>
             <div className="w-8 h-px bg-slate-300" />
             <div className="flex flex-col items-center gap-1">
               <div className={`p-2 rounded-lg ${cafDone ? 'bg-green-100' : 'bg-purple-50'}`}>
                 <ScanFace className={`w-4 h-4 ${cafDone ? 'text-green-600' : 'text-purple-600'}`} />
               </div>
-              <span className="text-[10px] text-[#002443]/60">Verificação</span>
+              <span className="text-[10px] text-[#0A0A0A]/60">Verificação</span>
             </div>
             <div className="w-8 h-px bg-slate-300" />
             <div className="flex flex-col items-center gap-1">
               <div className="p-2 rounded-lg bg-slate-100">
                 <CheckCircle2 className="w-4 h-4 text-slate-500" />
               </div>
-              <span className="text-[10px] text-[#002443]/60">Concluído</span>
+              <span className="text-[10px] text-[#0A0A0A]/60">Concluído</span>
             </div>
           </div>
 
@@ -128,11 +128,11 @@ export default function DocsAndCafLinkModal({ open, onOpenChange, caseData, merc
           {result?.url && (
             <div className="space-y-2">
               <div className="bg-gradient-to-br from-emerald-50 to-indigo-50 border border-emerald-200 rounded-lg p-3">
-                <p className="text-xs font-semibold text-[#002443] mb-1.5">🔗 Link gerado:</p>
-                <code className="text-[11px] text-[#002443] break-all block bg-white p-2 rounded border border-slate-200">
+                <p className="text-xs font-semibold text-[#0A0A0A] mb-1.5">🔗 Link gerado:</p>
+                <code className="text-[11px] text-[#0A0A0A] break-all block bg-white p-2 rounded border border-slate-200">
                   {result.url}
                 </code>
-                <p className="text-[10px] text-[#002443]/60 mt-1.5">
+                <p className="text-[10px] text-[#0A0A0A]/60 mt-1.5">
                   📋 Template: {result.templateName} · {result.requiredDocsCount} documentos
                 </p>
               </div>
@@ -154,7 +154,7 @@ export default function DocsAndCafLinkModal({ open, onOpenChange, caseData, merc
             <Button
               onClick={handleGenerate}
               disabled={loading}
-              className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+              className="flex-1 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
             >
               {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando...</> : <><Link2 className="w-4 h-4 mr-2" /> Gerar Link Completo</>}
             </Button>

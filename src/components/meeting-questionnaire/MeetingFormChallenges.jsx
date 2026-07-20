@@ -7,10 +7,10 @@ import { Shield } from 'lucide-react';
 
 export default function MeetingFormChallenges({ form, updateField }) {
   return (
-    <Card className="border-[#002443]/5">
+    <Card className="border-[#0A0A0A]/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Shield className="w-5 h-5 text-[#2bc196]" />
+          <Shield className="w-5 h-5 text-[#1356E2]" />
           Desafios e Oportunidades
         </CardTitle>
       </CardHeader>

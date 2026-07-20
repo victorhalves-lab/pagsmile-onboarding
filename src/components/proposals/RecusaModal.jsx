@@ -40,7 +40,7 @@ export default function RecusaModal({ open, onClose, onSubmit, isPending }) {
                 className={`text-left py-2.5 px-4 rounded-lg border text-sm font-medium transition-all ${
                   motivo === m
                     ? 'border-red-500 bg-red-50 text-red-700'
-                    : 'border-slate-200 text-[#002443]/70 hover:border-slate-300'
+                    : 'border-slate-200 text-[#0A0A0A]/70 hover:border-slate-300'
                 }`}
               >
                 {m}

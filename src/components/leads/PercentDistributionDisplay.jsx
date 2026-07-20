@@ -47,7 +47,7 @@ export default function PercentDistributionDisplay({ questionnaireData }) {
           <div key={group.title} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-base">{group.icon}</span>
-              <span className="text-xs font-bold text-[#002443]/70 uppercase tracking-wider">{group.title}</span>
+              <span className="text-xs font-bold text-[#0A0A0A]/70 uppercase tracking-wider">{group.title}</span>
               {hasAny && (
                 <span className={`text-[10px] ml-auto px-2.5 py-1 rounded-full font-bold border ${
                   Math.abs(total - 100) < 0.1
@@ -61,11 +61,11 @@ export default function PercentDistributionDisplay({ questionnaireData }) {
             <div className="grid grid-cols-3 gap-4">
               {values.map(v => (
                 <div key={v.id} className="text-center bg-white rounded-lg border border-[#e2e8f0] p-3">
-                  <p className="text-[10px] text-[#002443]/50 mb-1 font-medium">{v.label}</p>
+                  <p className="text-[10px] text-[#0A0A0A]/50 mb-1 font-medium">{v.label}</p>
                   {v.value !== null ? (
                     <p className="text-2xl font-bold text-indigo-600">{v.value.toFixed(0)}%</p>
                   ) : (
-                    <p className="text-lg text-[#002443]/15 font-bold">—</p>
+                    <p className="text-lg text-[#0A0A0A]/15 font-bold">—</p>
                   )}
                 </div>
               ))}

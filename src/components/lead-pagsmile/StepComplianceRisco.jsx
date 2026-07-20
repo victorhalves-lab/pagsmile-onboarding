@@ -15,19 +15,19 @@ export default function StepComplianceRisco({ form, updateField, errors = {} }) 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-bold text-[#002443]">Compliance e Risco</h2>
+        <h2 className="text-lg font-bold text-[#0A0A0A]">Compliance e Risco</h2>
       </div>
 
       {/* P34 — Já foi encerrado? */}
       <div className="space-y-2" data-field="encerrado">
-        <label className="text-sm font-semibold text-[#002443]">Já foi encerrado por algum processador? *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Já foi encerrado por algum processador? *</label>
         <ButtonSelector options={ENCERRADO_OPTIONS} value={form.encerrado} onChange={(v) => updateField('encerrado', v)} columns={3} />
         {errors?.encerrado && <p className="text-xs text-red-500">Campo obrigatório</p>}
       </div>
 
       {/* Chargeback — SEMPRE VISÍVEL com checkbox de exceção */}
       <div className="space-y-3" data-field="chargeback">
-        <label className="text-sm font-semibold text-[#002443]">Qual sua taxa de chargeback atual? *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Qual sua taxa de chargeback atual? *</label>
         {!naoProcessaCartao && (
           <ButtonSelector
             options={CHARGEBACK_FAIXAS}
@@ -44,9 +44,9 @@ export default function StepComplianceRisco({ form, updateField, errors = {} }) 
               updateField('naoProcessaCartao', e.target.checked);
               if (e.target.checked) updateField('chargeback', '');
             }}
-            className="w-4 h-4 rounded border-[#002443]/30 text-[#2bc196] focus:ring-[#2bc196]"
+            className="w-4 h-4 rounded border-[#0A0A0A]/30 text-[#1356E2] focus:ring-[#1356E2]"
           />
-          <span className="text-xs text-[#002443]/70">Não processo pagamento de cartão</span>
+          <span className="text-xs text-[#0A0A0A]/70">Não processo pagamento de cartão</span>
         </label>
         {errors?.chargeback && (
           <p className="text-xs text-red-500">Informe a taxa de chargeback ou marque "Não processo cartão"</p>
@@ -55,8 +55,8 @@ export default function StepComplianceRisco({ form, updateField, errors = {} }) 
 
       {/* MED PIX — SEMPRE VISÍVEL com checkbox de exceção */}
       <div className="space-y-3" data-field="medPix">
-        <label className="text-sm font-semibold text-[#002443]">Qual sua taxa de MED PIX atual? *</label>
-        <p className="text-xs text-[#002443]/50">MED = Mecanismo Especial de Devolução do Banco Central</p>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Qual sua taxa de MED PIX atual? *</label>
+        <p className="text-xs text-[#0A0A0A]/50">MED = Mecanismo Especial de Devolução do Banco Central</p>
         {!naoProcessaPix && (
           <ButtonSelector
             options={MED_PIX_FAIXAS}
@@ -73,9 +73,9 @@ export default function StepComplianceRisco({ form, updateField, errors = {} }) 
               updateField('naoProcessaPix', e.target.checked);
               if (e.target.checked) updateField('medPix', '');
             }}
-            className="w-4 h-4 rounded border-[#002443]/30 text-[#2bc196] focus:ring-[#2bc196]"
+            className="w-4 h-4 rounded border-[#0A0A0A]/30 text-[#1356E2] focus:ring-[#1356E2]"
           />
-          <span className="text-xs text-[#002443]/70">Não processo PIX</span>
+          <span className="text-xs text-[#0A0A0A]/70">Não processo PIX</span>
         </label>
         {errors?.medPix && (
           <p className="text-xs text-red-500">Informe a taxa de MED PIX ou marque "Não processo PIX"</p>

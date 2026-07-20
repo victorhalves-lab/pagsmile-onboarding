@@ -35,9 +35,9 @@ export default function PipelineConversionChart({ leads, contracts = [], merchan
     const d = payload[0].payload;
     return (
       <div className="bg-white border border-slate-200 rounded-lg p-2 shadow-lg text-xs">
-        <p className="font-medium text-[var(--pagsmile-blue)]">{d.name}</p>
+        <p className="font-medium text-[var(--pinbank-blue)]">{d.name}</p>
         <p>{d.count} {t('pipe_chart.leads')}</p>
-        <p className="text-[var(--pagsmile-green)]">TPV: R$ {(d.tpv / 1000).toFixed(0)}k</p>
+        <p className="text-[var(--pinbank-blue)]">TPV: R$ {(d.tpv / 1000).toFixed(0)}k</p>
       </div>
     );
   };
@@ -46,15 +46,15 @@ export default function PipelineConversionChart({ leads, contracts = [], merchan
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-[var(--pagsmile-green)]" />
+          <TrendingUp className="w-4 h-4 text-[var(--pinbank-blue)]" />
           {t('pipe_chart.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-            <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} />
-            <YAxis tick={{ fontSize: 10, fill: '#002443' }} allowDecimals={false} />
+            <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} />
+            <YAxis tick={{ fontSize: 10, fill: '#0A0A0A' }} allowDecimals={false} />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
               {data.map((entry, index) => (

@@ -58,31 +58,31 @@ function DimensionSection({ sectionKey, section }) {
   const okPct = totalItems > 0 ? Math.round((okCount / totalItems) * 100) : 0;
 
   return (
-    <div data-dimension-anchor={sectionKey} className="border border-[#002443]/8 rounded-xl overflow-hidden scroll-mt-20">
+    <div data-dimension-anchor={sectionKey} className="border border-[#0A0A0A]/8 rounded-xl overflow-hidden scroll-mt-20">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-3 p-4 hover:bg-slate-50/50 transition-colors text-left"
       >
         <div className={`p-2 rounded-lg ${RISK_COLORS[overallRisk]?.split(' ')[0] || 'bg-slate-50'}`}>
-          <Icon className="w-4 h-4 text-[#002443]/60" />
+          <Icon className="w-4 h-4 text-[#0A0A0A]/60" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-[#002443]">{dimCfg.label}</span>
+            <span className="text-sm font-bold text-[#0A0A0A]">{dimCfg.label}</span>
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="cursor-help"><Info className="w-3 h-3 text-[#002443]/30" /></span>
+                  <span className="cursor-help"><Info className="w-3 h-3 text-[#0A0A0A]/30" /></span>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs bg-[#002443] text-white">
+                <TooltipContent side="top" className="max-w-xs bg-[#0A0A0A] text-white">
                   <p className="text-[11px] leading-relaxed">{dimCfg.desc}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-[10px] text-[#002443]/40">{totalItems} itens • {totalPts > 0 ? '+' : ''}{totalPts} pts</span>
+            <span className="text-[10px] text-[#0A0A0A]/40">{totalItems} itens • {totalPts > 0 ? '+' : ''}{totalPts} pts</span>
             {/* Progress bar: % of items with OK/low risk */}
             <div className="flex-1 max-w-[140px] flex items-center gap-1.5">
               <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -91,7 +91,7 @@ function DimensionSection({ sectionKey, section }) {
                   style={{ width: `${okPct}%` }}
                 />
               </div>
-              <span className="text-[9px] font-mono text-[#002443]/40 shrink-0">{okCount}/{totalItems} OK</span>
+              <span className="text-[9px] font-mono text-[#0A0A0A]/40 shrink-0">{okCount}/{totalItems} OK</span>
             </div>
           </div>
         </div>
@@ -99,13 +99,13 @@ function DimensionSection({ sectionKey, section }) {
           {critCount > 0 && <Badge className="bg-red-50 text-red-700 border-red-200 border text-[9px]">{critCount} crítico</Badge>}
           {altoCount > 0 && <Badge className="bg-orange-50 text-orange-700 border-orange-200 border text-[9px]">{altoCount} alto</Badge>}
           <div className={`w-2.5 h-2.5 rounded-full ${RISK_DOT[overallRisk]}`} />
-          {expanded ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
         </div>
       </button>
 
       {expanded && (
-        <div className="border-t border-[#002443]/5 p-4 space-y-2">
-          <p className="text-[10px] text-[#002443]/40 mb-3">{dimCfg.desc}</p>
+        <div className="border-t border-[#0A0A0A]/5 p-4 space-y-2">
+          <p className="text-[10px] text-[#0A0A0A]/40 mb-3">{dimCfg.desc}</p>
           {section.items.map((item, idx) => (
             <DimensionItem key={idx} item={item} />
           ))}
@@ -171,9 +171,9 @@ function LawsuitsList({ lawsuits }) {
   return (
     <div className="mt-2 space-y-1.5">
       {displayed.map((lw, i) => (
-        <div key={i} className="p-2 bg-white/60 rounded border border-[#002443]/5 text-[10px]">
-          <div className="font-bold text-[#002443]">📄 {lw.number}</div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1 text-[#002443]/60">
+        <div key={i} className="p-2 bg-white/60 rounded border border-[#0A0A0A]/5 text-[10px]">
+          <div className="font-bold text-[#0A0A0A]">📄 {lw.number}</div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1 text-[#0A0A0A]/60">
             {lw.type && <div><strong>Tipo:</strong> {lw.type}</div>}
             {lw.subject && <div><strong>Assunto:</strong> {lw.subject}</div>}
             {lw.court && <div><strong>Tribunal:</strong> {lw.court}</div>}
@@ -183,7 +183,7 @@ function LawsuitsList({ lawsuits }) {
             {lw.ownerName && <div><strong>Sócio:</strong> {lw.ownerName}</div>}
           </div>
           {lw.parties && lw.parties.length > 0 && (
-            <div className="mt-1 text-[#002443]/50">
+            <div className="mt-1 text-[#0A0A0A]/50">
               <strong>Partes:</strong> {lw.parties.slice(0, 3).map(p => `${p.name} (${p.specificType || p.type || 'N/I'})`).join(', ')}
             </div>
           )}
@@ -207,10 +207,10 @@ export default function RiskDimensionalAnalysis({ complianceScore, merchant }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
-        <h3 className="text-sm font-bold text-[#002443]">Análise Dimensional — Dados BDC por Área</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A]">Análise Dimensional — Dados BDC por Área</h3>
         <Badge className="bg-blue-50 text-blue-700 border-blue-200 border text-[9px]">Dados Objetivos</Badge>
       </div>
-      <p className="text-[10px] text-[#002443]/40 mb-3">
+      <p className="text-[10px] text-[#0A0A0A]/40 mb-3">
         Cada dimensão mostra dados reais da Big Data Corp, organizados por área de análise. Clique para expandir e ver cada item com explicação.
       </p>
       {sectionKeys.map(key => {

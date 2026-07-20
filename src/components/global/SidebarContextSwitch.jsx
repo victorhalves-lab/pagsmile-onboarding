@@ -37,7 +37,7 @@ export default function SidebarContextSwitch({ collapsed = false }) {
               key={opt.key}
               onClick={() => onPick(opt.key)}
               className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                active ? 'bg-[#2bc196] text-white shadow' : 'text-white/40 hover:bg-white/5'
+                active ? 'bg-[#1356E2] text-white shadow' : 'text-white/40 hover:bg-white/5'
               }`}
               title={opt.label}
             >
@@ -59,7 +59,7 @@ export default function SidebarContextSwitch({ collapsed = false }) {
             key={opt.key}
             onClick={() => onPick(opt.key)}
             className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
-              active ? 'bg-[#2bc196] text-white shadow' : 'text-white/50 hover:text-white/80'
+              active ? 'bg-[#1356E2] text-white shadow' : 'text-white/50 hover:text-white/80'
             }`}
           >
             <Icon className="w-3 h-3" />

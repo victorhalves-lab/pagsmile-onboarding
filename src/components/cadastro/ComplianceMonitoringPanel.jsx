@@ -19,9 +19,9 @@ export default function ComplianceMonitoringPanel({ score }) {
   const details = score.monitoramento_detalhes || {};
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-4 flex items-center gap-2">
-        <Gauge className="w-4 h-4 text-[var(--pagsmile-green)]" />
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-4 flex items-center gap-2">
+        <Gauge className="w-4 h-4 text-[var(--pinbank-blue)]" />
         Monitoramento & Reservas
       </h3>
 
@@ -52,33 +52,33 @@ export default function ComplianceMonitoringPanel({ score }) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           {details.frequencia_revisao && (
             <div className="p-3 bg-gray-50 rounded-lg text-center">
-              <Calendar className="w-4 h-4 mx-auto text-[var(--pagsmile-blue)]/40 mb-1" />
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{details.frequencia_revisao}</p>
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Frequência Revisão</p>
+              <Calendar className="w-4 h-4 mx-auto text-[var(--pinbank-blue)]/40 mb-1" />
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{details.frequencia_revisao}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/50">Frequência Revisão</p>
             </div>
           )}
           {details.alertas_cb != null && (
             <div className="p-3 bg-gray-50 rounded-lg text-center">
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{details.alertas_cb}</p>
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Alertas CB</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{details.alertas_cb}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/50">Alertas CB</p>
             </div>
           )}
           {details.alertas_med != null && (
             <div className="p-3 bg-gray-50 rounded-lg text-center">
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{details.alertas_med}</p>
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Alertas Médios</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{details.alertas_med}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/50">Alertas Médios</p>
             </div>
           )}
           {details.alertas_pico != null && (
             <div className="p-3 bg-gray-50 rounded-lg text-center">
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{details.alertas_pico}</p>
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Alertas Pico</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{details.alertas_pico}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/50">Alertas Pico</p>
             </div>
           )}
           {details.revisao_periodica && (
             <div className="p-3 bg-gray-50 rounded-lg text-center">
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{details.revisao_periodica}</p>
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Revisão Periódica</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{details.revisao_periodica}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/50">Revisão Periódica</p>
             </div>
           )}
         </div>

@@ -206,24 +206,24 @@ export default function GestaoPropostas() {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" /></div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <FileText className="w-6 h-6 text-[#5cf7cf]" />
+              <FileText className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('gestao_propostas.title')}</h1>
               <p className="text-white/60 text-sm mt-1">{t('gestao_propostas.found', { count: filtered.length })}</p>
             </div>
           </div>
-          <Button onClick={() => navigate(createPageUrl('CriarProposta'))} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
+          <Button onClick={() => navigate(createPageUrl('CriarProposta'))} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 rounded-xl shadow-md">
             <Plus className="w-4 h-4" /> {t('gestao_propostas.new')}
           </Button>
         </div>
@@ -234,8 +234,8 @@ export default function GestaoPropostas() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-white border border-[#002443]/5">
-          <TabsTrigger value="lista" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
+        <TabsList className="bg-white border border-[#0A0A0A]/5">
+          <TabsTrigger value="lista" className="gap-2 data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#0A0A0A]">
             <List className="w-4 h-4" /> {t('gestao_propostas.list_tab')}
           </TabsTrigger>
           <TabsTrigger value="contrapropostas" className="gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 relative">
@@ -247,7 +247,7 @@ export default function GestaoPropostas() {
               ) : null;
             })()}
           </TabsTrigger>
-          <TabsTrigger value="empresa" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
+          <TabsTrigger value="empresa" className="gap-2 data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#0A0A0A]">
             <Building2 className="w-4 h-4" /> {t('gestao_propostas.by_company_tab')}
           </TabsTrigger>
         </TabsList>
@@ -256,7 +256,7 @@ export default function GestaoPropostas() {
           {/* Filters */}
           <div className="flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('gestao_propostas.search_placeholder')} className="pl-10 h-10" />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -285,7 +285,7 @@ export default function GestaoPropostas() {
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -305,9 +305,9 @@ export default function GestaoPropostas() {
                   {filtered.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={10} className="text-center py-12">
-                        <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-                        <p className="text-[var(--pagsmile-blue)]/60">{t('gestao_propostas.no_proposals')}</p>
-                        <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
+                        <FileText className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/30 mb-3" />
+                        <p className="text-[var(--pinbank-blue)]/60">{t('gestao_propostas.no_proposals')}</p>
+                        <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pinbank-blue)]">
                           {t('gestao_propostas.new')}
                         </Button>
                       </TableCell>
@@ -320,9 +320,9 @@ export default function GestaoPropostas() {
                       <TableRow key={p.id} className="hover:bg-[#f4f4f4] transition-colors">
                         <TableCell>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-sm text-[var(--pagsmile-green)]">{p.codigo || '-'}</span>
+                            <span className="font-mono text-sm text-[var(--pinbank-blue)]">{p.codigo || '-'}</span>
                             {(p.version || 1) > 1 && (
-                              <span className="text-[9px] bg-[#2bc196]/10 text-[#2bc196] px-1.5 py-0.5 rounded font-bold">v{p.version}</span>
+                              <span className="text-[9px] bg-[#1356E2]/10 text-[#1356E2] px-1.5 py-0.5 rounded font-bold">v{p.version}</span>
                             )}
                           </div>
                         </TableCell>
@@ -330,13 +330,13 @@ export default function GestaoPropostas() {
                          <TableCell>
                            {p.responsavelNome && p.responsavelNome !== 'sistema' ? (
                              <button onClick={() => setAssignSellerProposal(p)} className="flex items-center gap-1.5 group">
-                               <div className="w-5 h-5 rounded-full bg-[#2bc196]/20 flex items-center justify-center text-[8px] font-bold text-[#2bc196]">
+                               <div className="w-5 h-5 rounded-full bg-[#1356E2]/20 flex items-center justify-center text-[8px] font-bold text-[#1356E2]">
                                  {(p.responsavelNome)[0]?.toUpperCase()}
                                </div>
-                               <span className="text-xs text-[#002443]/70 group-hover:text-[#2bc196] transition-colors truncate max-w-[80px]">{p.responsavelNome}</span>
+                               <span className="text-xs text-[#0A0A0A]/70 group-hover:text-[#1356E2] transition-colors truncate max-w-[80px]">{p.responsavelNome}</span>
                              </button>
                            ) : (
-                             <button onClick={() => setAssignSellerProposal(p)} className="text-[10px] text-red-400 hover:text-[#2bc196] border border-dashed border-red-200 hover:border-[#2bc196] rounded-lg px-2 py-1 transition-all">
+                             <button onClick={() => setAssignSellerProposal(p)} className="text-[10px] text-red-400 hover:text-[#1356E2] border border-dashed border-red-200 hover:border-[#1356E2] rounded-lg px-2 py-1 transition-all">
                                + Atribuir
                              </button>
                            )}
@@ -362,7 +362,7 @@ export default function GestaoPropostas() {
                             ) : <span className="text-xs text-slate-400">—</span>}
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-[var(--pagsmile-blue)]/60">{p.clienteCnpj || '-'}</TableCell>
+                        <TableCell className="text-sm text-[var(--pinbank-blue)]/60">{p.clienteCnpj || '-'}</TableCell>
                         <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
                         <TableCell>
                           <div className="flex flex-col gap-0.5 text-[10px]">
@@ -392,14 +392,14 @@ export default function GestaoPropostas() {
                         <TableCell>
                           <div className="flex items-center gap-1">
                             {expiring && <AlertTriangle className="w-3 h-3 text-amber-500" />}
-                            <span className={`text-xs ${expiring ? 'text-amber-600 font-medium' : 'text-[var(--pagsmile-blue)]/60'}`}>
+                            <span className={`text-xs ${expiring ? 'text-amber-600 font-medium' : 'text-[var(--pinbank-blue)]/60'}`}>
                               {p.validUntil ? moment(p.validUntil).format('DD/MM/YY') : '-'}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="sm" onClick={() => setRentabilidadeProposal(p)} title="Simular Rentabilidade" className="text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10">
+                            <Button variant="ghost" size="sm" onClick={() => setRentabilidadeProposal(p)} title="Simular Rentabilidade" className="text-[#1356E2] hover:text-[#1356E2] hover:bg-[#1356E2]/10">
                               <DollarSign className="w-4 h-4" />
                             </Button>
                             <Button variant="ghost" size="sm" onClick={() => {
@@ -418,7 +418,7 @@ export default function GestaoPropostas() {
                             )}
                             {isFinalized && (
                               <Button variant="ghost" size="sm" onClick={() => criarNovaVersao(p)} title="Criar nova versão">
-                                <GitBranch className="w-4 h-4 text-[#2bc196]" />
+                                <GitBranch className="w-4 h-4 text-[#1356E2]" />
                               </Button>
                             )}
                             {p.tokenPublico && (

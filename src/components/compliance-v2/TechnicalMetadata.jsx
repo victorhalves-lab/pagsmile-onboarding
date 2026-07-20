@@ -24,13 +24,13 @@ export default function TechnicalMetadata({ score, latestCase, integrationLogs =
   if (!version && !framework && !caseCreated && transactionIds.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-slate-100"><Settings className="w-5 h-5 text-slate-600" /></div>
           <div>
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">Metadados Técnicos</h3>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Versões, IDs de transação e timeline de processamento</p>
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">Metadados Técnicos</h3>
+            <p className="text-[10px] text-[var(--pinbank-blue)]/40">Versões, IDs de transação e timeline de processamento</p>
           </div>
         </div>
       </div>
@@ -41,29 +41,29 @@ export default function TechnicalMetadata({ score, latestCase, integrationLogs =
           {version && (
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-center">
               <Cpu className="w-4 h-4 mx-auto mb-1 text-slate-400" />
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Agente SENTINEL</p>
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{version}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40">Agente SENTINEL</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{version}</p>
             </div>
           )}
           {framework && (
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-center">
               <Shield className="w-4 h-4 mx-auto mb-1 text-slate-400" />
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Framework</p>
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{framework}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40">Framework</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{framework}</p>
             </div>
           )}
           {segmento && (
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-center">
               <Hash className="w-4 h-4 mx-auto mb-1 text-slate-400" />
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Segmento</p>
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{segmento}{isPix ? ' (PIX)' : ''}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40">Segmento</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{segmento}{isPix ? ' (PIX)' : ''}</p>
             </div>
           )}
           {caseCreated && (
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-center">
               <Clock className="w-4 h-4 mx-auto mb-1 text-slate-400" />
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Caso Criado</p>
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]">{new Date(caseCreated).toLocaleDateString('pt-BR')}</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40">Caso Criado</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]">{new Date(caseCreated).toLocaleDateString('pt-BR')}</p>
             </div>
           )}
         </div>
@@ -82,15 +82,15 @@ export default function TechnicalMetadata({ score, latestCase, integrationLogs =
         {/* Transaction IDs */}
         {transactionIds.length > 0 && (
           <div>
-            <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/40 uppercase tracking-wider mb-2">IDs de Transação das Integrações</p>
+            <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/40 uppercase tracking-wider mb-2">IDs de Transação das Integrações</p>
             <div className="space-y-1 max-h-[200px] overflow-y-auto">
               {transactionIds.map((t, i) => (
                 <div key={i} className="flex items-center gap-2 text-[10px] p-2 bg-slate-50 rounded border border-slate-100">
                   <Badge className={`text-[8px] border-0 ${t.provider === 'BigDataCorp' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
                     {t.provider === 'BigDataCorp' ? 'BDC' : 'CAF'}
                   </Badge>
-                  <span className="text-[var(--pagsmile-blue)]/50">{t.svc.replace(/_/g, ' ')}</span>
-                  <span className="font-mono text-[var(--pagsmile-blue)]/30 ml-auto truncate max-w-[200px]">{t.id}</span>
+                  <span className="text-[var(--pinbank-blue)]/50">{t.svc.replace(/_/g, ' ')}</span>
+                  <span className="font-mono text-[var(--pinbank-blue)]/30 ml-auto truncate max-w-[200px]">{t.id}</span>
                 </div>
               ))}
             </div>

@@ -70,8 +70,8 @@ export default function CafManualSelfieUpload({ onboardingCaseId, onComplete }) 
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50">
           <CheckCircle2 className="w-7 h-7 text-green-600" />
         </div>
-        <h3 className="text-lg font-bold text-[#002443]">Selfie Enviada!</h3>
-        <p className="text-sm text-[#002443]/60">
+        <h3 className="text-lg font-bold text-[#0A0A0A]">Selfie Enviada!</h3>
+        <p className="text-sm text-[#0A0A0A]/60">
           Sua selfie será analisada pela equipe de compliance. Aguarde o processamento.
         </p>
       </div>
@@ -84,8 +84,8 @@ export default function CafManualSelfieUpload({ onboardingCaseId, onComplete }) 
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-purple-50 mb-3">
           <Camera className="w-7 h-7 text-purple-600" />
         </div>
-        <h3 className="text-lg font-bold text-[#002443] mb-1">Envio Manual de Selfie</h3>
-        <p className="text-sm text-[#002443]/60 max-w-sm mx-auto">
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-1">Envio Manual de Selfie</h3>
+        <p className="text-sm text-[#0A0A0A]/60 max-w-sm mx-auto">
           Tire uma foto do seu rosto (selfie) e envie abaixo. A verificação será feita manualmente pela equipe.
         </p>
       </div>
@@ -112,7 +112,7 @@ export default function CafManualSelfieUpload({ onboardingCaseId, onComplete }) 
       <Button
         onClick={() => fileRef.current?.click()}
         disabled={uploading}
-        className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-12 rounded-xl shadow-lg"
+        className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-12 rounded-xl shadow-lg"
       >
         {uploading ? (
           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando...</>

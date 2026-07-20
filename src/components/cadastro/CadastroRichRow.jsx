@@ -55,7 +55,7 @@ export default function CadastroRichRow({
       className={`block bg-white rounded-xl border transition-all group ${
         isDuplicate
           ? 'border-red-300 hover:border-red-400 hover:shadow-md'
-          : 'border-[var(--pagsmile-blue)]/8 hover:border-[var(--pagsmile-green)]/40 hover:shadow-md'
+          : 'border-[var(--pinbank-blue)]/8 hover:border-[var(--pinbank-blue)]/40 hover:shadow-md'
       }`}
     >
       {/* Banner de duplicação */}
@@ -79,18 +79,18 @@ export default function CadastroRichRow({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold text-sm text-[var(--pagsmile-blue)] truncate">
+              <span className="font-semibold text-sm text-[var(--pinbank-blue)] truncate">
                 {merchant.companyName || merchant.fullName}
               </span>
               <Badge variant="outline" className="text-[10px] shrink-0">{merchant.type}</Badge>
               <V5_2Badge frameworkVersion={oCase?.framework_version} />
               {merchant.fullName && merchant.companyName && merchant.fullName !== merchant.companyName && (
-                <span className="text-[11px] text-[var(--pagsmile-blue)]/40 truncate">
+                <span className="text-[11px] text-[var(--pinbank-blue)]/40 truncate">
                   ({merchant.fullName})
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 text-xs text-[var(--pagsmile-blue)]/50 mt-0.5">
+            <div className="flex items-center gap-2 text-xs text-[var(--pinbank-blue)]/50 mt-0.5">
               <span className="font-mono">{formatDoc(merchant.cpfCnpj)}</span>
             </div>
           </div>
@@ -106,33 +106,33 @@ export default function CadastroRichRow({
               </div>
             )}
             <Badge className={`${sc.color} text-[10px]`}>{sc.label}</Badge>
-            <ChevronRight className="w-4 h-4 text-[var(--pagsmile-blue)]/20 group-hover:text-[var(--pagsmile-green)] transition-colors" />
+            <ChevronRight className="w-4 h-4 text-[var(--pinbank-blue)]/20 group-hover:text-[var(--pinbank-blue)] transition-colors" />
           </div>
         </div>
 
         {/* Linha 2: dados de contato + TPV + segmento */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-1.5 mt-3 text-[11px]">
           {merchant.email && (
-            <div className="flex items-center gap-1.5 text-[var(--pagsmile-blue)]/60 truncate">
-              <Mail className="w-3 h-3 flex-shrink-0 text-[var(--pagsmile-blue)]/40" />
+            <div className="flex items-center gap-1.5 text-[var(--pinbank-blue)]/60 truncate">
+              <Mail className="w-3 h-3 flex-shrink-0 text-[var(--pinbank-blue)]/40" />
               <span className="truncate">{merchant.email}</span>
             </div>
           )}
           {merchant.phone && (
-            <div className="flex items-center gap-1.5 text-[var(--pagsmile-blue)]/60">
-              <Phone className="w-3 h-3 flex-shrink-0 text-[var(--pagsmile-blue)]/40" />
+            <div className="flex items-center gap-1.5 text-[var(--pinbank-blue)]/60">
+              <Phone className="w-3 h-3 flex-shrink-0 text-[var(--pinbank-blue)]/40" />
               <span>{merchant.phone}</span>
             </div>
           )}
           {tpv && (
-            <div className="flex items-center gap-1.5 text-[var(--pagsmile-blue)]/60">
-              <DollarSign className="w-3 h-3 flex-shrink-0 text-[var(--pagsmile-green)]" />
+            <div className="flex items-center gap-1.5 text-[var(--pinbank-blue)]/60">
+              <DollarSign className="w-3 h-3 flex-shrink-0 text-[var(--pinbank-blue)]" />
               <span className="font-semibold">TPV {formatMoney(tpv)}/mês</span>
             </div>
           )}
           {segName && (
-            <div className="flex items-center gap-1.5 text-[var(--pagsmile-blue)]/60">
-              <TrendingUp className="w-3 h-3 flex-shrink-0 text-[var(--pagsmile-blue)]/40" />
+            <div className="flex items-center gap-1.5 text-[var(--pinbank-blue)]/60">
+              <TrendingUp className="w-3 h-3 flex-shrink-0 text-[var(--pinbank-blue)]/40" />
               <span>{segName}</span>
             </div>
           )}
@@ -140,7 +140,7 @@ export default function CadastroRichRow({
 
         {/* Linha 3: vendedor + origem + proposta + contrato + subsellers */}
         {(sellerName || originLabel || hasProposal || hasContract || subsellerCount > 0) && (
-          <div className="flex items-center flex-wrap gap-2 mt-2 pt-2 border-t border-[var(--pagsmile-blue)]/5">
+          <div className="flex items-center flex-wrap gap-2 mt-2 pt-2 border-t border-[var(--pinbank-blue)]/5">
             {sellerName && (
               <Badge variant="outline" className="text-[10px] gap-1 bg-blue-50/50 border-blue-200 text-blue-700">
                 <UserCheck className="w-2.5 h-2.5" />

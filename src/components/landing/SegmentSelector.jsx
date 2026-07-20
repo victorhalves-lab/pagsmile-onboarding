@@ -79,14 +79,14 @@ export default function SegmentSelector({ segments, activeSegment, onSelect, onI
                   w-full px-3 py-3 rounded-xl text-sm font-bold
                   transition-all duration-200 border-2 text-center leading-tight
                   ${isActive
-                    ? 'bg-[#2bc196] text-white border-[#2bc196] shadow-md shadow-[#2bc196]/20'
-                    : 'bg-white text-[#002443] border-[#002443]/10 hover:border-[#2bc196]/40 hover:bg-[#2bc196]/5'
+                    ? 'bg-[#1356E2] text-white border-[#1356E2] shadow-md shadow-[#1356E2]/20'
+                    : 'bg-white text-[#0A0A0A] border-[#0A0A0A]/10 hover:border-[#1356E2]/40 hover:bg-[#1356E2]/5'
                   }
                 `}
               >
                 {seg.segmentName}
                 {desc && (
-                  <span className={`block text-[10px] font-medium mt-0.5 ${isActive ? 'text-white/60' : 'text-[#002443]/40'}`}>
+                  <span className={`block text-[10px] font-medium mt-0.5 ${isActive ? 'text-white/60' : 'text-[#0A0A0A]/40'}`}>
                     {desc.short}
                   </span>
                 )}
@@ -99,7 +99,7 @@ export default function SegmentSelector({ segments, activeSegment, onSelect, onI
                 {desc && (
                   <button
                     onClick={(e) => { e.stopPropagation(); openModal(seg.segmentName); }}
-                    className="flex items-center gap-1 text-[10px] font-semibold text-[#2bc196] hover:text-[#002443] transition-colors"
+                    className="flex items-center gap-1 text-[10px] font-semibold text-[#1356E2] hover:text-[#0A0A0A] transition-colors"
                   >
                     <Info className="w-3 h-3" />
                     Saiba mais
@@ -123,28 +123,28 @@ export default function SegmentSelector({ segments, activeSegment, onSelect, onI
           >
             <button
               onClick={() => setModalSegment(null)}
-              className="absolute top-4 right-4 text-[#002443]/30 hover:text-[#002443] transition-colors"
+              className="absolute top-4 right-4 text-[#0A0A0A]/30 hover:text-[#0A0A0A] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 bg-[#2bc196]/10 rounded-xl">
-                <Info className="w-5 h-5 text-[#2bc196]" />
+              <div className="p-2.5 bg-[#1356E2]/10 rounded-xl">
+                <Info className="w-5 h-5 text-[#1356E2]" />
               </div>
               <div>
-                <h3 className="text-lg font-extrabold text-[#002443]">{modalSegment}</h3>
-                <p className="text-xs text-[#002443]/40 font-medium">{SEGMENT_DESCRIPTIONS[modalSegment].short}</p>
+                <h3 className="text-lg font-extrabold text-[#0A0A0A]">{modalSegment}</h3>
+                <p className="text-xs text-[#0A0A0A]/40 font-medium">{SEGMENT_DESCRIPTIONS[modalSegment].short}</p>
               </div>
             </div>
 
-            <p className="text-sm text-[#002443]/70 leading-relaxed">
+            <p className="text-sm text-[#0A0A0A]/70 leading-relaxed">
               {SEGMENT_DESCRIPTIONS[modalSegment].long}
             </p>
 
             <button
               onClick={() => setModalSegment(null)}
-              className="mt-5 w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold text-sm py-2.5 rounded-xl transition-colors"
+              className="mt-5 w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white font-bold text-sm py-2.5 rounded-xl transition-colors"
             >
               Entendi
             </button>

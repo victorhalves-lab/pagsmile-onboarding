@@ -1,4 +1,4 @@
-// Lista de MCCs únicos extraídos da planilha CNAE x MCC Pagsmile
+// Lista de MCCs únicos extraídos da planilha CNAE x MCC Pin Bank
 // Cada entrada: { mcc, name, nameEn }
 export const MCC_LIST = [
   { mcc: "0742", name: "Serviço Veterinário", nameEn: "Veterinary Services" },

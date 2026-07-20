@@ -207,7 +207,7 @@ function ResultCard({ profitability, label }) {
       {/* Label */}
       {label && (
         <div className="text-center">
-          <Badge className="bg-[#002443] text-white">{label}</Badge>
+          <Badge className="bg-[#0A0A0A] text-white">{label}</Badge>
           <p className="text-xs text-slate-500 mt-1">TPV: {fmtBRL(profitability.tpv)} · {profitability.txMes.toLocaleString('pt-BR')} tx/mês</p>
         </div>
       )}
@@ -341,7 +341,7 @@ function MinimoGarantidoTab({ proposal, partner, selectedMccCode }) {
   return (
     <div className="space-y-4">
       {/* Summary */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-xl p-4 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-xl p-4 text-white">
         <p className="text-[10px] font-bold uppercase tracking-wider text-white/60 mb-1">Margem Acumulada (3 meses)</p>
         <p className="text-2xl font-bold">{fmtBRL(totalMargem)}</p>
         <div className="flex gap-4 mt-2 text-xs text-white/70">
@@ -458,7 +458,7 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
         <div className="sticky top-0 z-10 bg-white border-b px-5 py-4">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-base">
-              <DollarSign className="w-5 h-5 text-[#2bc196]" />
+              <DollarSign className="w-5 h-5 text-[#1356E2]" />
               Simulação de Rentabilidade
             </SheetTitle>
           </SheetHeader>
@@ -466,8 +466,8 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
           {/* Proposal Info */}
           {proposal && (
             <div className="mt-3 flex items-center gap-2 flex-wrap">
-              <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">{proposal.codigo}</Badge>
-              <span className="text-sm font-semibold text-[#002443]">{proposal.clienteNome || 'Sem nome'}</span>
+              <Badge className="bg-[#1356E2]/10 text-[#1356E2] border-0 text-[10px]">{proposal.codigo}</Badge>
+              <span className="text-sm font-semibold text-[#0A0A0A]">{proposal.clienteNome || 'Sem nome'}</span>
               {proposal.clienteMcc && (
                 <Badge variant="outline" className="text-[9px]">MCC {proposal.clienteMcc}</Badge>
               )}
@@ -486,8 +486,8 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
                   <button key={p.id} onClick={() => setSelectedPartnerId(p.id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
                       selectedPartnerId === p.id
-                        ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-md'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-[#2bc196]/50'
+                        ? 'bg-[#1356E2] border-[#1356E2] text-white shadow-md'
+                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-[#1356E2]/50'
                     }`}>
                     {selectedPartnerId === p.id && <Check className="w-3 h-3" />}
                     {p.isPrincipal && selectedPartnerId !== p.id && <Star className="w-2.5 h-2.5 text-amber-500 fill-amber-500" />}
@@ -508,8 +508,8 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
                     <button key={m.mccCode} onClick={() => setSelectedMccCode(m.mccCode)}
                       className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${
                         selectedMccCode === m.mccCode
-                          ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-md'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-[#2bc196]/50'
+                          ? 'bg-[#1356E2] border-[#1356E2] text-white shadow-md'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-[#1356E2]/50'
                       }`}>
                       {selectedMccCode === m.mccCode && <Check className="w-2.5 h-2.5 inline mr-1" />}
                       {m.mccCode} {m.mccDescription ? `— ${m.mccDescription}` : ''}
@@ -535,7 +535,7 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
             </div>
           ) : loadingPartners ? (
             <div className="flex justify-center py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+              <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
             </div>
           ) : (
             <Tabs value={activeTab} onValueChange={setActiveTab}>

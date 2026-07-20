@@ -48,7 +48,7 @@ export default function PartnerCasesTable({ assignments }) {
             return (
               <TableRow key={a.id} className="hover:bg-slate-50">
                 <TableCell>
-                  <div className="font-medium text-[#002443]">{a.merchantName || '—'}</div>
+                  <div className="font-medium text-[#0A0A0A]">{a.merchantName || '—'}</div>
                   <div className="text-xs text-slate-500">{a.merchantCpfCnpj || '—'}</div>
                 </TableCell>
                 <TableCell>

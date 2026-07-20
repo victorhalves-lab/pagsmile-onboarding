@@ -2,14 +2,14 @@ import React from 'react';
 import { H2, H3, H4, P, B, C, Table, Note, CodeBlock } from '../../DocPrimitives';
 
 /**
- * §1.5 Design System — index.css + globals.css + tailwind.config + Pagsmile brand overlay
+ * §1.5 Design System — index.css + globals.css + tailwind.config + Pin Bank brand overlay
  */
 export default function Ch01_DesignSystem() {
   return (
     <>
       <H2 num="1.5">Design System — Tokens, Tailwind e Brand Overlay</H2>
 
-      <P>O design system é uma <B>pirâmide de 3 camadas</B>: (1) tokens HSL em <C>index.css</C> (camada base shadcn/ui), (2) tema mapeado em <C>tailwind.config.js</C> (HSL → utility classes), (3) brand overlay PagSmile em <C>globals.css</C> que sobrescreve tudo via <C>!important</C> para garantir consistência visual.</P>
+      <P>O design system é uma <B>pirâmide de 3 camadas</B>: (1) tokens HSL em <C>index.css</C> (camada base shadcn/ui), (2) tema mapeado em <C>tailwind.config.js</C> (HSL → utility classes), (3) brand overlay Pin Bank em <C>globals.css</C> que sobrescreve tudo via <C>!important</C> para garantir consistência visual.</P>
 
       <H3 num="1.5.1">Camada 1 — index.css (tokens HSL shadcn/ui base)</H3>
 
@@ -40,7 +40,7 @@ export default function Ch01_DesignSystem() {
 }`}</CodeBlock>
 
       <Note title="darkMode coexiste mas é inativo" kind="info">
-        <C>tailwind.config.js</C> tem <C>darkMode: ["class"]</C>. As variáveis <C>{'.dark { ... }'}</C> em <C>index.css</C> existem por completude. Em produção <B>nenhum elemento adiciona a classe "dark"</B> — então o tema escuro nunca dispara. Remover seria refactoring fora de escopo. Apenas a sidebar navegacional (#002443) é "escura" mas usa cores fixas, não variáveis dark.
+        <C>tailwind.config.js</C> tem <C>darkMode: ["class"]</C>. As variáveis <C>{'.dark { ... }'}</C> em <C>index.css</C> existem por completude. Em produção <B>nenhum elemento adiciona a classe "dark"</B> — então o tema escuro nunca dispara. Remover seria refactoring fora de escopo. Apenas a sidebar navegacional (#0A0A0A) é "escura" mas usa cores fixas, não variáveis dark.
       </Note>
 
       <H3 num="1.5.2">Camada 2 — tailwind.config.js (mapping HSL → utility)</H3>
@@ -90,28 +90,28 @@ animation: { 'accordion-down': 'accordion-down 0.2s ease-out', 'accordion-up': '
         Apenas para classes cujo NOME exato é montado em runtime via concatenação ou map dinâmico. Classes literais (mesmo dentro de objetos const) já são detectadas pelo scanner. Não adicione classes que você escreveu como literal — só infla o CSS.
       </Note>
 
-      <H3 num="1.5.3">Camada 3 — globals.css (Brand Overlay PagSmile)</H3>
+      <H3 num="1.5.3">Camada 3 — globals.css (Brand Overlay Pin Bank)</H3>
 
-      <P>Esta camada é o "<B>truque</B>" do design — sobrescreve tokens shadcn neutros para forçar a paleta PagSmile em <B>todo</B> o app, incluindo componentes de bibliotecas externas (recharts, sonner, radix popover) que não respeitariam tokens nativamente.</P>
+      <P>Esta camada é o "<B>truque</B>" do design — sobrescreve tokens shadcn neutros para forçar a paleta Pin Bank em <B>todo</B> o app, incluindo componentes de bibliotecas externas (recharts, sonner, radix popover) que não respeitariam tokens nativamente.</P>
 
-      <H4>Tokens PagSmile</H4>
+      <H4>Tokens Pin Bank</H4>
       <Table dense headers={['Variável', 'Valor', 'Uso']} rows={[
-        ['--pagsmile-blue', '#002443', 'Cor de texto principal + sidebar admin + headers'],
-        ['--pagsmile-green', '#2bc196', 'Acento principal + botões primários + indicadores ativos'],
-        ['--pagsmile-green-light', '#5cf7cf', 'Highlights + chips ativos'],
-        ['--pagsmile-green-dark', '#36706c', 'Hover de verde escuro'],
-        ['--pagsmile-blue-light', '#003366', 'Variação azul mais clara'],
+        ['--pinbank-blue', '#0A0A0A', 'Cor de texto principal + sidebar admin + headers'],
+        ['--pinbank-blue', '#1356E2', 'Acento principal + botões primários + indicadores ativos'],
+        ['--pinbank-blue-light', '#E84B1C', 'Highlights + chips ativos'],
+        ['--pinbank-blue-dark', '#E84B1C', 'Hover de verde escuro'],
+        ['--pinbank-blue-light', '#003366', 'Variação azul mais clara'],
         ['--pagsmile-gray', '#f4f4f4', 'Fundo padrão da área principal'],
-        ['--pagsmile-text', '#282828', 'Texto secundário'],
+        ['--pagsmile-text', '#0A0A0A', 'Texto secundário'],
       ]} />
 
       <H4>Sobrescrita global de cor de texto</H4>
-      <CodeBlock language="css">{`/* globals.css — força azul Pagsmile como cor de texto padrão */
-* { color: #002443; }
+      <CodeBlock language="css">{`/* globals.css — força azul Pin Bank como cor de texto padrão */
+* { color: #0A0A0A; }
 
 /* Exceções: textos brancos em fundos coloridos */
-.bg-\\[\\#2bc196\\], .bg-\\[\\#2bc196\\] *,
-.bg-\\[\\#002443\\], .bg-\\[\\#002443\\] *,
+.bg-\\[\\#1356E2\\], .bg-\\[\\#1356E2\\] *,
+.bg-\\[\\#0A0A0A\\], .bg-\\[\\#0A0A0A\\] *,
 [data-state="checked"],
 .bg-red-500, .bg-red-500 *,
 .bg-green-500, .bg-green-500 * {
@@ -123,7 +123,7 @@ animation: { 'accordion-down': 'accordion-down 0.2s ease-out', 'accordion-up': '
 .text-gray-600, .text-gray-500, .text-gray-400,
 .text-slate-900, .text-slate-800, .text-slate-700,
 .text-slate-600, .text-slate-500, .text-slate-400 {
-  color: #002443 !important;
+  color: #0A0A0A !important;
 }`}</CodeBlock>
 
       <H4>Sobrescrita de fundos slate/gray</H4>
@@ -140,23 +140,23 @@ animation: { 'accordion-down': 'accordion-down 0.2s ease-out', 'accordion-up': '
 }`}</CodeBlock>
 
       <H4>Sobrescrita de bibliotecas externas</H4>
-      <CodeBlock language="css">{`/* Recharts — labels e legendas em azul PagSmile */
-.recharts-text                       { fill: #002443 !important; }
-.recharts-cartesian-axis-tick-value  { fill: #002443 !important; }
-.recharts-legend-item-text           { color: #002443 !important; }
+      <CodeBlock language="css">{`/* Recharts — labels e legendas em azul Pin Bank */
+.recharts-text                       { fill: #0A0A0A !important; }
+.recharts-cartesian-axis-tick-value  { fill: #0A0A0A !important; }
+.recharts-legend-item-text           { color: #0A0A0A !important; }
 .recharts-tooltip-label,
-.recharts-tooltip-item               { color: #002443 !important; }
+.recharts-tooltip-item               { color: #0A0A0A !important; }
 
 /* Sonner toasts */
-[data-sonner-toast]                  { background-color: #ffffff !important; color: #002443 !important; border-color: #e2e8f0 !important; }
+[data-sonner-toast]                  { background-color: #ffffff !important; color: #0A0A0A !important; border-color: #e2e8f0 !important; }
 
 /* Radix popover/dropdown — força cor padrão dentro de portal */
-[data-radix-popper-content-wrapper] *                     { color: #002443; }
+[data-radix-popper-content-wrapper] *                     { color: #0A0A0A; }
 [data-radix-popper-content-wrapper] [data-state="checked"] { color: #ffffff !important; }`}</CodeBlock>
 
       <H3 num="1.5.4">Sidebar — design escuro fixo</H3>
 
-      <P>A sidebar admin (<C>layout.jsx</C>) usa cores HARDCODED <B>#002443</B> como fundo, com texto branco e acentos em <B>#2bc196</B> e <B>#5cf7cf</B>. Não usa tokens — propositalmente, para garantir contraste alto sem depender de variáveis. Scrollbar customizada também é hardcode:</P>
+      <P>A sidebar admin (<C>layout.jsx</C>) usa cores HARDCODED <B>#0A0A0A</B> como fundo, com texto branco e acentos em <B>#1356E2</B> e <B>#E84B1C</B>. Não usa tokens — propositalmente, para garantir contraste alto sem depender de variáveis. Scrollbar customizada também é hardcode:</P>
 
       <CodeBlock language="css">{`/* globals.css */
 .sidebar-nav::-webkit-scrollbar              { width: 4px; }
@@ -180,10 +180,10 @@ animation: { 'accordion-down': 'accordion-down 0.2s ease-out', 'accordion-up': '
         ['4 (mais fraca)', 'Browser defaults', 'Nada'],
       ]} />
 
-      <P>Na prática isso significa: quando você adiciona <C>className="text-blue-500"</C> em algum lugar, a regra <C>{'* { color: #002443 }'}</C> de globals.css <B>sem !important</B> é vencida pela utility class — então blues específicos do Tailwind funcionam. Mas <C>className="text-gray-500"</C> é sobrescrito porque a regra que mata cinzas USA <C>!important</C>.</P>
+      <P>Na prática isso significa: quando você adiciona <C>className="text-blue-500"</C> em algum lugar, a regra <C>{'* { color: #0A0A0A }'}</C> de globals.css <B>sem !important</B> é vencida pela utility class — então blues específicos do Tailwind funcionam. Mas <C>className="text-gray-500"</C> é sobrescrito porque a regra que mata cinzas USA <C>!important</C>.</P>
 
       <Note title="Por que essa arquitetura existe" kind="info">
-        Histórico: o projeto começou com shadcn/ui puro (cinzas). Conforme o branding PagSmile foi sendo aplicado, ficou claro que tokens eram insuficientes — bibliotecas externas (recharts, sonner) ignoram tokens e usam cores fixas. A camada 3 (<C>globals.css</C> com !important) resolveu isso de forma centralizada. Mover para tokens nativos exigiria fork das bibliotecas — fora de escopo.
+        Histórico: o projeto começou com shadcn/ui puro (cinzas). Conforme o branding Pin Bank foi sendo aplicado, ficou claro que tokens eram insuficientes — bibliotecas externas (recharts, sonner) ignoram tokens e usam cores fixas. A camada 3 (<C>globals.css</C> com !important) resolveu isso de forma centralizada. Mover para tokens nativos exigiria fork das bibliotecas — fora de escopo.
       </Note>
     </>
   );

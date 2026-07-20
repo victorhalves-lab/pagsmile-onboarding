@@ -19,7 +19,7 @@ export default function Step4bEscopoNegocio({ formData, handleChange }) {
         placeholder="Descreva detalhadamente o que a empresa faz, seus produtos/serviços, público-alvo, etc. (mínimo 50 caracteres)"
         minLength={50}
         rows={8}
-        className="text-[var(--pagsmile-blue)]"
+        className="text-[var(--pinbank-blue)]"
       />
     </FormSection>
   );

@@ -50,8 +50,8 @@ function ServiceCard({ svcType, record }) {
         <statusStyle.SIcon className={`w-5 h-5 ${statusStyle.color} flex-shrink-0`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{meta.label}</span>
-            {record.duration_ms && <span className="text-[10px] text-[var(--pagsmile-blue)]/30">{record.duration_ms}ms</span>}
+            <span className="text-sm font-bold text-[var(--pinbank-blue)]">{meta.label}</span>
+            {record.duration_ms && <span className="text-[10px] text-[var(--pinbank-blue)]/30">{record.duration_ms}ms</span>}
           </div>
           <p className={`text-xs leading-relaxed ${statusStyle.color}`}>{result.text}</p>
         </div>
@@ -126,7 +126,7 @@ function ServiceCard({ svcType, record }) {
           {record.image_urls?.length > 0 && (
             <div className="flex gap-2 flex-wrap">
               {record.image_urls.map((url, i) => (
-                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="w-20 h-20 rounded-lg overflow-hidden border-2 border-slate-200 hover:border-[var(--pagsmile-green)]">
+                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="w-20 h-20 rounded-lg overflow-hidden border-2 border-slate-200 hover:border-[var(--pinbank-blue)]">
                   <img src={url} alt="" className="w-full h-full object-cover" />
                 </a>
               ))}
@@ -136,7 +136,7 @@ function ServiceCard({ svcType, record }) {
           {/* Raw JSON */}
           {hasData && (
             <div>
-              <button onClick={() => setShowJson(!showJson)} className="text-[10px] text-[var(--pagsmile-blue)]/30 hover:text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
+              <button onClick={() => setShowJson(!showJson)} className="text-[10px] text-[var(--pinbank-blue)]/30 hover:text-[var(--pinbank-blue)]/60 flex items-center gap-1">
                 <Eye className="w-3 h-3" />{showJson ? 'Ocultar JSON' : 'Ver JSON bruto'}
               </button>
               {showJson && <pre className="mt-2 p-3 bg-slate-900 text-green-300 text-[10px] rounded-lg overflow-auto max-h-[300px] font-mono">{JSON.stringify(data, null, 2)}</pre>}
@@ -182,13 +182,13 @@ export default function CAFFullAnalysis({ integrationLogs = [], validations = []
   const failCount = byType.filter(([t, r]) => { const m = SERVICE_META[t]; const res = m ? m.getResult(r) : genericResult(r); return res.ok === false; }).length;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-purple-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-purple-100"><Fingerprint className="w-5 h-5 text-purple-600" /></div>
           <div>
-            <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">CAF — Verificação de Identidade & Antifraude</h3>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-0.5">Cada serviço explicado: o que verifica, resultado, interpretação e impacto</p>
+            <h3 className="text-base font-bold text-[var(--pinbank-blue)]">CAF — Verificação de Identidade & Antifraude</h3>
+            <p className="text-xs text-[var(--pinbank-blue)]/40 mt-0.5">Cada serviço explicado: o que verifica, resultado, interpretação e impacto</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Badge className="bg-purple-100 text-purple-700 text-[10px]">{byType.length} verificações</Badge>

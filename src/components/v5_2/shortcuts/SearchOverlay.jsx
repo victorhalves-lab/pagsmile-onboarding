@@ -47,8 +47,8 @@ export default function SearchOverlay({ open, onOpenChange }) {
   };
 
   const flashHighlight = (el) => {
-    el.classList.add('ring-2', 'ring-[#2bc196]', 'ring-offset-2');
-    setTimeout(() => el.classList.remove('ring-2', 'ring-[#2bc196]', 'ring-offset-2'), 1400);
+    el.classList.add('ring-2', 'ring-[#1356E2]', 'ring-offset-2');
+    setTimeout(() => el.classList.remove('ring-2', 'ring-[#1356E2]', 'ring-offset-2'), 1400);
   };
 
   const handleKeyDown = (e) => {
@@ -81,8 +81,8 @@ export default function SearchOverlay({ open, onOpenChange }) {
         className="max-w-xl p-0 gap-0 overflow-hidden"
         data-shortcut-panel="true"
       >
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-[#002443]/8">
-          <Search className="w-4 h-4 text-[#002443]/40" />
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-[#0A0A0A]/8">
+          <Search className="w-4 h-4 text-[#0A0A0A]/40" />
           <input
             ref={inputRef}
             type="text"
@@ -90,11 +90,11 @@ export default function SearchOverlay({ open, onOpenChange }) {
             onChange={(e) => { setQuery(e.target.value); search(e.target.value); }}
             onKeyDown={handleKeyDown}
             placeholder="Buscar no caso (mín 2 caracteres) — ↑↓ navega, Enter pula"
-            className="flex-1 bg-transparent outline-none text-sm text-[#002443] placeholder:text-[#002443]/30"
+            className="flex-1 bg-transparent outline-none text-sm text-[#0A0A0A] placeholder:text-[#0A0A0A]/30"
           />
-          <kbd className="text-[10px] font-mono font-semibold text-[#002443]/40 px-1.5 py-0.5 rounded border border-[#002443]/10">Esc</kbd>
+          <kbd className="text-[10px] font-mono font-semibold text-[#0A0A0A]/40 px-1.5 py-0.5 rounded border border-[#0A0A0A]/10">Esc</kbd>
         </div>
-        <div className="px-4 py-2.5 text-[11px] text-[#002443]/50 bg-[#f4f4f4]">
+        <div className="px-4 py-2.5 text-[11px] text-[#0A0A0A]/50 bg-[#f4f4f4]">
           {query.trim().length < 2
             ? 'Digite ao menos 2 caracteres para buscar elementos visíveis na tela.'
             : hits.length === 0

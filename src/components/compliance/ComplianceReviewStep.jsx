@@ -73,22 +73,22 @@ export default function ComplianceReviewStep({
   return (
     <div className="space-y-6">
       {/* Banner de abertura */}
-      <div className="bg-gradient-to-br from-[#2bc196]/10 via-white to-[#002443]/5 border border-[#2bc196]/20 rounded-2xl p-5 md:p-6">
+      <div className="bg-gradient-to-br from-[#1356E2]/10 via-white to-[#0A0A0A]/5 border border-[#1356E2]/20 rounded-2xl p-5 md:p-6">
         <div className="flex items-start gap-4">
-          <div className="w-11 h-11 rounded-xl bg-[#2bc196] flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-[#1356E2] flex items-center justify-center shrink-0">
             <FileCheck2 className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg md:text-xl font-bold text-[#002443] mb-1">
+            <h2 className="text-lg md:text-xl font-bold text-[#0A0A0A] mb-1">
               Tudo pronto? Confira antes de enviar.
             </h2>
-            <p className="text-sm text-[#002443]/70 leading-relaxed">
+            <p className="text-sm text-[#0A0A0A]/70 leading-relaxed">
               Esta é a sua última chance de revisar as informações. Depois de confirmar, os dados
               seguem para análise da nossa equipe de compliance.
             </p>
             {modeLabel && (
-              <Badge className="mt-3 bg-white border border-[#2bc196]/30 text-[#002443] hover:bg-white">
-                <Shield className="w-3 h-3 mr-1.5 text-[#2bc196]" /> {modeLabel}
+              <Badge className="mt-3 bg-white border border-[#1356E2]/30 text-[#0A0A0A] hover:bg-white">
+                <Shield className="w-3 h-3 mr-1.5 text-[#1356E2]" /> {modeLabel}
               </Badge>
             )}
           </div>
@@ -98,8 +98,8 @@ export default function ComplianceReviewStep({
       {/* Resumo de identificação do cliente */}
       {merchant && (
         <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <h3 className="text-sm font-bold text-[#002443] mb-4 flex items-center gap-2">
-            {merchant.type === 'PF' ? <User className="w-4 h-4 text-[#2bc196]" /> : <Building2 className="w-4 h-4 text-[#2bc196]" />}
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-4 flex items-center gap-2">
+            {merchant.type === 'PF' ? <User className="w-4 h-4 text-[#1356E2]" /> : <Building2 className="w-4 h-4 text-[#1356E2]" />}
             {merchant.type === 'PF' ? 'Seus dados' : 'Dados da empresa'}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
@@ -164,7 +164,7 @@ export default function ComplianceReviewStep({
       {/* Lista detalhada dos documentos */}
       {mandatoryDocs.length > 0 && (
         <div>
-          <h3 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             Documentos obrigatórios ({mandatoryDocs.length})
           </h3>
@@ -176,7 +176,7 @@ export default function ComplianceReviewStep({
 
       {optionalDocs.length > 0 && (
         <div>
-          <h3 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2">
             <FileText className="w-4 h-4 text-slate-400" />
             Documentos opcionais ({optionalDocs.length})
           </h3>
@@ -189,12 +189,12 @@ export default function ComplianceReviewStep({
       {/* Aviso legal / LGPD */}
       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
         <div className="flex items-start gap-3">
-          <Shield className="w-4 h-4 text-[#002443]/60 shrink-0 mt-0.5" />
-          <div className="text-xs text-[#002443]/70 leading-relaxed">
-            <p className="font-semibold text-[#002443] mb-1">Ao confirmar, você declara que:</p>
+          <Shield className="w-4 h-4 text-[#0A0A0A]/60 shrink-0 mt-0.5" />
+          <div className="text-xs text-[#0A0A0A]/70 leading-relaxed">
+            <p className="font-semibold text-[#0A0A0A] mb-1">Ao confirmar, você declara que:</p>
             <ul className="list-disc pl-4 space-y-0.5">
               <li>as informações e documentos enviados são <strong>verdadeiros e atualizados</strong>;</li>
-              <li>autoriza a Pagsmile a <strong>armazenar e analisar</strong> os dados conforme a LGPD;</li>
+              <li>autoriza a Pin Bank a <strong>armazenar e analisar</strong> os dados conforme a LGPD;</li>
               <li>está ciente de que informações falsas podem levar à <strong>recusa do cadastro</strong>.</li>
             </ul>
           </div>
@@ -227,7 +227,7 @@ export default function ComplianceReviewStep({
           onClick={onConfirm}
           disabled={!canProceed}
           size="lg"
-          className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white shadow-lg shadow-[#2bc196]/30 disabled:opacity-50 disabled:shadow-none"
+          className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white shadow-lg shadow-[#1356E2]/30 disabled:opacity-50 disabled:shadow-none"
         >
           {isSubmitting ? (
             <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando...</>
@@ -245,10 +245,10 @@ export default function ComplianceReviewStep({
 function InfoRow({ icon: Icon, label, value, mono = false }) {
   return (
     <div className="flex items-start gap-2">
-      <Icon className="w-4 h-4 text-[#2bc196] shrink-0 mt-0.5" />
+      <Icon className="w-4 h-4 text-[#1356E2] shrink-0 mt-0.5" />
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] uppercase tracking-wider text-[#002443]/50 font-semibold">{label}</p>
-        <p className={`text-sm text-[#002443] truncate ${mono ? 'font-mono' : ''}`}>{value || '—'}</p>
+        <p className="text-[10px] uppercase tracking-wider text-[#0A0A0A]/50 font-semibold">{label}</p>
+        <p className={`text-sm text-[#0A0A0A] truncate ${mono ? 'font-mono' : ''}`}>{value || '—'}</p>
       </div>
     </div>
   );
@@ -258,7 +258,7 @@ function StatCard({ icon: Icon, label, value, tone = 'neutral' }) {
   const tones = {
     success: 'bg-green-50 border-green-200 text-green-700',
     warning: 'bg-amber-50 border-amber-200 text-amber-700',
-    neutral: 'bg-white border-slate-200 text-[#002443]',
+    neutral: 'bg-white border-slate-200 text-[#0A0A0A]',
   };
   return (
     <div className={`rounded-xl border p-3 ${tones[tone]}`}>
@@ -284,14 +284,14 @@ function DocSummaryRow({ doc, status, optional = false }) {
       <div className="flex items-start gap-3">
         <StatusBadge kind={kind} optional={optional} />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-[#002443] leading-tight">{doc.label || doc.name}</p>
+          <p className="text-sm font-medium text-[#0A0A0A] leading-tight">{doc.label || doc.name}</p>
           {kind === 'uploaded' && (
             <div className="mt-1.5 space-y-0.5">
               {files.map((f, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-[11px] text-[#002443]/70">
+                <div key={i} className="flex items-center gap-1.5 text-[11px] text-[#0A0A0A]/70">
                   <FileText className="w-3 h-3 shrink-0" />
                   <span className="truncate font-mono">{f.name}</span>
-                  {f.size && <span className="text-[#002443]/40 shrink-0">({formatSize(f.size)})</span>}
+                  {f.size && <span className="text-[#0A0A0A]/40 shrink-0">({formatSize(f.size)})</span>}
                 </div>
               ))}
             </div>
@@ -300,7 +300,7 @@ function DocSummaryRow({ doc, status, optional = false }) {
             <p className="mt-1 text-xs text-amber-900/80 italic line-clamp-2">"{reason}"</p>
           )}
           {kind === 'missing' && (
-            <p className="mt-1 text-xs text-[#002443]/50 italic">
+            <p className="mt-1 text-xs text-[#0A0A0A]/50 italic">
               {optional ? 'Não enviado (opcional)' : 'Falta anexar ou justificar'}
             </p>
           )}

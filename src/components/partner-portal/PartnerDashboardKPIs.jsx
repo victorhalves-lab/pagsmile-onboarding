@@ -37,7 +37,7 @@ export default function PartnerDashboardKPIs({ assignments = [] }) {
               <div className={`w-8 h-8 rounded-lg ${c.bg} flex items-center justify-center mb-2`}>
                 <Icon className={`w-4 h-4 ${c.color}`} />
               </div>
-              <div className="text-2xl font-bold text-[#002443]">{c.value}</div>
+              <div className="text-2xl font-bold text-[#0A0A0A]">{c.value}</div>
               <div className="text-xs text-slate-500 mt-0.5">{c.label}</div>
             </CardContent>
           </Card>

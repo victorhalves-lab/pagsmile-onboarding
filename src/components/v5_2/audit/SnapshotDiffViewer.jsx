@@ -14,7 +14,7 @@ export default function SnapshotDiffViewer({ prevSnapshot, nextSnapshot, diff })
   if (!prevSnapshot || !nextSnapshot) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-sm text-[#002443]/50">
+        <CardContent className="py-8 text-center text-sm text-[#0A0A0A]/50">
           Selecione um evento na timeline para ver o diff.
         </CardContent>
       </Card>
@@ -24,7 +24,7 @@ export default function SnapshotDiffViewer({ prevSnapshot, nextSnapshot, diff })
   if (diff?.isInitial || (diff?.changes || []).length === 0) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-sm text-[#002443]/50">
+        <CardContent className="py-8 text-center text-sm text-[#0A0A0A]/50">
           Nenhuma diferen\u00e7a entre este snapshot e o anterior.
         </CardContent>
       </Card>
@@ -54,7 +54,7 @@ export default function SnapshotDiffViewer({ prevSnapshot, nextSnapshot, diff })
     <Card className="sticky top-4">
       <CardHeader className="pb-3 border-b border-slate-100">
         <CardTitle className="text-sm flex items-center gap-2">
-          <GitBranch className="w-4 h-4 text-[#2bc196]" />
+          <GitBranch className="w-4 h-4 text-[#1356E2]" />
           Diff de Snapshots
         </CardTitle>
         <div className="flex items-center gap-2 mt-2 text-[11px]">
@@ -66,7 +66,7 @@ export default function SnapshotDiffViewer({ prevSnapshot, nextSnapshot, diff })
             {nextMeta.label}
           </Badge>
         </div>
-        <p className="text-[10px] text-[#002443]/55 mt-1">
+        <p className="text-[10px] text-[#0A0A0A]/55 mt-1">
           {fmtDate(prevSnapshot.created_date)} → {fmtDate(nextSnapshot.created_date)}
         </p>
       </CardHeader>
@@ -100,7 +100,7 @@ function DiffRow({ change }) {
   if (change.type === 'array') {
     return (
       <div className="border border-slate-200 rounded-lg p-2 bg-slate-50/50">
-        <p className="text-[11px] font-semibold text-[#002443] mb-1">{change.label}</p>
+        <p className="text-[11px] font-semibold text-[#0A0A0A] mb-1">{change.label}</p>
         {change.added.length > 0 && (
           <div className="space-y-0.5 mb-1">
             {change.added.map((item) => (
@@ -131,7 +131,7 @@ function DiffRow({ change }) {
 
   return (
     <div className="border border-slate-200 rounded-lg p-2 bg-slate-50/50">
-      <p className="text-[11px] font-semibold text-[#002443] mb-1.5">{change.label}</p>
+      <p className="text-[11px] font-semibold text-[#0A0A0A] mb-1.5">{change.label}</p>
       {change.long ? (
         <div className="space-y-1.5">
           <DiffLongText label="Antes" value={prevStr} color="red" />
@@ -158,7 +158,7 @@ function DiffLongText({ label, value, color }) {
     : 'bg-emerald-50 text-emerald-700 border-emerald-100';
   return (
     <div>
-      <div className="text-[9px] uppercase tracking-wider text-[#002443]/40 font-semibold mb-0.5">{label}</div>
+      <div className="text-[9px] uppercase tracking-wider text-[#0A0A0A]/40 font-semibold mb-0.5">{label}</div>
       <div className={`px-2 py-1 rounded border text-[10px] leading-relaxed max-h-24 overflow-y-auto whitespace-pre-wrap ${colorClasses}`}>
         {value || '—'}
       </div>

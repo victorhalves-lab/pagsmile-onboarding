@@ -31,17 +31,17 @@ export default function CadastroRepresentantesTab({ latestCase }) {
 
   if (!merged.length && !cafLinks.length && !contacts.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <Users className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum representante adicional registrado</p>
-        <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-1">O representante principal é exibido nos Dados Cadastrais.</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <Users className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum representante adicional registrado</p>
+        <p className="text-xs text-[var(--pinbank-blue)]/40 mt-1">O representante principal é exibido nos Dados Cadastrais.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-3 mt-4">
-      <p className="text-sm text-[var(--pagsmile-blue)]/60">
+      <p className="text-sm text-[var(--pinbank-blue)]/60">
         {merged.length} representante(s) adicional(is) • {cafLinks.length} link(s) CAF gerado(s)
       </p>
 
@@ -50,18 +50,18 @@ export default function CadastroRepresentantesTab({ latestCase }) {
         const sc = CAF_STATUS[status] || CAF_STATUS.pending;
         const StatusIcon = sc.icon;
         return (
-          <div key={idx} className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+          <div key={idx} className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">{rep.nome || 'Sem nome'}</h3>
+                  <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">{rep.nome || 'Sem nome'}</h3>
                   {rep._link && (
                     <Badge className={`gap-1 text-[10px] ${sc.color}`}>
                       <StatusIcon className="w-3 h-3" />CAF {sc.label}
                     </Badge>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-3 text-xs text-[var(--pagsmile-blue)]/60">
+                <div className="flex flex-wrap gap-3 text-xs text-[var(--pinbank-blue)]/60">
                   <span className="flex items-center gap-1"><Hash className="w-3 h-3" />{formatCpf(rep.cpf)}</span>
                   {rep.cargo && <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{rep.cargo}</span>}
                   {rep.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{rep.email}</span>}
@@ -98,11 +98,11 @@ export default function CadastroRepresentantesTab({ latestCase }) {
 
             {/* Timeline do link CAF */}
             {rep._link && (
-              <div className="grid grid-cols-2 gap-3 text-[10px] text-[var(--pagsmile-blue)]/50 pt-2 border-t border-slate-100">
+              <div className="grid grid-cols-2 gap-3 text-[10px] text-[var(--pinbank-blue)]/50 pt-2 border-t border-slate-100">
                 {rep._link.generatedAt && (
                   <div>
                     <span>Link gerado: </span>
-                    <span className="font-semibold text-[var(--pagsmile-blue)]/70">{new Date(rep._link.generatedAt).toLocaleString('pt-BR')}</span>
+                    <span className="font-semibold text-[var(--pinbank-blue)]/70">{new Date(rep._link.generatedAt).toLocaleString('pt-BR')}</span>
                   </div>
                 )}
                 {rep._link.completedAt && (
@@ -125,8 +125,8 @@ export default function CadastroRepresentantesTab({ latestCase }) {
           <div key={`orphan-${idx}`} className="bg-slate-50 rounded-xl border border-slate-200 p-4">
             <div className="flex items-center justify-between gap-2">
               <div>
-                <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">{link.nome || 'Link CAF'}</p>
-                <p className="text-xs text-[var(--pagsmile-blue)]/50">{formatCpf(link.cpf)} • {link.cargo || '—'}</p>
+                <p className="text-sm font-semibold text-[var(--pinbank-blue)]">{link.nome || 'Link CAF'}</p>
+                <p className="text-xs text-[var(--pinbank-blue)]/50">{formatCpf(link.cpf)} • {link.cargo || '—'}</p>
               </div>
               <Badge className={`gap-1 text-[10px] ${sc.color}`}>
                 <StatusIcon className="w-3 h-3" />{sc.label}

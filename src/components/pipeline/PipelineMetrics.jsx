@@ -113,7 +113,7 @@ export default function PipelineMetrics({ leads, proposals = [], dealClosedIds =
   }, [leads, proposals, dealClosedIds]);
 
   const kpis = [
-    { label: 'Leads no Funil', value: metrics.total, sub: `${metrics.activeCount} ativos`, icon: Users, iconColor: 'text-blue-500', valueColor: 'text-[var(--pagsmile-blue)]' },
+    { label: 'Leads no Funil', value: metrics.total, sub: `${metrics.activeCount} ativos`, icon: Users, iconColor: 'text-blue-500', valueColor: 'text-[var(--pinbank-blue)]' },
     { label: 'Negócios Fechados', value: metrics.closedCount, sub: `${metrics.conversionRate}% conversão`, icon: CheckCircle, iconColor: 'text-emerald-500', valueColor: 'text-emerald-600' },
     { label: 'TPV Fechado/mês', value: formatMoeda(metrics.tpvFechado), sub: `Anual: ${formatMoeda(metrics.tpvFechado * 12)}`, icon: DollarSign, iconColor: 'text-emerald-600', valueColor: 'text-emerald-700' },
     { label: 'Receita Fechada/mês', value: formatMoeda(metrics.receitaFechadaReal), sub: `Anual: ${formatMoeda(metrics.receitaFechadaReal * 12)}`, icon: Wallet, iconColor: 'text-green-600', valueColor: 'text-green-700' },
@@ -131,14 +131,14 @@ export default function PipelineMetrics({ leads, proposals = [], dealClosedIds =
         const Icon = kpi.icon;
         const subText = typeof kpi.sub === 'function' ? kpi.sub(metrics.total) : kpi.sub;
         return (
-          <Card key={kpi.label} className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+          <Card key={kpi.label} className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-3">
               <div className="flex items-center gap-2">
                 <Icon className={`w-4 h-4 ${kpi.iconColor}`} />
-                <span className="text-[10px] text-[var(--pagsmile-blue)]/60 leading-tight">{kpi.label}</span>
+                <span className="text-[10px] text-[var(--pinbank-blue)]/60 leading-tight">{kpi.label}</span>
               </div>
               <p className={`text-xl font-bold mt-1 ${kpi.valueColor}`}>{kpi.value}</p>
-              {subText && <p className="text-[9px] text-[var(--pagsmile-blue)]/40 mt-0.5">{subText}</p>}
+              {subText && <p className="text-[9px] text-[var(--pinbank-blue)]/40 mt-0.5">{subText}</p>}
             </CardContent>
           </Card>
         );

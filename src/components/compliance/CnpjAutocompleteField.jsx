@@ -88,7 +88,7 @@ export default function CnpjAutocompleteField({
   return (
     <div className="space-y-2">
       <div className="flex items-start gap-2">
-        <Label className="text-sm font-semibold text-[#002443]">
+        <Label className="text-sm font-semibold text-[#0A0A0A]">
           {label}
           {isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
@@ -107,11 +107,11 @@ export default function CnpjAutocompleteField({
       </div>
       
       {helpText && (
-        <p className="text-xs text-[#002443]/60">{helpText}</p>
+        <p className="text-xs text-[#0A0A0A]/60">{helpText}</p>
       )}
 
       <div className="relative">
-        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
         <Input
           value={displayValue}
           onChange={handleChange}
@@ -124,7 +124,7 @@ export default function CnpjAutocompleteField({
           maxLength={18}
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin brand-loading-spinner text-[#2bc196]" />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin brand-loading-spinner text-[#1356E2]" />
         )}
         {data && isActive && !isLoading && (
           <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 brand-icon-valid text-emerald-500" />

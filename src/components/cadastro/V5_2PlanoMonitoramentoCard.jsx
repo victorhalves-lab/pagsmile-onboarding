@@ -115,23 +115,23 @@ export default function V5_2PlanoMonitoramentoCard({ caseId }) {
           {/* Condições operacionais */}
           <div className="grid grid-cols-3 gap-3 text-xs">
             <div>
-              <p className="text-[#002443]/50 text-[10px] uppercase font-semibold tracking-wide">TPV Cap</p>
-              <p className="font-mono text-base font-bold text-[#002443]">{plano.tpv_cap_inicial_pct}%</p>
+              <p className="text-[#0A0A0A]/50 text-[10px] uppercase font-semibold tracking-wide">TPV Cap</p>
+              <p className="font-mono text-base font-bold text-[#0A0A0A]">{plano.tpv_cap_inicial_pct}%</p>
             </div>
             <div>
-              <p className="text-[#002443]/50 text-[10px] uppercase font-semibold tracking-wide">Rolling Reserve+</p>
-              <p className="font-mono text-base font-bold text-[#002443]">{plano.rolling_reserve_adicional_pct}%</p>
+              <p className="text-[#0A0A0A]/50 text-[10px] uppercase font-semibold tracking-wide">Rolling Reserve+</p>
+              <p className="font-mono text-base font-bold text-[#0A0A0A]">{plano.rolling_reserve_adicional_pct}%</p>
             </div>
             <div>
-              <p className="text-[#002443]/50 text-[10px] uppercase font-semibold tracking-wide">Revisão</p>
-              <p className="font-mono text-base font-bold text-[#002443]">{plano.frequencia_revisao_dias}d</p>
+              <p className="text-[#0A0A0A]/50 text-[10px] uppercase font-semibold tracking-wide">Revisão</p>
+              <p className="font-mono text-base font-bold text-[#0A0A0A]">{plano.frequencia_revisao_dias}d</p>
             </div>
           </div>
 
           {/* Bloqueios mitigados */}
           {Array.isArray(plano.bloqueios_mitigados) && plano.bloqueios_mitigados.length > 0 && (
             <div>
-              <p className="text-[10px] uppercase text-[#002443]/50 font-semibold mb-1">Bloqueios Mitigados</p>
+              <p className="text-[10px] uppercase text-[#0A0A0A]/50 font-semibold mb-1">Bloqueios Mitigados</p>
               <div className="flex flex-wrap gap-1">
                 {plano.bloqueios_mitigados.map((b) => (
                   <Badge key={b} className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] font-mono">
@@ -145,11 +145,11 @@ export default function V5_2PlanoMonitoramentoCard({ caseId }) {
           {/* Gatilhos off-boarding */}
           {Array.isArray(plano.gatilhos_off_boarding_agil) && plano.gatilhos_off_boarding_agil.length > 0 && (
             <div>
-              <p className="text-[10px] uppercase text-[#002443]/50 font-semibold mb-1 flex items-center gap-1">
+              <p className="text-[10px] uppercase text-[#0A0A0A]/50 font-semibold mb-1 flex items-center gap-1">
                 <ShieldAlert className="w-3 h-3" />
                 Gatilhos de Off-Boarding 24-48h
               </p>
-              <ul className="text-xs text-[#002443]/75 space-y-0.5">
+              <ul className="text-xs text-[#0A0A0A]/75 space-y-0.5">
                 {plano.gatilhos_off_boarding_agil.map((g, i) => (
                   <li key={i} className="flex gap-1.5"><span className="text-red-500">●</span>{g}</li>
                 ))}
@@ -158,7 +158,7 @@ export default function V5_2PlanoMonitoramentoCard({ caseId }) {
           )}
 
           {/* Datas */}
-          <div className="grid grid-cols-2 gap-3 text-[11px] text-[#002443]/70 border-t border-[#002443]/8 pt-2">
+          <div className="grid grid-cols-2 gap-3 text-[11px] text-[#0A0A0A]/70 border-t border-[#0A0A0A]/8 pt-2">
             <div className="flex items-center gap-1.5">
               <Clock className="w-3 h-3" />
               <span>Próx. revisão: <strong>{plano.data_proxima_revisao || '—'}</strong></span>
@@ -182,14 +182,14 @@ export default function V5_2PlanoMonitoramentoCard({ caseId }) {
                 </Badge>
               </div>
               {termo.aceito_em ? (
-                <div className="text-[11px] text-[#002443]/70 space-y-0.5">
+                <div className="text-[11px] text-[#0A0A0A]/70 space-y-0.5">
                   <p>Aceito por <strong>{termo.aceito_por_nome}</strong> ({termo.aceito_por_email})</p>
                   <p>Em: {new Date(termo.aceito_em).toLocaleString('pt-BR')}</p>
-                  <p className="font-mono text-[9px] text-[#002443]/40 truncate">hash: {termo.hash_integridade}</p>
+                  <p className="font-mono text-[9px] text-[#0A0A0A]/40 truncate">hash: {termo.hash_integridade}</p>
                 </div>
               ) : (
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px] text-[#002443]/70">O plano só fica plenamente ativo após aceite formal do seller.</p>
+                  <p className="text-[11px] text-[#0A0A0A]/70">O plano só fica plenamente ativo após aceite formal do seller.</p>
                   <Button size="sm" variant="outline" onClick={() => setAcceptOpen(true)}>
                     Registrar aceite
                   </Button>

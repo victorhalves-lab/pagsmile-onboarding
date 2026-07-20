@@ -12,7 +12,7 @@ export default function Step10aPLDPoliticas({ formData, handleChange }) {
       subtitle="Políticas e treinamentos de prevenção à lavagem de dinheiro."
       icon={ShieldCheck}
     >
-      <h3 className="font-semibold text-[var(--pagsmile-blue)] mb-2">8A. Políticas e Procedimentos</h3>
+      <h3 className="font-semibold text-[var(--pinbank-blue)] mb-2">8A. Políticas e Procedimentos</h3>
       
       <YesNoQuestion
         question="A empresa possui Política de PLD/FT documentada?"
@@ -37,7 +37,7 @@ export default function Step10aPLDPoliticas({ formData, handleChange }) {
       />
       {formData.pld_treinamento_formal === true && (
          <div className="mt-2 space-y-2">
-            <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Frequência do treinamento</Label>
+            <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Frequência do treinamento</Label>
             <SelectionButton
                options={[
                   {value: 'anual', label: 'Anual'},

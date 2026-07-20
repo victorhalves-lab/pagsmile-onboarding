@@ -85,7 +85,7 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
         return (
           <div className="flex flex-wrap gap-1.5 mt-1">
             {formatted.items.map((item, i) => (
-              <span key={i} className="inline-block px-2.5 py-1 bg-[#2bc196]/8 text-[#002443] text-xs font-semibold rounded-lg border border-[#2bc196]/15">
+              <span key={i} className="inline-block px-2.5 py-1 bg-[#1356E2]/8 text-[#0A0A0A] text-xs font-semibold rounded-lg border border-[#1356E2]/15">
                 {item}
               </span>
             ))}
@@ -95,53 +95,53 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
         return (
           <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold mt-1 ${
             formatted.value 
-              ? 'bg-[#2bc196]/10 text-[#2bc196]' 
+              ? 'bg-[#1356E2]/10 text-[#1356E2]' 
               : 'bg-red-50 text-red-500'
           }`}>
-            <span className={`w-2 h-2 rounded-full ${formatted.value ? 'bg-[#2bc196]' : 'bg-red-400'}`} />
+            <span className={`w-2 h-2 rounded-full ${formatted.value ? 'bg-[#1356E2]' : 'bg-red-400'}`} />
             {formatted.value ? 'Sim' : 'Não'}
           </span>
         );
       case 'file':
         return (
-          <span className="inline-flex items-center gap-1.5 text-[#2bc196] text-sm font-semibold mt-1">
+          <span className="inline-flex items-center gap-1.5 text-[#1356E2] text-sm font-semibold mt-1">
             <FileText className="w-4 h-4" />
             Arquivo enviado
           </span>
         );
       case 'files':
         return (
-          <span className="inline-flex items-center gap-1.5 text-[#2bc196] text-sm font-semibold mt-1">
+          <span className="inline-flex items-center gap-1.5 text-[#1356E2] text-sm font-semibold mt-1">
             <FileText className="w-4 h-4" />
             {formatted.count} {formatted.count === 1 ? 'arquivo enviado' : 'arquivos enviados'}
           </span>
         );
       case 'address':
         return (
-          <div className="mt-1 text-sm font-semibold text-[#002443] leading-relaxed">
+          <div className="mt-1 text-sm font-semibold text-[#0A0A0A] leading-relaxed">
             <span>{formatted.value.logradouro}, {formatted.value.numero || 'S/N'}</span>
             {formatted.value.complemento && <span> — {formatted.value.complemento}</span>}
             <br />
-            <span className="text-[#002443]/60 text-xs font-medium">
+            <span className="text-[#0A0A0A]/60 text-xs font-medium">
               {formatted.value.bairro} · {formatted.value.cidade}/{formatted.value.uf} · CEP {formatted.value.cep}
             </span>
           </div>
         );
       case 'currency':
         return (
-          <span className="text-base font-bold text-[#002443] mt-0.5 block tracking-tight">
+          <span className="text-base font-bold text-[#0A0A0A] mt-0.5 block tracking-tight">
             {formatCurrency(formatted.value)}
           </span>
         );
       case 'percent':
         return (
-          <span className="text-base font-bold text-[#002443] mt-0.5 block">
+          <span className="text-base font-bold text-[#0A0A0A] mt-0.5 block">
             {formatted.value}%
           </span>
         );
       default:
         return (
-          <span className="text-sm font-semibold text-[#002443] mt-0.5 block break-words leading-relaxed">
+          <span className="text-sm font-semibold text-[#0A0A0A] mt-0.5 block break-words leading-relaxed">
             {formatted.value}
           </span>
         );
@@ -152,11 +152,11 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2bc196]/10 mb-4">
-          <CheckCircle className="w-8 h-8 text-[#2bc196]" />
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1356E2]/10 mb-4">
+          <CheckCircle className="w-8 h-8 text-[#1356E2]" />
         </div>
-        <h2 className="text-2xl font-bold text-[#002443]">Revisão Final</h2>
-        <p className="text-sm text-[#002443]/50 mt-2 max-w-md mx-auto">
+        <h2 className="text-2xl font-bold text-[#0A0A0A]">Revisão Final</h2>
+        <p className="text-sm text-[#0A0A0A]/50 mt-2 max-w-md mx-auto">
           Confira todos os dados antes de enviar. Clique em <strong>"Editar"</strong> para corrigir qualquer informação.
         </p>
       </div>
@@ -166,21 +166,21 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
         {answeredByStep.map(({ stepIdx, questions: stepQs }) => {
           const isExpanded = expandedSections[stepIdx] !== false;
           return (
-            <div key={stepIdx} className="bg-white border border-[#002443]/8 rounded-2xl overflow-hidden shadow-sm">
+            <div key={stepIdx} className="bg-white border border-[#0A0A0A]/8 rounded-2xl overflow-hidden shadow-sm">
               {/* Section header */}
               <button
                 onClick={() => toggleSection(stepIdx)}
                 className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#f4f4f4]/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 rounded-lg bg-[#002443] text-white text-xs font-bold flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#0A0A0A] text-white text-xs font-bold flex items-center justify-center">
                     {stepIdx + 1}
                   </span>
                   <div className="text-left">
-                    <span className="text-sm font-bold text-[#002443] block">
+                    <span className="text-sm font-bold text-[#0A0A0A] block">
                       Etapa {stepIdx + 1}
                     </span>
-                    <span className="text-[10px] text-[#002443]/40 font-medium">
+                    <span className="text-[10px] text-[#0A0A0A]/40 font-medium">
                       {stepQs.length} {stepQs.length === 1 ? 'campo preenchido' : 'campos preenchidos'}
                     </span>
                   </div>
@@ -190,22 +190,22 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
                     variant="ghost"
                     size="sm"
                     onClick={(e) => { e.stopPropagation(); onGoToStep(stepIdx); }}
-                    className="text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10 h-8 px-3 text-xs font-bold rounded-lg"
+                    className="text-[#1356E2] hover:text-[#1356E2] hover:bg-[#1356E2]/10 h-8 px-3 text-xs font-bold rounded-lg"
                   >
                     <Edit2 className="w-3.5 h-3.5 mr-1.5" />
                     Editar
                   </Button>
                   {isExpanded
-                    ? <ChevronDown className="w-4 h-4 text-[#002443]/30" />
-                    : <ChevronRight className="w-4 h-4 text-[#002443]/30" />
+                    ? <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />
+                    : <ChevronRight className="w-4 h-4 text-[#0A0A0A]/30" />
                   }
                 </div>
               </button>
 
               {/* Section content */}
               {isExpanded && (
-                <div className="px-5 pb-5 pt-1 border-t border-[#002443]/5">
-                  <div className="divide-y divide-[#002443]/5">
+                <div className="px-5 pb-5 pt-1 border-t border-[#0A0A0A]/5">
+                  <div className="divide-y divide-[#0A0A0A]/5">
                     {stepQs.map(q => {
                       const Icon = getFieldIcon(q.text);
                       return (
@@ -213,17 +213,17 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
                           <div className="flex items-start gap-2.5">
                             {Icon && (
                               <div className="mt-0.5 w-5 h-5 rounded flex items-center justify-center shrink-0">
-                                <Icon className="w-3.5 h-3.5 text-[#002443]/25" />
+                                <Icon className="w-3.5 h-3.5 text-[#0A0A0A]/25" />
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <span className="text-[11px] font-medium text-[#002443]/40 uppercase tracking-wide leading-tight block">
+                              <span className="text-[11px] font-medium text-[#0A0A0A]/40 uppercase tracking-wide leading-tight block">
                                 {q.text}
                               </span>
                               {renderValue(q, formData[q.id])}
                               {/* "Outro" description if present */}
                               {formData[`${q.id}_outro_descricao`] && (
-                                <span className="text-xs text-[#002443]/50 italic block mt-1">
+                                <span className="text-xs text-[#0A0A0A]/50 italic block mt-1">
                                   Outros: {formData[`${q.id}_outro_descricao`]}
                                 </span>
                               )}
@@ -241,9 +241,9 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
       </div>
 
       {/* Terms */}
-      <div className="space-y-4 bg-white border border-[#002443]/8 rounded-2xl p-6 mt-6 shadow-sm">
-        <h3 className="text-sm font-bold text-[#002443] flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 text-[#2bc196]" />
+      <div className="space-y-4 bg-white border border-[#0A0A0A]/8 rounded-2xl p-6 mt-6 shadow-sm">
+        <h3 className="text-sm font-bold text-[#0A0A0A] flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 text-[#1356E2]" />
           Aceite dos Termos
         </h3>
         <div className="flex items-start gap-3 pl-1">
@@ -252,8 +252,8 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
             onCheckedChange={(checked) => updateField('aceite_termos', checked)}
             id="termos"
           />
-          <Label htmlFor="termos" className="text-sm leading-relaxed cursor-pointer text-[#002443]/80">
-            Li e aceito os <span className="text-[#2bc196] font-bold">Termos de Uso</span> da plataforma Pagsmile.
+          <Label htmlFor="termos" className="text-sm leading-relaxed cursor-pointer text-[#0A0A0A]/80">
+            Li e aceito os <span className="text-[#1356E2] font-bold">Termos de Uso</span> da plataforma Pin Bank.
           </Label>
         </div>
         <div className="flex items-start gap-3 pl-1">
@@ -262,8 +262,8 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
             onCheckedChange={(checked) => updateField('aceite_privacidade', checked)}
             id="privacidade"
           />
-          <Label htmlFor="privacidade" className="text-sm leading-relaxed cursor-pointer text-[#002443]/80">
-            Li e aceito a <span className="text-[#2bc196] font-bold">Política de Privacidade</span> da Pagsmile.
+          <Label htmlFor="privacidade" className="text-sm leading-relaxed cursor-pointer text-[#0A0A0A]/80">
+            Li e aceito a <span className="text-[#1356E2] font-bold">Política de Privacidade</span> da Pin Bank.
           </Label>
         </div>
       </div>

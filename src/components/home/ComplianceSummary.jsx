@@ -37,7 +37,7 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
       .map(([status, count]) => ({
         name: status,
         value: count,
-        color: STATUS_COLORS[status] || '#002443'
+        color: STATUS_COLORS[status] || '#0A0A0A'
       }));
 
     return { byStatus, pendingManual, approved, inProcess, autoApprovalRate, chartData, total: cases.length };

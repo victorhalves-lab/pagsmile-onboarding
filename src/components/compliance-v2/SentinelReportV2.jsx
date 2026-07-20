@@ -17,8 +17,8 @@ function Section({ id, icon: Icon, title, subtitle, iconColor, iconBg, accentBg,
       <button onClick={onToggle} className="w-full flex items-center gap-3 px-6 py-4 hover:bg-slate-50/50 transition-colors text-left">
         <div className={`p-2.5 rounded-xl ${iconBg} flex-shrink-0`}><Icon className={`w-4 h-4 ${iconColor}`} /></div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-bold text-[var(--pagsmile-blue)]">{title}</h4>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{subtitle}</p>
+          <h4 className="text-sm font-bold text-[var(--pinbank-blue)]">{title}</h4>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{subtitle}</p>
         </div>
         {isOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
       </button>
@@ -54,7 +54,7 @@ function SegmentedText({ text }) {
     <div className="space-y-4">
       {visible.map((s, i) => (
         <div key={i}>
-          {s.title && <h4 className="text-xs font-bold text-[var(--pagsmile-blue)] uppercase tracking-wide mb-2 pb-1 border-b border-slate-200">{s.title}</h4>}
+          {s.title && <h4 className="text-xs font-bold text-[var(--pinbank-blue)] uppercase tracking-wide mb-2 pb-1 border-b border-slate-200">{s.title}</h4>}
           <SentinelTextFormatter text={s.content} variant="compact" />
         </div>
       ))}
@@ -83,20 +83,20 @@ export default function SentinelReportV2({ score, latestCase }) {
   const version = score?.versao_agente || '';
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-violet-50/60 to-blue-50/40">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-violet-100"><Brain className="w-5 h-5 text-violet-600" /></div>
             <div>
-              <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Relatório SENTINEL — Dossiê de Compliance</h3>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-0.5">Relatório qualitativo para dossiê — decisão é determinística (V4 + CAF)</p>
+              <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Relatório SENTINEL — Dossiê de Compliance</h3>
+              <p className="text-xs text-[var(--pinbank-blue)]/40 mt-0.5">Relatório qualitativo para dossiê — decisão é determinística (V4 + CAF)</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
             {recommendation && <Badge className={`text-xs font-bold border ${DECISION_COLORS[recommendation] || 'bg-slate-100 text-slate-700 border-slate-200'}`}>{recommendation}</Badge>}
             {confidence != null && <Badge variant="outline" className="text-[10px]">Confiança: {confidence}%</Badge>}
-            {version && <Badge variant="outline" className="text-[9px] text-[var(--pagsmile-blue)]/30">{version}</Badge>}
+            {version && <Badge variant="outline" className="text-[9px] text-[var(--pinbank-blue)]/30">{version}</Badge>}
           </div>
         </div>
       </div>

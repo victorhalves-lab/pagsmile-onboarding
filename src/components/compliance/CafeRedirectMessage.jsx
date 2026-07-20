@@ -32,23 +32,23 @@ export default function CafeRedirectMessage({ redirectUrl, onConfirmCompletion, 
       <div className="text-center mb-8">
         <img 
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
-          alt="Pagsmile" 
+          alt="Pin Bank" 
           className="h-7 mx-auto mb-6"
         />
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2bc196]/15 mb-4">
-          <CheckCircle2 className="w-9 h-9 text-[#2bc196]" />
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1356E2]/15 mb-4">
+          <CheckCircle2 className="w-9 h-9 text-[#1356E2]" />
         </div>
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">
+        <h1 className="text-2xl font-bold text-[#0A0A0A] mb-2">
           Questionário Enviado com Sucesso!
         </h1>
-        <p className="text-[#002443]/60 text-sm max-w-md mx-auto">
+        <p className="text-[#0A0A0A]/60 text-sm max-w-md mx-auto">
           Suas respostas foram salvas. Agora é necessário realizar a verificação de documentos, liveness e face match pela plataforma da CAF.
         </p>
       </div>
 
       {/* Etapas explicativas */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6">
-        <h2 className="text-sm font-bold text-[#002443] uppercase tracking-wide mb-4">
+        <h2 className="text-sm font-bold text-[#0A0A0A] uppercase tracking-wide mb-4">
           Próximos passos na CAF
         </h2>
         <div className="space-y-4">
@@ -57,8 +57,8 @@ export default function CafeRedirectMessage({ redirectUrl, onConfirmCompletion, 
               <FileText className="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#002443]">Upload de Documentos</p>
-              <p className="text-xs text-[#002443]/50">Envie os documentos solicitados pela plataforma.</p>
+              <p className="text-sm font-semibold text-[#0A0A0A]">Upload de Documentos</p>
+              <p className="text-xs text-[#0A0A0A]/50">Envie os documentos solicitados pela plataforma.</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -66,8 +66,8 @@ export default function CafeRedirectMessage({ redirectUrl, onConfirmCompletion, 
               <ScanFace className="w-4 h-4 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#002443]">Liveness & Face Match</p>
-              <p className="text-xs text-[#002443]/50">Realize a prova de vida e verificação facial.</p>
+              <p className="text-sm font-semibold text-[#0A0A0A]">Liveness & Face Match</p>
+              <p className="text-xs text-[#0A0A0A]/50">Realize a prova de vida e verificação facial.</p>
             </div>
           </div>
         </div>
@@ -84,14 +84,14 @@ export default function CafeRedirectMessage({ redirectUrl, onConfirmCompletion, 
             type="text"
             readOnly
             value={redirectUrl}
-            className="flex-1 text-xs text-[#002443]/70 bg-transparent outline-none truncate"
+            className="flex-1 text-xs text-[#0A0A0A]/70 bg-transparent outline-none truncate"
           />
           <Button
             size="sm"
             variant={linkCopied ? "default" : "outline"}
             onClick={handleCopyLink}
             className={linkCopied
-              ? "bg-[#2bc196] hover:bg-[#2bc196]/90 text-white shrink-0"
+              ? "bg-[#1356E2] hover:bg-[#1356E2]/90 text-white shrink-0"
               : "border-amber-300 text-amber-700 hover:bg-amber-100 shrink-0"
             }
           >
@@ -112,21 +112,21 @@ export default function CafeRedirectMessage({ redirectUrl, onConfirmCompletion, 
 
       {/* Confirmação de conclusão */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-        <h3 className="text-sm font-bold text-[#002443] mb-3">
+        <h3 className="text-sm font-bold text-[#0A0A0A] mb-3">
           Já concluiu o processo na CAF?
         </h3>
-        <p className="text-xs text-[#002443]/50 mb-4">
+        <p className="text-xs text-[#0A0A0A]/50 mb-4">
           Após enviar todos os documentos e concluir o liveness/face match na plataforma da CAF, confirme abaixo para finalizar seu processo de compliance.
         </p>
 
-        <label className="flex items-start gap-3 cursor-pointer mb-5 p-3 rounded-xl border border-slate-200 hover:border-[#2bc196]/40 hover:bg-[#2bc196]/5 transition-all">
+        <label className="flex items-start gap-3 cursor-pointer mb-5 p-3 rounded-xl border border-slate-200 hover:border-[#1356E2]/40 hover:bg-[#1356E2]/5 transition-all">
           <input
             type="checkbox"
             checked={confirmed}
             onChange={(e) => setConfirmed(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#2bc196] focus:ring-[#2bc196] accent-[#2bc196]"
+            className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#1356E2] focus:ring-[#1356E2] accent-[#1356E2]"
           />
-          <span className="text-sm text-[#002443]">
+          <span className="text-sm text-[#0A0A0A]">
             Confirmo que já realizei o envio de documentos, liveness e face match na plataforma da CAF.
           </span>
         </label>
@@ -134,7 +134,7 @@ export default function CafeRedirectMessage({ redirectUrl, onConfirmCompletion, 
         <Button
           onClick={handleConfirmAndFinish}
           disabled={!confirmed || isCompleting}
-          className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+          className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
         >
           {isCompleting ? (
             <>
@@ -152,7 +152,7 @@ export default function CafeRedirectMessage({ redirectUrl, onConfirmCompletion, 
 
       {/* Footer */}
       <div className="text-center mt-6">
-        <p className="text-xs text-[#002443]/40 flex items-center justify-center gap-1">
+        <p className="text-xs text-[#0A0A0A]/40 flex items-center justify-center gap-1">
           <Shield className="w-3 h-3" />
           Seus dados estão protegidos e serão tratados com confidencialidade.
         </p>

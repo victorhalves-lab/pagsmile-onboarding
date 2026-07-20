@@ -11,10 +11,10 @@ export default function StepL4dExterior({ formData, handleChange }) {
           <Globe className="w-6 h-6 text-blue-600" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Operação Internacional
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Presença fora do Brasil
           </p>
         </div>
@@ -23,7 +23,7 @@ export default function StepL4dExterior({ formData, handleChange }) {
       <div className="grid gap-5">
         {/* Operação Fora do Brasil */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">
+          <Label className="text-[var(--pinbank-blue)] font-semibold">
             A empresa possui sede/operação fora do Brasil?
           </Label>
           <div className="flex gap-4">
@@ -37,26 +37,26 @@ export default function StepL4dExterior({ formData, handleChange }) {
               }`}
             >
               <Globe className="w-5 h-5 mx-auto mb-1 text-blue-600" />
-              <p className={`font-semibold ${formData.operacaoExterior === true ? 'text-blue-600' : 'text-[var(--pagsmile-blue)]'}`}>Sim</p>
+              <p className={`font-semibold ${formData.operacaoExterior === true ? 'text-blue-600' : 'text-[var(--pinbank-blue)]'}`}>Sim</p>
             </button>
             <button
               type="button"
               onClick={() => handleChange('operacaoExterior', false)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.operacaoExterior === false
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <Globe className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className={`font-semibold ${formData.operacaoExterior === false ? 'text-[var(--pagsmile-green)]' : 'text-[var(--pagsmile-blue)]'}`}>Não</p>
+              <p className={`font-semibold ${formData.operacaoExterior === false ? 'text-[var(--pinbank-blue)]' : 'text-[var(--pinbank-blue)]'}`}>Não</p>
             </button>
           </div>
         </div>
 
         {formData.operacaoExterior === true && (
           <div className="space-y-2 p-5 bg-blue-50 rounded-xl border border-blue-200">
-            <Label className="text-[var(--pagsmile-blue)] font-semibold flex items-center gap-2">
+            <Label className="text-[var(--pinbank-blue)] font-semibold flex items-center gap-2">
               <Globe className="w-4 h-4" />
               Quais países?
             </Label>

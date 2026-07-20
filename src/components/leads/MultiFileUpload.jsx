@@ -42,12 +42,12 @@ export default function MultiFileUpload({ value, onChange, questionText, helpTex
     <div className="space-y-3">
       {/* Uploaded files */}
       {files.map((url, i) => (
-        <div key={i} className="flex items-center gap-3 p-3 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl">
-          <CheckCircle className="w-5 h-5 text-[#2bc196] shrink-0" />
-          <span className="text-sm font-medium text-[#002443] flex-1 truncate">
+        <div key={i} className="flex items-center gap-3 p-3 bg-[#1356E2]/5 border border-[#1356E2]/20 rounded-xl">
+          <CheckCircle className="w-5 h-5 text-[#1356E2] shrink-0" />
+          <span className="text-sm font-medium text-[#0A0A0A] flex-1 truncate">
             Documento {i + 1}
           </span>
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#2bc196] underline shrink-0">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#1356E2] underline shrink-0">
             Ver
           </a>
           <button type="button" onClick={() => removeFile(i)} className="text-red-400 hover:text-red-600 shrink-0">
@@ -57,7 +57,7 @@ export default function MultiFileUpload({ value, onChange, questionText, helpTex
       ))}
 
       {/* Upload area */}
-      <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-[#2bc196]/50 transition-colors">
+      <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-[#1356E2]/50 transition-colors">
         <input
           type="file"
           accept=".pdf,.png,.jpg,.jpeg"
@@ -69,18 +69,18 @@ export default function MultiFileUpload({ value, onChange, questionText, helpTex
         <label htmlFor="multi-file-upload" className="cursor-pointer space-y-2">
           {uploading ? (
             <>
-              <Loader2 className="w-8 h-8 text-[#2bc196] mx-auto animate-spin" />
-              <p className="text-sm font-medium text-[#002443]/70">Enviando...</p>
+              <Loader2 className="w-8 h-8 text-[#1356E2] mx-auto animate-spin" />
+              <p className="text-sm font-medium text-[#0A0A0A]/70">Enviando...</p>
             </>
           ) : (
             <>
-              <div className="w-10 h-10 rounded-full bg-[#2bc196]/10 flex items-center justify-center mx-auto">
-                <Plus className="w-5 h-5 text-[#2bc196]" />
+              <div className="w-10 h-10 rounded-full bg-[#1356E2]/10 flex items-center justify-center mx-auto">
+                <Plus className="w-5 h-5 text-[#1356E2]" />
               </div>
-              <p className="text-sm font-medium text-[#002443]/70">
+              <p className="text-sm font-medium text-[#0A0A0A]/70">
                 {files.length === 0 ? 'Clique para enviar arquivo' : 'Adicionar outro documento'}
               </p>
-              <p className="text-xs text-[#002443]/40">PDF, PNG, JPG (máx. 10MB)</p>
+              <p className="text-xs text-[#0A0A0A]/40">PDF, PNG, JPG (máx. 10MB)</p>
             </>
           )}
         </label>

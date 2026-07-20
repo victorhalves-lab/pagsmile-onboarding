@@ -130,17 +130,17 @@ export default function DadosInsights() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5">
         <div className="relative">
-          <div className="absolute inset-0 rounded-3xl bg-[#2bc196]/20 blur-xl animate-pulse" />
-          <div className="relative w-16 h-16 rounded-3xl bg-gradient-to-br from-[#002443] to-[#003366] flex items-center justify-center shadow-2xl shadow-[#002443]/20">
-            <BarChart3 className="w-7 h-7 text-[#2bc196]" />
+          <div className="absolute inset-0 rounded-3xl bg-[#1356E2]/20 blur-xl animate-pulse" />
+          <div className="relative w-16 h-16 rounded-3xl bg-gradient-to-br from-[#0A0A0A] to-[#003366] flex items-center justify-center shadow-2xl shadow-[#0A0A0A]/20">
+            <BarChart3 className="w-7 h-7 text-[#1356E2]" />
           </div>
           <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-white shadow-lg flex items-center justify-center">
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-[#2bc196]" />
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-[#1356E2]" />
           </div>
         </div>
         <div className="text-center">
-          <p className="text-sm font-semibold text-[#002443]/60">{t('di.loading')}</p>
-          <p className="text-[10px] text-[#002443]/25 mt-1">{t('di.loading_hint')}</p>
+          <p className="text-sm font-semibold text-[#0A0A0A]/60">{t('di.loading')}</p>
+          <p className="text-[10px] text-[#0A0A0A]/25 mt-1">{t('di.loading_hint')}</p>
         </div>
       </div>
     );
@@ -150,9 +150,9 @@ export default function DadosInsights() {
   const currentProposalsCount = proposals.filter(p => p.isCurrentVersion === true).length;
   const currentPixProposalsCount = pixProposals.filter(p => p.isCurrentVersion === true).length;
   const counters = [
-    { label: t('di.leads'), value: leads.length, color: '#2bc196' },
-    { label: t('di.proposals'), value: currentProposalsCount + currentPixProposalsCount, color: '#5cf7cf' },
-    { label: t('di.compliance'), value: cases.length, color: '#36706c' },
+    { label: t('di.leads'), value: leads.length, color: '#1356E2' },
+    { label: t('di.proposals'), value: currentProposalsCount + currentPixProposalsCount, color: '#E84B1C' },
+    { label: t('di.compliance'), value: cases.length, color: '#E84B1C' },
     { label: t('di.merchants'), value: merchants.length, color: '#94a3b8' },
     { label: t('di.partners'), value: partners.length, color: '#f59e0b' },
   ];
@@ -160,12 +160,12 @@ export default function DadosInsights() {
   return (
     <div className="space-y-5 max-w-[1440px] mx-auto">
       {/* ═══ PREMIUM HEADER ═══ */}
-      <div className="relative overflow-hidden rounded-[28px] bg-[#002443]">
+      <div className="relative overflow-hidden rounded-[28px] bg-[#0A0A0A]">
         {/* Multi-layer mesh gradient */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#2bc196]/8 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#5cf7cf]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4" />
-          <div className="absolute top-1/2 left-1/2 w-[200px] h-[200px] bg-[#2bc196]/3 rounded-full blur-[60px] -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#1356E2]/8 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#E84B1C]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4" />
+          <div className="absolute top-1/2 left-1/2 w-[200px] h-[200px] bg-[#1356E2]/3 rounded-full blur-[60px] -translate-x-1/2 -translate-y-1/2" />
         </div>
         {/* Grid pattern */}
         <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
@@ -178,8 +178,8 @@ export default function DadosInsights() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div className="flex items-center gap-5">
               <div className="relative">
-                <div className="absolute inset-0 rounded-2xl bg-[#2bc196]/30 blur-lg" />
-                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2bc196] to-[#36706c] flex items-center justify-center shadow-xl">
+                <div className="absolute inset-0 rounded-2xl bg-[#1356E2]/30 blur-lg" />
+                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1356E2] to-[#E84B1C] flex items-center justify-center shadow-xl">
                   <BarChart3 className="w-7 h-7 text-white" />
                 </div>
               </div>
@@ -187,7 +187,7 @@ export default function DadosInsights() {
                 <div className="flex items-center gap-3">
                   <h1 className="text-[26px] md:text-[32px] font-extrabold text-white tracking-[-0.02em] leading-none">{t('di.title')}</h1>
                   <div className="flex items-center gap-1.5 bg-white/[0.08] backdrop-blur-md rounded-full px-3 py-1 border border-white/[0.06]">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#2bc196] shadow-[0_0_8px_rgba(43,193,150,0.6)] animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#1356E2] shadow-[0_0_8px_rgba(43,193,150,0.6)] animate-pulse" />
                     <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">{t('di.live')}</span>
                   </div>
                 </div>
@@ -214,7 +214,7 @@ export default function DadosInsights() {
         <div className="flex flex-wrap items-center gap-1">
           {TAB_GROUPS.map((group, gi) => (
             <React.Fragment key={gi}>
-              {gi > 0 && <div className="hidden md:block w-px h-6 bg-[#002443]/[0.06] mx-1" />}
+              {gi > 0 && <div className="hidden md:block w-px h-6 bg-[#0A0A0A]/[0.06] mx-1" />}
               {group.tabs.map(tab => {
                 const isActive = activeTab === tab.id;
                 const Icon = tab.icon;
@@ -224,12 +224,12 @@ export default function DadosInsights() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-bold transition-all duration-400 whitespace-nowrap
                       ${isActive
-                        ? 'bg-[#002443] text-white shadow-lg shadow-[#002443]/15'
-                        : 'text-[#002443]/35 hover:text-[#002443]/70 hover:bg-[#002443]/[0.03]'
+                        ? 'bg-[#0A0A0A] text-white shadow-lg shadow-[#0A0A0A]/15'
+                        : 'text-[#0A0A0A]/35 hover:text-[#0A0A0A]/70 hover:bg-[#0A0A0A]/[0.03]'
                       }`}
                   >
-                    {isActive && <div className="absolute inset-x-2 -bottom-[2px] h-[2px] bg-[#2bc196] rounded-full" />}
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#2bc196]' : ''}`} />
+                    {isActive && <div className="absolute inset-x-2 -bottom-[2px] h-[2px] bg-[#1356E2] rounded-full" />}
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#1356E2]' : ''}`} />
                     {tab.label}
                   </button>
                 );

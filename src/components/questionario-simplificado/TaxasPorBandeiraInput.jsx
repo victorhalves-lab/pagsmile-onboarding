@@ -22,11 +22,11 @@ export default function TaxasPorBandeiraInput({ label, fieldKey, formData, setFo
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-semibold text-[#002443]">{label}</Label>
+      <Label className="text-sm font-semibold text-[#0A0A0A]">{label}</Label>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {MARCAS.map(m => (
           <div key={m.key} className="space-y-1">
-            <Label className="text-xs text-[#002443]/70">{m.label}</Label>
+            <Label className="text-xs text-[#0A0A0A]/70">{m.label}</Label>
             <div className="relative">
               <Input
                 type="number"
@@ -36,7 +36,7 @@ export default function TaxasPorBandeiraInput({ label, fieldKey, formData, setFo
                 onChange={(e) => updateValue(m.key, e.target.value)}
                 className="pr-8"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#002443]/50">%</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#0A0A0A]/50">%</span>
             </div>
           </div>
         ))}

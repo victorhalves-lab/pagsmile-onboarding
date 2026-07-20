@@ -79,8 +79,8 @@ export default function V5_2_AuditTrail() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
-        <span className="ml-3 text-[#002443]/70">Carregando trilha de auditoria…</span>
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
+        <span className="ml-3 text-[#0A0A0A]/70">Carregando trilha de auditoria…</span>
       </div>
     );
   }
@@ -131,11 +131,11 @@ export default function V5_2_AuditTrail() {
           </Button>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <History className="w-5 h-5 text-[#2bc196]" />
-              <h1 className="text-lg font-bold text-[#002443]">Trilha de Auditoria V5.2</h1>
-              <Badge className="bg-[#2bc196]/15 text-[#36706c] border-0">v5.2</Badge>
+              <History className="w-5 h-5 text-[#1356E2]" />
+              <h1 className="text-lg font-bold text-[#0A0A0A]">Trilha de Auditoria V5.2</h1>
+              <Badge className="bg-[#1356E2]/15 text-[#E84B1C] border-0">v5.2</Badge>
             </div>
-            <p className="text-xs text-[#002443]/55 mt-0.5">
+            <p className="text-xs text-[#0A0A0A]/55 mt-0.5">
               {merchant?.fullName || merchant?.companyName || onboardingCase?.merchantId} \u00b7
               <span className="font-mono ml-1">{onboardingCase?.id?.substring(0, 12)}…</span>
             </p>
@@ -144,7 +144,7 @@ export default function V5_2_AuditTrail() {
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" size="sm" className="gap-2">
             <Link to={`/V5_2_ReplayStudio?caseId=${caseId}`}>
-              <FlaskConical className="w-4 h-4 text-[#2bc196]" />
+              <FlaskConical className="w-4 h-4 text-[#1356E2]" />
               Replay Studio
             </Link>
           </Button>
@@ -176,7 +176,7 @@ export default function V5_2_AuditTrail() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
-                <History className="w-4 h-4 text-[#002443]/60" />
+                <History className="w-4 h-4 text-[#0A0A0A]/60" />
                 Timeline de Snapshots
               </CardTitle>
             </CardHeader>
@@ -229,12 +229,12 @@ function KPI({ label, value, icon: Icon }) {
   return (
     <Card>
       <CardContent className="p-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-[#2bc196]/10 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-4 h-4 text-[#2bc196]" />
+        <div className="w-9 h-9 rounded-lg bg-[#1356E2]/10 flex items-center justify-center flex-shrink-0">
+          <Icon className="w-4 h-4 text-[#1356E2]" />
         </div>
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-wider text-[#002443]/50 font-semibold truncate">{label}</div>
-          <div className="text-base font-bold text-[#002443] font-mono">{value}</div>
+          <div className="text-[10px] uppercase tracking-wider text-[#0A0A0A]/50 font-semibold truncate">{label}</div>
+          <div className="text-base font-bold text-[#0A0A0A] font-mono">{value}</div>
         </div>
       </CardContent>
     </Card>
@@ -247,8 +247,8 @@ function ErrorState({ title, description }) {
       <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mx-auto mb-4">
         <AlertTriangle className="w-6 h-6 text-amber-600" />
       </div>
-      <h2 className="text-lg font-bold text-[#002443] mb-2">{title}</h2>
-      <p className="text-sm text-[#002443]/70">{description}</p>
+      <h2 className="text-lg font-bold text-[#0A0A0A] mb-2">{title}</h2>
+      <p className="text-sm text-[#0A0A0A]/70">{description}</p>
     </div>
   );
 }

@@ -70,10 +70,10 @@ export default function CadastroCompletenessAuditModal({ merchantId, merchantNam
         {!loading && !error && report && (
           <>
             {/* Summary card */}
-            <div className="bg-white border border-[var(--pagsmile-blue)]/10 rounded-xl p-4">
+            <div className="bg-white border border-[var(--pinbank-blue)]/10 rounded-xl p-4">
               <div className="grid grid-cols-4 gap-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{report.summary.percentComplete}%</p>
+                  <p className="text-2xl font-bold text-[var(--pinbank-blue)]">{report.summary.percentComplete}%</p>
                   <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Completude</p>
                 </div>
                 <div className="text-center">
@@ -108,10 +108,10 @@ export default function CadastroCompletenessAuditModal({ merchantId, merchantNam
                 {report.sections.map(section => {
                   const sectionGaps = section.entities.filter(e => e.status === 'gap').length;
                   return (
-                    <div key={section.id} className="bg-white border border-[var(--pagsmile-blue)]/10 rounded-xl overflow-hidden">
+                    <div key={section.id} className="bg-white border border-[var(--pinbank-blue)]/10 rounded-xl overflow-hidden">
                       <div className="bg-slate-50 px-4 py-2.5 flex items-center justify-between border-b border-slate-100">
                         <div>
-                          <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">{section.title}</p>
+                          <p className="text-sm font-semibold text-[var(--pinbank-blue)]">{section.title}</p>
                           <p className="text-[11px] text-slate-500">{section.description}</p>
                         </div>
                         {sectionGaps > 0 && (
@@ -127,7 +127,7 @@ export default function CadastroCompletenessAuditModal({ merchantId, merchantNam
                               <Icon className={`w-4 h-4 ${sc.color} flex-shrink-0 mt-0.5`} />
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="text-xs font-semibold text-[var(--pagsmile-blue)] font-mono">{entity.name}</span>
+                                  <span className="text-xs font-semibold text-[var(--pinbank-blue)] font-mono">{entity.name}</span>
                                   <Badge variant="outline" className="text-[9px] py-0">{entity.recordsFound} reg.</Badge>
                                   <Badge className={`${sc.bg} ${sc.color} text-[9px] py-0 border ${sc.border}`}>{sc.label}</Badge>
                                 </div>

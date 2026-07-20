@@ -32,7 +32,7 @@ export default function SubsellerQuestionnaire() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -44,8 +44,8 @@ export default function SubsellerQuestionnaire() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-md mx-auto text-center px-4">
         <AlertTriangle className="w-16 h-16 text-amber-500 mb-4" />
-        <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">Link inválido</h2>
-        <p className="text-[var(--pagsmile-blue)]/70">Este link de onboarding não é válido ou expirou.</p>
+        <h2 className="text-xl font-bold text-[var(--pinbank-blue)] mb-2">Link inválido</h2>
+        <p className="text-[var(--pinbank-blue)]/70">Este link de onboarding não é válido ou expirou.</p>
       </div>
     );
   }
@@ -93,7 +93,7 @@ export default function SubsellerQuestionnaire() {
         documentUploadPage="SubsellerDocUpload"
         flowType={isPF ? 'subseller_pf' : 'subseller'}
         badgeLabel={isPF ? 'SUBSELLER PF · V5.2' : 'SUBSELLER PJ · V5.2'}
-        badgeColor="bg-[#2bc196]/15 text-[#2bc196] border border-[#2bc196]/30"
+        badgeColor="bg-[#1356E2]/15 text-[#1356E2] border border-[#1356E2]/30"
         questionsPerStep={4}
         branding={branding}
         isPublicView={true}

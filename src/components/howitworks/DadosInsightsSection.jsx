@@ -4,14 +4,14 @@ import { ArrowRight, CircleDot } from 'lucide-react';
 
 function TabDetail({ name, group, icon, description, metricas, graficos, insights }) {
   return (
-    <div className="border border-slate-200 rounded-xl p-4 hover:border-[#2bc196]/30 transition-colors">
+    <div className="border border-slate-200 rounded-xl p-4 hover:border-[#1356E2]/30 transition-colors">
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="flex items-center gap-2">
-            <h5 className="font-bold text-[#002443] text-sm">{name}</h5>
+            <h5 className="font-bold text-[#0A0A0A] text-sm">{name}</h5>
             <Badge className="bg-slate-100 text-slate-600 border-0 text-[8px]">{group}</Badge>
           </div>
-          <p className="text-[10px] text-[#002443]/50 mt-0.5">{description}</p>
+          <p className="text-[10px] text-[#0A0A0A]/50 mt-0.5">{description}</p>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
@@ -22,9 +22,9 @@ function TabDetail({ name, group, icon, description, metricas, graficos, insight
           </div>
         )}
         {graficos && (
-          <div className="bg-[#2bc196]/5 rounded-lg p-3 border border-[#2bc196]/10">
-            <p className="text-[8px] font-bold text-[#2bc196] uppercase tracking-wider mb-1.5">Gráficos / Visualizações</p>
-            {graficos.map((g, i) => <p key={i} className="text-[9px] text-[#002443]/60 flex items-start gap-1"><CircleDot className="w-2.5 h-2.5 mt-0.5 shrink-0 text-[#2bc196]" />{g}</p>)}
+          <div className="bg-[#1356E2]/5 rounded-lg p-3 border border-[#1356E2]/10">
+            <p className="text-[8px] font-bold text-[#1356E2] uppercase tracking-wider mb-1.5">Gráficos / Visualizações</p>
+            {graficos.map((g, i) => <p key={i} className="text-[9px] text-[#0A0A0A]/60 flex items-start gap-1"><CircleDot className="w-2.5 h-2.5 mt-0.5 shrink-0 text-[#1356E2]" />{g}</p>)}
           </div>
         )}
         {insights && (
@@ -41,7 +41,7 @@ function TabDetail({ name, group, icon, description, metricas, graficos, insight
 export default function DadosInsightsSection() {
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-5 text-white">
         <h3 className="text-lg font-bold mb-2">Dados & Insights — Central de Inteligência de Negócio</h3>
         <p className="text-white/80 text-sm leading-relaxed mb-3">
           Página premium com 20 abas analíticas organizadas em 5 grupos. Cruza dados de 10 entidades: Leads, Proposals, PixProposals, OnboardingCases, ComplianceScores, Merchants, Partners, DocumentUploads, QuestionnaireResponses e ComplianceSessions.
@@ -69,7 +69,7 @@ export default function DadosInsightsSection() {
         graficos={['Cards de insights com ícones por categoria', 'Priorização por impacto']}
         insights={['Recomendações de ação para comercial', 'Alertas de performance', 'Sugestões de otimização']}
       />
-      <TabDetail name="Inteligência de Mercado" group="Inteligência" description="Extrai dados do questionário Pagsmile v5 para gerar inteligência de mercado: segmentação granular, concorrência, dores, urgência, maturidade antifraude e canal de aquisição."
+      <TabDetail name="Inteligência de Mercado" group="Inteligência" description="Extrai dados do questionário Pin Bank v5 para gerar inteligência de mercado: segmentação granular, concorrência, dores, urgência, maturidade antifraude e canal de aquisição."
         metricas={['Leads com perfil v5 vs total', 'Novos merchants (nunca processaram)', 'Urgência imediata (count)', 'Insatisfeitos com processador atual']}
         graficos={['Donut: Segmento granular v5 (10 verticais)', 'Donut: Satisfação com processador', 'Donut: Urgência de migração', 'Donut: Já processa pagamentos?', 'Donut: Maturidade antifraude', 'Donut: Faturamento anual', 'Donut: Modelo de cobrança', 'Donut: Funcionários', 'Donut: Expectativa de crescimento', 'HorizontalBarList: Processador atual (de onde vêm)', 'HorizontalBarList: Principais dores do mercado', 'HorizontalBarList: Canal de aquisição', 'HorizontalBarList: Plataforma e-commerce']}
         insights={['De qual processador vêm mais leads', 'Quais dores mais recorrentes', 'Qual segmento cresce mais', 'Qual canal de marketing mais efetivo']}

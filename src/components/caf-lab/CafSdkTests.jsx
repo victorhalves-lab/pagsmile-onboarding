@@ -135,10 +135,10 @@ export default function CafSdkTests() {
         enableFramingAnalyzer: true,
         enableVisibilityChangeSecurity: true,
         appearance: {
-          capture: { captureButtonColor: '#2bc196' },
+          capture: { captureButtonColor: '#1356E2' },
           upload: {
-            startScreen: { allowButton: { backgroundColor: '#2bc196' } },
-            successScreen: { icon: { color: '#2bc196' } },
+            startScreen: { allowButton: { backgroundColor: '#1356E2' } },
+            successScreen: { icon: { color: '#1356E2' } },
           },
         },
       });
@@ -200,7 +200,7 @@ export default function CafSdkTests() {
       }, {
         startButton: {
           label: 'Iniciar',
-          backgroundColor: '#2bc196',
+          backgroundColor: '#1356E2',
           color: '#ffffff',
           borderRadius: '12px',
         },
@@ -267,7 +267,7 @@ export default function CafSdkTests() {
       <Card className="p-4 bg-purple-50 border-purple-200">
         <div className="flex items-center justify-between gap-3">
           <div className="flex-1">
-            <h3 className="text-sm font-bold text-[#002443]">Inicializar SDK</h3>
+            <h3 className="text-sm font-bold text-[#0A0A0A]">Inicializar SDK</h3>
             <p className="text-xs text-slate-600 mt-0.5">
               Gera Session Token fresco + carrega DocumentDetector + FaceLiveness scripts.
             </p>
@@ -304,7 +304,7 @@ export default function CafSdkTests() {
       <Card className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <h4 className="text-sm font-bold text-[#002443]">8. Document Detector — FRENTE</h4>
+            <h4 className="text-sm font-bold text-[#0A0A0A]">8. Document Detector — FRENTE</h4>
             <p className="text-xs text-slate-500 mt-0.5">
               Abre câmera. Capture um RG/CNH de frente. Retorna blob + metadata.
             </p>
@@ -313,7 +313,7 @@ export default function CafSdkTests() {
             onClick={() => runDocDetector('front')}
             disabled={!sdksLoaded || activeTest !== null}
             size="sm"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {activeTest === 'doc_front' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Capturando...</>
@@ -329,7 +329,7 @@ export default function CafSdkTests() {
       <Card className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <h4 className="text-sm font-bold text-[#002443]">9. Document Detector — VERSO</h4>
+            <h4 className="text-sm font-bold text-[#0A0A0A]">9. Document Detector — VERSO</h4>
             <p className="text-xs text-slate-500 mt-0.5">
               Abre câmera novamente. Vire o documento e capture o verso.
             </p>
@@ -338,7 +338,7 @@ export default function CafSdkTests() {
             onClick={() => runDocDetector('back')}
             disabled={!sdksLoaded || activeTest !== null}
             size="sm"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {activeTest === 'doc_back' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Capturando...</>
@@ -354,7 +354,7 @@ export default function CafSdkTests() {
       <Card className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <h4 className="text-sm font-bold text-[#002443]">10. Face Liveness (Prova de Vida)</h4>
+            <h4 className="text-sm font-bold text-[#0A0A0A]">10. Face Liveness (Prova de Vida)</h4>
             <p className="text-xs text-slate-500 mt-0.5">
               Abre câmera frontal. Siga as instruções para prova de vida. Retorna JWT com isAlive + sessionId.
             </p>
@@ -363,7 +363,7 @@ export default function CafSdkTests() {
             onClick={runLiveness}
             disabled={!sdksLoaded || activeTest !== null}
             size="sm"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {activeTest === 'liveness' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Capturando...</>

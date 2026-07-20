@@ -11,7 +11,7 @@ export default function Step7bCompliance({ formData, handleChange }) {
       icon={ShieldCheck}
     >
       <div className="bg-slate-50 p-5 rounded-xl border border-slate-200">
-         <h3 className="font-bold text-[var(--pagsmile-blue)] mb-2">Responsável pela Área de Compliance</h3>
+         <h3 className="font-bold text-[var(--pinbank-blue)] mb-2">Responsável pela Área de Compliance</h3>
          <p className="text-sm text-slate-500 mb-6">Todos os campos são obrigatórios, mesmo que a empresa não tenha área de compliance formalizada.</p>
          
          <FormField 
@@ -20,7 +20,7 @@ export default function Step7bCompliance({ formData, handleChange }) {
             value={formData.complianceNome} 
             onChange={(v) => handleChange('complianceNome', v)} 
             placeholder="Nome"
-            className="text-[var(--pagsmile-blue)] bg-white"
+            className="text-[var(--pinbank-blue)] bg-white"
          />
          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <FormField 
@@ -29,7 +29,7 @@ export default function Step7bCompliance({ formData, handleChange }) {
                 value={formData.complianceCPF} 
                 onChange={(v) => handleChange('complianceCPF', v)} 
                 placeholder="000.000.000-00"
-                className="text-[var(--pagsmile-blue)] bg-white"
+                className="text-[var(--pinbank-blue)] bg-white"
             />
             <FormField 
                 label="Email" 
@@ -38,7 +38,7 @@ export default function Step7bCompliance({ formData, handleChange }) {
                 value={formData.complianceEmail} 
                 onChange={(v) => handleChange('complianceEmail', v)} 
                 placeholder="email@..."
-                className="text-[var(--pagsmile-blue)] bg-white"
+                className="text-[var(--pinbank-blue)] bg-white"
             />
             <FormField 
                 label="Telefone Celular" 
@@ -46,7 +46,7 @@ export default function Step7bCompliance({ formData, handleChange }) {
                 value={formData.complianceCelular} 
                 onChange={(v) => handleChange('complianceCelular', v)} 
                 placeholder="(00) 00000-0000"
-                className="text-[var(--pagsmile-blue)] bg-white"
+                className="text-[var(--pinbank-blue)] bg-white"
             />
          </div>
       </div>

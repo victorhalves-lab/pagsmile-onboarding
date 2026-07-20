@@ -99,10 +99,10 @@ export default function GestaoLandingPages() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">{t('glp.title')}</h1>
-          <p className="text-sm text-[#002443]/50 mt-1">{t('glp.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('glp.title')}</h1>
+          <p className="text-sm text-[#0A0A0A]/50 mt-1">{t('glp.subtitle')}</p>
         </div>
-        <Button onClick={handleNew} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+        <Button onClick={handleNew} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
           <Plus className="w-4 h-4 mr-2" /> {t('glp.new')}
         </Button>
       </div>
@@ -117,7 +117,7 @@ export default function GestaoLandingPages() {
 
       {/* Search */}
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
         <Input
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -129,19 +129,19 @@ export default function GestaoLandingPages() {
       {/* Table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
-          <LayoutTemplate className="w-12 h-12 text-[#002443]/15 mx-auto mb-4" />
-          <h3 className="font-bold text-[#002443] mb-1">{t('glp.no_found')}</h3>
-          <p className="text-sm text-[#002443]/50 mb-4">{t('glp.no_found_desc')}</p>
-          <Button onClick={handleNew} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-12 text-center">
+          <LayoutTemplate className="w-12 h-12 text-[#0A0A0A]/15 mx-auto mb-4" />
+          <h3 className="font-bold text-[#0A0A0A] mb-1">{t('glp.no_found')}</h3>
+          <p className="text-sm text-[#0A0A0A]/50 mb-4">{t('glp.no_found_desc')}</p>
+          <Button onClick={handleNew} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" /> {t('glp.create')}
           </Button>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -159,36 +159,36 @@ export default function GestaoLandingPages() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {intro.companyLogoUrl ? (
-                        <img src={intro.companyLogoUrl} alt="" className="w-9 h-9 rounded-lg object-contain border border-[#002443]/5 p-0.5" />
+                        <img src={intro.companyLogoUrl} alt="" className="w-9 h-9 rounded-lg object-contain border border-[#0A0A0A]/5 p-0.5" />
                       ) : (
-                        <div className="w-9 h-9 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-                          <Globe className="w-4 h-4 text-[#2bc196]" />
+                        <div className="w-9 h-9 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+                          <Globe className="w-4 h-4 text-[#1356E2]" />
                         </div>
                       )}
                       <div>
-                        <p className="font-semibold text-sm text-[#002443]">{intro.companyName || intro.name}</p>
-                        <p className="text-[10px] text-[#002443]/40">{t('glp.code')}: {intro.referralCode}</p>
+                        <p className="font-semibold text-sm text-[#0A0A0A]">{intro.companyName || intro.name}</p>
+                        <p className="text-[10px] text-[#0A0A0A]/40">{t('glp.code')}: {intro.referralCode}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     {intro.uniqueLandingPageSlug ? (
                       <div className="flex items-center gap-2">
-                        <code className="text-xs bg-[#f4f4f4] px-2 py-1 rounded-lg text-[#002443]/60 font-mono">
+                        <code className="text-xs bg-[#f4f4f4] px-2 py-1 rounded-lg text-[#0A0A0A]/60 font-mono">
                           /parceiro/{intro.uniqueLandingPageSlug}
                         </code>
-                        <button onClick={() => copyLink(intro.uniqueLandingPageSlug)} className="text-[#002443]/30 hover:text-[#2bc196] transition-colors">
-                          {copiedId === intro.uniqueLandingPageSlug ? <Check className="w-3.5 h-3.5 text-[#2bc196]" /> : <Copy className="w-3.5 h-3.5" />}
+                        <button onClick={() => copyLink(intro.uniqueLandingPageSlug)} className="text-[#0A0A0A]/30 hover:text-[#1356E2] transition-colors">
+                          {copiedId === intro.uniqueLandingPageSlug ? <Check className="w-3.5 h-3.5 text-[#1356E2]" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
                       </div>
                     ) : (
-                      <span className="text-xs text-[#002443]/30">{t('glp.not_configured')}</span>
+                      <span className="text-xs text-[#0A0A0A]/30">{t('glp.not_configured')}</span>
                     )}
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1 flex-wrap">
                       {(intro.standardRates || []).length > 0 ? (
-                        <Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px] border-0">
+                        <Badge className="bg-[#1356E2]/10 text-[#1356E2] text-[10px] border-0">
                           {t('glp.n_segments', { count: intro.standardRates.length })}
                         </Badge>
                       ) : (
@@ -209,16 +209,16 @@ export default function GestaoLandingPages() {
                     </button>
                   </TableCell>
                   <TableCell className="text-center">
-                    <span className="font-bold text-sm text-[#002443]">{getLeadCount(intro)}</span>
+                    <span className="font-bold text-sm text-[#0A0A0A]">{getLeadCount(intro)}</span>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                     <Button variant="ghost" size="sm" onClick={() => setAnalyticsIntroducer(intro)} className="h-7 text-[#002443]/50 hover:text-[#2bc196]" title="Analytics">
+                     <Button variant="ghost" size="sm" onClick={() => setAnalyticsIntroducer(intro)} className="h-7 text-[#0A0A0A]/50 hover:text-[#1356E2]" title="Analytics">
                        <BarChart3 className="w-3.5 h-3.5" />
                      </Button>
                      {intro.uniqueLandingPageSlug && (
                        <Link to={`/parceiro/${intro.uniqueLandingPageSlug}`} target="_blank">
-                         <Button variant="ghost" size="sm" className="h-7 text-[#2bc196]" title="Visualizar Landing Page">
+                         <Button variant="ghost" size="sm" className="h-7 text-[#1356E2]" title="Visualizar Landing Page">
                            <ExternalLink className="w-3.5 h-3.5" />
                          </Button>
                        </Link>
@@ -254,20 +254,20 @@ export default function GestaoLandingPages() {
 
 function StatCard({ label, value, icon: Icon, color = 'emerald' }) {
   const colorMap = {
-    emerald: 'bg-[#2bc196]/10 text-[#2bc196]',
+    emerald: 'bg-[#1356E2]/10 text-[#1356E2]',
     green: 'bg-green-100 text-green-600',
     slate: 'bg-slate-100 text-slate-500',
     blue: 'bg-blue-100 text-blue-600',
   };
   return (
-    <div className="bg-white rounded-xl border border-[#002443]/5 p-4">
+    <div className="bg-white rounded-xl border border-[#0A0A0A]/5 p-4">
       <div className="flex items-center gap-3">
         <div className={`p-2 rounded-lg ${colorMap[color]}`}>
           <Icon className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-2xl font-bold text-[#002443]">{value}</p>
-          <p className="text-xs text-[#002443]/50">{label}</p>
+          <p className="text-2xl font-bold text-[#0A0A0A]">{value}</p>
+          <p className="text-xs text-[#0A0A0A]/50">{label}</p>
         </div>
       </div>
     </div>

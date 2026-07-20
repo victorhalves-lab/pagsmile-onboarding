@@ -48,12 +48,12 @@ export default function IntroducerCompanyFields({ form, setForm }) {
   const appBaseUrl = window.location.origin;
 
   return (
-    <div className="space-y-4 pt-2 border-t border-[#002443]/10">
-      <p className="text-xs font-bold text-[#2bc196] uppercase tracking-wider">Dados da Empresa</p>
+    <div className="space-y-4 pt-2 border-t border-[#0A0A0A]/10">
+      <p className="text-xs font-bold text-[#1356E2] uppercase tracking-wider">Dados da Empresa</p>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold text-[#002443]/50">Nome da Empresa *</Label>
+          <Label className="text-xs font-bold text-[#0A0A0A]/50">Nome da Empresa *</Label>
           <Input
             value={form.companyName || ''}
             onChange={e => handleCompanyNameChange(e.target.value)}
@@ -62,7 +62,7 @@ export default function IntroducerCompanyFields({ form, setForm }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold text-[#002443]/50">CNPJ</Label>
+          <Label className="text-xs font-bold text-[#0A0A0A]/50">CNPJ</Label>
           <Input
             value={form.cnpj || ''}
             onChange={e => setForm(p => ({ ...p, cnpj: e.target.value }))}
@@ -74,7 +74,7 @@ export default function IntroducerCompanyFields({ form, setForm }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold text-[#002443]/50">E-mail da Empresa</Label>
+          <Label className="text-xs font-bold text-[#0A0A0A]/50">E-mail da Empresa</Label>
           <Input
             type="email"
             value={form.contactEmailCompany || ''}
@@ -84,7 +84,7 @@ export default function IntroducerCompanyFields({ form, setForm }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold text-[#002443]/50">Telefone da Empresa</Label>
+          <Label className="text-xs font-bold text-[#0A0A0A]/50">Telefone da Empresa</Label>
           <Input
             value={form.contactPhoneCompany || ''}
             onChange={e => setForm(p => ({ ...p, contactPhoneCompany: e.target.value }))}
@@ -96,15 +96,15 @@ export default function IntroducerCompanyFields({ form, setForm }) {
 
       {/* Logo Upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs font-bold text-[#002443]/50">Logo da Empresa</Label>
+        <Label className="text-xs font-bold text-[#0A0A0A]/50">Logo da Empresa</Label>
         <div className="flex items-center gap-4">
           {form.companyLogoUrl ? (
-            <div className="w-20 h-20 rounded-xl border-2 border-dashed border-[#2bc196]/30 bg-white flex items-center justify-center p-2">
+            <div className="w-20 h-20 rounded-xl border-2 border-dashed border-[#1356E2]/30 bg-white flex items-center justify-center p-2">
               <img src={form.companyLogoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
             </div>
           ) : (
-            <div className="w-20 h-20 rounded-xl border-2 border-dashed border-[#002443]/10 bg-[#f4f4f4] flex items-center justify-center">
-              <Image className="w-6 h-6 text-[#002443]/20" />
+            <div className="w-20 h-20 rounded-xl border-2 border-dashed border-[#0A0A0A]/10 bg-[#f4f4f4] flex items-center justify-center">
+              <Image className="w-6 h-6 text-[#0A0A0A]/20" />
             </div>
           )}
           <div className="flex-1">
@@ -117,7 +117,7 @@ export default function IntroducerCompanyFields({ form, setForm }) {
                 </span>
               </Button>
             </label>
-            <p className="text-[10px] text-[#002443]/30 mt-1.5">
+            <p className="text-[10px] text-[#0A0A0A]/30 mt-1.5">
               Fundo branco ou transparente. PNG ou SVG. Mínimo 200×200px.
             </p>
           </div>
@@ -126,11 +126,11 @@ export default function IntroducerCompanyFields({ form, setForm }) {
 
       {/* Landing Page Slug */}
       <div className="space-y-1.5">
-        <Label className="text-xs font-bold text-[#002443]/50">Slug da Landing Page *</Label>
+        <Label className="text-xs font-bold text-[#0A0A0A]/50">Slug da Landing Page *</Label>
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#f4f4f4] rounded-l-xl px-3 h-10 border border-r-0 border-[#002443]/10">
-            <Globe className="w-3.5 h-3.5 text-[#002443]/30 mr-1.5" />
-            <span className="text-xs text-[#002443]/40">{appBaseUrl}/parceiro/</span>
+          <div className="flex items-center bg-[#f4f4f4] rounded-l-xl px-3 h-10 border border-r-0 border-[#0A0A0A]/10">
+            <Globe className="w-3.5 h-3.5 text-[#0A0A0A]/30 mr-1.5" />
+            <span className="text-xs text-[#0A0A0A]/40">{appBaseUrl}/parceiro/</span>
           </div>
           <Input
             value={form.uniqueLandingPageSlug || ''}
@@ -140,7 +140,7 @@ export default function IntroducerCompanyFields({ form, setForm }) {
           />
         </div>
         {form.uniqueLandingPageSlug && (
-          <p className="text-[10px] text-[#2bc196] flex items-center gap-1">
+          <p className="text-[10px] text-[#1356E2] flex items-center gap-1">
             <ExternalLink className="w-3 h-3" />
             {appBaseUrl}/parceiro/{form.uniqueLandingPageSlug}
           </p>
@@ -150,8 +150,8 @@ export default function IntroducerCompanyFields({ form, setForm }) {
       {/* Landing Page Active */}
       <div className="flex items-center justify-between bg-[#f4f4f4] rounded-xl p-3">
         <div>
-          <p className="text-xs font-bold text-[#002443]">Landing Page Ativa</p>
-          <p className="text-[10px] text-[#002443]/40">Quando desativada, a página exibe "não disponível"</p>
+          <p className="text-xs font-bold text-[#0A0A0A]">Landing Page Ativa</p>
+          <p className="text-[10px] text-[#0A0A0A]/40">Quando desativada, a página exibe "não disponível"</p>
         </div>
         <Switch
           checked={form.landingPageActive !== false}

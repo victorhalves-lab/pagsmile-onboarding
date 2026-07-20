@@ -39,7 +39,7 @@ export default function InsightsMarketIntelSection({ leads }) {
   // Satisfação com processador
   const satisfacaoData = countField(leads, 'satisfacao');
   const satisfacaoColors = {
-    'Muito satisfeito': '#2bc196', 'Satisfeito': '#36706c', 'Neutro': '#94a3b8',
+    'Muito satisfeito': '#1356E2', 'Satisfeito': '#E84B1C', 'Neutro': '#94a3b8',
     'Insatisfeito': '#f59e0b', 'Muito insatisfeito': '#ef4444'
   };
 
@@ -50,7 +50,7 @@ export default function InsightsMarketIntelSection({ leads }) {
   const urgenciaData = countField(leads, 'urgencia');
   const urgenciaColors = {
     'Imediato (<1 semana)': '#ef4444', 'Este mês': '#f59e0b',
-    'Próximos 2-3 meses': '#94a3b8', 'Estou apenas cotando': '#002443'
+    'Próximos 2-3 meses': '#94a3b8', 'Estou apenas cotando': '#0A0A0A'
   };
 
   // Modelo de cobrança
@@ -86,9 +86,9 @@ export default function InsightsMarketIntelSection({ leads }) {
   if (totalWithSegmento === 0) {
     return (
       <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center mt-2">
-        <Store className="w-10 h-10 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-sm text-[#002443]/50">Nenhum lead com dados do questionário v5 ainda.</p>
-        <p className="text-xs text-[#002443]/30 mt-1">Os dados aparecem automaticamente quando leads preenchem o questionário Pagsmile.</p>
+        <Store className="w-10 h-10 mx-auto text-[#0A0A0A]/20 mb-3" />
+        <p className="text-sm text-[#0A0A0A]/50">Nenhum lead com dados do questionário v5 ainda.</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">Os dados aparecem automaticamente quando leads preenchem o questionário Pin Bank.</p>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function InsightsMarketIntelSection({ leads }) {
       {/* Segmento + Processador */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {segmentoData.length > 0 && <DonutChart title="Segmento (Granular v5)" data={segmentoData} />}
-        {processadorData.length > 0 && <HorizontalBarList title="De Onde Vêm (Processador Atual)" data={processadorData} color="#002443" />}
+        {processadorData.length > 0 && <HorizontalBarList title="De Onde Vêm (Processador Atual)" data={processadorData} color="#0A0A0A" />}
       </div>
 
       {/* Dores + Satisfação */}
@@ -118,7 +118,7 @@ export default function InsightsMarketIntelSection({ leads }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {urgenciaData.length > 0 && <DonutChart title="Urgência de Migração" data={urgenciaData} colorMap={urgenciaColors} />}
         {crescimentoData.length > 0 && <DonutChart title="Expectativa de Crescimento" data={crescimentoData} />}
-        {jaProcessaData.length > 0 && <DonutChart title="Já Processa Pagamentos?" data={jaProcessaData} colorMap={{ 'Sim, já processo': '#2bc196', 'Não, estou começando': '#f59e0b' }} />}
+        {jaProcessaData.length > 0 && <DonutChart title="Já Processa Pagamentos?" data={jaProcessaData} colorMap={{ 'Sim, já processo': '#1356E2', 'Não, estou começando': '#f59e0b' }} />}
       </div>
 
       {/* Porte + Modelo cobrança */}
@@ -130,8 +130,8 @@ export default function InsightsMarketIntelSection({ leads }) {
 
       {/* Marketing + Antifraude + Plataforma */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {comoConheceuData.length > 0 && <HorizontalBarList title="Canal de Aquisição (Como Conheceu)" data={comoConheceuData} color="#2bc196" />}
-        {antifraudeData.length > 0 && <DonutChart title="Maturidade Antifraude" data={antifraudeData} colorMap={{ 'Antifraude + 3DS': '#2bc196', 'Só antifraude': '#36706c', 'Só 3DS': '#f59e0b', 'Não possuo': '#ef4444' }} />}
+        {comoConheceuData.length > 0 && <HorizontalBarList title="Canal de Aquisição (Como Conheceu)" data={comoConheceuData} color="#1356E2" />}
+        {antifraudeData.length > 0 && <DonutChart title="Maturidade Antifraude" data={antifraudeData} colorMap={{ 'Antifraude + 3DS': '#1356E2', 'Só antifraude': '#E84B1C', 'Só 3DS': '#f59e0b', 'Não possuo': '#ef4444' }} />}
       </div>
 
       {plataformaData.length > 0 && (

@@ -38,7 +38,7 @@ export default function InviteIntroducerButton({ introducer }) {
 
   if (!introducer.contactEmail) {
     return (
-      <Button variant="ghost" size="sm" disabled className="h-7 text-[#002443]/30">
+      <Button variant="ghost" size="sm" disabled className="h-7 text-[#0A0A0A]/30">
         <Mail className="w-3.5 h-3.5 mr-1" /> Sem e-mail
       </Button>
     );
@@ -54,7 +54,7 @@ export default function InviteIntroducerButton({ introducer }) {
 
   return (
     <>
-      <Button variant="ghost" size="sm" onClick={() => setOpen(true)} className="h-7 text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10">
+      <Button variant="ghost" size="sm" onClick={() => setOpen(true)} className="h-7 text-[#1356E2] hover:text-[#1356E2] hover:bg-[#1356E2]/10">
         <UserPlus className="w-3.5 h-3.5 mr-1" /> Convidar
       </Button>
 
@@ -67,10 +67,10 @@ export default function InviteIntroducerButton({ introducer }) {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-4">
-            <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-              <p className="text-sm font-bold text-[#002443]">{introducer.name}</p>
-              <p className="text-xs text-[#002443]/50">{introducer.contactEmail}</p>
-              <p className="text-[10px] text-[#002443]/30 mt-1">Código: {introducer.referralCode}</p>
+            <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5">
+              <p className="text-sm font-bold text-[#0A0A0A]">{introducer.name}</p>
+              <p className="text-xs text-[#0A0A0A]/50">{introducer.contactEmail}</p>
+              <p className="text-[10px] text-[#0A0A0A]/30 mt-1">Código: {introducer.referralCode}</p>
             </div>
             <div className="p-3 rounded-xl bg-blue-50 border border-blue-100">
               <p className="text-xs text-blue-700">
@@ -83,7 +83,7 @@ export default function InviteIntroducerButton({ introducer }) {
             <Button
               onClick={() => inviteMutation.mutate()}
               disabled={inviteMutation.isPending}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl"
             >
               {inviteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
               Enviar Convite

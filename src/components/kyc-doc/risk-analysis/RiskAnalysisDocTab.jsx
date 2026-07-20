@@ -37,15 +37,15 @@ export default function RiskAnalysisDocTab() {
       {/* ─── Header com botão de impressão ─── */}
       <div className="no-print sticky top-[68px] z-[5] bg-white border-b border-[#e8e8e8] max-w-[1200px] mx-auto px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-[#2bc196]/10">
-            <Microscope className="w-4 h-4 text-[#2bc196]" />
+          <div className="p-2 rounded-lg bg-[#1356E2]/10">
+            <Microscope className="w-4 h-4 text-[#1356E2]" />
           </div>
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#2bc196]">Documento Técnico</p>
-            <p className="text-sm font-bold text-[#002443]">Análise de Risco — Microscópico (12 blocos)</p>
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#1356E2]">Documento Técnico</p>
+            <p className="text-sm font-bold text-[#0A0A0A]">Análise de Risco — Microscópico (12 blocos)</p>
           </div>
         </div>
-        <Button onClick={() => window.print()} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+        <Button onClick={() => window.print()} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
           <Download className="w-4 h-4 mr-1.5" /> Baixar PDF
         </Button>
       </div>
@@ -54,11 +54,11 @@ export default function RiskAnalysisDocTab() {
       <div className="max-w-[1200px] mx-auto px-6 py-8 bg-white">
         {/* CAPA */}
         <div className="text-center py-12 border-b border-[#e8e8e8] mb-8 print-avoid-break">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#2bc196]/10 mb-4">
-            <Microscope className="w-10 h-10 text-[#2bc196]" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#1356E2]/10 mb-4">
+            <Microscope className="w-10 h-10 text-[#1356E2]" />
           </div>
-          <p className="text-[10pt] font-bold tracking-[0.25em] uppercase text-[#2bc196] mb-2">Documentação Microscópica</p>
-          <h1 className="text-[28pt] font-black text-[#002443] leading-tight mb-3">
+          <p className="text-[10pt] font-bold tracking-[0.25em] uppercase text-[#1356E2] mb-2">Documentação Microscópica</p>
+          <h1 className="text-[28pt] font-black text-[#0A0A0A] leading-tight mb-3">
             Análise de Risco
           </h1>
           <p className="text-[12pt] text-[#1a1a1a]/60 max-w-2xl mx-auto leading-relaxed">
@@ -221,7 +221,7 @@ export default function RiskAnalysisDocTab() {
         {/* Rodapé */}
         <div className="mt-10 border-t border-[#e0e0e0] pt-4 text-center">
           <p className="text-[9pt] text-[#1a1a1a]/30">
-            PagSmile — Documentação Microscópica da Tela de Análise de Risco
+            Pin Bank — Documentação Microscópica da Tela de Análise de Risco
           </p>
           <p className="text-[8pt] text-[#1a1a1a]/20 mt-1">
             Documento Confidencial · Gerado em {new Date().toLocaleDateString('pt-BR')} · Versão{' '}

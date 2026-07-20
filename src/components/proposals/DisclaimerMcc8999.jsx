@@ -63,7 +63,7 @@ export default function DisclaimerMcc8999({
           <p className={`text-amber-900/80 leading-relaxed ${compact ? 'text-[11px]' : 'text-xs'}`}>
             As taxas desta proposta foram dimensionadas para o
             {mccEsperado ? <strong className="mx-1">MCC {mccEsperado}</strong> : ' MCC contratado'}
-            do seu segmento. Caso a Pagsmile identifique transações operadas em MCCs incompatíveis com o segmento contratado,
+            do seu segmento. Caso a Pin Bank identifique transações operadas em MCCs incompatíveis com o segmento contratado,
             essas transações específicas serão <strong>reclassificadas automaticamente para o MCC 8999</strong> e
             cobradas com as taxas padrão abaixo:
           </p>

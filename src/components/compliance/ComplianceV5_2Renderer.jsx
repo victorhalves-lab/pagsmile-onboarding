@@ -283,7 +283,7 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -303,15 +303,15 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-[#2bc196]/10">
-            <Rocket className="w-5 h-5 text-[#2bc196]" />
+          <div className="p-2.5 rounded-xl bg-[#1356E2]/10">
+            <Rocket className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#002443]">Onboarding V5.2</h1>
-            <p className="text-xs text-[#002443]/60">{template?.name}</p>
+            <h1 className="text-xl font-bold text-[#0A0A0A]">Onboarding V5.2</h1>
+            <p className="text-xs text-[#0A0A0A]/60">{template?.name}</p>
           </div>
         </div>
-        <Badge className={badgeColor || 'bg-[#2bc196]/15 text-[#36706c] border-0'}>
+        <Badge className={badgeColor || 'bg-[#1356E2]/15 text-[#E84B1C] border-0'}>
           {badgeLabel || 'V5.2 DINÂMICO'}
         </Badge>
       </div>
@@ -332,13 +332,13 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#2bc196]" />
+            <ShieldCheck className="w-4 h-4 text-[#1356E2]" />
             {visibleQuestions.length} pergunta{visibleQuestions.length !== 1 ? 's' : ''} no fluxo
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {visibleQuestions.length === 0 ? (
-            <p className="text-sm text-[#002443]/60">Nenhuma pergunta aplicável ao contexto atual.</p>
+            <p className="text-sm text-[#0A0A0A]/60">Nenhuma pergunta aplicável ao contexto atual.</p>
           ) : (
             visibleQuestions.map((q) => (
               <QuestionRendererV5_2
@@ -379,7 +379,7 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
           <Button
             onClick={handleSubmit}
             disabled={blocks.hard.length > 0 || submitting}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {submitting ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando…</>
@@ -391,7 +391,7 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
       )}
 
       {/* Beta banner */}
-      <div className="text-[11px] text-[#002443]/40 text-center pt-4 border-t border-[#002443]/5">
+      <div className="text-[11px] text-[#0A0A0A]/40 text-center pt-4 border-t border-[#0A0A0A]/5">
         Framework V5.2 — Fase 5.8 (Beta). Persistência ativa, pipeline de score V5.2 ativará automaticamente.
       </div>
     </div>

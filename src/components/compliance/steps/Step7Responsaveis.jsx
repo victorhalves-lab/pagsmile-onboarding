@@ -85,10 +85,10 @@ export default function Step7Responsaveis({ formData, handleChange, handleArrayC
         <div className="space-y-4">
            <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                 <MessageSquare className="w-5 h-5 text-[var(--pagsmile-blue)]" />
+                 <MessageSquare className="w-5 h-5 text-[var(--pinbank-blue)]" />
                  <h3 className="font-bold text-slate-800">4. Canais de Atendimento</h3>
               </div>
-              <Button type="button" variant="outline" size="sm" onClick={addCanal} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
+              <Button type="button" variant="outline" size="sm" onClick={addCanal} className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]">
                 <Plus className="w-4 h-4 mr-1" /> Adicionar
               </Button>
            </div>

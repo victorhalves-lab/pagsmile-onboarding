@@ -23,10 +23,10 @@ function EnrichmentRow({ icon: Icon, label, value, flag, positive }) {
   return (
     <div className="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0">
       <Icon className={`w-4 h-4 flex-shrink-0 ${
-        flag ? 'text-amber-500' : positive ? 'text-emerald-500' : 'text-[#002443]/30'
+        flag ? 'text-amber-500' : positive ? 'text-emerald-500' : 'text-[#0A0A0A]/30'
       }`} />
-      <span className="text-xs text-[#002443]/60 w-28 flex-shrink-0">{label}</span>
-      <span className={`text-xs font-medium flex-1 ${flag ? 'text-amber-700' : 'text-[#002443]'}`}>
+      <span className="text-xs text-[#0A0A0A]/60 w-28 flex-shrink-0">{label}</span>
+      <span className={`text-xs font-medium flex-1 ${flag ? 'text-amber-700' : 'text-[#0A0A0A]'}`}>
         {value || '—'}
       </span>
       {flag && (
@@ -95,8 +95,8 @@ export default function CnpjEnrichmentSummaryCard({ complianceScore, onboardingC
             <Shield className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-[#002443]">Enriquecimento CNPJ</h4>
-            <p className="text-[10px] text-[#002443]/50">Dados da Receita Federal + Análise de Risco</p>
+            <h4 className="text-sm font-bold text-[#0A0A0A]">Enriquecimento CNPJ</h4>
+            <p className="text-[10px] text-[#0A0A0A]/50">Dados da Receita Federal + Análise de Risco</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function CnpjEnrichmentSummaryCard({ complianceScore, onboardingC
                 displayScore >= 60 ? 'text-amber-600' : 
                 displayScore >= 40 ? 'text-orange-600' : 'text-red-600'
               }`}>{displayScore}</span>
-              <span className="text-xs text-[#002443]/40">/100</span>
+              <span className="text-xs text-[#0A0A0A]/40">/100</span>
               {displayLevel && <RiskBadge level={displayLevel} />}
             </>
           ) : (

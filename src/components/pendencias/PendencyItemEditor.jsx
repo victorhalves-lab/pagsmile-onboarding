@@ -56,7 +56,7 @@ export default function PendencyItemEditor({ item, index, onChange, onRemove }) 
 
       {/* Label */}
       <div>
-        <Label className="text-xs font-semibold text-[var(--pagsmile-blue)] mb-1">
+        <Label className="text-xs font-semibold text-[var(--pinbank-blue)] mb-1">
           {isDoc ? 'Nome do documento *' : 'Pergunta *'}
         </Label>
         <Input
@@ -69,7 +69,7 @@ export default function PendencyItemEditor({ item, index, onChange, onRemove }) 
 
       {/* Description */}
       <div>
-        <Label className="text-xs font-semibold text-[var(--pagsmile-blue)] mb-1">Descrição (opcional)</Label>
+        <Label className="text-xs font-semibold text-[var(--pinbank-blue)] mb-1">Descrição (opcional)</Label>
         <Textarea
           value={item.description || ''}
           onChange={(e) => update({ description: e.target.value })}
@@ -83,7 +83,7 @@ export default function PendencyItemEditor({ item, index, onChange, onRemove }) 
       {isDoc && (
         <div className="grid grid-cols-2 gap-3 pt-1">
           <div>
-            <Label className="text-xs font-semibold text-[var(--pagsmile-blue)] mb-1">Tipos aceitos *</Label>
+            <Label className="text-xs font-semibold text-[var(--pinbank-blue)] mb-1">Tipos aceitos *</Label>
             <div className="flex items-center gap-3 pt-1">
               <label className="flex items-center gap-1.5 cursor-pointer">
                 <Checkbox
@@ -102,7 +102,7 @@ export default function PendencyItemEditor({ item, index, onChange, onRemove }) 
             </div>
           </div>
           <div>
-            <Label className="text-xs font-semibold text-[var(--pagsmile-blue)] mb-1">Quantidade mínima</Label>
+            <Label className="text-xs font-semibold text-[var(--pinbank-blue)] mb-1">Quantidade mínima</Label>
             <Input
               type="number"
               min={1}
@@ -119,7 +119,7 @@ export default function PendencyItemEditor({ item, index, onChange, onRemove }) 
       {isQuestion && (
         <div className="grid grid-cols-2 gap-3 pt-1">
           <div>
-            <Label className="text-xs font-semibold text-[var(--pagsmile-blue)] mb-1">Tipo de resposta *</Label>
+            <Label className="text-xs font-semibold text-[var(--pinbank-blue)] mb-1">Tipo de resposta *</Label>
             <Select
               value={item.answerType || 'text'}
               onValueChange={(v) => update({ answerType: v })}

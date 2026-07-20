@@ -132,12 +132,12 @@ export default function RegrasDeCompliance() {
   };
 
   const typeConfig = {
-    'auto_approve': { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: t('rc.type_auto_approve') },
+    'auto_approve': { bg: 'bg-[#1356E2]/10', text: 'text-[#1356E2]', icon: CheckCircle2, label: t('rc.type_auto_approve') },
     'auto_reject': { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: t('rc.type_auto_reject') },
-    'manual_review': { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: t('rc.type_manual_review') },
-    'request_documents': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: FileText, label: t('rc.type_request_docs') },
-    'notification': { bg: 'bg-[#5cf7cf]/10', text: 'text-[#36706c]', icon: Mail, label: t('rc.type_notification') },
-    'add_flag': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: Flag, label: t('rc.type_add_flag') },
+    'manual_review': { bg: 'bg-[#E84B1C]/10', text: 'text-[#E84B1C]', icon: AlertTriangle, label: t('rc.type_manual_review') },
+    'request_documents': { bg: 'bg-[#0A0A0A]/5', text: 'text-[#0A0A0A]', icon: FileText, label: t('rc.type_request_docs') },
+    'notification': { bg: 'bg-[#E84B1C]/10', text: 'text-[#E84B1C]', icon: Mail, label: t('rc.type_notification') },
+    'add_flag': { bg: 'bg-[#0A0A0A]/5', text: 'text-[#0A0A0A]', icon: Flag, label: t('rc.type_add_flag') },
   };
 
   const getTypeBadge = (type) => {
@@ -173,10 +173,10 @@ export default function RegrasDeCompliance() {
   ];
 
   const ruleStats = [
-    { label: t('rc.total'), value: rules.length, color: '#002443' },
-    { label: t('rc.active'), value: rules.filter(r => r.isActive).length, color: '#2bc196' },
-    { label: t('rc.inactive_count'), value: rules.filter(r => !r.isActive).length, color: '#002443' },
-    { label: t('rc.executions'), value: rules.reduce((sum, r) => sum + (r.executionCount || 0), 0), color: '#36706c' },
+    { label: t('rc.total'), value: rules.length, color: '#0A0A0A' },
+    { label: t('rc.active'), value: rules.filter(r => r.isActive).length, color: '#1356E2' },
+    { label: t('rc.inactive_count'), value: rules.filter(r => !r.isActive).length, color: '#0A0A0A' },
+    { label: t('rc.executions'), value: rules.reduce((sum, r) => sum + (r.executionCount || 0), 0), color: '#E84B1C' },
   ];
 
   return (
@@ -184,20 +184,20 @@ export default function RegrasDeCompliance() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
-            <Settings className="w-5 h-5 text-[#002443]" />
+          <div className="w-10 h-10 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center">
+            <Settings className="w-5 h-5 text-[#0A0A0A]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">{t('rc.title')}</h1>
-            <p className="text-sm text-[#002443]/60">{t('rc.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('rc.title')}</h1>
+            <p className="text-sm text-[#0A0A0A]/60">{t('rc.subtitle')}</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-            <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" />
-            <span className="text-[#002443]/70">{t('rc.refresh')}</span>
+          <Button variant="outline" onClick={() => refetch()} className="border-[#0A0A0A]/10 hover:bg-[#f4f4f4] rounded-xl">
+            <RefreshCw className="w-4 h-4 mr-2 text-[#0A0A0A]/50" />
+            <span className="text-[#0A0A0A]/70">{t('rc.refresh')}</span>
           </Button>
-          <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+          <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" />
             {t('rc.new_rule')}
           </Button>
@@ -207,9 +207,9 @@ export default function RegrasDeCompliance() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {ruleStats.map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+          <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
             <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
-            <p className="text-xs text-[#002443]/50">{s.label}</p>
+            <p className="text-xs text-[#0A0A0A]/50">{s.label}</p>
           </div>
         ))}
       </div>
@@ -217,48 +217,48 @@ export default function RegrasDeCompliance() {
       {/* Rules List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
         </div>
       ) : rules.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
-            <Settings className="w-7 h-7 text-[#002443]/20" />
+            <Settings className="w-7 h-7 text-[#0A0A0A]/20" />
           </div>
-          <h3 className="text-base font-semibold text-[#002443] mb-1">{t('rc.no_rules')}</h3>
-          <p className="text-sm text-[#002443]/50 mb-6">{t('rc.no_rules_desc')}</p>
-          <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+          <h3 className="text-base font-semibold text-[#0A0A0A] mb-1">{t('rc.no_rules')}</h3>
+          <p className="text-sm text-[#0A0A0A]/50 mb-6">{t('rc.no_rules_desc')}</p>
+          <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" /> {t('rc.create_rule')}
           </Button>
         </div>
       ) : (
         <div className="space-y-3">
           {rules.map((rule) => (
-            <div key={rule.id} className={`bg-white rounded-2xl border border-[#002443]/5 p-5 hover:shadow-sm transition-shadow ${!rule.isActive ? 'opacity-50' : ''}`}>
+            <div key={rule.id} className={`bg-white rounded-2xl border border-[#0A0A0A]/5 p-5 hover:shadow-sm transition-shadow ${!rule.isActive ? 'opacity-50' : ''}`}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <h3 className="text-base font-semibold text-[#002443]">{rule.name}</h3>
+                    <h3 className="text-base font-semibold text-[#0A0A0A]">{rule.name}</h3>
                     {getTypeBadge(rule.type)}
-                    <Badge variant="outline" className="font-normal border-[#002443]/10 text-[#002443]/50 text-xs">
+                    <Badge variant="outline" className="font-normal border-[#0A0A0A]/10 text-[#0A0A0A]/50 text-xs">
                       Prioridade: {rule.priority}
                     </Badge>
                   </div>
-                  <p className="text-sm text-[#002443]/50 mb-3">{rule.description || t('rc.no_description')}</p>
+                  <p className="text-sm text-[#0A0A0A]/50 mb-3">{rule.description || t('rc.no_description')}</p>
                   
                   {rule.conditions && rule.conditions.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-3">
-                      <span className="text-xs text-[#002443]/30">{t('rc.conditions')}</span>
+                      <span className="text-xs text-[#0A0A0A]/30">{t('rc.conditions')}</span>
                       {rule.conditions.map((cond, idx) => (
-                        <Badge key={idx} variant="outline" className="text-[10px] font-mono border-[#002443]/10 text-[#002443]/50">
+                        <Badge key={idx} variant="outline" className="text-[10px] font-mono border-[#0A0A0A]/10 text-[#0A0A0A]/50">
                           {cond.field} {cond.operator} {String(cond.value)}
                         </Badge>
                       ))}
                     </div>
                   )}
 
-                  <div className="flex gap-4 text-xs text-[#002443]/40">
+                  <div className="flex gap-4 text-xs text-[#0A0A0A]/40">
                     <span className="flex items-center gap-1">
-                      <Zap className="w-3 h-3 text-[#2bc196]" />
+                      <Zap className="w-3 h-3 text-[#1356E2]" />
                       {t('rc.executions_count', { count: rule.executionCount || 0 })}
                     </span>
                     {rule.lastExecutedAt && (
@@ -269,22 +269,22 @@ export default function RegrasDeCompliance() {
 
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#002443]/40">{t('rc.active_label')}</span>
+                    <span className="text-xs text-[#0A0A0A]/40">{t('rc.active_label')}</span>
                     <Switch
                       checked={rule.isActive}
                       onCheckedChange={(checked) => toggleMutation.mutate({ id: rule.id, isActive: checked })}
-                      className="data-[state=checked]:bg-[#2bc196]"
+                      className="data-[state=checked]:bg-[#1356E2]"
                     />
                   </div>
 
-                  <div className="h-6 w-px bg-[#002443]/5" />
+                  <div className="h-6 w-px bg-[#0A0A0A]/5" />
                   
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(rule)} title="Editar">
-                    <Edit className="w-4 h-4 text-[#002443]/40" />
+                    <Edit className="w-4 h-4 text-[#0A0A0A]/40" />
                   </Button>
                   
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSimulateRule(rule)} title="Simular">
-                    <Play className="w-4 h-4 text-[#2bc196]" />
+                    <Play className="w-4 h-4 text-[#1356E2]" />
                   </Button>
                   
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-400 hover:text-red-600" onClick={() => setDeleteId(rule.id)} title="Excluir">
@@ -301,20 +301,20 @@ export default function RegrasDeCompliance() {
       <Dialog open={showEditor} onOpenChange={(open) => { if (!open) resetForm(); setShowEditor(open); }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-[#002443]">{editingRule ? t('rc.dialog_title_edit') : t('rc.dialog_title_new')}</DialogTitle>
-            <DialogDescription className="text-[#002443]/50">{t('rc.dialog_desc')}</DialogDescription>
+            <DialogTitle className="text-[#0A0A0A]">{editingRule ? t('rc.dialog_title_edit') : t('rc.dialog_title_new')}</DialogTitle>
+            <DialogDescription className="text-[#0A0A0A]/50">{t('rc.dialog_desc')}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs text-[#002443]/50">Nome da Regra <span className="text-red-400">*</span></Label>
-                <Input value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} placeholder="Ex: Auto-aprovar PF com Score > 90" className="border-[#002443]/10" />
+                <Label className="text-xs text-[#0A0A0A]/50">Nome da Regra <span className="text-red-400">*</span></Label>
+                <Input value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} placeholder="Ex: Auto-aprovar PF com Score > 90" className="border-[#0A0A0A]/10" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-[#002443]/50">Tipo de Ação</Label>
+                <Label className="text-xs text-[#0A0A0A]/50">Tipo de Ação</Label>
                 <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
-                  <SelectTrigger className="border-[#002443]/10"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="border-[#0A0A0A]/10"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="auto_approve">Auto-aprovar</SelectItem>
                     <SelectItem value="auto_reject">Auto-rejeitar</SelectItem>
@@ -328,20 +328,20 @@ export default function RegrasDeCompliance() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs text-[#002443]/50">Descrição</Label>
-              <Textarea value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} placeholder="Descreva o propósito desta regra..." rows={2} className="border-[#002443]/10" />
+              <Label className="text-xs text-[#0A0A0A]/50">Descrição</Label>
+              <Textarea value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} placeholder="Descreva o propósito desta regra..." rows={2} className="border-[#0A0A0A]/10" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs text-[#002443]/50">Prioridade (1-100)</Label>
-                <Input type="number" value={formData.priority} onChange={(e) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) || 50 }))} min={1} max={100} className="border-[#002443]/10" />
-                <p className="text-[10px] text-[#002443]/30">Maior = executada primeiro</p>
+                <Label className="text-xs text-[#0A0A0A]/50">Prioridade (1-100)</Label>
+                <Input type="number" value={formData.priority} onChange={(e) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) || 50 }))} min={1} max={100} className="border-[#0A0A0A]/10" />
+                <p className="text-[10px] text-[#0A0A0A]/30">Maior = executada primeiro</p>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-[#002443]/50">Operador Lógico</Label>
+                <Label className="text-xs text-[#0A0A0A]/50">Operador Lógico</Label>
                 <Select value={formData.logicOperator} onValueChange={(v) => setFormData(prev => ({ ...prev, logicOperator: v }))}>
-                  <SelectTrigger className="border-[#002443]/10"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="border-[#0A0A0A]/10"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="AND">E (todas as condições)</SelectItem>
                     <SelectItem value="OR">OU (qualquer condição)</SelectItem>
@@ -353,8 +353,8 @@ export default function RegrasDeCompliance() {
             {/* Conditions */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-xs text-[#002443]/50">Condições</Label>
-                <Button variant="outline" size="sm" className="rounded-lg border-[#002443]/10 text-xs" onClick={() => setFormData(prev => ({
+                <Label className="text-xs text-[#0A0A0A]/50">Condições</Label>
+                <Button variant="outline" size="sm" className="rounded-lg border-[#0A0A0A]/10 text-xs" onClick={() => setFormData(prev => ({
                   ...prev, conditions: [...prev.conditions, { field: 'riskScore', operator: 'equals', value: '' }]
                 }))}>
                   <Plus className="w-3 h-3 mr-1" /> Adicionar
@@ -362,12 +362,12 @@ export default function RegrasDeCompliance() {
               </div>
               
               {formData.conditions.map((cond, idx) => (
-                <div key={idx} className="flex gap-2 items-center p-3 bg-[#f4f4f4] rounded-xl border border-[#002443]/5">
+                <div key={idx} className="flex gap-2 items-center p-3 bg-[#f4f4f4] rounded-xl border border-[#0A0A0A]/5">
                   <Select value={cond.field} onValueChange={(v) => {
                     const newConds = [...formData.conditions]; newConds[idx].field = v;
                     setFormData(prev => ({ ...prev, conditions: newConds }));
                   }}>
-                    <SelectTrigger className="w-40 border-[#002443]/10 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-40 border-[#0A0A0A]/10 bg-white"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {fieldOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                     </SelectContent>
@@ -377,7 +377,7 @@ export default function RegrasDeCompliance() {
                     const newConds = [...formData.conditions]; newConds[idx].operator = v;
                     setFormData(prev => ({ ...prev, conditions: newConds }));
                   }}>
-                    <SelectTrigger className="w-36 border-[#002443]/10 bg-white"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-36 border-[#0A0A0A]/10 bg-white"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {operatorOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                     </SelectContent>
@@ -386,7 +386,7 @@ export default function RegrasDeCompliance() {
                   <Input value={cond.value} onChange={(e) => {
                     const newConds = [...formData.conditions]; newConds[idx].value = e.target.value;
                     setFormData(prev => ({ ...prev, conditions: newConds }));
-                  }} placeholder="Valor" className="flex-1 border-[#002443]/10 bg-white" />
+                  }} placeholder="Valor" className="flex-1 border-[#0A0A0A]/10 bg-white" />
 
                   {formData.conditions.length > 1 && (
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-400" onClick={() => {
@@ -400,18 +400,18 @@ export default function RegrasDeCompliance() {
             </div>
 
             {/* Active toggle */}
-            <div className="flex items-center justify-between p-4 rounded-xl border border-[#002443]/5 bg-[#f4f4f4]">
+            <div className="flex items-center justify-between p-4 rounded-xl border border-[#0A0A0A]/5 bg-[#f4f4f4]">
               <div>
-                <Label className="text-sm font-medium text-[#002443]">Regra Ativa</Label>
-                <p className="text-xs text-[#002443]/40">Regras inativas não serão executadas</p>
+                <Label className="text-sm font-medium text-[#0A0A0A]">Regra Ativa</Label>
+                <p className="text-xs text-[#0A0A0A]/40">Regras inativas não serão executadas</p>
               </div>
-              <Switch checked={formData.isActive} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))} className="data-[state=checked]:bg-[#2bc196]" />
+              <Switch checked={formData.isActive} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))} className="data-[state=checked]:bg-[#1356E2]" />
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditor(false)} className="rounded-xl border-[#002443]/10">{t('rc.cancel')}</Button>
-            <Button onClick={handleSave} disabled={saveMutation.isPending} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+            <Button variant="outline" onClick={() => setShowEditor(false)} className="rounded-xl border-[#0A0A0A]/10">{t('rc.cancel')}</Button>
+            <Button onClick={handleSave} disabled={saveMutation.isPending} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl">
               {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               {editingRule ? t('rc.update') : t('rc.create')}
             </Button>
@@ -424,8 +424,8 @@ export default function RegrasDeCompliance() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#002443]">{t('rc.delete_title')}</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#002443]/60">{t('rc.delete_desc')}</AlertDialogDescription>
+            <AlertDialogTitle className="text-[#0A0A0A]">{t('rc.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#0A0A0A]/60">{t('rc.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-xl">{t('rc.cancel')}</AlertDialogCancel>

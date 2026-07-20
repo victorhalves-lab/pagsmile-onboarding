@@ -68,9 +68,9 @@ function OverviewTab({ cases, complianceScores }) {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <DonutChart title="Status" data={Object.entries(statusMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#2bc196', Recusado: '#ef4444', Manual: '#f59e0b', Pendente: '#94a3b8', 'Em Processamento': '#002443', 'Docs Solicitados': '#8b5cf6' }} />
-        <DonutChart title="Decisão IA" data={Object.entries(iaMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#2bc196', Recusado: '#ef4444', Manual: '#f59e0b' }} />
-        <DonutChart title="Prioridade" data={Object.entries(priorMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ low: '#2bc196', medium: '#f59e0b', high: '#ef4444', critical: '#7c2d12' }} />
+        <DonutChart title="Status" data={Object.entries(statusMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#1356E2', Recusado: '#ef4444', Manual: '#f59e0b', Pendente: '#94a3b8', 'Em Processamento': '#0A0A0A', 'Docs Solicitados': '#8b5cf6' }} />
+        <DonutChart title="Decisão IA" data={Object.entries(iaMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#1356E2', Recusado: '#ef4444', Manual: '#f59e0b' }} />
+        <DonutChart title="Prioridade" data={Object.entries(priorMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ low: '#1356E2', medium: '#f59e0b', high: '#ef4444', critical: '#7c2d12' }} />
       </div>
 
       {topFlags.length > 0 && <HorizontalBarList title="Top Red Flags" data={topFlags} color="#ef4444" />}
@@ -79,7 +79,7 @@ function OverviewTab({ cases, complianceScores }) {
 }
 
 function SentinelTab({ complianceScores }) {
-  if (!complianceScores.length) return <Card className="p-8 text-center"><p className="text-sm text-[#002443]/50">Nenhum score SENTINEL disponível.</p></Card>;
+  if (!complianceScores.length) return <Card className="p-8 text-center"><p className="text-sm text-[#0A0A0A]/50">Nenhum score SENTINEL disponível.</p></Card>;
 
   // V4 = fonte de verdade atual (score_final 0-849, 3 camadas).
   // Legado SQ/SVE/SGC são preservados, mas só aparecem se realmente houver dados.
@@ -145,18 +145,18 @@ function SentinelTab({ complianceScores }) {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <DonutChart title="Recomendação (V4 + Sentinel)" data={Object.entries(recMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#2bc196', 'Aprovado com Condições': '#36706c', 'Revisão Manual': '#f59e0b', Recusado: '#ef4444', Pendente: '#94a3b8' }} />
+        <DonutChart title="Recomendação (V4 + Sentinel)" data={Object.entries(recMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#1356E2', 'Aprovado com Condições': '#E84B1C', 'Revisão Manual': '#f59e0b', Recusado: '#ef4444', Pendente: '#94a3b8' }} />
         {Object.keys(subfaixaMap).length > 0 && (
           <DonutChart title="Subfaixa V4" data={Object.entries(subfaixaMap).sort(([a],[b]) => a.localeCompare(b)).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ '1A': '#22c55e', '1B': '#4ade80', '2A': '#3b82f6', '2B': '#60a5fa', '3A': '#eab308', '3B': '#facc15', '4': '#f97316', '5': '#ef4444' }} />
         )}
-        {Object.keys(sevTotals).length > 0 && <DonutChart title="Findings por Severidade" data={Object.entries(sevTotals).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ critico: '#ef4444', alto: '#f59e0b', medio: '#94a3b8', baixo: '#2bc196', info: '#64748b' }} />}
+        {Object.keys(sevTotals).length > 0 && <DonutChart title="Findings por Severidade" data={Object.entries(sevTotals).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ critico: '#ef4444', alto: '#f59e0b', medio: '#94a3b8', baixo: '#1356E2', info: '#64748b' }} />}
       </div>
     </div>
   );
 }
 
 function MerchantsTab({ merchants }) {
-  if (!merchants.length) return <Card className="p-8 text-center"><p className="text-sm text-[#002443]/50">Nenhum merchant.</p></Card>;
+  if (!merchants.length) return <Card className="p-8 text-center"><p className="text-sm text-[#0A0A0A]/50">Nenhum merchant.</p></Card>;
 
   const typeMap = {};
   merchants.forEach(m => { typeMap[m.type || 'N/A'] = (typeMap[m.type || 'N/A'] || 0) + 1; });
@@ -178,7 +178,7 @@ function MerchantsTab({ merchants }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <DonutChart title="Tipo" data={Object.entries(typeMap).map(([n, v]) => ({ name: n === 'PJ' ? 'Pessoa Jurídica' : n === 'PF' ? 'Pessoa Física' : n, value: v }))} />
-        <DonutChart title="Status Onboarding" data={Object.entries(statusMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#2bc196', Recusado: '#ef4444', Manual: '#f59e0b', Pendente: '#94a3b8' }} />
+        <DonutChart title="Status Onboarding" data={Object.entries(statusMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#1356E2', Recusado: '#ef4444', Manual: '#f59e0b', Pendente: '#94a3b8' }} />
         <DonutChart title="Serviços" data={Object.entries(payMap).map(([n, v]) => ({ name: n, value: v }))} />
       </div>
     </div>
@@ -186,7 +186,7 @@ function MerchantsTab({ merchants }) {
 }
 
 function QuestionnaireTab({ responses }) {
-  if (!responses.length) return <Card className="p-8 text-center"><p className="text-sm text-[#002443]/50">Nenhuma resposta.</p></Card>;
+  if (!responses.length) return <Card className="p-8 text-center"><p className="text-sm text-[#0A0A0A]/50">Nenhuma resposta.</p></Card>;
 
   const questionMap = {};
   responses.forEach(r => {
@@ -242,7 +242,7 @@ function QuestionnaireTab({ responses }) {
 
       {selectQuestions.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selectQuestions.map((sq, i) => <HorizontalBarList key={i} title={sq.title} data={sq.data} color="#002443" />)}
+          {selectQuestions.map((sq, i) => <HorizontalBarList key={i} title={sq.title} data={sq.data} color="#0A0A0A" />)}
         </div>
       )}
     </div>
@@ -250,7 +250,7 @@ function QuestionnaireTab({ responses }) {
 }
 
 function DocumentsTab({ documents }) {
-  if (!documents.length) return <Card className="p-8 text-center"><p className="text-sm text-[#002443]/50">Nenhum documento.</p></Card>;
+  if (!documents.length) return <Card className="p-8 text-center"><p className="text-sm text-[#0A0A0A]/50">Nenhum documento.</p></Card>;
 
   const statusMap = {};
   documents.forEach(d => { statusMap[d.validationStatus || 'N/A'] = (statusMap[d.validationStatus || 'N/A'] || 0) + 1; });
@@ -279,7 +279,7 @@ function DocumentsTab({ documents }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DonutChart title="Status de Validação" data={Object.entries(statusMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Pendente: '#f59e0b', Validado: '#2bc196', Rejeitado: '#ef4444', Erro: '#94a3b8' }} />
+        <DonutChart title="Status de Validação" data={Object.entries(statusMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Pendente: '#f59e0b', Validado: '#1356E2', Rejeitado: '#ef4444', Erro: '#94a3b8' }} />
         <DonutChart title="Formato" data={Object.entries(formatMap).map(([n, v]) => ({ name: n, value: v }))} />
       </div>
 

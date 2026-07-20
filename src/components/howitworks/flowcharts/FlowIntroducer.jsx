@@ -49,7 +49,7 @@ export default function FlowIntroducer() {
         <div className="border-2 border-dashed border-violet-200 rounded-xl p-4 bg-violet-50/30">
           <p className="text-[9px] font-bold text-violet-600 uppercase text-center mb-2">Jornada do Lead na Landing Page</p>
           <div className="space-y-1">
-            <ProcessNode label="Lead acessa /parceiro/:slug" sublabel="Página co-branded: logo parceiro + logo Pagsmile" actor="Lead" />
+            <ProcessNode label="Lead acessa /parceiro/:slug" sublabel="Página co-branded: logo parceiro + logo Pin Bank" actor="Lead" />
             <ArrowDown />
             <ProcessNode label="Visualiza taxas por segmento" sublabel="SegmentRatesTable: MDR, PIX, fees por segmento" actor="Lead" />
             <ArrowDown />

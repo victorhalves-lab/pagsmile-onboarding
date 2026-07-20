@@ -48,7 +48,7 @@ export default function InsightsFunnelSection({ leads, proposals, cases }) {
 
   // Lead source distribution
   const ORIGEM_LABELS = {
-    questionario_leads_pagsmile_v5: 'Lead V5 (Pagsmile)',
+    questionario_leads_pagsmile_v5: 'Lead V5 (Pin Bank)',
     lead_pix_v4: 'PIX V4',
     landing_page: 'Landing Page',
     introducer_landing: 'Landing Introducer',
@@ -94,13 +94,13 @@ export default function InsightsFunnelSection({ leads, proposals, cases }) {
             <BarChart data={funnelData} layout="vertical" barCategoryGap="20%">
               <defs>
                 <linearGradient id="funnelGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#2bc196" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="#2bc196" />
+                  <stop offset="0%" stopColor="#1356E2" stopOpacity={0.5} />
+                  <stop offset="100%" stopColor="#1356E2" />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#002443' }} width={130} axisLine={false} tickLine={false} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#0A0A0A' }} width={130} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Bar dataKey="count" fill="url(#funnelGrad)" radius={[0, 8, 8, 0]} name="Leads" />
             </BarChart>
@@ -112,13 +112,13 @@ export default function InsightsFunnelSection({ leads, proposals, cases }) {
             <BarChart data={sourceData} layout="vertical" barCategoryGap="20%">
               <defs>
                 <linearGradient id="sourceGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#002443" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#002443" />
+                  <stop offset="0%" stopColor="#0A0A0A" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#0A0A0A" />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#002443' }} width={130} axisLine={false} tickLine={false} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#0A0A0A' }} width={130} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Bar dataKey="count" fill="url(#sourceGrad)" radius={[0, 8, 8, 0]} name="Leads" />
             </BarChart>
@@ -128,23 +128,23 @@ export default function InsightsFunnelSection({ leads, proposals, cases }) {
 
       {Object.keys(introducerMap).length > 0 && (
         <div className="rounded-2xl bg-white border border-slate-100 p-5">
-          <h3 className="text-sm font-bold text-[#002443] mb-4">Performance por Introducer</h3>
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">Performance por Introducer</h3>
           <div className="space-y-2.5">
             {Object.entries(introducerMap).sort((a, b) => b[1].total - a[1].total).map(([name, data], i) => {
               const convRate = (data.converted / data.total * 100).toFixed(0);
               return (
-                <div key={i} className="group flex items-center justify-between p-3.5 bg-slate-50/50 rounded-xl border border-transparent hover:border-[#2bc196]/10 hover:bg-[#2bc196]/[0.02] transition-all duration-200">
+                <div key={i} className="group flex items-center justify-between p-3.5 bg-slate-50/50 rounded-xl border border-transparent hover:border-[#1356E2]/10 hover:bg-[#1356E2]/[0.02] transition-all duration-200">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center">
-                      <span className="text-[10px] font-extrabold text-[#002443]/40">{i + 1}</span>
+                    <div className="w-8 h-8 rounded-lg bg-[#0A0A0A]/5 flex items-center justify-center">
+                      <span className="text-[10px] font-extrabold text-[#0A0A0A]/40">{i + 1}</span>
                     </div>
-                    <span className="text-xs font-semibold text-[#002443]">{name}</span>
+                    <span className="text-xs font-semibold text-[#0A0A0A]">{name}</span>
                   </div>
                   <div className="flex items-center gap-4 text-[11px]">
-                    <span className="text-[#002443]/40">Leads: <span className="font-bold text-[#002443]">{data.total}</span></span>
-                    <span className="text-[#002443]/40">Conv: <span className="font-bold text-[#2bc196]">{data.converted}</span></span>
-                    <div className="flex items-center gap-1.5 bg-[#2bc196]/10 rounded-full px-2.5 py-0.5">
-                      <span className="text-[10px] font-extrabold text-[#2bc196]">{convRate}%</span>
+                    <span className="text-[#0A0A0A]/40">Leads: <span className="font-bold text-[#0A0A0A]">{data.total}</span></span>
+                    <span className="text-[#0A0A0A]/40">Conv: <span className="font-bold text-[#1356E2]">{data.converted}</span></span>
+                    <div className="flex items-center gap-1.5 bg-[#1356E2]/10 rounded-full px-2.5 py-0.5">
+                      <span className="text-[10px] font-extrabold text-[#1356E2]">{convRate}%</span>
                     </div>
                   </div>
                 </div>

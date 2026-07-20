@@ -65,7 +65,7 @@ export default function AssignCaseToPartnerModal({ open, onClose, onboardingCase
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Handshake className="w-5 h-5 text-[#2bc196]" />
+            <Handshake className="w-5 h-5 text-[#1356E2]" />
             Atribuir caso a parceiro
           </DialogTitle>
         </DialogHeader>
@@ -123,7 +123,7 @@ export default function AssignCaseToPartnerModal({ open, onClose, onboardingCase
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleSubmit} disabled={saving || !partnerId} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+          <Button onClick={handleSubmit} disabled={saving || !partnerId} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
             {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Atribuir
           </Button>

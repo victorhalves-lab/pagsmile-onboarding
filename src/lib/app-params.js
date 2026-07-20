@@ -114,12 +114,50 @@ const getAppParams = () => {
 
 	const rawToken = getAppParamValue("access_token", { removeFromUrl: true });
 
+	// ⚡ DOMAIN MIGRATION SAFETY: If the app moved to a custom domain (e.g.
+	// autonboarding.base44.app) but localStorage still holds the old app_base_url
+	// (e.g. pagsmile-onboarding.base44.app), the stored value will cause API
+	// calls to hit the wrong server. Clear it so the SDK and publicApi fall
+	// back to same-origin requests, which always match the current domain.
+	if (!isNode) {
+		try {
+			const storedBaseUrl = storage.getItem('base44_app_base_url');
+			if (storedBaseUrl) {
+				const storedHost = new URL(storedBaseUrl).hostname;
+				const currentHost = window.location.hostname;
+				if (storedHost !== currentHost) {
+					storage.removeItem('base44_app_base_url');
+				}
+			}
+		} catch {}
+	}
+
+	// Read app_base_url AFTER the stale cleanup above.
+	// If VITE_BASE44_APP_BASE_URL (build-time env) also points to a different
+	// host, we skip it and let the SDK use same-origin (empty string).
+	let appBaseUrl = null;
+	if (!isNode) {
+		const envBaseUrl = import.meta.env.VITE_BASE44_APP_BASE_URL;
+		if (envBaseUrl) {
+			try {
+				const envHost = new URL(envBaseUrl).hostname;
+				if (envHost === window.location.hostname) {
+					appBaseUrl = getAppParamValue("app_base_url", { defaultValue: envBaseUrl });
+				}
+			} catch {
+				// envBaseUrl is not a valid URL — skip it
+			}
+		}
+	} else {
+		appBaseUrl = getAppParamValue("app_base_url", { defaultValue: import.meta.env.VITE_BASE44_APP_BASE_URL });
+	}
+
 	return {
 		appId: getAppParamValue("app_id", { defaultValue: import.meta.env.VITE_BASE44_APP_ID }),
 		token: onPublicRoute ? null : rawToken,
 		fromUrl: getAppParamValue("from_url", { defaultValue: window.location.href }),
 		functionsVersion: getAppParamValue("functions_version", { defaultValue: import.meta.env.VITE_BASE44_FUNCTIONS_VERSION }),
-		appBaseUrl: getAppParamValue("app_base_url", { defaultValue: import.meta.env.VITE_BASE44_APP_BASE_URL }),
+		appBaseUrl,
 	}
 }
 

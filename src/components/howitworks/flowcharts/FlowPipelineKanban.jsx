@@ -6,8 +6,8 @@ export default function FlowPipelineKanban() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h4 className="font-bold text-[#002443] text-sm">Fluxo 7: Pipeline Comercial Kanban — Jornada Completa do Lead</h4>
-          <p className="text-[10px] text-[#002443]/50">Da entrada no pipeline até a ativação ou perda do lead — 7 colunas</p>
+          <h4 className="font-bold text-[#0A0A0A] text-sm">Fluxo 7: Pipeline Comercial Kanban — Jornada Completa do Lead</h4>
+          <p className="text-[10px] text-[#0A0A0A]/50">Da entrada no pipeline até a ativação ou perda do lead — 7 colunas</p>
         </div>
         <div className="flex gap-1.5">
           <ResponsibleBadge label="Time Comercial" color="bg-blue-600" />
@@ -15,7 +15,7 @@ export default function FlowPipelineKanban() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 overflow-x-auto">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 overflow-x-auto">
         <div className="flex flex-col items-center min-w-[400px]">
           <StartEndNode label="Lead Entra no Pipeline" />
           <Arrow />
@@ -124,7 +124,7 @@ export default function FlowPipelineKanban() {
           </div>
 
           <Arrow />
-          <StartEndNode label="FIM — Merchant Ativado ou Lead Perdido" color="bg-[#002443]" />
+          <StartEndNode label="FIM — Merchant Ativado ou Lead Perdido" color="bg-[#0A0A0A]" />
         </div>
       </div>
     </div>

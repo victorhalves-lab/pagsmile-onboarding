@@ -52,35 +52,35 @@ export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compa
   const prazoOverrides = getOverridesForPrazo(taxaFinalOverrides, prazo);
 
   if (!taxas || (!taxas.avista && !taxas.vista && !taxas.de2a6x && !taxas.parcelado_2_6)) {
-    return <p className="text-xs text-[var(--pagsmile-blue)]/40 text-center py-2">Preencha as taxas de cartão</p>;
+    return <p className="text-xs text-[var(--pinbank-blue)]/40 text-center py-2">Preencha as taxas de cartão</p>;
   }
 
   return (
     <div className="overflow-x-auto">
       <table className={`w-full ${compact ? 'text-[10px]' : 'text-xs'}`}>
         <thead>
-          <tr className="border-b border-[#002443]/10">
-            <th className="text-left py-1.5 px-2 font-semibold text-[#002443]/70">Parcela</th>
-            <th className="text-left py-1.5 px-2 font-semibold text-[#002443]/70">Faixa</th>
-            <th className="text-right py-1.5 px-2 font-semibold text-[#002443]/70">Base</th>
+          <tr className="border-b border-[#0A0A0A]/10">
+            <th className="text-left py-1.5 px-2 font-semibold text-[#0A0A0A]/70">Parcela</th>
+            <th className="text-left py-1.5 px-2 font-semibold text-[#0A0A0A]/70">Faixa</th>
+            <th className="text-right py-1.5 px-2 font-semibold text-[#0A0A0A]/70">Base</th>
             {taxaRAV > 0 && prazo !== 'FLUXO' && (
-              <th className="text-right py-1.5 px-2 font-semibold text-[#002443]/70">Antecipação</th>
+              <th className="text-right py-1.5 px-2 font-semibold text-[#0A0A0A]/70">Antecipação</th>
             )}
-            <th className="text-right py-1.5 px-2 font-semibold text-[#2bc196]">Final</th>
+            <th className="text-right py-1.5 px-2 font-semibold text-[#1356E2]">Final</th>
           </tr>
         </thead>
         <tbody>
           {rows.map(r => (
-            <tr key={r.parcela} className="border-b border-[#002443]/5 hover:bg-[#2bc196]/5">
+            <tr key={r.parcela} className="border-b border-[#0A0A0A]/5 hover:bg-[#1356E2]/5">
               <td className="py-1.5 px-2 font-medium">{r.parcela}x</td>
-              <td className="py-1.5 px-2 text-[#282828]/50">{r.faixa}</td>
+              <td className="py-1.5 px-2 text-[#0A0A0A]/50">{r.faixa}</td>
               <td className="py-1.5 px-2 text-right">{r.taxaBase.toFixed(2)}%</td>
               {taxaRAV > 0 && prazo !== 'FLUXO' && (
                 <td className="py-1.5 px-2 text-right text-amber-600">
                   {r.taxaAntecipacao > 0 ? `+${r.taxaAntecipacao.toFixed(2)}%` : '-'}
                 </td>
               )}
-              <td className={`py-1.5 px-2 text-right font-bold ${prazoOverrides[String(r.parcela)] != null ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
+              <td className={`py-1.5 px-2 text-right font-bold ${prazoOverrides[String(r.parcela)] != null ? 'text-amber-600' : 'text-[var(--pinbank-blue)]'}`}>
                 {(prazoOverrides[String(r.parcela)] != null ? prazoOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
               </td>
             </tr>

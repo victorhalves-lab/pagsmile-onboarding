@@ -21,7 +21,7 @@ const CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R;
 function addFooter(doc, pageNum, totalPages) {
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.gray);
-  doc.text(`Pagsmile — Processos Modelo v2.0`, MARGIN_L, PAGE_H - 10);
+  doc.text(`Pin Bank — Processos Modelo v2.0`, MARGIN_L, PAGE_H - 10);
   doc.text(`Página ${pageNum} de ${totalPages}`, PAGE_W - MARGIN_R, PAGE_H - 10, { align: 'right' });
   doc.setDrawColor(...COLORS.green);
   doc.setLineWidth(0.5);
@@ -392,7 +392,7 @@ function addCoverPage(doc) {
   // Footer
   doc.setFontSize(8);
   doc.setTextColor(...COLORS.gray);
-  doc.text('Pagsmile — Compliance & Operações', PAGE_W / 2, PAGE_H - 20, { align: 'center' });
+  doc.text('Pin Bank — Compliance & Operações', PAGE_W / 2, PAGE_H - 20, { align: 'center' });
 }
 
 function addTableOfContents(doc) {

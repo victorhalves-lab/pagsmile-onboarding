@@ -87,7 +87,7 @@ export default function InsightsRiskPortfolioSection({ leads, complianceScores, 
   return (
     <div className="space-y-6 mt-2">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Diamantes" value={diamonds} subtitle="Alto TPV + Baixo Risco" icon={TrendingUp} accentColor="#2bc196" />
+        <StatCard label="Diamantes" value={diamonds} subtitle="Alto TPV + Baixo Risco" icon={TrendingUp} accentColor="#1356E2" />
         <StatCard label="Alertas" value={alerts} subtitle="Alto TPV + Alto Risco" icon={AlertTriangle} accentColor="#ef4444" />
         <StatCard label="Quick Wins" value={quickWins} subtitle="Baixo TPV + Baixo Risco" icon={TrendingUp} accentColor="#f59e0b" />
         <StatCard label="Flags PLD" value={pldData.length > 0 ? pldData.reduce((s, d) => s + d.value, 0) : 0} subtitle={`${totalCasesWithPLD} casos`} icon={Skull} accentColor="#ef4444" />
@@ -104,7 +104,7 @@ export default function InsightsRiskPortfolioSection({ leads, complianceScores, 
               <Tooltip contentStyle={TT} formatter={(val, name) => name === 'TPV' ? formatCurrency(val) : val} />
               <Scatter data={matrixData}>
                 {matrixData.map((entry, i) => (
-                  <Cell key={i} fill={entry.x >= medianTPV && entry.y <= medianRisk ? '#2bc196' : entry.x >= medianTPV ? '#ef4444' : entry.y <= medianRisk ? '#f59e0b' : '#94a3b8'} opacity={0.7} />
+                  <Cell key={i} fill={entry.x >= medianTPV && entry.y <= medianRisk ? '#1356E2' : entry.x >= medianTPV ? '#ef4444' : entry.y <= medianRisk ? '#f59e0b' : '#94a3b8'} opacity={0.7} />
                 ))}
               </Scatter>
             </ScatterChart>
@@ -118,7 +118,7 @@ export default function InsightsRiskPortfolioSection({ leads, complianceScores, 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {riskClassData.length > 0 && <DonutChart title="Classificação de Risco" data={riskClassData} colorMap={{ BAIXO: '#2bc196', MÉDIO: '#f59e0b', ALTO: '#ef4444', CRÍTICO: '#7c2d12' }} />}
+        {riskClassData.length > 0 && <DonutChart title="Classificação de Risco" data={riskClassData} colorMap={{ BAIXO: '#1356E2', MÉDIO: '#f59e0b', ALTO: '#ef4444', CRÍTICO: '#7c2d12' }} />}
         {Object.keys(chargebackMap).length > 0 && <DonutChart title="Faixa de Chargeback" data={Object.entries(chargebackMap).map(([n, v]) => ({ name: n, value: v }))} />}
         {Object.keys(estornoMap).length > 0 && <DonutChart title="Faixa de Estornos" data={Object.entries(estornoMap).map(([n, v]) => ({ name: n, value: v }))} />}
       </div>

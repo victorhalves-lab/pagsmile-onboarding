@@ -13,9 +13,9 @@ import FlowRevalidacao from './flowcharts/FlowRevalidacao';
 import FlowSubseller from './flowcharts/FlowSubseller';
 
 const LEGEND = [
-  { shape: 'rounded-full bg-[#2bc196]', label: 'Início / Fim (terminal)' },
+  { shape: 'rounded-full bg-[#1356E2]', label: 'Início / Fim (terminal)' },
   { shape: 'rounded-lg bg-white border-2 border-slate-300', label: 'Processo / Ação' },
-  { shape: 'rounded-lg bg-white border-2 border-[#2bc196]', label: 'Processo Destacado' },
+  { shape: 'rounded-lg bg-white border-2 border-[#1356E2]', label: 'Processo Destacado' },
   { shape: 'bg-amber-50 border-2 border-amber-400', label: 'Decisão (losango)', extra: '◇' },
   { shape: 'rounded-lg bg-blue-50 border-2 border-blue-300', label: 'Dados / Entidade' },
   { shape: 'rounded-lg bg-purple-50 border-2 border-purple-300 ring-2 ring-purple-200', label: 'Sub-processo (IA / automação)' },
@@ -26,7 +26,7 @@ export default function FlowchartsSection() {
   return (
     <div className="space-y-6">
       {/* Introdução */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-6 text-white">
         <h3 className="text-xl font-bold mb-2">Diagramas de Fluxo — Visão Microscópica</h3>
         <p className="text-white/80 text-sm leading-relaxed mb-4">
           Cada fluxo abaixo representa um processo completo da aplicação, desenhado etapa por etapa, 
@@ -43,19 +43,19 @@ export default function FlowchartsSection() {
 
       {/* Legenda */}
       <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-        <p className="text-[10px] font-bold text-[#002443]/50 uppercase tracking-wider mb-3">Legenda dos Símbolos</p>
+        <p className="text-[10px] font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-3">Legenda dos Símbolos</p>
         <div className="flex flex-wrap gap-4">
           {LEGEND.map((item, i) => (
             <div key={i} className="flex items-center gap-2">
               <div className={`w-6 h-4 ${item.shape} flex items-center justify-center`}>
                 {item.extra && <span className="text-[8px] text-amber-700">{item.extra}</span>}
               </div>
-              <span className="text-[10px] text-[#002443]/60">{item.label}</span>
+              <span className="text-[10px] text-[#0A0A0A]/60">{item.label}</span>
             </div>
           ))}
           <div className="flex items-center gap-2">
             <Badge className="text-[8px] bg-slate-100 text-slate-600 border-0">Actor</Badge>
-            <span className="text-[10px] text-[#002443]/60">Responsável pela etapa</span>
+            <span className="text-[10px] text-[#0A0A0A]/60">Responsável pela etapa</span>
           </div>
         </div>
       </div>
@@ -88,9 +88,9 @@ export default function FlowchartsSection() {
       </Tabs>
 
       {/* Mapa de Interconexão */}
-      <div className="bg-white border-2 border-[#2bc196]/30 rounded-2xl p-5">
-        <h4 className="font-bold text-[#002443] text-sm mb-4 flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#2bc196]" />
+      <div className="bg-white border-2 border-[#1356E2]/30 rounded-2xl p-5">
+        <h4 className="font-bold text-[#0A0A0A] text-sm mb-4 flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-[#1356E2]" />
           Mapa de Interconexão dos Fluxos
         </h4>
         <div className="space-y-2">
@@ -104,10 +104,10 @@ export default function FlowchartsSection() {
             { from: 'Fluxo 9 (Subseller)', to: 'Fluxo 6 (Compliance)', trigger: 'Subseller preenche questionário → entra no fluxo compliance', color: 'text-pink-600' },
           ].map((conn, i) => (
             <div key={i} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg">
-              <span className="text-[10px] font-bold text-[#002443] min-w-[160px]">{conn.from}</span>
+              <span className="text-[10px] font-bold text-[#0A0A0A] min-w-[160px]">{conn.from}</span>
               <span className={`text-[10px] font-bold ${conn.color}`}>→</span>
-              <span className="text-[10px] font-bold text-[#002443] min-w-[160px]">{conn.to}</span>
-              <span className="text-[9px] text-[#002443]/50 flex-1">"{conn.trigger}"</span>
+              <span className="text-[10px] font-bold text-[#0A0A0A] min-w-[160px]">{conn.to}</span>
+              <span className="text-[9px] text-[#0A0A0A]/50 flex-1">"{conn.trigger}"</span>
             </div>
           ))}
         </div>

@@ -101,8 +101,8 @@ export default class SelfHealingBoundary extends React.Component {
         <div className="min-h-screen flex items-center justify-center p-6 bg-[#f4f4f4]">
           <div className="max-w-md text-center bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
             <ShieldAlert className="w-12 h-12 mx-auto text-amber-500 mb-3" />
-            <h2 className="text-lg font-bold text-[#002443] mb-2">Tivemos um problema ao exibir esta página</h2>
-            <p className="text-sm text-[#002443]/60 mb-5">
+            <h2 className="text-lg font-bold text-[#0A0A0A] mb-2">Tivemos um problema ao exibir esta página</h2>
+            <p className="text-sm text-[#0A0A0A]/60 mb-5">
               Parece que alguma extensão do seu navegador está interferindo no carregamento
               (tradutor automático, Grammarly, leitor de tela, etc). Tente recarregar —
               se o problema persistir, abra o link em uma <b>janela anônima</b> ou
@@ -110,7 +110,7 @@ export default class SelfHealingBoundary extends React.Component {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-5 h-10 rounded-lg bg-[#2bc196] text-white text-sm font-semibold hover:opacity-90"
+              className="px-5 h-10 rounded-lg bg-[#1356E2] text-white text-sm font-semibold hover:opacity-90"
             >
               Recarregar página
             </button>

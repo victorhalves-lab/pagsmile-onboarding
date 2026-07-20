@@ -20,8 +20,8 @@ export default function GovernanceKPIs({ stats }) {
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 ${it.color}`}>
               <Icon className="w-4 h-4" />
             </div>
-            <div className="text-2xl font-bold text-[#002443]">{it.value ?? '—'}</div>
-            <div className="text-xs text-[#002443]/60 mt-0.5">{it.label}</div>
+            <div className="text-2xl font-bold text-[#0A0A0A]">{it.value ?? '—'}</div>
+            <div className="text-xs text-[#0A0A0A]/60 mt-0.5">{it.label}</div>
           </Card>
         );
       })}

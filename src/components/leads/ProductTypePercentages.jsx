@@ -32,10 +32,10 @@ export default function ProductTypePercentages({ formData, updateField, error })
   return (
     <div className="space-y-4">
       <div>
-        <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+        <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
           Qual o percentual de faturamento de cada tipo selecionado? <span className="text-red-500">*</span>
         </Label>
-        <p className="text-xs text-[var(--pagsmile-blue)]/60 flex items-center gap-1 mt-1">
+        <p className="text-xs text-[var(--pinbank-blue)]/60 flex items-center gap-1 mt-1">
           <HelpCircle className="w-3 h-3" />
           A soma de todos os percentuais deve ser exatamente 100%.
         </p>
@@ -44,7 +44,7 @@ export default function ProductTypePercentages({ formData, updateField, error })
       <div className="space-y-3">
         {selectedTypes.map((type) => (
           <div key={type} className="flex items-center gap-3">
-            <span className="text-sm font-medium text-[var(--pagsmile-blue)] min-w-[180px] flex-shrink-0 truncate" title={type}>
+            <span className="text-sm font-medium text-[var(--pinbank-blue)] min-w-[180px] flex-shrink-0 truncate" title={type}>
               {shortName(type)}
             </span>
             <div className="relative flex-1 max-w-[140px]">
@@ -63,7 +63,7 @@ export default function ProductTypePercentages({ formData, updateField, error })
                 placeholder="0"
                 className="h-10 rounded-xl pr-8 text-right"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/60 font-semibold text-sm">%</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pinbank-blue)]/60 font-semibold text-sm">%</span>
             </div>
           </div>
         ))}
@@ -80,9 +80,9 @@ export default function ProductTypePercentages({ formData, updateField, error })
       {/* Indicador de soma */}
       <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium ${
         total === 0
-          ? 'bg-slate-50 border-slate-200 text-[var(--pagsmile-blue)]/50'
+          ? 'bg-slate-50 border-slate-200 text-[var(--pinbank-blue)]/50'
           : isValid
-          ? 'bg-[#2bc196]/5 border-[#2bc196]/20 text-[#2bc196]'
+          ? 'bg-[#1356E2]/5 border-[#1356E2]/20 text-[#1356E2]'
           : 'bg-red-50 border-red-200 text-red-600'
       }`}>
         {isValid ? (

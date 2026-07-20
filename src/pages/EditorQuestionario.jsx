@@ -211,7 +211,7 @@ export default function EditorQuestionario() {
   if (loadingTemplate) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -229,11 +229,11 @@ export default function EditorQuestionario() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+            <h1 className="text-2xl font-bold text-[var(--pinbank-blue)]">
               {isEditing ? t('eq.title_edit') : t('eq.title_new')}
             </h1>
             {isEditing && template && (
-              <p className="text-[var(--pagsmile-blue)]/70">{template.name}</p>
+              <p className="text-[var(--pinbank-blue)]/70">{template.name}</p>
             )}
           </div>
         </div>
@@ -256,7 +256,7 @@ export default function EditorQuestionario() {
           <Button
             onClick={handleSave}
             disabled={saveMutation.isPending}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90"
           >
             {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             {t('eq.save')}
@@ -331,10 +331,10 @@ export default function EditorQuestionario() {
             {formData.category === 'LEAD_GENERATION' && complianceTemplates.length > 0 && (
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <LinkIcon className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                  <LinkIcon className="w-4 h-4 text-[var(--pinbank-blue)]" />
                   Vincular a Template de Compliance
                 </Label>
-                <p className="text-xs text-[var(--pagsmile-blue)]/60">
+                <p className="text-xs text-[var(--pinbank-blue)]/60">
                   Ao vincular, quando o lead for qualificado, o sistema recomendará este questionário de compliance.
                 </p>
                 <Select
@@ -359,7 +359,7 @@ export default function EditorQuestionario() {
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
               <div>
                 <Label className="text-base">Questionário Ativo</Label>
-                <p className="text-sm text-[var(--pagsmile-blue)]/70">
+                <p className="text-sm text-[var(--pinbank-blue)]/70">
                   Questionários inativos não podem ser usados em novos onboardings
                 </p>
               </div>
@@ -406,7 +406,7 @@ export default function EditorQuestionario() {
               />
             </div>
             <div className="hidden xl:block sticky top-4">
-              <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)]/70 mb-3">Pré-visualização</h3>
+              <h3 className="text-sm font-semibold text-[var(--pinbank-blue)]/70 mb-3">Pré-visualização</h3>
               <QuestionnairePreview template={formData} questions={questions} />
             </div>
           </div>
@@ -427,8 +427,8 @@ export default function EditorQuestionario() {
         <TabsContent value="risk" className="space-y-6">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-8">
             <div>
-              <h3 className="text-lg font-semibold text-[var(--pagsmile-blue)] mb-2">Limiares de Decisão Automática</h3>
-              <p className="text-sm text-[var(--pagsmile-blue)]/70">
+              <h3 className="text-lg font-semibold text-[var(--pinbank-blue)] mb-2">Limiares de Decisão Automática</h3>
+              <p className="text-sm text-[var(--pinbank-blue)]/70">
                 Configure os limites de score para aprovação/rejeição automática e revisão manual.
               </p>
             </div>

@@ -9,13 +9,13 @@ export default function CardOutrasTaxas({ rates, onUpdateRates, partner, readOnl
   const updatePix = (field, value) => onUpdateRates({ ...rates, pix: { ...rates?.pix, [field]: value } });
   const updateField = (field, value) => onUpdateRates({ ...rates, [field]: value });
 
-  const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
-  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/15 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]";
+  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
+  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/15 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-5">
       <div className="flex items-center gap-2 mb-1">
-        <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Banknote className="w-3.5 h-3.5 text-[#2bc196]" /></div>
+        <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center"><Banknote className="w-3.5 h-3.5 text-[#1356E2]" /></div>
         <h2 className="text-sm font-bold text-white">Outras Taxas</h2>
       </div>
 
@@ -27,7 +27,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates, partner, readOnl
             <button key={opt.v} onClick={() => !readOnly && updatePix('tipo', opt.v)} disabled={readOnly}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
                 pixTipo === opt.v
-                  ? 'bg-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
+                  ? 'bg-[#1356E2] text-[#0A0A0A] shadow-lg shadow-[#1356E2]/20'
                   : 'bg-white/5 text-white/30 hover:text-white/50 border border-white/5'
               }`}>
               {pixTipo === opt.v && <Check className="w-3 h-3" />} {opt.l}

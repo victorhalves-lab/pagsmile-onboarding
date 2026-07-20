@@ -260,30 +260,30 @@ function FrameworkAdoptionBar({ byFramework, total }) {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#1356E2]" />
             <div>
-              <p className="text-[10px] text-[#002443]/50 uppercase font-bold">V5.2</p>
-              <p className="text-xs font-mono text-[#002443]">{byFramework.v52} ({pct(byFramework.v52).toFixed(1)}%)</p>
+              <p className="text-[10px] text-[#0A0A0A]/50 uppercase font-bold">V5.2</p>
+              <p className="text-xs font-mono text-[#0A0A0A]">{byFramework.v52} ({pct(byFramework.v52).toFixed(1)}%)</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-400" />
             <div>
-              <p className="text-[10px] text-[#002443]/50 uppercase font-bold">V5.1</p>
-              <p className="text-xs font-mono text-[#002443]">{byFramework.v51} ({pct(byFramework.v51).toFixed(1)}%)</p>
+              <p className="text-[10px] text-[#0A0A0A]/50 uppercase font-bold">V5.1</p>
+              <p className="text-xs font-mono text-[#0A0A0A]">{byFramework.v51} ({pct(byFramework.v51).toFixed(1)}%)</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
             <div>
-              <p className="text-[10px] text-[#002443]/50 uppercase font-bold">V4</p>
-              <p className="text-xs font-mono text-[#002443]">{byFramework.v4} ({pct(byFramework.v4).toFixed(1)}%)</p>
+              <p className="text-[10px] text-[#0A0A0A]/50 uppercase font-bold">V4</p>
+              <p className="text-xs font-mono text-[#0A0A0A]">{byFramework.v4} ({pct(byFramework.v4).toFixed(1)}%)</p>
             </div>
           </div>
           {byFramework.unknown > 0 && (
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-slate-200" />
               <div>
-                <p className="text-[10px] text-[#002443]/50 uppercase font-bold">S/ versão</p>
-                <p className="text-xs font-mono text-[#002443]">{byFramework.unknown}</p>
+                <p className="text-[10px] text-[#0A0A0A]/50 uppercase font-bold">S/ versão</p>
+                <p className="text-xs font-mono text-[#0A0A0A]">{byFramework.unknown}</p>
               </div>
             </div>
           )}

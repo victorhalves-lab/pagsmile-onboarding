@@ -35,7 +35,7 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -57,7 +57,7 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
             {introducers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={11} className="text-center py-12">
-                  <p className="text-[#002443]/50">Nenhum introducer encontrado</p>
+                  <p className="text-[#0A0A0A]/50">Nenhum introducer encontrado</p>
                 </TableCell>
               </TableRow>
             ) : introducers.map(intro => {
@@ -65,8 +65,8 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
               return (
                 <TableRow key={intro.id} className="hover:bg-[#f4f4f4] transition-colors">
                   <TableCell>
-                    <p className="font-semibold text-sm text-[#002443]">{intro.companyName || intro.name}</p>
-                    {intro.type === 'company' && <p className="text-[10px] text-[#002443]/40">{intro.name}</p>}
+                    <p className="font-semibold text-sm text-[#0A0A0A]">{intro.companyName || intro.name}</p>
+                    {intro.type === 'company' && <p className="text-[10px] text-[#0A0A0A]/40">{intro.name}</p>}
                   </TableCell>
                   <TableCell>
                     <Badge className={intro.type === 'company' ? 'bg-blue-100 text-blue-700 text-[10px]' : 'bg-slate-100 text-slate-500 text-[10px]'}>
@@ -74,7 +74,7 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
                     </Badge>
                   </TableCell>
                   <TableCell><span className="font-mono text-xs bg-[#f4f4f4] px-2 py-1 rounded-lg">{intro.referralCode}</span></TableCell>
-                  <TableCell><span className="text-xs text-[#002443]/60">{intro.contactEmail || intro.contactEmailCompany || '-'}</span></TableCell>
+                  <TableCell><span className="text-xs text-[#0A0A0A]/60">{intro.contactEmail || intro.contactEmailCompany || '-'}</span></TableCell>
                   <TableCell>
                     <Badge className={intro.status === 'active' ? 'bg-green-100 text-green-700 text-xs' : 'bg-slate-100 text-slate-500 text-xs'}>
                       {intro.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -88,16 +88,16 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
                       </span>
                     ) : <span className="text-xs text-slate-400">-</span>}
                   </TableCell>
-                  <TableCell className="text-center"><span className="font-bold text-sm text-[#2bc196]">{m.accepted}</span></TableCell>
+                  <TableCell className="text-center"><span className="font-bold text-sm text-[#1356E2]">{m.accepted}</span></TableCell>
                   <TableCell className="text-right"><span className="font-mono text-sm">{m.volume > 0 ? `R$ ${m.volume.toLocaleString('pt-BR')}` : '-'}</span></TableCell>
                   <TableCell className="text-center">
-                    <Badge className="bg-[#002443]/5 text-[#002443] text-xs border-0">{m.successRate}%</Badge>
+                    <Badge className="bg-[#0A0A0A]/5 text-[#0A0A0A] text-xs border-0">{m.successRate}%</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       {intro.type === 'company' && intro.uniqueLandingPageSlug && (
                         <Link to={`/parceiro/${intro.uniqueLandingPageSlug}`} target="_blank">
-                          <Button variant="ghost" size="sm" className="h-7 text-[#2bc196]" title="Ver Landing Page"><LinkIcon className="w-3.5 h-3.5" /></Button>
+                          <Button variant="ghost" size="sm" className="h-7 text-[#1356E2]" title="Ver Landing Page"><LinkIcon className="w-3.5 h-3.5" /></Button>
                         </Link>
                       )}
                       <InviteIntroducerButton introducer={intro} />

@@ -27,14 +27,14 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
     }
   };
 
-  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/20 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]";
-  const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
+  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/20 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
+  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
   const errorCls = "text-[10px] text-red-400";
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
       <div className="flex items-center gap-2 mb-1">
-        <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#2bc196]" /></div>
+        <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#1356E2]" /></div>
         <h2 className="text-sm font-bold text-white">Dados do Cliente</h2>
       </div>
 
@@ -43,7 +43,7 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
           {leads.slice(0, 6).map(l => (
             <button key={l.id} onClick={() => handleLeadSelect(l.id)}
-              className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/50 hover:text-white hover:border-[#2bc196]/30 hover:bg-[#2bc196]/5 transition-all truncate max-w-[140px]">
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/50 hover:text-white hover:border-[#1356E2]/30 hover:bg-[#1356E2]/5 transition-all truncate max-w-[140px]">
               {l.companyName || l.fullName}
             </button>
           ))}

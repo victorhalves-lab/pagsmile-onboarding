@@ -53,7 +53,7 @@ export default function CepAutocompleteField({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Label className="text-sm font-semibold text-[#002443]">
+        <Label className="text-sm font-semibold text-[#0A0A0A]">
           {label}
           {isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
@@ -64,7 +64,7 @@ export default function CepAutocompleteField({
         )}
       </div>
       <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
         <Input
           value={formatCep(value || '')}
           onChange={handleChange}
@@ -72,7 +72,7 @@ export default function CepAutocompleteField({
           className="h-11 pl-10 pr-10 font-mono"
           maxLength={9}
         />
-        {isLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
+        {isLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />}
       </div>
       {error && (
         <p className="text-xs text-red-600 flex items-center gap-1">

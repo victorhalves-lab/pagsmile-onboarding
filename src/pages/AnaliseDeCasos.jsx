@@ -135,7 +135,7 @@ export default function AnaliseDeCasos() {
   if (caseLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function AnaliseDeCasos() {
   if (!onboardingCase) {
     return (
       <div className="text-center py-12">
-        <p className="text-[var(--pagsmile-blue)]/70 font-medium">{t('ac.not_found')}</p>
+        <p className="text-[var(--pinbank-blue)]/70 font-medium">{t('ac.not_found')}</p>
         <Button variant="outline" onClick={() => navigate(createPageUrl('AdminDashboard'))} className="mt-4">
           {t('ac.back_dashboard')}
         </Button>
@@ -195,7 +195,7 @@ export default function AnaliseDeCasos() {
 
         <TabsContent value="responses">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">{t('ac.questionnaire_responses')}</h3>
+            <h3 className="text-lg font-bold text-[var(--pinbank-blue)] mb-6">{t('ac.questionnaire_responses')}</h3>
             {merchant?.type === 'PF' ? (
               <SubsellerPFResponsesInline caseId={caseId} merchantName={merchant?.fullName} />
             ) : (

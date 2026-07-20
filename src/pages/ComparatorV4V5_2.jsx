@@ -100,8 +100,8 @@ export default function ComparatorV4V5_2() {
   if (loadingResolve || loadingData) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
-        <span className="ml-3 text-[#002443]/70">Carregando comparação…</span>
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
+        <span className="ml-3 text-[#0A0A0A]/70">Carregando comparação…</span>
       </div>
     );
   }
@@ -264,12 +264,12 @@ function Section({ title, description, icon: Icon, children }) {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
       <div className="flex items-start gap-2 mb-3 pb-3 border-b border-slate-100">
-        <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center shrink-0">
-          <Icon className="w-4 h-4 text-[#002443]" />
+        <div className="w-8 h-8 rounded-lg bg-[#0A0A0A]/5 flex items-center justify-center shrink-0">
+          <Icon className="w-4 h-4 text-[#0A0A0A]" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[#002443]">{title}</h3>
-          {description && <p className="text-[11px] text-[#002443]/55 mt-0.5">{description}</p>}
+          <h3 className="text-sm font-bold text-[#0A0A0A]">{title}</h3>
+          {description && <p className="text-[11px] text-[#0A0A0A]/55 mt-0.5">{description}</p>}
         </div>
       </div>
       <div>{children}</div>
@@ -286,21 +286,21 @@ function SentinelPareceresPair({ v4Score, v5_2Score }) {
       <div className="p-3 rounded-lg bg-blue-50/40 border border-blue-100">
         <p className="text-[9px] font-bold uppercase tracking-wider text-blue-700 mb-1.5">SENTINEL · V4</p>
         {v4Text ? (
-          <p className="text-xs text-[#002443]/85 whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">
+          <p className="text-xs text-[#0A0A0A]/85 whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">
             {v4Text}
           </p>
         ) : (
-          <p className="text-xs text-[#002443]/50 italic">Sem parecer registrado.</p>
+          <p className="text-xs text-[#0A0A0A]/50 italic">Sem parecer registrado.</p>
         )}
       </div>
-      <div className="p-3 rounded-lg bg-[#2bc196]/5 border border-[#2bc196]/20">
-        <p className="text-[9px] font-bold uppercase tracking-wider text-[#2bc196] mb-1.5">SENTINEL · V5.2</p>
+      <div className="p-3 rounded-lg bg-[#1356E2]/5 border border-[#1356E2]/20">
+        <p className="text-[9px] font-bold uppercase tracking-wider text-[#1356E2] mb-1.5">SENTINEL · V5.2</p>
         {v5Text ? (
-          <p className="text-xs text-[#002443]/85 whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">
+          <p className="text-xs text-[#0A0A0A]/85 whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">
             {v5Text}
           </p>
         ) : (
-          <p className="text-xs text-[#002443]/50 italic">Sem parecer registrado (talvez o pipeline V5.2 ainda esteja processando).</p>
+          <p className="text-xs text-[#0A0A0A]/50 italic">Sem parecer registrado (talvez o pipeline V5.2 ainda esteja processando).</p>
         )}
       </div>
     </div>
@@ -313,8 +313,8 @@ function ErrorState({ title, description }) {
       <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mx-auto mb-4">
         <AlertTriangle className="w-6 h-6 text-amber-600" />
       </div>
-      <h2 className="text-lg font-bold text-[#002443] mb-2">{title}</h2>
-      <p className="text-sm text-[#002443]/70">{description}</p>
+      <h2 className="text-lg font-bold text-[#0A0A0A] mb-2">{title}</h2>
+      <p className="text-sm text-[#0A0A0A]/70">{description}</p>
     </div>
   );
 }

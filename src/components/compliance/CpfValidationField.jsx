@@ -52,7 +52,7 @@ export default function CpfValidationField({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Label className="text-sm font-semibold text-[#002443]">
+        <Label className="text-sm font-semibold text-[#0A0A0A]">
           {label}
           {isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
@@ -62,9 +62,9 @@ export default function CpfValidationField({
           </Badge>
         )}
       </div>
-      {helpText && <p className="text-xs text-[#002443]/60">{helpText}</p>}
+      {helpText && <p className="text-xs text-[#0A0A0A]/60">{helpText}</p>}
       <div className="relative">
-        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
         <Input
           value={formatCpf(value || '')}
           onChange={handleChange}

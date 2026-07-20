@@ -69,34 +69,34 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove, onR
     <Card
       className={`relative overflow-hidden transition-all border-2 ${
         filled
-          ? 'border-[#2bc196]/50 shadow-lg shadow-[#2bc196]/10'
-          : 'border-[#002443]/10 shadow-md'
+          ? 'border-[#1356E2]/50 shadow-lg shadow-[#1356E2]/10'
+          : 'border-[#0A0A0A]/10 shadow-md'
       }`}
     >
       {/* Faixa lateral colorida para reforçar a separação */}
       <div
         className={`absolute left-0 top-0 bottom-0 w-1.5 ${
-          filled ? 'bg-[#2bc196]' : 'bg-[#002443]/20'
+          filled ? 'bg-[#1356E2]' : 'bg-[#0A0A0A]/20'
         }`}
         aria-hidden="true"
       />
 
       <CardContent className="p-5 md:p-6 space-y-4 pl-6 md:pl-7">
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#002443]/8">
+        <div className="flex items-center justify-between pb-3 border-b border-[#0A0A0A]/8">
           <div className="flex items-center gap-3">
             <div
               className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black tabular-nums ${
-                filled ? 'bg-[#2bc196] text-white shadow-md shadow-[#2bc196]/30' : 'bg-[#f4f4f4] text-[#002443]/50'
+                filled ? 'bg-[#1356E2] text-white shadow-md shadow-[#1356E2]/30' : 'bg-[#f4f4f4] text-[#0A0A0A]/50'
               }`}
             >
               {idx + 1}
             </div>
             <div className="min-w-0">
-              <div className="text-base font-bold text-[#002443] truncate">
+              <div className="text-base font-bold text-[#0A0A0A] truncate">
                 {row.company_name || `Subseller #${idx + 1}`}
               </div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/40">
                 {(row.person_type || 'PJ') === 'PJ' ? 'Pessoa Jurídica' : 'Pessoa Física'}
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove, onR
                 size="sm"
                 variant="outline"
                 onClick={() => setPullOpen(true)}
-                className="h-8 text-xs border-[#2bc196]/40 text-[#36706c] hover:bg-[#2bc196]/5"
+                className="h-8 text-xs border-[#1356E2]/40 text-[#E84B1C] hover:bg-[#1356E2]/5"
                 title="Puxar dados de um cliente já cadastrado na plataforma"
               >
                 <Download className="w-3.5 h-3.5 mr-1" /> Puxar cliente
@@ -115,7 +115,7 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove, onR
             )}
             <button
               onClick={onRemove}
-              className="text-[#002443]/30 hover:text-red-500 hover:bg-red-50 transition-colors p-2 rounded-lg"
+              className="text-[#0A0A0A]/30 hover:text-red-500 hover:bg-red-50 transition-colors p-2 rounded-lg"
               title="Remover este subseller"
             >
               <Trash2 className="w-4 h-4" />
@@ -243,7 +243,7 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove, onR
 
           {/* Volumetria */}
           <div className="md:col-span-2 pt-2">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mb-2">Volumetria estimada</div>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-2">Volumetria estimada</div>
           </div>
           <div>
             <Label className="text-xs">TPV Mensal (R$)</Label>
@@ -266,7 +266,7 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove, onR
 
           {/* Conta bancária */}
           <div className="md:col-span-2 pt-2">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mb-2">Conta bancária para liquidação</div>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-2">Conta bancária para liquidação</div>
           </div>
           <div>
             <Label className="text-xs">Banco</Label>
@@ -303,7 +303,7 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove, onR
 
         {/* Documentos */}
         <div className="pt-2">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mb-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-2">
             Documentos obrigatórios ({isPJ ? 'Pessoa Jurídica' : 'Pessoa Física'})
           </div>
           <div className="grid md:grid-cols-2 gap-2">

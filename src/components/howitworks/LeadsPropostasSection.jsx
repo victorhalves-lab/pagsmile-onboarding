@@ -3,9 +3,9 @@ import { CircleDot, ArrowRight, ArrowDown, CheckCircle2, XCircle, AlertTriangle,
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
-const FlowStep = ({ icon: Icon, text, color = '#2bc196', arrow = true }) => (
+const FlowStep = ({ icon: Icon, text, color = '#1356E2', arrow = true }) => (
   <div className="flex items-center gap-2">
-    <div className="flex items-center gap-1.5 bg-white rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-[#002443] shadow-sm">
+    <div className="flex items-center gap-1.5 bg-white rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-[#0A0A0A] shadow-sm">
       <Icon className="w-3.5 h-3.5 shrink-0" style={{ color }} />
       <span>{text}</span>
     </div>
@@ -25,12 +25,12 @@ const FlowDecision = ({ text }) => (
 const PageDoc = ({ name, route, description, purpose, access, funcionalidades, subAbas, fluxo, entidadesAfetadas }) => (
   <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
     {/* Header */}
-    <div className="bg-gradient-to-r from-[#002443] to-[#003a66] p-4">
+    <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003a66] p-4">
       <div className="flex items-center justify-between">
         <h4 className="text-white font-bold text-sm">{name}</h4>
         <div className="flex items-center gap-2">
           <Badge className="bg-white/10 text-white/80 border-0 text-[10px] font-mono">{route}</Badge>
-          <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] border-0 text-[10px]">{access}</Badge>
+          <Badge className="bg-[#1356E2]/20 text-[#E84B1C] border-0 text-[10px]">{access}</Badge>
         </div>
       </div>
       <p className="text-white/60 text-xs mt-1">{description}</p>
@@ -39,17 +39,17 @@ const PageDoc = ({ name, route, description, purpose, access, funcionalidades, s
     <div className="p-4 space-y-4">
       {/* O que é e para que serve */}
       <div>
-        <h5 className="text-xs font-bold text-[#002443] uppercase tracking-wider mb-1.5">🎯 Para que serve</h5>
-        <p className="text-xs text-[#002443]/70 leading-relaxed">{purpose}</p>
+        <h5 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider mb-1.5">🎯 Para que serve</h5>
+        <p className="text-xs text-[#0A0A0A]/70 leading-relaxed">{purpose}</p>
       </div>
 
       {/* Funcionalidades microscópicas */}
       <div>
-        <h5 className="text-xs font-bold text-[#002443] uppercase tracking-wider mb-1.5">⚙️ Funcionalidades ({funcionalidades.length})</h5>
+        <h5 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider mb-1.5">⚙️ Funcionalidades ({funcionalidades.length})</h5>
         <ul className="space-y-1">
           {funcionalidades.map((f, i) => (
-            <li key={i} className="flex items-start gap-1.5 text-[11px] text-[#002443]/70">
-              <CircleDot className="w-2.5 h-2.5 text-[#2bc196] mt-0.5 shrink-0" />
+            <li key={i} className="flex items-start gap-1.5 text-[11px] text-[#0A0A0A]/70">
+              <CircleDot className="w-2.5 h-2.5 text-[#1356E2] mt-0.5 shrink-0" />
               <span>{f}</span>
             </li>
           ))}
@@ -59,11 +59,11 @@ const PageDoc = ({ name, route, description, purpose, access, funcionalidades, s
       {/* Sub-abas */}
       {subAbas && subAbas.length > 0 && (
         <div>
-          <h5 className="text-xs font-bold text-[#002443] uppercase tracking-wider mb-1.5">📑 Sub-abas / Seções Internas ({subAbas.length})</h5>
+          <h5 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider mb-1.5">📑 Sub-abas / Seções Internas ({subAbas.length})</h5>
           <div className="space-y-1.5">
             {subAbas.map((s, i) => (
               <div key={i} className="bg-slate-50 rounded-lg p-2 border border-slate-100">
-                <p className="text-[11px] text-[#002443]/80">{s}</p>
+                <p className="text-[11px] text-[#0A0A0A]/80">{s}</p>
               </div>
             ))}
           </div>
@@ -73,16 +73,16 @@ const PageDoc = ({ name, route, description, purpose, access, funcionalidades, s
       {/* Fluxograma */}
       {fluxo && fluxo.length > 0 && (
         <div>
-          <h5 className="text-xs font-bold text-[#002443] uppercase tracking-wider mb-2">🔀 Fluxograma — O que dá para fazer</h5>
+          <h5 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider mb-2">🔀 Fluxograma — O que dá para fazer</h5>
           <div className="bg-[#f8fafc] rounded-xl p-3 border border-slate-200 space-y-3">
             {fluxo.map((f, i) => (
               <div key={i} className="space-y-1">
-                <p className="text-[10px] font-bold text-[#002443]/50 uppercase">{f.titulo}</p>
+                <p className="text-[10px] font-bold text-[#0A0A0A]/50 uppercase">{f.titulo}</p>
                 <div className="flex flex-wrap items-center gap-1.5">
                   {f.steps.map((s, j) => (
                     <div key={j} className="flex items-center gap-1">
                       <div className={`text-[10px] px-2 py-1 rounded-md border font-medium ${
-                        s.type === 'action' ? 'bg-[#2bc196]/10 text-[#2bc196] border-[#2bc196]/20' :
+                        s.type === 'action' ? 'bg-[#1356E2]/10 text-[#1356E2] border-[#1356E2]/20' :
                         s.type === 'decision' ? 'bg-amber-50 text-amber-700 border-amber-200' :
                         s.type === 'result' ? 'bg-blue-50 text-blue-700 border-blue-200' :
                         s.type === 'error' ? 'bg-red-50 text-red-700 border-red-200' :
@@ -103,10 +103,10 @@ const PageDoc = ({ name, route, description, purpose, access, funcionalidades, s
       {/* Entidades afetadas */}
       {entidadesAfetadas && entidadesAfetadas.length > 0 && (
         <div>
-          <h5 className="text-xs font-bold text-[#002443] uppercase tracking-wider mb-1.5">🗄️ Entidades Afetadas</h5>
+          <h5 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider mb-1.5">🗄️ Entidades Afetadas</h5>
           <div className="flex flex-wrap gap-1">
             {entidadesAfetadas.map((e, i) => (
-              <Badge key={i} className="bg-[#002443] text-white font-mono text-[9px] border-0">{e}</Badge>
+              <Badge key={i} className="bg-[#0A0A0A] text-white font-mono text-[9px] border-0">{e}</Badge>
             ))}
           </div>
         </div>
@@ -119,14 +119,14 @@ export default function LeadsPropostasSection() {
   return (
     <div className="space-y-6">
       {/* Visão Geral do Módulo */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#003366] rounded-2xl p-5 text-white">
         <h3 className="text-lg font-bold mb-2">Módulo de Leads & Propostas — Catálogo Microscópico de Páginas</h3>
         <p className="text-white/80 text-sm leading-relaxed">
           Documentação completa, página por página, de todo o módulo comercial. Cada página tem: descrição, propósito, funcionalidades microscópicas, sub-abas, fluxogramas de ações e entidades afetadas.
         </p>
         <div className="flex flex-wrap gap-2 mt-3">
           <Badge className="bg-white/10 text-white/80 border-0">17 Páginas</Badge>
-          <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] border-0">9 Entidades</Badge>
+          <Badge className="bg-[#1356E2]/20 text-[#E84B1C] border-0">9 Entidades</Badge>
           <Badge className="bg-blue-500/20 text-blue-200 border-0">3 Tipos de Proposta</Badge>
         </div>
       </div>
@@ -475,7 +475,7 @@ export default function LeadsPropostasSection() {
         route="/GestaoPropostasPadrao"
         access="Admin"
         description="Gerencia propostas padrão (templates) com taxas oficiais por segmento. Inclui 6 SegmentQuickLinks para compartilhar propostas com um clique. Tabela com métricas, filtros e ações CRUD."
-        purpose="Manter propostas padrão com taxas oficiais Pagsmile para cada segmento, permitindo compartilhar rapidamente uma proposta sem precisar criar uma personalizada. Ideal para primeiros contatos ou envios em massa."
+        purpose="Manter propostas padrão com taxas oficiais Pin Bank para cada segmento, permitindo compartilhar rapidamente uma proposta sem precisar criar uma personalizada. Ideal para primeiros contatos ou envios em massa."
         funcionalidades={[
           'SegmentQuickLinks: 6 cards (Educação, Infoprodutos, E-commerce, SaaS, Gateway, Marketplace) com botão "Copiar Link" que copia link público da proposta padrão do segmento (filtrada por isDefaultForSegment=true)',
           'ProposalMetrics: 4 KPIs (Total, Rascunho, Ativas, Inativas)',
@@ -758,8 +758,8 @@ export default function LeadsPropostasSection() {
       />
 
       {/* Entidades do módulo */}
-      <div className="bg-[#002443]/5 rounded-xl p-4 border border-[#002443]/10">
-        <h5 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Entidades do Módulo Leads & Propostas</h5>
+      <div className="bg-[#0A0A0A]/5 rounded-xl p-4 border border-[#0A0A0A]/10">
+        <h5 className="text-xs font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-2">Entidades do Módulo Leads & Propostas</h5>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[
             { name: 'Lead', desc: '30+ campos: e-mail, nome, CNPJ, telefone, status (11 valores), tipo negócio, scores PRISCILA/Lead Qualifier/Risco, TPV, ticket médio, protocolo, origem, introducer, expectedRates' },
@@ -773,8 +773,8 @@ export default function LeadsPropostasSection() {
             { name: 'Introducer', desc: 'Parceiro de indicação: nome, tipo, referralCode, comissão, landing page slug, standardRates por segmento, logo' },
           ].map((e, i) => (
             <div key={i} className="p-2 bg-white rounded-lg border border-slate-200">
-              <Badge className="bg-[#002443] text-white font-mono text-[10px] border-0 mb-1">{e.name}</Badge>
-              <p className="text-[10px] text-[#002443]/60 leading-relaxed">{e.desc}</p>
+              <Badge className="bg-[#0A0A0A] text-white font-mono text-[10px] border-0 mb-1">{e.name}</Badge>
+              <p className="text-[10px] text-[#0A0A0A]/60 leading-relaxed">{e.desc}</p>
             </div>
           ))}
         </div>

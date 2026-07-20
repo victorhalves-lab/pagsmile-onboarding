@@ -134,7 +134,7 @@ export default function RequestPendencyModal({
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-[var(--pagsmile-blue)] flex items-center gap-2">
+          <DialogTitle className="text-xl font-bold text-[var(--pinbank-blue)] flex items-center gap-2">
             📋 Solicitar Pendências ao Cliente
           </DialogTitle>
           <p className="text-sm text-slate-600">
@@ -146,14 +146,14 @@ export default function RequestPendencyModal({
           {/* Caso + merchant info */}
           <div className="bg-slate-50 rounded-lg px-4 py-3 text-sm">
             <div className="text-slate-500 text-xs">Caso:</div>
-            <div className="font-semibold text-[var(--pagsmile-blue)]">
+            <div className="font-semibold text-[var(--pinbank-blue)]">
               {merchant?.fullName || 'Merchant'} • {merchant?.email || 'sem e-mail'}
             </div>
           </div>
 
           {/* Mensagem geral */}
           <div>
-            <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+            <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
               Mensagem ao cliente (opcional)
             </Label>
             <Textarea
@@ -167,7 +167,7 @@ export default function RequestPendencyModal({
 
           {/* Prazo */}
           <div>
-            <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">Prazo (dias) *</Label>
+            <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">Prazo (dias) *</Label>
             <Input
               type="number"
               min={1}
@@ -182,7 +182,7 @@ export default function RequestPendencyModal({
           {/* Lista de itens */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+              <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
                 Itens da solicitação
               </Label>
               <div className="text-xs text-slate-500">
@@ -231,7 +231,7 @@ export default function RequestPendencyModal({
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting || items.length === 0}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green-dark)] text-white gap-2"
+            className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue-dark)] text-white gap-2"
           >
             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {isSubmitting ? 'Enviando...' : 'Enviar ao Cliente'}

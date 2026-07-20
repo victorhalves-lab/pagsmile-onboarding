@@ -112,11 +112,11 @@ export default function ComplianceResume() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-md mx-auto text-center px-4">
         <AlertTriangle className="w-16 h-16 text-amber-500 mb-4" />
-        <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">Não foi possível retomar</h2>
-        <p className="text-[var(--pagsmile-blue)]/70 mb-6">{error}</p>
+        <h2 className="text-xl font-bold text-[var(--pinbank-blue)] mb-2">Não foi possível retomar</h2>
+        <p className="text-[var(--pinbank-blue)]/70 mb-6">{error}</p>
         <Button
           onClick={() => navigate('/ComplianceOnboardingStart')}
-          className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
+          className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white"
         >
           Iniciar Novo Questionário
         </Button>
@@ -126,11 +126,11 @@ export default function ComplianceResume() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-md mx-auto text-center px-4">
-      <div className="p-4 rounded-2xl bg-[var(--pagsmile-green)]/10 mb-6">
-        <RefreshCw className="w-12 h-12 text-[var(--pagsmile-green)] animate-spin" />
+      <div className="p-4 rounded-2xl bg-[var(--pinbank-blue)]/10 mb-6">
+        <RefreshCw className="w-12 h-12 text-[var(--pinbank-blue)] animate-spin" />
       </div>
-      <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">Retomando seu questionário...</h2>
-      <p className="text-[var(--pagsmile-blue)]/70">
+      <h2 className="text-xl font-bold text-[var(--pinbank-blue)] mb-2">Retomando seu questionário...</h2>
+      <p className="text-[var(--pinbank-blue)]/70">
         {session ? (
           <>Carregando seus dados salvos. Você estava na etapa {session.currentStep}.</>
         ) : (

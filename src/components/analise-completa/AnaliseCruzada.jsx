@@ -149,15 +149,15 @@ export default function AnaliseCruzada({ merchant, cafValidations, cafLogs, bdcV
   if (checks.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-gradient-to-br from-purple-50 to-blue-50">
             <GitBranch className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-[var(--pagsmile-blue)]">Análise Cruzada — CAF × BDC × Dados Declarados</h2>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40">Cruzamento de dados entre diferentes fontes para identificar concordâncias e divergências</p>
+            <h2 className="text-base font-bold text-[var(--pinbank-blue)]">Análise Cruzada — CAF × BDC × Dados Declarados</h2>
+            <p className="text-xs text-[var(--pinbank-blue)]/40">Cruzamento de dados entre diferentes fontes para identificar concordâncias e divergências</p>
           </div>
         </div>
       </div>
@@ -175,12 +175,12 @@ export default function AnaliseCruzada({ merchant, cafValidations, cafLogs, bdcV
                 <StatusIcon className={`w-5 h-5 ${statusColor} flex-shrink-0 mt-0.5`} />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{check.label}</span>
+                    <span className="text-sm font-bold text-[var(--pinbank-blue)]">{check.label}</span>
                     <Badge className={`text-[10px] ${check.status === 'ok' ? 'bg-green-100 text-green-700' : check.status === 'fail' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
                       {statusLabel}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] text-[var(--pagsmile-blue)]/40 mb-2">
+                  <div className="flex items-center gap-2 text-[10px] text-[var(--pinbank-blue)]/40 mb-2">
                     <span>{check.source1}</span>
                     {check.source2 !== '—' && <><ArrowRight className="w-3 h-3" /><span>{check.source2}</span></>}
                   </div>

@@ -55,10 +55,10 @@ export default function CasePartnerAssignments({ onboardingCaseId }) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Handshake className="w-4 h-4 text-[#2bc196]" />
+            <Handshake className="w-4 h-4 text-[#1356E2]" />
             Parceiros de Compliance ({assignments.length})
           </CardTitle>
-          <Button size="sm" onClick={() => setModalOpen(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+          <Button size="sm" onClick={() => setModalOpen(true)} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
             <Plus className="w-3 h-3 mr-1" />
             Atribuir
           </Button>
@@ -79,7 +79,7 @@ export default function CasePartnerAssignments({ onboardingCaseId }) {
                   <div key={a.id} className="flex items-start justify-between gap-3 p-3 border border-slate-200 rounded-lg">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-sm text-[#002443]">{a.partnerName}</span>
+                        <span className="font-medium text-sm text-[#0A0A0A]">{a.partnerName}</span>
                         <Badge className="bg-slate-100 text-slate-700 border-slate-200 text-xs">
                           {STATUS_LABELS[a.status] || a.status}
                         </Badge>

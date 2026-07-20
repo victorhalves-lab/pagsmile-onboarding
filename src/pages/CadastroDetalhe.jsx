@@ -343,7 +343,7 @@ export default function CadastroDetalhe() {
   if (!merchant) {
     return (
       <div className="text-center py-20">
-        <p className="text-[var(--pagsmile-blue)]/50">Merchant não encontrado</p>
+        <p className="text-[var(--pinbank-blue)]/50">Merchant não encontrado</p>
         <Link to="/Cadastro">
           <Button variant="outline" className="mt-4">Voltar ao Cadastro</Button>
         </Link>
@@ -370,20 +370,20 @@ export default function CadastroDetalhe() {
   return (
     <div className="space-y-6">
       {/* Back */}
-      <Link to={backLink} className="inline-flex items-center gap-2 text-sm text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-green)] transition-colors">
+      <Link to={backLink} className="inline-flex items-center gap-2 text-sm text-[var(--pinbank-blue)]/60 hover:text-[var(--pinbank-blue)] transition-colors">
         <ArrowLeft className="w-4 h-4" />
         {merchant.isSubseller ? 'Voltar ao Seller' : 'Voltar ao Cadastro'}
       </Link>
 
       {/* Header Card */}
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-6">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-6">
         <div className="flex flex-col md:flex-row md:items-start gap-4">
           <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${merchant.type === 'PJ' ? 'bg-blue-50' : 'bg-purple-50'}`}>
             {merchant.type === 'PJ' ? <Building2 className="w-7 h-7 text-blue-600" /> : <User className="w-7 h-7 text-purple-600" />}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h1 className="text-xl font-bold text-[var(--pagsmile-blue)]">{merchant.companyName || merchant.fullName}</h1>
+              <h1 className="text-xl font-bold text-[var(--pinbank-blue)]">{merchant.companyName || merchant.fullName}</h1>
               <Badge variant="outline" className="text-xs">{merchant.type}</Badge>
               {merchant.isSubseller && <Badge className="bg-purple-100 text-purple-700 text-xs">Subseller</Badge>}
               {(lead?.businessSubCategory || latestCase?.questionnaireTemplateId) && (
@@ -394,9 +394,9 @@ export default function CadastroDetalhe() {
               <Badge className={`${sc.color} text-xs`}>{merchant.onboardingStatus}</Badge>
             </div>
             {merchant.fullName && merchant.companyName && (
-              <p className="text-sm text-[var(--pagsmile-blue)]/50 mb-2">{merchant.fullName}</p>
+              <p className="text-sm text-[var(--pinbank-blue)]/50 mb-2">{merchant.fullName}</p>
             )}
-            <div className="flex flex-wrap gap-4 text-xs text-[var(--pagsmile-blue)]/60">
+            <div className="flex flex-wrap gap-4 text-xs text-[var(--pinbank-blue)]/60">
               <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{formatDoc(merchant.cpfCnpj)}</span>
               {merchant.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{merchant.email}</span>}
               {merchant.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{merchant.phone}</span>}
@@ -423,7 +423,7 @@ export default function CadastroDetalhe() {
             return (
               <div className={`text-center px-4 py-2 rounded-xl flex-shrink-0 ${color.split(' ')[0]}`}>
                 <p className={`text-2xl font-bold ${color.split(' ').slice(1).join(' ')}`}>{displayScore}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{isV4 ? `V4 — ${subfaixa}` : 'Risk Score'}</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50">{isV4 ? `V4 — ${subfaixa}` : 'Risk Score'}</p>
               </div>
             );
           })()}
@@ -436,9 +436,9 @@ export default function CadastroDetalhe() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-white border border-[var(--pagsmile-blue)]/8 p-1 rounded-xl flex-wrap h-auto">
+        <TabsList className="bg-white border border-[var(--pinbank-blue)]/8 p-1 rounded-xl flex-wrap h-auto">
           <TabsTrigger value="overview" className="text-xs gap-1"><BarChart3 className="w-3 h-3" />Visão Geral</TabsTrigger>
-          <TabsTrigger value="timeline" className="text-xs gap-1 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#36706c]"><Sparkles className="w-3 h-3" />Timeline</TabsTrigger>
+          <TabsTrigger value="timeline" className="text-xs gap-1 data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#E84B1C]"><Sparkles className="w-3 h-3" />Timeline</TabsTrigger>
           <TabsTrigger value="dados" className="text-xs gap-1"><FileText className="w-3 h-3" />Dados Cadastrais</TabsTrigger>
           <TabsTrigger value="origem" className="text-xs gap-1"><GitBranch className="w-3 h-3" />Origem & Captação</TabsTrigger>
           <TabsTrigger value="comercial" className="text-xs gap-1"><Briefcase className="w-3 h-3" />Comercial</TabsTrigger>
@@ -453,7 +453,7 @@ export default function CadastroDetalhe() {
           <TabsTrigger value="contrato" className="text-xs gap-1"><Stamp className="w-3 h-3" />Contratos{allContracts.length > 0 ? ` (${allContracts.length})` : ''}</TabsTrigger>
           <TabsTrigger value="compliance" className="text-xs gap-1"><Shield className="w-3 h-3" />Compliance</TabsTrigger>
           {latestCase?.framework_version === 'v5.2' && (
-            <TabsTrigger value="v5_2" className="text-xs gap-1 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#36706c]">
+            <TabsTrigger value="v5_2" className="text-xs gap-1 data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#E84B1C]">
               <Rocket className="w-3 h-3" />V5.2
             </TabsTrigger>
           )}

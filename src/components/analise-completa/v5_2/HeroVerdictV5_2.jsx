@@ -112,7 +112,7 @@ export default function HeroVerdictV5_2({ latestCase, latestScore }) {
             <h1 className={`text-3xl md:text-4xl font-bold ${config.text} leading-tight`}>
               {config.label}
             </h1>
-            <p className="text-sm text-[#002443]/70 mt-1">{causa}</p>
+            <p className="text-sm text-[#0A0A0A]/70 mt-1">{causa}</p>
 
             {/* Tier + Segmento + Subfaixa — com glossário inline */}
             <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -137,11 +137,11 @@ export default function HeroVerdictV5_2({ latestCase, latestScore }) {
           {/* Score */}
           {score != null && (
             <div className="text-right flex-shrink-0">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-[#002443]/40 mb-1">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[#0A0A0A]/40 mb-1">
                 <Term code="framework_version" inline>Score V5.2</Term>
               </p>
               <p className={`text-5xl font-bold font-mono ${config.text}`}>{score}</p>
-              <p className="text-[10px] text-[#002443]/40 font-mono">
+              <p className="text-[10px] text-[#0A0A0A]/40 font-mono">
                 {tier === 'tier_3' ? '/ 999' : '/ 850'}
               </p>
             </div>
@@ -151,7 +151,7 @@ export default function HeroVerdictV5_2({ latestCase, latestScore }) {
         {/* Chips de bloqueios ativos — com glossário inline em cada B-* conhecido */}
         {bloqueios.length > 0 && (
           <div className="mt-4 pt-4 border-t border-current/10">
-            <p className="text-[10px] uppercase font-semibold text-[#002443]/50 mb-2">
+            <p className="text-[10px] uppercase font-semibold text-[#0A0A0A]/50 mb-2">
               <Term code="bloqueio_absoluto" inline>Bloqueios ativos</Term> ({bloqueios.length})
             </p>
             <div className="flex flex-wrap gap-1.5">

@@ -25,7 +25,7 @@ export default function ProfileActionsChips({ actions, value, onChange, disabled
             disabled={disabled}
             className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
               on
-                ? 'bg-[#2bc196]/10 border-[#2bc196] text-[#2bc196] font-medium'
+                ? 'bg-[#1356E2]/10 border-[#1356E2] text-[#1356E2] font-medium'
                 : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
             }`}
           >

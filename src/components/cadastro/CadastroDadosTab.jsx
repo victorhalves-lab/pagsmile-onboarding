@@ -12,18 +12,18 @@ function formatValue(val) {
 
 function DataRow({ label, value }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-start gap-1 py-2 border-b border-[var(--pagsmile-blue)]/5 last:border-0">
-      <span className="text-xs text-[var(--pagsmile-blue)]/50 sm:w-1/3 flex-shrink-0">{label}</span>
-      <span className="text-sm text-[var(--pagsmile-blue)] font-medium break-words">{formatValue(value)}</span>
+    <div className="flex flex-col sm:flex-row sm:items-start gap-1 py-2 border-b border-[var(--pinbank-blue)]/5 last:border-0">
+      <span className="text-xs text-[var(--pinbank-blue)]/50 sm:w-1/3 flex-shrink-0">{label}</span>
+      <span className="text-sm text-[var(--pinbank-blue)] font-medium break-words">{formatValue(value)}</span>
     </div>
   );
 }
 
 function Section({ title, children }) {
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
-        <FileText className="w-4 h-4 text-[var(--pagsmile-green)]" />
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
+        <FileText className="w-4 h-4 text-[var(--pinbank-blue)]" />
         {title}
       </h3>
       <div>{children}</div>
@@ -93,9 +93,9 @@ export default function CadastroDadosTab({ merchant, lead, responses, latestCase
 
       {/* If no data at all */}
       {questionResponses.length === 0 && leadEntries.length === 0 && (
-        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center">
-          <FileText className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-          <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum questionário preenchido ainda</p>
+        <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center">
+          <FileText className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+          <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum questionário preenchido ainda</p>
         </div>
       )}
     </div>

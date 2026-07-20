@@ -4,7 +4,7 @@ import { Sec, H1, H2, H3, P, B, C, CodeBlock, Table, Note, Source } from '../Doc
 /**
  * Capítulo 19 — Mundo Global (USD / Multi-país)
  *
- * Documenta o trilho paralelo internacional da Pagsmile:
+ * Documenta o trilho paralelo internacional da Pin Bank:
  * leads em USD, propostas multi-moeda, KYC trilíngue, catálogo
  * de canais por país, simulador de pricing.
  */
@@ -13,7 +13,7 @@ export default function Ch19_MundoGlobal() {
     <Sec id="ch-19">
       <H1 num="19">Mundo Global — USD / Multi-país / Trilíngue</H1>
 
-      <P>O <B>Mundo Global</B> é um <B>trilho paralelo</B> ao fluxo Brasil. Ele atende clientes <B>internacionais</B> (LATAM, APAC, Africa, MEA, Turkey) que querem rodar pagamentos em múltiplos países através da Pagsmile. Toda a operação é em <B>USD</B>, com propostas e questionários disponíveis em <B>3 idiomas</B> (PT, EN, ZH), e o catálogo é organizado por <B>país × provider × método de pagamento</B>. NÃO compartilha entidades com o trilho Brasil — usa um conjunto próprio de Global*Entities e funções <C>publicGlobal*</C>.</P>
+      <P>O <B>Mundo Global</B> é um <B>trilho paralelo</B> ao fluxo Brasil. Ele atende clientes <B>internacionais</B> (LATAM, APAC, Africa, MEA, Turkey) que querem rodar pagamentos em múltiplos países através da Pin Bank. Toda a operação é em <B>USD</B>, com propostas e questionários disponíveis em <B>3 idiomas</B> (PT, EN, ZH), e o catálogo é organizado por <B>país × provider × método de pagamento</B>. NÃO compartilha entidades com o trilho Brasil — usa um conjunto próprio de Global*Entities e funções <C>publicGlobal*</C>.</P>
 
       <Note title="Como ativar o contexto Global" kind="info">
         <p>Na sidebar principal há um switch <B>Brasil ↔ Global ↔ Unificado</B> (componente <C>SidebarContextSwitch</C>). O estado fica em <C>localStorage</C> via <C>lib/global/globalContext.js</C>. Quando o usuário navega para qualquer página do conjunto <C>GLOBAL_PAGES</C>, o contexto é forçado automaticamente. A sidebar troca o menu inteiro — Brasil some, Global aparece.</p>
@@ -62,7 +62,7 @@ export default function Ch19_MundoGlobal() {
         <li><B>Base cost percentage</B> (default 0.5%)</li>
         <li><B>Selected interchange type</B>: visa_low/avg/high · master_low/avg/high · combined_low/avg/high · custom</li>
         <li><B>interchange_percentage + interchange_fixed</B>: valores da tabela <C>GlobalInterchangeRate</C></li>
-        <li><B>markup_percentage</B>: a margem Pagsmile sobre interchange</li>
+        <li><B>markup_percentage</B>: a margem Pin Bank sobre interchange</li>
         <li><B>fixed_fee_per_transaction</B>: gateway fee em USD</li>
         <li><B>final_rate_percentage + final_fixed_fee</B>: cálculo consolidado exibido ao cliente</li>
       </ul>
@@ -133,7 +133,7 @@ export default function Ch19_MundoGlobal() {
         ['country', 'ISO-2 (AR, MX, CO, CL, PE, EC, BO, CR, GT, PA, UY, PY, SV, NG, KE, GH, SA, AE, TR, KR, TH, ID, PH, VN, MY, JP, CN, SG, AU)'],
         ['region', 'LATAM | CENTRAL_AMERICA | APAC | AFRICA | MEA | TURKEY'],
         ['method_category', 'cards | bank_transfer | cash | qr_code | wallet | carrier_billing | other'],
-        ['integration_type', 'Direct (Pagsmile direto com provider) | Via PSP (third-party) | Mixed'],
+        ['integration_type', 'Direct (Pin Bank direto com provider) | Via PSP (third-party) | Mixed'],
         ['payin_or_payout', 'PAYIN | PAYOUT | BOTH'],
         ['operational_status', 'ONLINE | OFFLINE | TESTING'],
         ['usage_status', 'PRIMARY (produção principal) | BACK UP (contingência) | DEPRECATED'],
@@ -143,7 +143,7 @@ export default function Ch19_MundoGlobal() {
         ['prohibited_industries', 'array de indústrias estritamente vetadas neste canal'],
         ['regulatory_requirements', 'texto livre (ex: "Casino requires COLJUEGOS license", "CNVB authorization for microcredit")'],
         ['default_payin_rate_pct + default_payin_fixed + default_payin_fixed_currency + default_payin_min', 'Defaults vindos da última proposta calibrada — pré-preenche o builder'],
-        ['internal_responsible_team', 'Partnership | Tech | Compliance | Multiple (quem operacionaliza no Pagsmile)'],
+        ['internal_responsible_team', 'Partnership | Tech | Compliance | Multiple (quem operacionaliza no Pin Bank)'],
         ['imported_from', 'Nome do XLSX + timestamp (auditoria de import)'],
       ]} />
 
@@ -190,7 +190,7 @@ export default function Ch19_MundoGlobal() {
         ['Diretores', 'directors[]: job_title, first_name, last_name (+ flag "directors_same_as_ubos")'],
         ['Contatos operacionais', 'accounting_contact_* / support_contact_* / compliance_contact_*'],
         ['4 perguntas críticas PLD/Sanções', 'q_sanctions_list (+ detail) — alguém na empresa está em lista de sanções? q_pep (+ detail) — algum UBO/director é PEP? q_sanctioned_country (+ detail) — opera em país sancionado? q_sanctioned_ownership (+ detail) — controle de pessoa sancionada?'],
-        ['2 perguntas extras', 'q_pagsmile_dealings — já teve relação com Pagsmile? · q_value_exchange — fornece serviços de exchange de valor?'],
+        ['2 perguntas extras', 'q_pagsmile_dealings — já teve relação com Pin Bank? · q_value_exchange — fornece serviços de exchange de valor?'],
         ['Documentos', 'doc_corp_documents_url (incorporation/MOA/AOA), doc_bank_statement_url, doc_ids[] (IDs dos UBOs), doc_address_proofs[], doc_company_address_proof_url, doc_pilot_llc_url (se aplicável), doc_license_url (se regulado), doc_ownership_chart_url'],
         ['Certificação', 'certifier_name, certifier_job_title, certifier_email, certification_date (assinatura digital do declarante)'],
       ]} />
@@ -208,7 +208,7 @@ export default function Ch19_MundoGlobal() {
   card_type: "credit" | "debit" | "prepaid" | ...,
   rate_percentage: number,
   rate_fixed: number,
-  category: "card_not_present",  // Pagsmile só opera CNP em Global
+  category: "card_not_present",  // Pin Bank só opera CNP em Global
   details: "...",                 // observações
   is_active: boolean,
 }`}</CodeBlock>

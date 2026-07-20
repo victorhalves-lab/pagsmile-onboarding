@@ -19,7 +19,7 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium text-[#002443]",
+        caption_label: "text-sm font-medium text-[#0A0A0A]",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -30,37 +30,37 @@ function Calendar({
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell:
-          "text-[#002443]/60 rounded-md w-8 font-normal text-[0.8rem]",
+          "text-[#0A0A0A]/60 rounded-md w-8 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
         cell: cn(
-          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-[#2bc196]/10 [&:has([aria-selected].day-outside)]:bg-[#2bc196]/5 [&:has([aria-selected].day-range-end)]:rounded-r-md",
+          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-[#1356E2]/10 [&:has([aria-selected].day-outside)]:bg-[#1356E2]/5 [&:has([aria-selected].day-range-end)]:rounded-r-md",
           props.mode === "range"
             ? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
             : "[&:has([aria-selected])]:rounded-md"
         ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-8 w-8 p-0 font-normal aria-selected:opacity-100 text-[#002443]"
+          "h-8 w-8 p-0 font-normal aria-selected:opacity-100 text-[#0A0A0A]"
         ),
         day_range_start: "day-range-start",
         day_range_end: "day-range-end",
         day_selected:
-          "bg-[#2bc196] text-white hover:bg-[#2bc196] hover:text-white focus:bg-[#2bc196] focus:text-white",
-        day_today: "bg-[#002443]/10 text-[#002443]",
+          "bg-[#1356E2] text-white hover:bg-[#1356E2] hover:text-white focus:bg-[#1356E2] focus:text-white",
+        day_today: "bg-[#0A0A0A]/10 text-[#0A0A0A]",
         day_outside:
-          "day-outside text-[#002443]/40 aria-selected:bg-[#2bc196]/5 aria-selected:text-[#002443]/60",
-        day_disabled: "text-[#002443]/30 opacity-50",
+          "day-outside text-[#0A0A0A]/40 aria-selected:bg-[#1356E2]/5 aria-selected:text-[#0A0A0A]/60",
+        day_disabled: "text-[#0A0A0A]/30 opacity-50",
         day_range_middle:
-          "aria-selected:bg-[#2bc196]/10 aria-selected:text-[#002443]",
+          "aria-selected:bg-[#1356E2]/10 aria-selected:text-[#0A0A0A]",
         day_hidden: "invisible",
         ...classNames,
       }}
       components={{
         IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4 text-[#002443]", className)} {...props} />
+          <ChevronLeft className={cn("h-4 w-4 text-[#0A0A0A]", className)} {...props} />
         ),
         IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4 text-[#002443]", className)} {...props} />
+          <ChevronRight className={cn("h-4 w-4 text-[#0A0A0A]", className)} {...props} />
         ),
       }}
       {...props} />)

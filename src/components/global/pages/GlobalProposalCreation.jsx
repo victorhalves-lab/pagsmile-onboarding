@@ -148,9 +148,9 @@ export default function GlobalProposalCreation() {
       {/* Coluna principal — formulário */}
       <div className="lg:col-span-2 space-y-4">
         {/* Toggle de modelo de pricing */}
-        <Card className="border-[#2bc196]/30 bg-gradient-to-br from-white to-[#2bc196]/5">
+        <Card className="border-[#1356E2]/30 bg-gradient-to-br from-white to-[#1356E2]/5">
           <CardContent className="pt-4">
-            <Label className="text-xs font-bold uppercase tracking-wider text-[#002443]/60 mb-2 block">Modelo de Pricing</Label>
+            <Label className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/60 mb-2 block">Modelo de Pricing</Label>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { code: 'cross_border_interchange', label: 'Cross-Border USD', desc: 'Interchange++ em USD' },
@@ -160,19 +160,19 @@ export default function GlobalProposalCreation() {
                 <button key={opt.code} type="button" onClick={() => setF('pricing_model', opt.code)}
                   className={`p-2 rounded-lg border-2 transition-all text-left ${
                     form.pricing_model === opt.code
-                      ? 'border-[#2bc196] bg-[#2bc196]/10'
-                      : 'border-[#002443]/10 bg-white hover:border-[#2bc196]/40'
+                      ? 'border-[#1356E2] bg-[#1356E2]/10'
+                      : 'border-[#0A0A0A]/10 bg-white hover:border-[#1356E2]/40'
                   }`}>
-                  <div className="text-xs font-bold text-[#002443]">{opt.label}</div>
-                  <div className="text-[10px] text-[#002443]/60 mt-0.5">{opt.desc}</div>
+                  <div className="text-xs font-bold text-[#0A0A0A]">{opt.label}</div>
+                  <div className="text-[10px] text-[#0A0A0A]/60 mt-0.5">{opt.desc}</div>
                 </button>
               ))}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-[#002443]/5">
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><FileText className="w-4 h-4 text-[#2bc196]" /> Cliente</CardTitle></CardHeader>
+        <Card className="border-[#0A0A0A]/5">
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><FileText className="w-4 h-4 text-[#1356E2]" /> Cliente</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
               <Label className="text-xs">Vincular Questionário (opcional)</Label>
@@ -215,7 +215,7 @@ export default function GlobalProposalCreation() {
         </Card>
 
         {/* HR Industries — sempre visível (alimenta alertas regulatórios) */}
-        <Card className="border-[#002443]/5">
+        <Card className="border-[#0A0A0A]/5">
           <CardHeader><CardTitle className="text-base">Indústrias declaradas (HR)</CardTitle></CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-1.5">
@@ -225,13 +225,13 @@ export default function GlobalProposalCreation() {
                   className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
                     form.declared_industries.includes(ind.code)
                       ? 'bg-amber-500 text-white border-amber-500'
-                      : 'bg-white text-[#002443]/70 border-[#002443]/10 hover:border-amber-400'
+                      : 'bg-white text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:border-amber-400'
                   }`}>
                   {ind.label}
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-[#002443]/50 mt-2">
+            <p className="text-[10px] text-[#0A0A0A]/50 mt-2">
               Marque as indústrias do cliente — geram alertas regulatórios automáticos por país.
             </p>
           </CardContent>
@@ -239,8 +239,8 @@ export default function GlobalProposalCreation() {
 
         {/* Builder de pricing por país (Local/Hybrid) */}
         {(form.pricing_model === 'local_payments' || form.pricing_model === 'hybrid') && (
-          <Card className="border-[#002443]/5">
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#2bc196]" /> Pricing por País</CardTitle></CardHeader>
+          <Card className="border-[#0A0A0A]/5">
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#1356E2]" /> Pricing por País</CardTitle></CardHeader>
             <CardContent>
               <CountryPricingBuilder
                 value={form.country_pricing}
@@ -251,7 +251,7 @@ export default function GlobalProposalCreation() {
           </Card>
         )}
 
-        <Card className="border-[#002443]/5">
+        <Card className="border-[#0A0A0A]/5">
           <CardHeader><CardTitle className="text-base">MCCs & Mercados</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
@@ -264,8 +264,8 @@ export default function GlobalProposalCreation() {
                     onClick={() => toggleArr('mccs', m)}
                     className={`text-xs px-2 py-1 rounded-full border transition-colors ${
                       form.mccs.includes(m)
-                        ? 'bg-[#2bc196] text-white border-[#2bc196]'
-                        : 'bg-white text-[#002443]/70 border-[#002443]/10 hover:bg-[#2bc196]/10'
+                        ? 'bg-[#1356E2] text-white border-[#1356E2]'
+                        : 'bg-white text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:bg-[#1356E2]/10'
                     }`}
                   >{m}</button>
                 ))}
@@ -286,8 +286,8 @@ export default function GlobalProposalCreation() {
 
         {/* Composição cross-border só aparece nos modelos cross_border_interchange e hybrid */}
         {(form.pricing_model === 'cross_border_interchange' || form.pricing_model === 'hybrid') && (
-        <Card className="border-[#002443]/5">
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#2bc196]" /> Composição da Taxa (Cross-Border USD)</CardTitle></CardHeader>
+        <Card className="border-[#0A0A0A]/5">
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#1356E2]" /> Composição da Taxa (Cross-Border USD)</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
               <Label className="text-xs mb-1.5 block">Interchange (escolha o tier ou personalize)</Label>
@@ -304,8 +304,8 @@ export default function GlobalProposalCreation() {
             </div>
 
             {/* Tabela COMPLETA de programas Interchange — Visa & Mastercard linha-a-linha */}
-            <details className="border border-[#002443]/10 rounded-lg overflow-hidden">
-              <summary className="bg-[#f4f4f4] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#002443]/70 cursor-pointer hover:bg-[#f4f4f4]/80 select-none">
+            <details className="border border-[#0A0A0A]/10 rounded-lg overflow-hidden">
+              <summary className="bg-[#f4f4f4] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/70 cursor-pointer hover:bg-[#f4f4f4]/80 select-none">
                 Ver tabela completa de Interchange (Visa + Mastercard, USD)
               </summary>
               <div className="p-3 space-y-3">
@@ -321,12 +321,12 @@ export default function GlobalProposalCreation() {
                   setF('interchange_fixed', r.rate_fixed);
                   toast.success(`${r.program_name} aplicado`);
                 }} />
-                <p className="text-[10px] text-[#002443]/50">
+                <p className="text-[10px] text-[#0A0A0A]/50">
                   Clique em qualquer linha para aplicar o programa como Interchange Custom.
                 </p>
               </div>
             </details>
-            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-[#002443]/5">
+            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-[#0A0A0A]/5">
               <div>
                 <Label className="text-xs">Custo Base (%)</Label>
                 <Input type="number" step="0.01" value={form.base_cost_percentage} onChange={e => setF('base_cost_percentage', e.target.value)} />
@@ -344,7 +344,7 @@ export default function GlobalProposalCreation() {
         </Card>
         )}
 
-        <Card className="border-[#002443]/5">
+        <Card className="border-[#0A0A0A]/5">
           <CardHeader><CardTitle className="text-base">Outras Taxas & Settlement</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Setup Fee (USD)</Label><Input type="number" step="0.01" value={form.setup_fee} onChange={e => setF('setup_fee', e.target.value)} placeholder="0 = FREE" /></div>
@@ -382,16 +382,16 @@ export default function GlobalProposalCreation() {
 
       {/* Coluna direita — sumário e ação */}
       <div className="space-y-4">
-        <Card className="border-[#2bc196]/30 bg-gradient-to-br from-white to-[#2bc196]/5 sticky top-4">
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><Calc className="w-4 h-4 text-[#2bc196]" /> Sumário da Proposta</CardTitle></CardHeader>
+        <Card className="border-[#1356E2]/30 bg-gradient-to-br from-white to-[#1356E2]/5 sticky top-4">
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><Calc className="w-4 h-4 text-[#1356E2]" /> Sumário da Proposta</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <Summary label="Taxa Final (%)" value={`${finalRate.toFixed(3)}%`} highlight />
             <Summary label="Fixo Final por Trx" value={`$${finalFixed.toFixed(2)}`} highlight />
-            <div className="h-px bg-[#002443]/10 my-2" />
+            <div className="h-px bg-[#0A0A0A]/10 my-2" />
             <Summary label="Custo Base" value={`${Number(form.base_cost_percentage).toFixed(3)}%`} />
             <Summary label="Interchange" value={`${Number(form.interchange_percentage).toFixed(3)}% + $${Number(form.interchange_fixed).toFixed(2)}`} />
             <Summary label="Markup" value={`${Number(form.markup_percentage).toFixed(3)}%`} />
-            <div className="h-px bg-[#002443]/10 my-2" />
+            <div className="h-px bg-[#0A0A0A]/10 my-2" />
             <Summary label="Setup" value={`$${Number(form.setup_fee).toFixed(2)}`} />
             <Summary label="Rolling Reserve" value={`${form.rolling_reserve_percentage}% por ${form.rolling_reserve_days}d`} />
             <Summary label="Settlement" value={form.settlement_days} />
@@ -399,7 +399,7 @@ export default function GlobalProposalCreation() {
               <Save className="w-4 h-4 mr-2" />
               {saveM.isPending ? 'Salvando...' : 'Criar Proposta'}
             </Button>
-            <p className="text-[10px] text-[#002443]/50 text-center">
+            <p className="text-[10px] text-[#0A0A0A]/50 text-center">
               Será gerada como <strong>sent</strong> e receberá um link público.
             </p>
           </CardContent>
@@ -411,10 +411,10 @@ export default function GlobalProposalCreation() {
 
 function InterchangeTable({ title, rows, onPick }) {
   return (
-    <div className="border border-[#002443]/10 rounded-lg overflow-hidden">
-      <div className="bg-white px-3 py-2 text-[11px] font-bold text-[#002443] border-b border-[#002443]/10">{title}</div>
+    <div className="border border-[#0A0A0A]/10 rounded-lg overflow-hidden">
+      <div className="bg-white px-3 py-2 text-[11px] font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10">{title}</div>
       <table className="w-full text-xs">
-        <thead className="bg-[#f4f4f4]/50 text-[#002443]/60">
+        <thead className="bg-[#f4f4f4]/50 text-[#0A0A0A]/60">
           <tr>
             <th className="text-left px-3 py-1.5 font-semibold">Programa</th>
             <th className="text-left px-3 py-1.5 font-semibold">Tipo de Cartão</th>
@@ -422,13 +422,13 @@ function InterchangeTable({ title, rows, onPick }) {
             <th className="text-right px-3 py-1.5 font-semibold">Fixo USD</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#002443]/5">
+        <tbody className="divide-y divide-[#0A0A0A]/5">
           {rows.map((r, i) => (
-            <tr key={i} onClick={() => onPick?.(r)} className="hover:bg-[#2bc196]/5 cursor-pointer transition-colors">
-              <td className="px-3 py-1.5 font-medium text-[#002443]">{r.program_name}</td>
-              <td className="px-3 py-1.5 text-[#002443]/70">{r.card_type}</td>
-              <td className="px-3 py-1.5 text-right font-mono text-[#002443]">{r.rate_percentage.toFixed(2)}%</td>
-              <td className="px-3 py-1.5 text-right font-mono text-[#002443]">${r.rate_fixed.toFixed(2)}</td>
+            <tr key={i} onClick={() => onPick?.(r)} className="hover:bg-[#1356E2]/5 cursor-pointer transition-colors">
+              <td className="px-3 py-1.5 font-medium text-[#0A0A0A]">{r.program_name}</td>
+              <td className="px-3 py-1.5 text-[#0A0A0A]/70">{r.card_type}</td>
+              <td className="px-3 py-1.5 text-right font-mono text-[#0A0A0A]">{r.rate_percentage.toFixed(2)}%</td>
+              <td className="px-3 py-1.5 text-right font-mono text-[#0A0A0A]">${r.rate_fixed.toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
@@ -440,8 +440,8 @@ function InterchangeTable({ title, rows, onPick }) {
 function Summary({ label, value, highlight = false }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-[#002443]/60">{label}</span>
-      <span className={`font-mono ${highlight ? 'text-[#2bc196] font-bold' : 'text-[#002443]'}`}>{value}</span>
+      <span className="text-[#0A0A0A]/60">{label}</span>
+      <span className={`font-mono ${highlight ? 'text-[#1356E2] font-bold' : 'text-[#0A0A0A]'}`}>{value}</span>
     </div>
   );
 }

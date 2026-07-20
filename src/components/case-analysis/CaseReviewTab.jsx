@@ -17,7 +17,7 @@ export default function CaseReviewTab({
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-      <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Revisão Manual</h3>
+      <h3 className="text-lg font-bold text-[var(--pinbank-blue)]">Revisão Manual</h3>
 
       {/* Auto-Decision Context */}
       {subfaixa && (
@@ -30,7 +30,7 @@ export default function CaseReviewTab({
         }`}>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Zap className="w-4 h-4" />
-            <span className="text-xs font-bold text-[var(--pagsmile-blue)]">
+            <span className="text-xs font-bold text-[var(--pinbank-blue)]">
               V4: Subfaixa {subfaixa} — {subfaixaNome}
             </span>
             {isAutoDecision && <Badge className="bg-blue-100 text-blue-700 text-[9px]">Decisão Automática</Badge>}
@@ -43,28 +43,28 @@ export default function CaseReviewTab({
           )}
           <div className="grid grid-cols-3 gap-3 text-xs">
             <div>
-              <span className="text-[var(--pagsmile-blue)]/50">Score V4</span>
-              <p className="font-bold text-[var(--pagsmile-blue)]">{onboardingCase.riskScoreV4 ?? 'N/D'}/849</p>
+              <span className="text-[var(--pinbank-blue)]/50">Score V4</span>
+              <p className="font-bold text-[var(--pinbank-blue)]">{onboardingCase.riskScoreV4 ?? 'N/D'}/849</p>
             </div>
             <div>
-              <span className="text-[var(--pagsmile-blue)]/50">Rolling Reserve</span>
-              <p className="font-bold text-[var(--pagsmile-blue)]">{onboardingCase.rollingReservePercent || 0}%</p>
+              <span className="text-[var(--pinbank-blue)]/50">Rolling Reserve</span>
+              <p className="font-bold text-[var(--pinbank-blue)]">{onboardingCase.rollingReservePercent || 0}%</p>
             </div>
             <div>
-              <span className="text-[var(--pagsmile-blue)]/50">Monitoramento</span>
-              <p className="font-bold text-[var(--pagsmile-blue)]">{onboardingCase.monitoramentoNivel?.replace(/_/g, ' ') || 'Padrão'}</p>
+              <span className="text-[var(--pinbank-blue)]/50">Monitoramento</span>
+              <p className="font-bold text-[var(--pinbank-blue)]">{onboardingCase.monitoramentoNivel?.replace(/_/g, ' ') || 'Padrão'}</p>
             </div>
           </div>
 
           {onboardingCase.condicoesAutomaticas?.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-[var(--pagsmile-blue)]/10">
-              <p className="text-[10px] font-semibold text-[var(--pagsmile-blue)]/60 mb-1.5 flex items-center gap-1">
+            <div className="mt-3 pt-3 border-t border-[var(--pinbank-blue)]/10">
+              <p className="text-[10px] font-semibold text-[var(--pinbank-blue)]/60 mb-1.5 flex items-center gap-1">
                 <Target className="w-3 h-3" /> Condições Automáticas Aplicadas
               </p>
               <ul className="space-y-1">
                 {onboardingCase.condicoesAutomaticas.map((c, i) => (
-                  <li key={i} className="text-[11px] text-[var(--pagsmile-blue)]/70 flex items-start gap-1.5">
-                    <span className="text-[var(--pagsmile-blue)]/30">•</span> {c}
+                  <li key={i} className="text-[11px] text-[var(--pinbank-blue)]/70 flex items-start gap-1.5">
+                    <span className="text-[var(--pinbank-blue)]/30">•</span> {c}
                   </li>
                 ))}
               </ul>
@@ -135,10 +135,10 @@ export default function CaseReviewTab({
       {onboardingCase.manualReviewComments && (
         <Alert className="bg-slate-50 border-slate-200">
           <AlertDescription>
-            <p className="font-semibold text-[var(--pagsmile-blue)] mb-1">Comentário anterior:</p>
-            <p className="text-[var(--pagsmile-blue)]/80 font-medium">{onboardingCase.manualReviewComments}</p>
+            <p className="font-semibold text-[var(--pinbank-blue)] mb-1">Comentário anterior:</p>
+            <p className="text-[var(--pinbank-blue)]/80 font-medium">{onboardingCase.manualReviewComments}</p>
             {onboardingCase.manualReviewerId && (
-              <p className="text-xs text-[var(--pagsmile-blue)]/60 font-medium mt-2">
+              <p className="text-xs text-[var(--pinbank-blue)]/60 font-medium mt-2">
                 Por {onboardingCase.manualReviewerId} em {onboardingCase.manualReviewDate ? 
                   new Date(onboardingCase.manualReviewDate).toLocaleDateString('pt-BR') : '-'}
               </p>

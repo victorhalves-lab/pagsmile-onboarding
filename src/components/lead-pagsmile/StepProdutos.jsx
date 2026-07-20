@@ -47,8 +47,8 @@ export default function StepProdutos({ form, updateField, errors = {} }) {
         onClick={() => toggleProduto(nome)}
         className={`px-3.5 py-2 rounded-full text-xs font-medium border-2 transition-all
           ${selected
-            ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-sm'
-            : 'bg-white border-[#002443]/15 text-[#002443]/70 hover:border-[#2bc196]/40 hover:bg-[#2bc196]/5'
+            ? 'bg-[#1356E2] border-[#1356E2] text-white shadow-sm'
+            : 'bg-white border-[#0A0A0A]/15 text-[#0A0A0A]/70 hover:border-[#1356E2]/40 hover:bg-[#1356E2]/5'
           }`}
       >
         {selected && '✓ '}{nome}
@@ -60,8 +60,8 @@ export default function StepProdutos({ form, updateField, errors = {} }) {
     <div className="space-y-5">
       {/* Tipo de Produto */}
       <div className="space-y-2" data-field="tipoProduto">
-        <label className="text-sm font-semibold text-[#002443]">Tipo de Produto *</label>
-        <p className="text-xs text-[#002443]/50">Você vende produtos físicos, digitais ou ambos?</p>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Tipo de Produto *</label>
+        <p className="text-xs text-[#0A0A0A]/50">Você vende produtos físicos, digitais ou ambos?</p>
         <ButtonSelector
           options={TIPO_PRODUTO_OPTIONS}
           value={tipoProduto}
@@ -75,15 +75,15 @@ export default function StepProdutos({ form, updateField, errors = {} }) {
       {tipoProduto && (
         <div className="space-y-3" data-field="produtosSelecionados">
           <div>
-            <label className="text-sm font-semibold text-[#002443]">Quais produtos você vende? *</label>
-            <p className="text-xs text-[#002443]/50">Selecione todos que se aplicam</p>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Quais produtos você vende? *</label>
+            <p className="text-xs text-[#0A0A0A]/50">Selecione todos que se aplicam</p>
           </div>
 
           {/* Físicos */}
           {(tipoProduto === 'Físico' || tipoProduto === 'Ambos') && (
             <div className="space-y-2">
               {tipoProduto === 'Ambos' && (
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40">Produtos Físicos</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40">Produtos Físicos</p>
               )}
               <div className="flex flex-wrap gap-2">
                 {PRODUTOS_FISICOS.map(renderChip)}
@@ -95,7 +95,7 @@ export default function StepProdutos({ form, updateField, errors = {} }) {
           {(tipoProduto === 'Digital' || tipoProduto === 'Ambos') && (
             <div className="space-y-2">
               {tipoProduto === 'Ambos' && (
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mt-3">Produtos Digitais</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mt-3">Produtos Digitais</p>
               )}
               <div className="flex flex-wrap gap-2">
                 {PRODUTOS_DIGITAIS.map(renderChip)}
@@ -107,7 +107,7 @@ export default function StepProdutos({ form, updateField, errors = {} }) {
             <p className="text-xs text-red-500">Selecione pelo menos 1 produto</p>
           )}
           {produtos.length > 0 && (
-            <p className="text-[11px] text-[#2bc196] font-medium">
+            <p className="text-[11px] text-[#1356E2] font-medium">
               ✓ {produtos.length} produto{produtos.length > 1 ? 's' : ''} selecionado{produtos.length > 1 ? 's' : ''}
             </p>
           )}

@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 
 const Section = ({ title, icon: Icon, children }) => (
   <div>
-    <h4 className="text-xs uppercase tracking-wider text-[#002443]/60 font-bold mb-2 flex items-center gap-1.5">
+    <h4 className="text-xs uppercase tracking-wider text-[#0A0A0A]/60 font-bold mb-2 flex items-center gap-1.5">
       {Icon && <Icon className="w-3.5 h-3.5" />}
       {title}
     </h4>
@@ -34,8 +34,8 @@ export default function ChangelogDetailModal({ entry, onClose, categoryConfig, s
                 <Badge className={cat.color}>{cat.label}</Badge>
                 <Badge className={sev.color}>{sev.label}</Badge>
                 {entry.breakingChanges && <Badge className="bg-red-100 text-red-700"><AlertTriangle className="w-3 h-3 mr-1" />Breaking Change</Badge>}
-                <span className="text-xs text-[#002443]/50">{format(new Date(entry.implementedAt || entry.created_date), 'dd/MM/yyyy HH:mm')}</span>
-                {entry.implementedBy && <span className="text-xs text-[#002443]/50">· {entry.implementedBy}</span>}
+                <span className="text-xs text-[#0A0A0A]/50">{format(new Date(entry.implementedAt || entry.created_date), 'dd/MM/yyyy HH:mm')}</span>
+                {entry.implementedBy && <span className="text-xs text-[#0A0A0A]/50">· {entry.implementedBy}</span>}
               </div>
             </div>
           </div>
@@ -44,25 +44,25 @@ export default function ChangelogDetailModal({ entry, onClose, categoryConfig, s
         <div className="space-y-5 mt-2">
           {entry.userRequest && (
             <Section title="Pedido Original do Usuário">
-              <div className="bg-slate-50 border-l-4 border-[#2bc196] p-3 rounded text-sm italic text-[#002443]/80">
+              <div className="bg-slate-50 border-l-4 border-[#1356E2] p-3 rounded text-sm italic text-[#0A0A0A]/80">
                 "{entry.userRequest}"
               </div>
             </Section>
           )}
 
           <Section title="Resumo Executivo">
-            <p className="text-sm text-[#002443]/80 whitespace-pre-wrap">{entry.summary}</p>
+            <p className="text-sm text-[#0A0A0A]/80 whitespace-pre-wrap">{entry.summary}</p>
           </Section>
 
           {entry.businessImpact && (
             <Section title="Impacto de Negócio">
-              <p className="text-sm text-[#002443]/80 whitespace-pre-wrap">{entry.businessImpact}</p>
+              <p className="text-sm text-[#0A0A0A]/80 whitespace-pre-wrap">{entry.businessImpact}</p>
             </Section>
           )}
 
           {entry.technicalDetails && (
             <Section title="Detalhes Técnicos">
-              <div className="prose prose-sm max-w-none text-[#002443]/80">
+              <div className="prose prose-sm max-w-none text-[#0A0A0A]/80">
                 <ReactMarkdown>{entry.technicalDetails}</ReactMarkdown>
               </div>
             </Section>
@@ -78,7 +78,7 @@ export default function ChangelogDetailModal({ entry, onClose, categoryConfig, s
                       f.action === 'deleted' ? 'border-red-300 text-red-700' : 'border-blue-300 text-blue-700'
                     }>{f.action}</Badge>
                     <code className="font-mono">{f.path}</code>
-                    {f.description && <span className="text-[#002443]/60">— {f.description}</span>}
+                    {f.description && <span className="text-[#0A0A0A]/60">— {f.description}</span>}
                   </div>
                 ))}
               </div>
@@ -107,13 +107,13 @@ export default function ChangelogDetailModal({ entry, onClose, categoryConfig, s
 
           {entry.testingNotes && (
             <Section title="Como Testar">
-              <p className="text-sm text-[#002443]/80 whitespace-pre-wrap bg-emerald-50 p-3 rounded border border-emerald-200">{entry.testingNotes}</p>
+              <p className="text-sm text-[#0A0A0A]/80 whitespace-pre-wrap bg-emerald-50 p-3 rounded border border-emerald-200">{entry.testingNotes}</p>
             </Section>
           )}
 
           {entry.rollbackInstructions && (
             <Section title="Como Reverter">
-              <p className="text-sm text-[#002443]/80 whitespace-pre-wrap bg-amber-50 p-3 rounded border border-amber-200">{entry.rollbackInstructions}</p>
+              <p className="text-sm text-[#0A0A0A]/80 whitespace-pre-wrap bg-amber-50 p-3 rounded border border-amber-200">{entry.rollbackInstructions}</p>
             </Section>
           )}
 

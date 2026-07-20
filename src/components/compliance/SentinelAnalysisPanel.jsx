@@ -37,7 +37,7 @@ export default function SentinelAnalysisPanel({ score, latestCase }) {
   const escalated = score?.decisao_escalada_sentinel;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-violet-50/60 to-blue-50/40">
         <div className="flex items-center justify-between">
@@ -46,8 +46,8 @@ export default function SentinelAnalysisPanel({ score, latestCase }) {
               <Brain className="w-5 h-5 text-violet-600" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Relatório SENTINEL — Dossiê de Compliance</h3>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40">Relatório qualitativo para dossiê — decisão é determinística (V4 + CAF)</p>
+              <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Relatório SENTINEL — Dossiê de Compliance</h3>
+              <p className="text-xs text-[var(--pinbank-blue)]/40">Relatório qualitativo para dossiê — decisão é determinística (V4 + CAF)</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
@@ -67,7 +67,7 @@ export default function SentinelAnalysisPanel({ score, latestCase }) {
               </Badge>
             )}
             {version && (
-              <Badge variant="outline" className="text-[9px] text-[var(--pagsmile-blue)]/30">{version}</Badge>
+              <Badge variant="outline" className="text-[9px] text-[var(--pinbank-blue)]/30">{version}</Badge>
             )}
           </div>
         </div>
@@ -205,7 +205,7 @@ function SegmentedAnalysis({ text }) {
       {visibleSegments.map((seg, i) => (
         <div key={i}>
           {seg.title && (
-            <h4 className="text-xs font-bold text-[var(--pagsmile-blue)] uppercase tracking-wide mb-2 pb-1 border-b border-slate-200">
+            <h4 className="text-xs font-bold text-[var(--pinbank-blue)] uppercase tracking-wide mb-2 pb-1 border-b border-slate-200">
               {seg.title}
             </h4>
           )}
@@ -232,8 +232,8 @@ function SentinelSection({ id, icon: Icon, title, subtitle, iconColor, iconBg, i
           <Icon className={`w-4 h-4 ${iconColor}`} />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-bold text-[var(--pagsmile-blue)]">{title}</h4>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{subtitle}</p>
+          <h4 className="text-sm font-bold text-[var(--pinbank-blue)]">{title}</h4>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{subtitle}</p>
         </div>
         {isOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
       </button>

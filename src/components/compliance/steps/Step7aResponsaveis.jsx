@@ -13,8 +13,8 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
       <div className="space-y-6">
         {/* 1. Responsável Contábil */}
         <div className="bg-slate-50 p-5 rounded-xl border border-slate-200">
-           <h3 className="font-bold text-[var(--pagsmile-blue)] mb-4 flex items-center gap-2">
-             <span className="bg-[var(--pagsmile-blue)] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+           <h3 className="font-bold text-[var(--pinbank-blue)] mb-4 flex items-center gap-2">
+             <span className="bg-[var(--pinbank-blue)] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
              Responsável Contábil
            </h3>
            <FormField 
@@ -23,7 +23,7 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
             value={formData.contabilNome} 
             onChange={(v) => handleChange('contabilNome', v)} 
             placeholder="Nome"
-            className="text-[var(--pagsmile-blue)] bg-white"
+            className="text-[var(--pinbank-blue)] bg-white"
            />
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <FormField 
@@ -33,7 +33,7 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
                 value={formData.contabilEmail} 
                 onChange={(v) => handleChange('contabilEmail', v)} 
                 placeholder="email@..."
-                className="text-[var(--pagsmile-blue)] bg-white"
+                className="text-[var(--pinbank-blue)] bg-white"
               />
               <FormField 
                 label="Telefone" 
@@ -41,7 +41,7 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
                 value={formData.contabilTelefone} 
                 onChange={(v) => handleChange('contabilTelefone', v)} 
                 placeholder="(00) 00000-0000"
-                className="text-[var(--pagsmile-blue)] bg-white"
+                className="text-[var(--pinbank-blue)] bg-white"
               />
            </div>
            <FormField 
@@ -49,14 +49,14 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
             value={formData.contabilCRC} 
             onChange={(v) => handleChange('contabilCRC', v)} 
             placeholder="Opcional"
-            className="text-[var(--pagsmile-blue)] bg-white mt-4"
+            className="text-[var(--pinbank-blue)] bg-white mt-4"
            />
         </div>
 
         {/* 2. Responsável SAC */}
         <div className="bg-slate-50 p-5 rounded-xl border border-slate-200">
-           <h3 className="font-bold text-[var(--pagsmile-blue)] mb-4 flex items-center gap-2">
-             <span className="bg-[var(--pagsmile-blue)] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+           <h3 className="font-bold text-[var(--pinbank-blue)] mb-4 flex items-center gap-2">
+             <span className="bg-[var(--pinbank-blue)] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
              Responsável pelo SAC
            </h3>
            <FormField 
@@ -65,7 +65,7 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
             value={formData.sacNome} 
             onChange={(v) => handleChange('sacNome', v)} 
             placeholder="Nome"
-            className="text-[var(--pagsmile-blue)] bg-white"
+            className="text-[var(--pinbank-blue)] bg-white"
            />
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <FormField 
@@ -75,7 +75,7 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
                 value={formData.sacEmail} 
                 onChange={(v) => handleChange('sacEmail', v)} 
                 placeholder="email@..."
-                className="text-[var(--pagsmile-blue)] bg-white"
+                className="text-[var(--pinbank-blue)] bg-white"
               />
               <FormField 
                 label="Telefone Celular" 
@@ -83,7 +83,7 @@ export default function Step7aResponsaveis({ formData, handleChange }) {
                 value={formData.sacCelular} 
                 onChange={(v) => handleChange('sacCelular', v)} 
                 placeholder="(00) 00000-0000"
-                className="text-[var(--pagsmile-blue)] bg-white"
+                className="text-[var(--pinbank-blue)] bg-white"
               />
            </div>
         </div>

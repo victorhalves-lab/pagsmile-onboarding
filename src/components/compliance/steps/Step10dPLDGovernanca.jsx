@@ -12,7 +12,7 @@ export default function Step10dPLDGovernanca({ formData, handleChange }) {
       subtitle="Estrutura de governança e auditoria."
       icon={ShieldCheck}
     >
-      <h3 className="font-semibold text-[var(--pagsmile-blue)] mb-2">8D. Governança</h3>
+      <h3 className="font-semibold text-[var(--pinbank-blue)] mb-2">8D. Governança</h3>
       
       <YesNoQuestion
         question="Existe área/pessoa dedicada a Compliance?"
@@ -36,7 +36,7 @@ export default function Step10dPLDGovernanca({ formData, handleChange }) {
       />
       {formData.pld_gov_auditoria === true && (
          <div className="mt-2 space-y-2">
-            <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Frequência das auditorias</Label>
+            <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Frequência das auditorias</Label>
             <SelectionButton
                options={[
                   {value: 'anual', label: 'Anual'},

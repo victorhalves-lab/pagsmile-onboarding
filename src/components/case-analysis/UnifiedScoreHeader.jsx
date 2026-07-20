@@ -22,9 +22,9 @@ function ScoreDecompositionBar({ c1, c2, c3, total }) {
   const safeTotal = Math.min(total || 0, max);
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 text-[10px] text-[#002443]/50">
+      <div className="flex items-center gap-2 text-[10px] text-[#0A0A0A]/50">
         <span className="font-bold uppercase tracking-wider">Decomposição do Score</span>
-        <span className="text-[#002443]/30">—</span>
+        <span className="text-[#0A0A0A]/30">—</span>
         <span>C1 (Base) + C2 (Variáveis) + C3 (Enriquecimento)</span>
       </div>
       <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden flex">
@@ -95,16 +95,16 @@ export default function UnifiedScoreHeader({ onboardingCase, complianceScore, va
   // Fallback: if V4 score not available, show IA recommendation from ComplianceScore
   if (currentScore == null && !complianceScore) {
     return (
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-6 text-center">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-6 text-center">
         <Shield className="w-10 h-10 mx-auto text-slate-300 mb-3" />
-        <p className="text-sm font-semibold text-[#002443]/60">Score de Risco não disponível</p>
-        <p className="text-xs text-[#002443]/40 mt-1">Execute o Risk Scoring V4 para gerar a análise unificada</p>
+        <p className="text-sm font-semibold text-[#0A0A0A]/60">Score de Risco não disponível</p>
+        <p className="text-xs text-[#0A0A0A]/40 mt-1">Execute o Risk Scoring V4 para gerar a análise unificada</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 overflow-hidden">
       <div className={`h-2 ${config.color}`} />
       <div className="p-6 space-y-5">
         {/* Top row: Title + revalidation badge */}
@@ -114,10 +114,10 @@ export default function UnifiedScoreHeader({ onboardingCase, complianceScore, va
               <Shield className={`w-6 h-6 ${config.textColor}`} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#002443]">Score de Risco Unificado</h3>
-              <p className="text-xs text-[#002443]/40 mt-0.5">
+              <h3 className="text-base font-bold text-[#0A0A0A]">Score de Risco Unificado</h3>
+              <p className="text-xs text-[#0A0A0A]/40 mt-0.5">
                 Framework V4 • 3 Camadas • Score 0–849
-                {segmento && <> • Segmento: <strong className="text-[#002443]/60">{segmento}</strong></>}
+                {segmento && <> • Segmento: <strong className="text-[#0A0A0A]/60">{segmento}</strong></>}
               </p>
             </div>
           </div>
@@ -140,19 +140,19 @@ export default function UnifiedScoreHeader({ onboardingCase, complianceScore, va
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Score card */}
           <div className={`p-5 rounded-xl ${config.bgLight} border ${config.border}`}>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">Score Final</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">Score Final</p>
             <div className="flex items-baseline gap-1.5">
               <span className={`text-4xl font-black ${config.textColor}`}>{currentScore ?? '—'}</span>
-              <span className="text-sm text-[#002443]/30 font-medium">/849</span>
+              <span className="text-sm text-[#0A0A0A]/30 font-medium">/849</span>
             </div>
             <div className="w-full h-2.5 bg-white/60 rounded-full mt-3 overflow-hidden">
               <div className={`h-full rounded-full ${config.color} transition-all duration-1000`} style={{ width: `${pct}%` }} />
             </div>
-            <p className="text-[10px] text-[#002443]/40 mt-1.5">0 = risco mínimo • 849 = risco máximo</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 mt-1.5">0 = risco mínimo • 849 = risco máximo</p>
             {lastDelta !== 0 && originalScore != null && (
-              <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#002443]/5">
+              <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#0A0A0A]/5">
                 {lastDelta > 0 ? <TrendingUp className="w-3.5 h-3.5 text-red-500" /> : <TrendingDown className="w-3.5 h-3.5 text-green-500" />}
-                <span className="text-[10px] text-[#002443]/50">Score anterior: {originalScore}</span>
+                <span className="text-[10px] text-[#0A0A0A]/50">Score anterior: {originalScore}</span>
                 <span className={`text-[10px] font-mono font-bold ${lastDelta > 0 ? 'text-red-600' : 'text-green-600'}`}>
                   {lastDelta >= 0 ? '+' : ''}{lastDelta}
                 </span>
@@ -161,17 +161,17 @@ export default function UnifiedScoreHeader({ onboardingCase, complianceScore, va
           </div>
 
           {/* Subfaixa + Monitoramento */}
-          <div className="p-5 rounded-xl bg-[#f4f4f4] border border-[#002443]/5 flex flex-col justify-between">
+          <div className="p-5 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5 flex flex-col justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">Classificação</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">Classificação</p>
               <Badge className={`${config.bgLight} ${config.textColor} ${config.border} border text-base font-black px-4 py-1.5`}>
                 {currentSubfaixa || '—'} — {config.label}
               </Badge>
             </div>
             <div className="mt-3 space-y-1.5">
               {monitoramento && (
-                <div className="flex items-center gap-1.5 text-xs text-[#002443]/60">
-                  <Eye className="w-3.5 h-3.5 text-[#002443]/40" />
+                <div className="flex items-center gap-1.5 text-xs text-[#0A0A0A]/60">
+                  <Eye className="w-3.5 h-3.5 text-[#0A0A0A]/40" />
                   <span>Monitoramento: <strong>{monitoramento}</strong></span>
                 </div>
               )}
@@ -187,18 +187,18 @@ export default function UnifiedScoreHeader({ onboardingCase, complianceScore, va
           {/* Recommendation */}
           <div className={`p-5 rounded-xl ${config.bgLight} border ${config.border} flex flex-col justify-between`}>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">Recomendação Framework</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">Recomendação Framework</p>
               <div className="flex items-center gap-2">
                 <RecIcon className={`w-5 h-5 ${config.recColor}`} />
                 <span className={`text-sm font-bold ${config.recColor}`}>{config.recommendation}</span>
               </div>
             </div>
             {complianceScore?.recomendacao_final && (
-              <div className="mt-3 pt-3 border-t border-[#002443]/10">
-                <p className="text-[10px] text-[#002443]/40 mb-0.5">Recomendação IA SENTINEL:</p>
-                <span className="text-xs font-semibold text-[#002443]/70">{complianceScore.recomendacao_final}</span>
+              <div className="mt-3 pt-3 border-t border-[#0A0A0A]/10">
+                <p className="text-[10px] text-[#0A0A0A]/40 mb-0.5">Recomendação IA SENTINEL:</p>
+                <span className="text-xs font-semibold text-[#0A0A0A]/70">{complianceScore.recomendacao_final}</span>
                 {complianceScore.nivel_confianca_ia && (
-                  <span className="text-[10px] text-[#002443]/40 ml-2">({complianceScore.nivel_confianca_ia}% confiança)</span>
+                  <span className="text-[10px] text-[#0A0A0A]/40 ml-2">({complianceScore.nivel_confianca_ia}% confiança)</span>
                 )}
               </div>
             )}

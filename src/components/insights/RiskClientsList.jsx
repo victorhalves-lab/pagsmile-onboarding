@@ -143,7 +143,7 @@ export default function RiskClientsList({ scores, cases, merchants }) {
                 <Icon className="w-5 h-5" style={{ color: item.color }} />
                 <span className="text-2xl font-extrabold" style={{ color: item.color }}>{item.count}</span>
               </div>
-              <p className="text-[10px] font-bold text-[#002443]/60">{item.label}</p>
+              <p className="text-[10px] font-bold text-[#0A0A0A]/60">{item.label}</p>
             </button>
           );
         })}
@@ -154,11 +154,11 @@ export default function RiskClientsList({ scores, cases, merchants }) {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-bold">Clientes ({filtered.length})</CardTitle>
-            <Badge className="bg-[#002443] text-white border-0 text-[10px]">{clients.length} total</Badge>
+            <Badge className="bg-[#0A0A0A] text-white border-0 text-[10px]">{clients.length} total</Badge>
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#002443]/30" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#0A0A0A]/30" />
               <Input placeholder="Buscar por nome, CNPJ, e-mail, segmento..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 h-9 text-xs" />
             </div>
             <Select value={sortBy} onValueChange={setSortBy}>
@@ -175,7 +175,7 @@ export default function RiskClientsList({ scores, cases, merchants }) {
         <CardContent>
           <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
             {filtered.length === 0 && (
-              <div className="text-center py-12 text-[#002443]/30">
+              <div className="text-center py-12 text-[#0A0A0A]/30">
                 <FileWarning className="w-8 h-8 mx-auto mb-2" />
                 <p className="text-xs font-medium">Nenhum cliente encontrado com os filtros selecionados</p>
               </div>
@@ -202,22 +202,22 @@ export default function RiskClientsList({ scores, cases, merchants }) {
                     {/* Client name & info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#002443] truncate">{client.merchantName}</span>
+                        <span className="text-sm font-bold text-[#0A0A0A] truncate">{client.merchantName}</span>
                         {client.merchantType && (
                           <Badge variant="outline" className="text-[8px] font-mono shrink-0">{client.merchantType}</Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-3 mt-0.5">
-                        {client.merchantCpfCnpj && <span className="text-[10px] text-[#002443]/40 font-mono">{client.merchantCpfCnpj}</span>}
-                        <span className="text-[10px] text-[#002443]/40 capitalize">{(client.segmento || '').replace(/_/g, ' ')}</span>
-                        {client.caseDate && <span className="text-[10px] text-[#002443]/30">{moment(client.caseDate).format('DD/MM/YYYY')}</span>}
+                        {client.merchantCpfCnpj && <span className="text-[10px] text-[#0A0A0A]/40 font-mono">{client.merchantCpfCnpj}</span>}
+                        <span className="text-[10px] text-[#0A0A0A]/40 capitalize">{(client.segmento || '').replace(/_/g, ' ')}</span>
+                        {client.caseDate && <span className="text-[10px] text-[#0A0A0A]/30">{moment(client.caseDate).format('DD/MM/YYYY')}</span>}
                       </div>
                     </div>
 
                     {/* Score gauge */}
                     <div className="flex-shrink-0 text-center w-16">
-                      <p className="text-lg font-extrabold text-[#002443]">{client.score_final ?? '—'}</p>
-                      <p className="text-[8px] text-[#002443]/30">SCORE</p>
+                      <p className="text-lg font-extrabold text-[#0A0A0A]">{client.score_final ?? '—'}</p>
+                      <p className="text-[8px] text-[#0A0A0A]/30">SCORE</p>
                     </div>
 
                     {/* Subfaixa */}
@@ -229,8 +229,8 @@ export default function RiskClientsList({ scores, cases, merchants }) {
 
                     {/* RR */}
                     <div className="flex-shrink-0 text-center w-12">
-                      <p className="text-sm font-bold text-[#002443]/70">{client.rolling_reserve_percent ?? 0}%</p>
-                      <p className="text-[8px] text-[#002443]/30">RR</p>
+                      <p className="text-sm font-bold text-[#0A0A0A]/70">{client.rolling_reserve_percent ?? 0}%</p>
+                      <p className="text-[8px] text-[#0A0A0A]/30">RR</p>
                     </div>
 
                     {/* Decision */}
@@ -255,27 +255,27 @@ export default function RiskClientsList({ scores, cases, merchants }) {
 
                       {/* Score breakdown */}
                       <div className="bg-white rounded-lg p-3 border border-slate-100 mb-3">
-                        <p className="text-[9px] font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Composição do Score</p>
+                        <p className="text-[9px] font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-2">Composição do Score</p>
                         <div className="grid grid-cols-4 gap-3 text-center">
                           <div>
                             <p className="text-lg font-bold text-blue-600">{client.score_base_segmento || 0}</p>
-                            <p className="text-[9px] text-[#002443]/40">C1 Base</p>
+                            <p className="text-[9px] text-[#0A0A0A]/40">C1 Base</p>
                           </div>
                           <div>
                             <p className="text-lg font-bold" style={{ color: (client.score_variaveis || 0) > 0 ? '#ef4444' : '#22c55e' }}>
                               {client.score_variaveis > 0 ? '+' : ''}{client.score_variaveis || 0}
                             </p>
-                            <p className="text-[9px] text-[#002443]/40">C2 Variáveis</p>
+                            <p className="text-[9px] text-[#0A0A0A]/40">C2 Variáveis</p>
                           </div>
                           <div>
                             <p className="text-lg font-bold" style={{ color: (client.score_enriquecimento || 0) > 0 ? '#ef4444' : '#22c55e' }}>
                               {client.score_enriquecimento > 0 ? '+' : ''}{client.score_enriquecimento || 0}
                             </p>
-                            <p className="text-[9px] text-[#002443]/40">C3 Enriquecimento</p>
+                            <p className="text-[9px] text-[#0A0A0A]/40">C3 Enriquecimento</p>
                           </div>
-                          <div className="bg-[#002443]/5 rounded-lg p-1">
-                            <p className="text-lg font-extrabold text-[#002443]">{client.score_final ?? 0}</p>
-                            <p className="text-[9px] text-[#002443]/40">Final</p>
+                          <div className="bg-[#0A0A0A]/5 rounded-lg p-1">
+                            <p className="text-lg font-extrabold text-[#0A0A0A]">{client.score_final ?? 0}</p>
+                            <p className="text-[9px] text-[#0A0A0A]/40">Final</p>
                           </div>
                         </div>
                       </div>
@@ -283,20 +283,20 @@ export default function RiskClientsList({ scores, cases, merchants }) {
                       {/* Monitoring & status */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 text-[10px]">
                         <div className="bg-white rounded-lg p-2 border border-slate-100">
-                          <span className="text-[#002443]/40">Monitoramento:</span>
-                          <p className="font-bold text-[#002443]">{(client.monitoramento_nivel || 'PADRAO').replace(/_/g, ' ')}</p>
+                          <span className="text-[#0A0A0A]/40">Monitoramento:</span>
+                          <p className="font-bold text-[#0A0A0A]">{(client.monitoramento_nivel || 'PADRAO').replace(/_/g, ' ')}</p>
                         </div>
                         <div className="bg-white rounded-lg p-2 border border-slate-100">
-                          <span className="text-[#002443]/40">Decisão:</span>
-                          <p className="font-bold text-[#002443]">{client.decisao_automatica ? 'Automática' : 'Manual'}</p>
+                          <span className="text-[#0A0A0A]/40">Decisão:</span>
+                          <p className="font-bold text-[#0A0A0A]">{client.decisao_automatica ? 'Automática' : 'Manual'}</p>
                         </div>
                         <div className="bg-white rounded-lg p-2 border border-slate-100">
-                          <span className="text-[#002443]/40">PIX:</span>
-                          <p className="font-bold text-[#002443]">{client.is_pix ? 'Sim' : 'Não'}</p>
+                          <span className="text-[#0A0A0A]/40">PIX:</span>
+                          <p className="font-bold text-[#0A0A0A]">{client.is_pix ? 'Sim' : 'Não'}</p>
                         </div>
                         <div className="bg-white rounded-lg p-2 border border-slate-100">
-                          <span className="text-[#002443]/40">Analista:</span>
-                          <p className="font-bold text-[#002443]">{client.assignedAnalyst || '—'}</p>
+                          <span className="text-[#0A0A0A]/40">Analista:</span>
+                          <p className="font-bold text-[#0A0A0A]">{client.assignedAnalyst || '—'}</p>
                         </div>
                       </div>
 
@@ -320,7 +320,7 @@ export default function RiskClientsList({ scores, cases, merchants }) {
                             {negVars.map((v, i) => (
                               <div key={i} className="flex items-center gap-2 text-[10px]">
                                 <Badge className="bg-red-100 text-red-700 border-0 text-[8px] font-mono w-10 justify-center shrink-0">{v}</Badge>
-                                <span className="text-[#002443]/60">{VAR_DESCRIPTIONS[v] || v}</span>
+                                <span className="text-[#0A0A0A]/60">{VAR_DESCRIPTIONS[v] || v}</span>
                               </div>
                             ))}
                           </div>
@@ -335,7 +335,7 @@ export default function RiskClientsList({ scores, cases, merchants }) {
                             {posVars.map((v, i) => (
                               <div key={i} className="flex items-center gap-2 text-[10px]">
                                 <Badge className="bg-green-100 text-green-700 border-0 text-[8px] font-mono w-10 justify-center shrink-0">{v}</Badge>
-                                <span className="text-[#002443]/60">{VAR_DESCRIPTIONS[v] || v}</span>
+                                <span className="text-[#0A0A0A]/60">{VAR_DESCRIPTIONS[v] || v}</span>
                               </div>
                             ))}
                           </div>
@@ -348,7 +348,7 @@ export default function RiskClientsList({ scores, cases, merchants }) {
                           <p className="text-[9px] font-bold text-amber-700 uppercase tracking-wider mb-1.5">Condições Aplicadas ({conds.length})</p>
                           <div className="space-y-1">
                             {conds.map((c, i) => (
-                              <p key={i} className="text-[10px] text-[#002443]/60 flex items-start gap-1.5">
+                              <p key={i} className="text-[10px] text-[#0A0A0A]/60 flex items-start gap-1.5">
                                 <span className="text-amber-500 shrink-0">•</span> {c}
                               </p>
                             ))}
@@ -370,10 +370,10 @@ export default function RiskClientsList({ scores, cases, merchants }) {
 function DetailItem({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-2 text-[10px]">
-      <Icon className="w-3.5 h-3.5 text-[#002443]/30 shrink-0 mt-0.5" />
+      <Icon className="w-3.5 h-3.5 text-[#0A0A0A]/30 shrink-0 mt-0.5" />
       <div>
-        <p className="text-[#002443]/40">{label}</p>
-        <p className="font-medium text-[#002443] capitalize">{value}</p>
+        <p className="text-[#0A0A0A]/40">{label}</p>
+        <p className="font-medium text-[#0A0A0A] capitalize">{value}</p>
       </div>
     </div>
   );

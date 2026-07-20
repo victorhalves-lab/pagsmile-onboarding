@@ -37,27 +37,27 @@ export default function AnaliseManualV5_2Stats({ cases, categoriaFilter, onCateg
       disabled={disabled}
       className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
         active
-          ? 'bg-white border-[#2bc196] shadow-md ring-2 ring-[#2bc196]/20'
+          ? 'bg-white border-[#1356E2] shadow-md ring-2 ring-[#1356E2]/20'
           : disabled
           ? 'bg-slate-50 border-slate-100 opacity-50 cursor-not-allowed'
-          : 'bg-white/80 border-[#002443]/10 hover:border-[#2bc196]/40'
+          : 'bg-white/80 border-[#0A0A0A]/10 hover:border-[#1356E2]/40'
       }`}
     >
       <div className={`p-2 rounded-lg ${color}`}>
         <Icon className="w-4 h-4" />
       </div>
       <div className="text-left">
-        <p className="text-[10px] font-semibold text-[#002443]/60 uppercase tracking-wide">{label}</p>
-        <p className="text-2xl font-bold text-[#002443] leading-none mt-0.5">{value}</p>
+        <p className="text-[10px] font-semibold text-[#0A0A0A]/60 uppercase tracking-wide">{label}</p>
+        <p className="text-2xl font-bold text-[#0A0A0A] leading-none mt-0.5">{value}</p>
       </div>
     </button>
   );
 
   return (
-    <div className="rounded-xl border-2 border-dashed border-[#2bc196]/40 bg-[#2bc196]/5 p-4 space-y-3">
+    <div className="rounded-xl border-2 border-dashed border-[#1356E2]/40 bg-[#1356E2]/5 p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <ShieldCheck className="w-4 h-4 text-[#2bc196]" />
-        <p className="text-xs font-bold text-[#002443] uppercase tracking-wide">
+        <ShieldCheck className="w-4 h-4 text-[#1356E2]" />
+        <p className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wide">
           Filtros V5.2 — Categoria de Decisão & Bloqueios
         </p>
         {stats.transicionais > 0 && (

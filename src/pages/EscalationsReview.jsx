@@ -49,8 +49,8 @@ export default function EscalationsReview() {
   return (
     <div className="max-w-7xl mx-auto space-y-6 py-4">
       <div>
-        <h1 className="text-2xl font-bold text-[#002443]">Escalações Questionáveis</h1>
-        <p className="text-sm text-[#002443]/60 mt-1">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Escalações Questionáveis</h1>
+        <p className="text-sm text-[#0A0A0A]/60 mt-1">
           Casos com subfaixa de baixo/médio risco (1A–3B) que foram escalados para Revisão Manual.
           Use para identificar padrões e ajustar as regras de escalação.
         </p>
@@ -93,7 +93,7 @@ export default function EscalationsReview() {
           {/* Distribution by subfaixa */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-bold text-[#002443]">Distribuição por Subfaixa</CardTitle>
+              <CardTitle className="text-sm font-bold text-[#0A0A0A]">Distribuição por Subfaixa</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -102,9 +102,9 @@ export default function EscalationsReview() {
                   const pct = list.length > 0 ? ((count / list.length) * 100).toFixed(0) : 0;
                   return (
                     <div key={sf} className="rounded-lg border border-slate-200 p-3 text-center">
-                      <p className="text-[10px] font-bold text-[#002443]/50 uppercase">{sf}</p>
-                      <p className="text-2xl font-black text-[#002443]">{count}</p>
-                      <p className="text-[10px] text-[#002443]/40">{pct}% do total</p>
+                      <p className="text-[10px] font-bold text-[#0A0A0A]/50 uppercase">{sf}</p>
+                      <p className="text-2xl font-black text-[#0A0A0A]">{count}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/40">{pct}% do total</p>
                     </div>
                   );
                 })}
@@ -115,13 +115,13 @@ export default function EscalationsReview() {
           {/* List of cases */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-bold text-[#002443]">
+              <CardTitle className="text-sm font-bold text-[#0A0A0A]">
                 Casos escalados ({list.length})
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               {list.length === 0 ? (
-                <p className="text-sm text-[#002443]/50 text-center py-12">
+                <p className="text-sm text-[#0A0A0A]/50 text-center py-12">
                   Nenhuma escalação questionável encontrada. As regras de escalação estão se comportando bem.
                 </p>
               ) : (
@@ -141,7 +141,7 @@ export default function EscalationsReview() {
 
 function KPICard({ label, value, icon: Icon, tone, hint }) {
   const toneClasses = {
-    slate: 'bg-slate-50 border-slate-200 text-[#002443]',
+    slate: 'bg-slate-50 border-slate-200 text-[#0A0A0A]',
     sky: 'bg-sky-50 border-sky-200 text-sky-900',
     red: 'bg-red-50 border-red-200 text-red-900',
     amber: 'bg-amber-50 border-amber-200 text-amber-900',
@@ -170,8 +170,8 @@ function CaseRow({ caseItem }) {
         to={`/CadastroDetalhe?id=${caseItem.merchantId}`}
         className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors"
       >
-        <div className="w-9 h-9 rounded-lg bg-[#002443]/5 flex items-center justify-center shrink-0">
-          <Icon className="w-4 h-4 text-[#002443]/70" />
+        <div className="w-9 h-9 rounded-lg bg-[#0A0A0A]/5 flex items-center justify-center shrink-0">
+          <Icon className="w-4 h-4 text-[#0A0A0A]/70" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -188,13 +188,13 @@ function CaseRow({ caseItem }) {
             )}
           </div>
           {caseItem.escalationReason && (
-            <p className="text-xs text-[#002443]/70 mt-1 line-clamp-2">{caseItem.escalationReason}</p>
+            <p className="text-xs text-[#0A0A0A]/70 mt-1 line-clamp-2">{caseItem.escalationReason}</p>
           )}
-          <p className="text-[10px] text-[#002443]/40 mt-1">
+          <p className="text-[10px] text-[#0A0A0A]/40 mt-1">
             Score V4: {caseItem.riskScoreV4}/849 • Decidido em {date}
           </p>
         </div>
-        <ChevronRight className="w-4 h-4 text-[#002443]/30 shrink-0" />
+        <ChevronRight className="w-4 h-4 text-[#0A0A0A]/30 shrink-0" />
       </Link>
     </li>
   );

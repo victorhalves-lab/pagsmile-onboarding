@@ -204,12 +204,12 @@ export default function SubsellerInfoRecebidos() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
-            <Inbox className="w-5 h-5 text-[#002443]" />
+          <div className="w-10 h-10 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center">
+            <Inbox className="w-5 h-5 text-[#0A0A0A]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Inbox — Subsellers Recebidos</h1>
-            <p className="text-sm text-[#002443]/60">Submissões dos Gateways, separadas por cliente. Exporte em XLSX por gateway ou tudo de uma vez.</p>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">Inbox — Subsellers Recebidos</h1>
+            <p className="text-sm text-[#0A0A0A]/60">Submissões dos Gateways, separadas por cliente. Exporte em XLSX por gateway ou tudo de uma vez.</p>
           </div>
         </div>
         <Button onClick={exportAll} variant="outline">
@@ -225,12 +225,12 @@ export default function SubsellerInfoRecebidos() {
           { label: 'Subsellers totais', value: submissions.reduce((s, x) => s + (x.subsellers_count || x.subsellers?.length || 0), 0), icon: Users },
           { label: 'Pendentes', value: submissions.filter(s => s.status === 'pending').length, icon: Calendar },
         ].map((k, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+          <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
             <div className="flex items-center gap-2 mb-1">
-              <k.icon className="w-4 h-4 text-[#2bc196]" />
-              <p className="text-xl font-bold text-[#002443]">{k.value}</p>
+              <k.icon className="w-4 h-4 text-[#1356E2]" />
+              <p className="text-xl font-bold text-[#0A0A0A]">{k.value}</p>
             </div>
-            <p className="text-[10px] text-[#002443]/40">{k.label}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40">{k.label}</p>
           </div>
         ))}
       </div>
@@ -239,7 +239,7 @@ export default function SubsellerInfoRecebidos() {
       <Card><CardContent className="p-4">
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#002443]/30" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#0A0A0A]/30" />
             <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por gateway, CNPJ, razão social..." className="pl-9" />
           </div>
           <Select value={gatewayFilter} onValueChange={setGatewayFilter}>
@@ -261,11 +261,11 @@ export default function SubsellerInfoRecebidos() {
 
       {/* Grouped list */}
       {isLoading ? (
-        <Card><CardContent className="p-8 text-center text-sm text-[#002443]/40">Carregando...</CardContent></Card>
+        <Card><CardContent className="p-8 text-center text-sm text-[#0A0A0A]/40">Carregando...</CardContent></Card>
       ) : grouped.length === 0 ? (
         <Card><CardContent className="p-12 text-center">
-          <Inbox className="w-10 h-10 text-[#002443]/20 mx-auto mb-3" />
-          <p className="text-sm text-[#002443]/60">Nenhuma submissão recebida ainda.</p>
+          <Inbox className="w-10 h-10 text-[#0A0A0A]/20 mx-auto mb-3" />
+          <p className="text-sm text-[#0A0A0A]/60">Nenhuma submissão recebida ainda.</p>
         </CardContent></Card>
       ) : (
         <div className="space-y-3">
@@ -277,13 +277,13 @@ export default function SubsellerInfoRecebidos() {
                 <CardContent className="p-0">
                   <button onClick={() => toggleExpand(key)} className="w-full flex items-center justify-between p-4 hover:bg-[#f4f4f4]/50 transition-colors">
                     <div className="flex items-center gap-3">
-                      {isOpen ? <ChevronDown className="w-5 h-5 text-[#002443]/40" /> : <ChevronRight className="w-5 h-5 text-[#002443]/40" />}
-                      <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-                        <Building2 className="w-5 h-5 text-[#2bc196]" />
+                      {isOpen ? <ChevronDown className="w-5 h-5 text-[#0A0A0A]/40" /> : <ChevronRight className="w-5 h-5 text-[#0A0A0A]/40" />}
+                      <div className="w-10 h-10 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+                        <Building2 className="w-5 h-5 text-[#1356E2]" />
                       </div>
                       <div className="text-left">
-                        <h3 className="text-sm font-bold text-[#002443]">{gateway}</h3>
-                        <p className="text-[11px] text-[#002443]/50">
+                        <h3 className="text-sm font-bold text-[#0A0A0A]">{gateway}</h3>
+                        <p className="text-[11px] text-[#0A0A0A]/50">
                           {subs.length} {subs.length === 1 ? 'submissão' : 'submissões'} · {totalSubsellers} subsellers
                         </p>
                       </div>
@@ -294,7 +294,7 @@ export default function SubsellerInfoRecebidos() {
                       </Button>
                       <Button
                         size="sm"
-                        className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+                        className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
                         disabled={dossieLoading === key}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -313,7 +313,7 @@ export default function SubsellerInfoRecebidos() {
                     </div>
                   </button>
                   {isOpen && (
-                    <div className="border-t border-[#002443]/5 divide-y divide-[#002443]/5">
+                    <div className="border-t border-[#0A0A0A]/5 divide-y divide-[#0A0A0A]/5">
                       {subs.map(sub => (
                         <div key={sub.id} className="p-4 hover:bg-[#f4f4f4]/30">
                           <div className="flex items-start justify-between mb-2">
@@ -322,11 +322,11 @@ export default function SubsellerInfoRecebidos() {
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${STATUS_LABELS[sub.status]?.color || 'bg-slate-100'}`}>
                                   {STATUS_LABELS[sub.status]?.label || sub.status}
                                 </span>
-                                <span className="text-xs text-[#002443]/50">
+                                <span className="text-xs text-[#0A0A0A]/50">
                                   {sub.created_date ? format(new Date(sub.created_date), "dd 'de' MMM 'às' HH:mm", { locale: ptBR }) : ''}
                                 </span>
                               </div>
-                              <p className="text-xs text-[#002443]/60">
+                              <p className="text-xs text-[#0A0A0A]/60">
                                 {sub.subsellers_count || sub.subsellers?.length || 0} subseller(s)
                                 {sub.submitter_name && ` · enviado por ${sub.submitter_name}`}
                               </p>
@@ -362,7 +362,7 @@ export default function SubsellerInfoRecebidos() {
           </DialogHeader>
           {detailOpen && (
             <div className="space-y-3 pt-2">
-              <div className="text-xs text-[#002443]/60">
+              <div className="text-xs text-[#0A0A0A]/60">
                 Enviado em {detailOpen.created_date ? format(new Date(detailOpen.created_date), "dd/MM/yyyy 'às' HH:mm") : ''}
                 {detailOpen.submitter_name && ` · por ${detailOpen.submitter_name}`}
                 {detailOpen.submitter_email && ` (${detailOpen.submitter_email})`}
@@ -370,14 +370,14 @@ export default function SubsellerInfoRecebidos() {
               {(detailOpen.subsellers || []).map((s, i) => {
                 const isPJ = (s.person_type || 'PJ') === 'PJ';
                 return (
-                  <div key={i} className="border border-[#002443]/10 rounded-xl p-4 bg-[#f4f4f4]/30">
+                  <div key={i} className="border border-[#0A0A0A]/10 rounded-xl p-4 bg-[#f4f4f4]/30">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-[#2bc196] text-white flex items-center justify-center text-xs font-bold">{i + 1}</div>
-                        <h4 className="text-sm font-bold text-[#002443]">{s.company_name || '(sem nome)'}</h4>
+                        <div className="w-7 h-7 rounded-lg bg-[#1356E2] text-white flex items-center justify-center text-xs font-bold">{i + 1}</div>
+                        <h4 className="text-sm font-bold text-[#0A0A0A]">{s.company_name || '(sem nome)'}</h4>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isPJ ? 'bg-[#002443]/10 text-[#002443]' : 'bg-amber-50 text-amber-700'}`}>
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isPJ ? 'bg-[#0A0A0A]/10 text-[#0A0A0A]' : 'bg-amber-50 text-amber-700'}`}>
                           {isPJ ? <Building2 className="w-3 h-3" /> : <User className="w-3 h-3" />}
                           {isPJ ? 'PJ' : 'PF'}
                         </span>
@@ -407,43 +407,43 @@ export default function SubsellerInfoRecebidos() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                       {isPJ ? (
                         <>
-                          <div><span className="text-[#002443]/40">CNPJ:</span> {s.cnpj || '—'}</div>
-                          <div><span className="text-[#002443]/40">CNAE:</span> {s.cnae || '—'}</div>
+                          <div><span className="text-[#0A0A0A]/40">CNPJ:</span> {s.cnpj || '—'}</div>
+                          <div><span className="text-[#0A0A0A]/40">CNAE:</span> {s.cnae || '—'}</div>
                         </>
                       ) : (
                         <>
-                          <div><span className="text-[#002443]/40">CPF:</span> {s.cpf || '—'}</div>
-                          <div><span className="text-[#002443]/40">RG:</span> {s.rg || '—'}</div>
+                          <div><span className="text-[#0A0A0A]/40">CPF:</span> {s.cpf || '—'}</div>
+                          <div><span className="text-[#0A0A0A]/40">RG:</span> {s.rg || '—'}</div>
                         </>
                       )}
-                      <div><span className="text-[#002443]/40">Modelo:</span> {s.business_model || '—'}</div>
-                      <div><span className="text-[#002443]/40">Vende:</span> {s.what_they_sell || '—'}</div>
+                      <div><span className="text-[#0A0A0A]/40">Modelo:</span> {s.business_model || '—'}</div>
+                      <div><span className="text-[#0A0A0A]/40">Vende:</span> {s.what_they_sell || '—'}</div>
                       {s.business_model === 'outro' && s.business_model_other && (
-                        <div className="col-span-2"><span className="text-[#002443]/40">Detalhe "outro":</span> {s.business_model_other}</div>
+                        <div className="col-span-2"><span className="text-[#0A0A0A]/40">Detalhe "outro":</span> {s.business_model_other}</div>
                       )}
-                      <div><span className="text-[#002443]/40">TPV:</span> R$ {s.monthly_tpv || '—'}</div>
-                      <div><span className="text-[#002443]/40">Ticket:</span> R$ {s.average_ticket || '—'}</div>
-                      <div className="col-span-2"><span className="text-[#002443]/40">Site:</span> {s.offer_url || '—'}</div>
-                      {s.offer_explanation && <div className="col-span-2"><span className="text-[#002443]/40">Oferta:</span> {s.offer_explanation}</div>}
-                      <div className="col-span-2 pt-2 mt-2 border-t border-[#002443]/10">
-                        <span className="text-[#002443]/40">Conta:</span> {s.bank_name} · Ag {s.bank_agency} · Cc {s.bank_account} ({s.bank_account_type})
+                      <div><span className="text-[#0A0A0A]/40">TPV:</span> R$ {s.monthly_tpv || '—'}</div>
+                      <div><span className="text-[#0A0A0A]/40">Ticket:</span> R$ {s.average_ticket || '—'}</div>
+                      <div className="col-span-2"><span className="text-[#0A0A0A]/40">Site:</span> {s.offer_url || '—'}</div>
+                      {s.offer_explanation && <div className="col-span-2"><span className="text-[#0A0A0A]/40">Oferta:</span> {s.offer_explanation}</div>}
+                      <div className="col-span-2 pt-2 mt-2 border-t border-[#0A0A0A]/10">
+                        <span className="text-[#0A0A0A]/40">Conta:</span> {s.bank_name} · Ag {s.bank_agency} · Cc {s.bank_account} ({s.bank_account_type})
                         {s.bank_holder_name && ` · Titular: ${s.bank_holder_name}`}
                       </div>
 
                       {/* Documentos */}
                       {(s.documents || []).length > 0 && (
-                        <div className="col-span-2 pt-2 mt-2 border-t border-[#002443]/10">
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40 mb-1.5">
+                        <div className="col-span-2 pt-2 mt-2 border-t border-[#0A0A0A]/10">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-1.5">
                             Documentos enviados ({(s.documents || []).length})
                           </div>
                           <div className="space-y-1">
                             {(s.documents || []).map((doc, dIdx) => (
                               <div key={dIdx} className="flex items-center justify-between bg-white rounded px-2 py-1.5">
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <FileText className="w-3.5 h-3.5 text-[#002443]/40 flex-shrink-0" />
+                                  <FileText className="w-3.5 h-3.5 text-[#0A0A0A]/40 flex-shrink-0" />
                                   <div className="min-w-0">
-                                    <div className="text-[11px] font-semibold text-[#002443] truncate">{doc.doc_label || doc.doc_type}</div>
-                                    <div className="text-[10px] text-[#002443]/40 truncate">{doc.file_name}</div>
+                                    <div className="text-[11px] font-semibold text-[#0A0A0A] truncate">{doc.doc_label || doc.doc_type}</div>
+                                    <div className="text-[10px] text-[#0A0A0A]/40 truncate">{doc.file_name}</div>
                                   </div>
                                 </div>
                                 <Button

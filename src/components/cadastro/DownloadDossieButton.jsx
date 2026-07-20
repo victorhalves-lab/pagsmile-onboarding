@@ -34,7 +34,7 @@ export default function DownloadDossieButton({ merchantId, merchantName }) {
       onClick={handleDownload}
       disabled={loading}
       variant="outline"
-      className="gap-2 border-[var(--pagsmile-green)]/30 text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
+      className="gap-2 border-[var(--pinbank-blue)]/30 text-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/5"
     >
       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
       {loading ? 'Gerando PDF...' : 'Baixar Dossiê'}

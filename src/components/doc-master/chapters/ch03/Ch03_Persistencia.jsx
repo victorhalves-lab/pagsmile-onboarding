@@ -64,7 +64,7 @@ await base44.entities.Merchant.update(merchant.id, {
 
       <H3 num="3.6.4">Códigos de cor por decisão</H3>
       <Table dense headers={['Decisão', 'Emoji', 'Cor visual Slack']} rows={[
-        ['Aprovado', '🟢', 'Verde — atachment color #2bc196'],
+        ['Aprovado', '🟢', 'Verde — atachment color #1356E2'],
         ['Aprovado com Condições', '🟡', 'Amarelo — #f4b400'],
         ['Manual', '🔵', 'Azul — #3b82f6'],
         ['Manual (Safety Net)', '🟠', 'Laranja — #f97316 (destaque visual diferenciado)'],
@@ -86,7 +86,7 @@ await base44.entities.Merchant.update(merchant.id, {
       <Table dense headers={['Não-evento', 'Razão']} rows={[
         ['Email para o cliente', 'Disparado por automation entity-update separada (notifyMerchantDecision) — desacoplado do pipeline para permitir batching'],
         ['Geração de contrato', 'Manual — vendedor inicia em /CriarContrato após análise de aprovação'],
-        ['Habilitação de processamento real', 'Sistema externo PagSmile (fora do scope desta plataforma) consome via API'],
+        ['Habilitação de processamento real', 'Sistema externo Pin Bank (fora do scope desta plataforma) consome via API'],
       ]} />
     </>
   );

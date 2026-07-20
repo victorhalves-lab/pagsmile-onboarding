@@ -630,8 +630,8 @@ export default function DynamicDocumentUploadPage({
   if (loadingTemplate || loadingQuestions) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
-        <span className="ml-3 text-[#002443]/70">Carregando...</span>
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
+        <span className="ml-3 text-[#0A0A0A]/70">Carregando...</span>
       </div>
     );
   }
@@ -640,8 +640,8 @@ export default function DynamicDocumentUploadPage({
     return (
       <div className="text-center py-12">
         <AlertTriangle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
-        <h2 className="text-xl font-bold text-[#002443] mb-2">Template não encontrado</h2>
-        <p className="text-[#002443]/70">Não foi possível carregar os documentos necessários.</p>
+        <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Template não encontrado</h2>
+        <p className="text-[#0A0A0A]/70">Não foi possível carregar os documentos necessários.</p>
       </div>
     );
   }
@@ -688,11 +688,11 @@ export default function DynamicDocumentUploadPage({
 
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pagsmile-green)]/10 mb-4">
+        <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pinbank-blue)]/10 mb-4">
           {currentStep === 'caf_verification' ? (
             <ScanFace className="w-8 h-8 text-purple-600" />
           ) : (
-            <FileUp className="w-8 h-8 text-[var(--pagsmile-green)]" />
+            <FileUp className="w-8 h-8 text-[var(--pinbank-blue)]" />
           )}
         </div>
 
@@ -727,10 +727,10 @@ export default function DynamicDocumentUploadPage({
           </div>
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)] mb-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--pinbank-blue)] mb-2">
           {currentStep === 'caf_verification' ? 'Verificação de Identidade (CAF)' : 'Envio de Documentos'}
         </h1>
-        <p className="text-[var(--pagsmile-blue)]/70 max-w-lg mx-auto">
+        <p className="text-[var(--pinbank-blue)]/70 max-w-lg mx-auto">
           {currentStep === 'caf_verification'
             ? 'Capture seu documento e realize a prova de vida para verificar sua identidade.'
             : 'Envie os documentos solicitados para concluir sua solicitação de onboarding.'
@@ -916,7 +916,7 @@ export default function DynamicDocumentUploadPage({
             <Button
               variant="ghost"
               onClick={() => navigate(`/${questionnairePageName}`)}
-              className="text-slate-500 hover:text-[var(--pagsmile-blue)] w-full sm:w-auto"
+              className="text-slate-500 hover:text-[var(--pinbank-blue)] w-full sm:w-auto"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Questionário
@@ -925,7 +925,7 @@ export default function DynamicDocumentUploadPage({
             <Button
               onClick={handleProceedToCaf}
               disabled={isSubmitting}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50 w-full sm:w-auto"
+              className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50 w-full sm:w-auto"
             >
               {isSubmitting ? (
                 <>

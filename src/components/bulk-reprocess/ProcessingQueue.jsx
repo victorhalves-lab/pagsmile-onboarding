@@ -14,23 +14,23 @@ const STEP_LABELS = {
 
 function QueueItem({ item, isActive }) {
   const statusIcon = {
-    pending: <Clock className="w-4 h-4 text-[#002443]/30" />,
-    processing: <Loader2 className="w-4 h-4 text-[#2bc196] animate-spin" />,
+    pending: <Clock className="w-4 h-4 text-[#0A0A0A]/30" />,
+    processing: <Loader2 className="w-4 h-4 text-[#1356E2] animate-spin" />,
     success: <CheckCircle2 className="w-4 h-4 text-green-600" />,
     error: <XCircle className="w-4 h-4 text-red-500" />,
     skipped: <AlertTriangle className="w-4 h-4 text-amber-500" />,
   };
 
   return (
-    <div className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${isActive ? 'bg-[#2bc196]/10 ring-1 ring-[#2bc196]/30' : 'bg-[#f4f4f4]'}`}>
+    <div className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${isActive ? 'bg-[#1356E2]/10 ring-1 ring-[#1356E2]/30' : 'bg-[#f4f4f4]'}`}>
       {statusIcon[item.status] || statusIcon.pending}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-[#002443] truncate">{item.merchantName}</span>
-          <span className="text-[10px] font-mono text-[#002443]/40">...{item.caseId.slice(-8)}</span>
+          <span className="text-sm font-medium text-[#0A0A0A] truncate">{item.merchantName}</span>
+          <span className="text-[10px] font-mono text-[#0A0A0A]/40">...{item.caseId.slice(-8)}</span>
         </div>
         {item.status === 'processing' && item.currentStep && (
-          <div className="text-[10px] text-[#2bc196] mt-0.5">Executando pipeline...</div>
+          <div className="text-[10px] text-[#1356E2] mt-0.5">Executando pipeline...</div>
         )}
         {item.status === 'success' && item.result && (
           <div className="flex items-center gap-1.5 mt-1 flex-wrap">
@@ -43,7 +43,7 @@ function QueueItem({ item, isActive }) {
               );
             })}
             {item.result.decision?.finalDecision && (
-              <Badge className="text-[9px] py-0 px-1.5 bg-[#002443] text-white ml-1">
+              <Badge className="text-[9px] py-0 px-1.5 bg-[#0A0A0A] text-white ml-1">
                 {item.result.decision.finalDecision}
               </Badge>
             )}
@@ -54,7 +54,7 @@ function QueueItem({ item, isActive }) {
         )}
       </div>
       {item.duration && (
-        <span className="text-[10px] text-[#002443]/40 flex-shrink-0">{Math.round(item.duration / 1000)}s</span>
+        <span className="text-[10px] text-[#0A0A0A]/40 flex-shrink-0">{Math.round(item.duration / 1000)}s</span>
       )}
     </div>
   );
@@ -69,7 +69,7 @@ export default function ProcessingQueue({ queue, currentIndex, totalSelected }) 
     <div className="space-y-3">
       {/* Progress bar */}
       <div className="space-y-1.5">
-        <div className="flex justify-between text-xs text-[#002443]/60">
+        <div className="flex justify-between text-xs text-[#0A0A0A]/60">
           <span>Progresso: {queue.filter(q => q.status !== 'pending').length}/{totalSelected}</span>
           <span className="flex gap-3">
             <span className="text-green-600">{completed} ✓</span>

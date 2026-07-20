@@ -135,7 +135,7 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
 
   // Border style
   const borderClass = isDragging
-    ? 'border-[#2bc196] bg-[#2bc196]/5 ring-2 ring-[#2bc196]/20'
+    ? 'border-[#1356E2] bg-[#1356E2]/5 ring-2 ring-[#1356E2]/20'
     : files.length > 0
     ? 'border-green-200 bg-green-50/50'
     : isNotAvailable
@@ -191,7 +191,7 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
           )}
           {/* break-words substitui truncate — título quebra em múltiplas linhas no mobile
               ao invés de cortar com "..." escondendo o nome do sócio. */}
-          <h4 className="font-semibold text-[#002443] text-sm leading-snug break-words">
+          <h4 className="font-semibold text-[#0A0A0A] text-sm leading-snug break-words">
             {doc.label || doc.name}
             {doc.required && <span className="text-red-500 ml-1">*</span>}
           </h4>
@@ -214,7 +214,7 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
             <div key={`${f.url}_${idx}`} className="flex items-center gap-2 bg-white border border-green-200 rounded-lg p-1.5">
               <FileThumbnail name={f.name} type={f.type} localFile={f._localFile} size="sm" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-[#002443] truncate">{f.name}</p>
+                <p className="text-xs font-medium text-[#0A0A0A] truncate">{f.name}</p>
                 <p className="text-[10px] text-slate-500">{formatSize(f.size)}</p>
               </div>
               <Button
@@ -231,9 +231,9 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
 
       {/* ── Drag & drop hint ── */}
       {isDragging && (
-        <div className="mb-3 py-3 border-2 border-dashed border-[#2bc196] rounded-lg bg-[#2bc196]/5 text-center">
-          <Upload className="w-5 h-5 mx-auto text-[#2bc196] mb-1" />
-          <p className="text-xs font-semibold text-[#2bc196]">Solte para enviar</p>
+        <div className="mb-3 py-3 border-2 border-dashed border-[#1356E2] rounded-lg bg-[#1356E2]/5 text-center">
+          <Upload className="w-5 h-5 mx-auto text-[#1356E2] mb-1" />
+          <p className="text-xs font-semibold text-[#1356E2]">Solte para enviar</p>
         </div>
       )}
 
@@ -242,7 +242,7 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
         <div className="space-y-2 mb-3">
           <div className="bg-white border border-amber-300 rounded-lg p-2.5">
             <p className="text-[10px] font-bold text-amber-800 mb-1 uppercase tracking-wide">Justificativa enviada:</p>
-            <p className="text-xs text-[#002443]/80 leading-relaxed italic">"{uploadedFile.notAvailableReason}"</p>
+            <p className="text-xs text-[#0A0A0A]/80 leading-relaxed italic">"{uploadedFile.notAvailableReason}"</p>
           </div>
           <div className="flex items-center justify-between gap-2">
             <span className="text-[10px] text-amber-700 bg-amber-100 px-2 py-1 rounded-full flex items-center gap-1">

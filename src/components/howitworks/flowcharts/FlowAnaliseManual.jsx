@@ -6,16 +6,16 @@ export default function FlowAnaliseManual() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h4 className="font-bold text-[#002443] text-sm">Fluxo 6: Análise Manual de Compliance</h4>
-          <p className="text-[10px] text-[#002443]/50">Quando SENTINEL recomenda revisão manual — jornada completa do analista</p>
+          <h4 className="font-bold text-[#0A0A0A] text-sm">Fluxo 6: Análise Manual de Compliance</h4>
+          <p className="text-[10px] text-[#0A0A0A]/50">Quando SENTINEL recomenda revisão manual — jornada completa do analista</p>
         </div>
         <div className="flex gap-1.5">
-          <ResponsibleBadge label="Analista Compliance" color="bg-[#002443]" />
+          <ResponsibleBadge label="Analista Compliance" color="bg-[#0A0A0A]" />
           <ResponsibleBadge label="Sistema" color="bg-blue-600" />
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 overflow-x-auto">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 overflow-x-auto">
         <div className="flex flex-col items-center min-w-[400px]">
           <StartEndNode label="INÍCIO — Case com Recomendação 'Revisão Manual'" />
           <Arrow />
@@ -112,7 +112,7 @@ export default function FlowAnaliseManual() {
           <ProcessNode label="AuditLog Registrado" sublabel="APPROVAL, REJECTION ou VALIDATION" />
           <Arrow />
 
-          <StartEndNode label="FIM — Decisão Final Registrada" color="bg-[#002443]" />
+          <StartEndNode label="FIM — Decisão Final Registrada" color="bg-[#0A0A0A]" />
         </div>
       </div>
     </div>

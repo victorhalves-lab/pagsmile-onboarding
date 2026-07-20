@@ -105,12 +105,12 @@ export default function InsightsTPVSection({ leads }) {
             <BarChart data={tpvDistribution} barCategoryGap="25%">
               <defs>
                 <linearGradient id="tpvGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#2bc196" />
-                  <stop offset="100%" stopColor="#2bc196" stopOpacity={0.5} />
+                  <stop offset="0%" stopColor="#1356E2" />
+                  <stop offset="100%" stopColor="#1356E2" stopOpacity={0.5} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Bar dataKey="Leads" fill="url(#tpvGrad)" radius={[8, 8, 0, 0]} />
@@ -123,12 +123,12 @@ export default function InsightsTPVSection({ leads }) {
             <BarChart data={ticketDist} barCategoryGap="25%">
               <defs>
                 <linearGradient id="ticketGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#002443" />
-                  <stop offset="100%" stopColor="#002443" stopOpacity={0.4} />
+                  <stop offset="0%" stopColor="#0A0A0A" />
+                  <stop offset="100%" stopColor="#0A0A0A" stopOpacity={0.4} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Bar dataKey="Leads" fill="url(#ticketGrad)" radius={[8, 8, 0, 0]} />
@@ -142,11 +142,11 @@ export default function InsightsTPVSection({ leads }) {
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={segmentBarData} barCategoryGap="25%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
               <Tooltip contentStyle={chartTooltipStyle} formatter={(val) => formatCurrency(val)} />
-              <Bar dataKey="TPV Médio" fill="#2bc196" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="Ticket Médio" fill="#002443" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="TPV Médio" fill="#1356E2" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="Ticket Médio" fill="#0A0A0A" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -157,15 +157,15 @@ export default function InsightsTPVSection({ leads }) {
               <AreaChart data={timelineData}>
                 <defs>
                   <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2bc196" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="#2bc196" stopOpacity={0.02} />
+                    <stop offset="0%" stopColor="#1356E2" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="#1356E2" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000000).toFixed(1)}M`} />
                 <Tooltip contentStyle={chartTooltipStyle} formatter={(val) => formatCurrency(val)} />
-                <Area type="monotone" dataKey="TPV Acumulado" stroke="#2bc196" fill="url(#areaGrad)" strokeWidth={2.5} dot={{ r: 4, fill: '#2bc196', stroke: '#fff', strokeWidth: 2 }} />
+                <Area type="monotone" dataKey="TPV Acumulado" stroke="#1356E2" fill="url(#areaGrad)" strokeWidth={2.5} dot={{ r: 4, fill: '#1356E2', stroke: '#fff', strokeWidth: 2 }} />
               </AreaChart>
             </ResponsiveContainer>
           </ChartCard>

@@ -8,7 +8,7 @@ import { Loader2, CheckCircle, AlertTriangle, Building2, Plus, X, Shield, Shield
 import { callPublicFunction } from '@/lib/publicApi';
 import { formatCnpj } from '@/hooks/useCnpjAutocomplete';
 
-// CNAEs proibidos (Anexo I PagSmile)
+// CNAEs proibidos (Anexo I Pin Bank)
 const ATIVIDADES_PROIBIDAS_CNAES = ['9200301', '9200302'];
 const ATIVIDADES_RESTRITAS_CNAES = ['9200301', '9200302', '9200399', '6619302', '6622300', '4789004', '4723700', '1220401', '1220402', '4774100'];
 
@@ -125,14 +125,14 @@ export default function Top5CnpjField({
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-semibold text-[#002443]">{label}</Label>
+      <Label className="text-sm font-semibold text-[#0A0A0A]">{label}</Label>
       
       {items.map((item, idx) => (
         <div key={idx} className="border border-slate-200 rounded-xl p-3 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-[#002443]/50 w-5">#{idx + 1}</span>
+            <span className="text-xs font-bold text-[#0A0A0A]/50 w-5">#{idx + 1}</span>
             <div className="relative flex-1">
-              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" />
               <Input
                 value={formatCnpj(item.cnpj || '')}
                 onChange={(e) => handleCnpjChange(idx, e.target.value)}
@@ -140,7 +140,7 @@ export default function Top5CnpjField({
                 className="h-10 pl-10 pr-10 font-mono text-sm"
                 maxLength={18}
               />
-              {loadingIdx === idx && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
+              {loadingIdx === idx && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />}
               {item.status === 'ok' && <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
               {item.status === 'inactive' && <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500" />}
             </div>

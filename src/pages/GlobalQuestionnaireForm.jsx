@@ -80,8 +80,8 @@ export default function GlobalQuestionnaireForm() {
           <div className="inline-flex p-4 rounded-full bg-green-100 mb-4">
             <CheckCircle2 className="w-12 h-12 text-green-600" />
           </div>
-          <h2 className="text-xl font-bold text-[#002443] mb-2">{t('success_title')}</h2>
-          <p className="text-[#002443]/70">{t('success_desc')}</p>
+          <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">{t('success_title')}</h2>
+          <p className="text-[#0A0A0A]/70">{t('success_desc')}</p>
         </div>
       </PublicGlobalShell>
     );
@@ -173,8 +173,8 @@ export default function GlobalQuestionnaireForm() {
                 <button key={m} type="button" onClick={() => toggleMarket(m)}
                   className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
                     f.target_markets.includes(m)
-                      ? 'bg-[#2bc196] text-white border-[#2bc196]'
-                      : 'bg-white text-[#002443]/70 border-[#002443]/10 hover:bg-[#2bc196]/10'
+                      ? 'bg-[#1356E2] text-white border-[#1356E2]'
+                      : 'bg-white text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:bg-[#1356E2]/10'
                   }`}
                 >{m}</button>
               ))}
@@ -185,7 +185,7 @@ export default function GlobalQuestionnaireForm() {
         {error && <div className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg p-2">{error}</div>}
 
         {/* Nav */}
-        <div className="flex items-center justify-between pt-4 border-t border-[#002443]/5">
+        <div className="flex items-center justify-between pt-4 border-t border-[#0A0A0A]/5">
           <Button variant="ghost" disabled={step === 0} onClick={() => setStep(s => s - 1)}>
             <ArrowLeft className="w-4 h-4 mr-1" /> {t('back')}
           </Button>
@@ -213,7 +213,7 @@ function Field2({ wide, children }) {
 function YesNoButton({ active, onClick, children }) {
   return (
     <button type="button" onClick={onClick}
-      className={`px-4 py-1.5 rounded-lg text-sm border ${active ? 'bg-[#2bc196] text-white border-[#2bc196]' : 'bg-white text-[#002443]/70 border-[#002443]/10'}`}>
+      className={`px-4 py-1.5 rounded-lg text-sm border ${active ? 'bg-[#1356E2] text-white border-[#1356E2]' : 'bg-white text-[#0A0A0A]/70 border-[#0A0A0A]/10'}`}>
       {children}
     </button>
   );

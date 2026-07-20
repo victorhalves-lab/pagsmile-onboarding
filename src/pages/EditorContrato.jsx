@@ -99,7 +99,7 @@ export default function EditorContrato() {
   if (isLoading || !formData) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -121,17 +121,17 @@ export default function EditorContrato() {
       {/* Left Column - Forms */}
       <div className="flex-1 flex flex-col min-w-0 bg-[#f4f4f4]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-[#002443]/5 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-[#0A0A0A]/5 shrink-0">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl('GestaoContratos'))} className="rounded-xl">
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-[#002443]">{t('ec.title')}</h1>
+                <h1 className="text-lg font-bold text-[#0A0A0A]">{t('ec.title')}</h1>
                 <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
               </div>
-              <p className="text-xs text-[#002443]/50">
+              <p className="text-xs text-[#0A0A0A]/50">
                 {formData.codigo || '---'} • {formData.clientName || 'Sem nome'}
               </p>
             </div>
@@ -144,26 +144,26 @@ export default function EditorContrato() {
               contract={formData}
               variant="outline"
               label="Baixar PDF"
-              className="rounded-xl border-[#002443]/10 text-sm"
+              className="rounded-xl border-[#0A0A0A]/10 text-sm"
             />
             <DownloadContractDocxButton
               contract={formData}
               variant="outline"
               label="Baixar Word"
-              className="rounded-xl border-[#002443]/10 text-sm"
+              className="rounded-xl border-[#0A0A0A]/10 text-sm"
             />
-            <Button variant="outline" onClick={() => saveMutation.mutate(formData)} disabled={saveMutation.isPending} className="rounded-xl border-[#002443]/10 text-sm">
+            <Button variant="outline" onClick={() => saveMutation.mutate(formData)} disabled={saveMutation.isPending} className="rounded-xl border-[#0A0A0A]/10 text-sm">
               {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
               {t('ec.save')}
             </Button>
-            <Button onClick={handleGenerateContract} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl px-5 font-bold">
+            <Button onClick={handleGenerateContract} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl px-5 font-bold">
               <Eye className="w-4 h-4 mr-2" /> {t('ec.generate')}
             </Button>
           </div>
         </div>
 
         {/* Status Bar */}
-        <div className="flex items-center gap-4 px-6 py-2 bg-white border-b border-[#002443]/5 shrink-0">
+        <div className="flex items-center gap-4 px-6 py-2 bg-white border-b border-[#0A0A0A]/5 shrink-0">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-green-600" />
             <span className="text-xs font-medium text-green-700">{t('ec.fields_filled', { count: preFilledCount })}</span>
@@ -185,11 +185,11 @@ export default function EditorContrato() {
         {/* Tabs + Form */}
         <div className="flex-1 overflow-y-auto p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full justify-start bg-white border border-[#002443]/5 p-1 rounded-xl mb-4">
+            <TabsList className="w-full justify-start bg-white border border-[#0A0A0A]/5 p-1 rounded-xl mb-4">
               {TABS.map(tab => {
                 const Icon = tab.icon;
                 return (
-                  <TabsTrigger key={tab.id} value={tab.id} className="flex items-center gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443] rounded-lg">
+                  <TabsTrigger key={tab.id} value={tab.id} className="flex items-center gap-2 data-[state=active]:bg-[#1356E2]/10 data-[state=active]:text-[#0A0A0A] rounded-lg">
                     <Icon className="w-4 h-4" />
                     <span className="hidden sm:inline">{tab.label}</span>
                   </TabsTrigger>
@@ -197,7 +197,7 @@ export default function EditorContrato() {
               })}
             </TabsList>
 
-            <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
+            <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6">
               <TabsContent value="cliente" className="mt-0">
                 <ClienteForm contract={formData} onChange={handleFieldChange} preFilledFields={formData.preFilledFields || []} />
               </TabsContent>
@@ -219,10 +219,10 @@ export default function EditorContrato() {
       </div>
 
       {/* Right Column - Preview do Contrato */}
-      <div className="w-[520px] bg-white border-l border-[#002443]/10 flex flex-col shrink-0 hidden lg:flex">
-        <div className="px-6 py-3 border-b border-[#002443]/5 bg-[#002443]/[0.02]">
-          <h2 className="text-sm font-bold text-[#002443]">{t('ec.preview_title')}</h2>
-          <p className="text-[10px] text-[#002443]/40">{t('ec.preview_desc')}</p>
+      <div className="w-[520px] bg-white border-l border-[#0A0A0A]/10 flex flex-col shrink-0 hidden lg:flex">
+        <div className="px-6 py-3 border-b border-[#0A0A0A]/5 bg-[#0A0A0A]/[0.02]">
+          <h2 className="text-sm font-bold text-[#0A0A0A]">{t('ec.preview_title')}</h2>
+          <p className="text-[10px] text-[#0A0A0A]/40">{t('ec.preview_desc')}</p>
         </div>
         <div className="flex-1 overflow-y-auto">
           <div className="transform scale-[0.65] origin-top-left w-[154%]">

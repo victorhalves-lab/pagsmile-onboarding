@@ -23,7 +23,7 @@ export default function GlobalQuestionnaireDetailModal({ questionnaireId, onClos
     <Dialog open={!!questionnaireId} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-lg text-[#002443]">
+          <DialogTitle className="text-lg text-[#0A0A0A]">
             {isLoading ? 'Carregando...' : (q?.company_name || 'Questionário')}
           </DialogTitle>
         </DialogHeader>
@@ -70,9 +70,9 @@ export default function GlobalQuestionnaireDetailModal({ questionnaireId, onClos
             <Section title="Mercados-alvo">
               <div className="md:col-span-2 flex flex-wrap gap-1">
                 {(q.target_markets || []).length === 0
-                  ? <span className="text-[#002443]/50">—</span>
+                  ? <span className="text-[#0A0A0A]/50">—</span>
                   : (q.target_markets || []).map(m => (
-                      <span key={m} className="text-xs bg-[#2bc196]/10 text-[#2bc196] px-2 py-0.5 rounded-full">{m}</span>
+                      <span key={m} className="text-xs bg-[#1356E2]/10 text-[#1356E2] px-2 py-0.5 rounded-full">{m}</span>
                     ))}
               </div>
             </Section>
@@ -86,7 +86,7 @@ export default function GlobalQuestionnaireDetailModal({ questionnaireId, onClos
 function Section({ title, children }) {
   return (
     <div>
-      <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">{title}</h4>
+      <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">{title}</h4>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-[#f4f4f4]/40 rounded-xl p-3">
         {children}
       </div>
@@ -97,8 +97,8 @@ function Section({ title, children }) {
 function Field({ label, value, className = '' }) {
   return (
     <div className={className}>
-      <div className="text-[10px] uppercase tracking-wider text-[#002443]/50">{label}</div>
-      <div className="text-[#002443] mt-0.5 break-words">{value || '—'}</div>
+      <div className="text-[10px] uppercase tracking-wider text-[#0A0A0A]/50">{label}</div>
+      <div className="text-[#0A0A0A] mt-0.5 break-words">{value || '—'}</div>
     </div>
   );
 }

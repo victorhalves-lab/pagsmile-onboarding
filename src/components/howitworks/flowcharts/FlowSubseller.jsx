@@ -22,7 +22,7 @@ export default function FlowSubseller() {
         <ArrowDown />
 
         <ProcessNode label="Gerar link para subseller" sublabel="generateSubsellerLink: cria OnboardingLink (tipo SUBSELLER_COMPLIANCE) com parentMerchantId, branding white-label opcional" actor="Sistema" />
-        <MicroStep steps={['Seleciona seller', 'Modo PagSmile ou White-Label', 'Branding (logo, cores, nome)', 'Slug curto opcional', 'Gera código único']} />
+        <MicroStep steps={['Seleciona seller', 'Modo Pin Bank ou White-Label', 'Branding (logo, cores, nome)', 'Slug curto opcional', 'Gera código único']} />
         <ArrowDown />
 
         <ProcessNode label="Seller envia link para subconta" sublabel="Link: /SubsellerQuestionnaire?ref=xxx ou /s/{slug}" actor="Seller" />

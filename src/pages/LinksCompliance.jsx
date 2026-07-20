@@ -49,15 +49,15 @@ export default function LinksCompliance() {
   // [V5.2 BETA] Questionários tier-aware — só aparecem quando feature flag ativa.
   // Coexistem com V4 sem substituir.
   const quickLinksV5_2 = [
-    { key: 'V5_2_TIER1_LITE', label: 'V5.2 Tier 1 Lite (TPV ≤ R$50k)', desc: 'Questionário curto adaptativo para micro-merchants. Tier 1 com upgrade automático se TPV/BDC indicar Tier 2+. ~30 perguntas.', icon: Rocket, color: '#2bc196', url: `${base}/ComplianceDinamico?model=v5_2_tier1_lite&framework=v5.2` },
-    { key: 'V5_2_TIER2_PADRAO', label: 'V5.2 Tier 2 Padrão (R$50k–500k)', desc: 'Questionário V5.2 universal Tier 2. Patch Financeiro ativado. ~60 perguntas + cross-validation 16 campos.', icon: Rocket, color: '#36706c', url: `${base}/ComplianceDinamico?model=v5_2_tier2_padrao&framework=v5.2` },
-    { key: 'V5_2_TIER3_ENHANCED', label: 'V5.2 Tier 3 Enhanced (TPV > R$500k)', desc: 'Questionário V5.2 completo Tier 3 + 9 módulos especializados. Escala de score 0-999. ~100 perguntas + SENTINEL especializado.', icon: Rocket, color: '#002443', url: `${base}/ComplianceDinamico?model=v5_2_tier3_enhanced&framework=v5.2` },
+    { key: 'V5_2_TIER1_LITE', label: 'V5.2 Tier 1 Lite (TPV ≤ R$50k)', desc: 'Questionário curto adaptativo para micro-merchants. Tier 1 com upgrade automático se TPV/BDC indicar Tier 2+. ~30 perguntas.', icon: Rocket, color: '#1356E2', url: `${base}/ComplianceDinamico?model=v5_2_tier1_lite&framework=v5.2` },
+    { key: 'V5_2_TIER2_PADRAO', label: 'V5.2 Tier 2 Padrão (R$50k–500k)', desc: 'Questionário V5.2 universal Tier 2. Patch Financeiro ativado. ~60 perguntas + cross-validation 16 campos.', icon: Rocket, color: '#E84B1C', url: `${base}/ComplianceDinamico?model=v5_2_tier2_padrao&framework=v5.2` },
+    { key: 'V5_2_TIER3_ENHANCED', label: 'V5.2 Tier 3 Enhanced (TPV > R$500k)', desc: 'Questionário V5.2 completo Tier 3 + 9 módulos especializados. Escala de score 0-999. ~100 perguntas + SENTINEL especializado.', icon: Rocket, color: '#0A0A0A', url: `${base}/ComplianceDinamico?model=v5_2_tier3_enhanced&framework=v5.2` },
     { key: 'V5_2_SUBSELLER_PJ', label: 'V5.2 Subseller PJ', desc: 'Questionário V5.2 para subsellers PJ (3 graus A/B/C). Aplica em sub-credenciamento Marketplace/Gateway.', icon: Rocket, color: '#7c3aed', url: `${base}/ComplianceDinamico?model=v5_2_subseller_pj&framework=v5.2` },
     { key: 'V5_2_SUBSELLER_PF', label: 'V5.2 Subseller PF', desc: 'Questionário V5.2 para subsellers PF (3 graus A/B/C). Identidade reforçada + Patch Financeiro PF.', icon: Rocket, color: '#a855f7', url: `${base}/ComplianceDinamico?model=v5_2_subseller_pf&framework=v5.2` },
   ];
 
   const quickLinksPixV4 = [
-    { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
+    { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#1356E2', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
     { key: 'PIX_INTERMEDIARIO_V4', label: 'PIX Intermediário v4', desc: '47 perguntas em 8 blocos. Compliance PIX + Conta para intermediários (Gateway/PSP, Marketplace, Plataforma). Foco em split, anti-bolção, MED e regulatório BCB.', icon: Globe, color: '#4f46e5', url: `${base}/ComplianceDinamico?model=CompliancePixIntermediarioV4` },
     { key: 'PIX_API_ENTERPRISE', label: 'PIX API Enterprise', desc: '~30 perguntas em 6 passos. Fluxo simplificado para grandes contas — autocomplete BDC massivo + enriquecimento automático de 40+ datasets. Liveness/Facematch + PLD/FT obrigatórios.', icon: Shield, color: '#2563eb', url: `${base}/ComplianceDinamico?model=pix_api_enterprise` },
   ];
@@ -110,26 +110,26 @@ export default function LinksCompliance() {
   };
 
   const QuickLinkCard = ({ item }) => (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 p-4 hover:shadow-md transition-all group">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4 hover:shadow-md transition-all group">
       <div className="flex items-start gap-3 mb-3">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${item.color}10` }}>
           <item.icon className="w-4 h-4" style={{ color: item.color }} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-bold text-[#002443]">{item.label}</h3>
-          <p className="text-[10px] text-[#002443]/40">{item.desc}</p>
+          <h3 className="text-sm font-bold text-[#0A0A0A]">{item.label}</h3>
+          <p className="text-[10px] text-[#0A0A0A]/40">{item.desc}</p>
         </div>
       </div>
       <div className="flex gap-1.5">
         <button onClick={() => handleCopy(item.url, item.key)}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all ${
-            copiedKey === item.key ? 'bg-[#2bc196] text-white' : 'bg-[#f4f4f4] text-[#002443]/60 hover:bg-[#2bc196]/10 hover:text-[#2bc196]'
+            copiedKey === item.key ? 'bg-[#1356E2] text-white' : 'bg-[#f4f4f4] text-[#0A0A0A]/60 hover:bg-[#1356E2]/10 hover:text-[#1356E2]'
           }`}>
           {copiedKey === item.key ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           {copiedKey === item.key ? t('lc.copied') : t('lc.copy')}
         </button>
         <button onClick={() => window.open(item.url, '_blank')}
-          className="px-3 py-2 rounded-xl bg-[#f4f4f4] text-[#002443]/40 hover:bg-[#002443]/5 hover:text-[#002443] transition-all">
+          className="px-3 py-2 rounded-xl bg-[#f4f4f4] text-[#0A0A0A]/40 hover:bg-[#0A0A0A]/5 hover:text-[#0A0A0A] transition-all">
           <ExternalLink className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -141,44 +141,44 @@ export default function LinksCompliance() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-[#002443]" />
+          <div className="w-10 h-10 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-[#0A0A0A]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">{t('lc.title')}</h1>
-            <p className="text-sm text-[#002443]/60">{t('lc.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">{t('lc.title')}</h1>
+            <p className="text-sm text-[#0A0A0A]/60">{t('lc.subtitle')}</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('lc.refresh')}</span>
+        <Button variant="outline" onClick={() => refetch()} className="border-[#0A0A0A]/10 hover:bg-[#f4f4f4] rounded-xl">
+          <RefreshCw className="w-4 h-4 mr-2 text-[#0A0A0A]/50" /> <span className="text-[#0A0A0A]/70">{t('lc.refresh')}</span>
         </Button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { label: t('lc.links'), value: stats.total, icon: LinkIcon, color: '#002443' },
-          { label: t('lc.clicks'), value: stats.clicks, icon: MousePointer, color: '#36706c' },
-          { label: t('lc.submissions'), value: stats.submissions, icon: FileCheck, color: '#2bc196' },
-          { label: t('lc.completed'), value: stats.completed, icon: Check, color: '#2bc196' },
-          { label: t('lc.conversion'), value: `${stats.conv}%`, icon: TrendingUp, color: '#36706c' },
+          { label: t('lc.links'), value: stats.total, icon: LinkIcon, color: '#0A0A0A' },
+          { label: t('lc.clicks'), value: stats.clicks, icon: MousePointer, color: '#E84B1C' },
+          { label: t('lc.submissions'), value: stats.submissions, icon: FileCheck, color: '#1356E2' },
+          { label: t('lc.completed'), value: stats.completed, icon: Check, color: '#1356E2' },
+          { label: t('lc.conversion'), value: `${stats.conv}%`, icon: TrendingUp, color: '#E84B1C' },
         ].map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+          <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
             <div className="flex items-center gap-2 mb-1"><s.icon className="w-4 h-4" style={{ color: s.color }} /><p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p></div>
-            <p className="text-[10px] text-[#002443]/40">{s.label}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 bg-[#f4f4f4] rounded-2xl p-1.5 border border-[#002443]/5">
+      <div className="flex gap-2 bg-[#f4f4f4] rounded-2xl p-1.5 border border-[#0A0A0A]/5">
         {[
           { id: 'links', label: t('lc.quick_links') },
           { id: 'historico', label: t('lc.history', { count: links.length }) },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
-              activeTab === tab.id ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/40 hover:text-[#002443]/60'
+              activeTab === tab.id ? 'bg-white text-[#0A0A0A] shadow-sm' : 'text-[#0A0A0A]/40 hover:text-[#0A0A0A]/60'
             }`}>{tab.label}</button>
         ))}
       </div>
@@ -190,16 +190,16 @@ export default function LinksCompliance() {
           {v5_2Enabled && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#002443] to-[#2bc196] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0A0A0A] to-[#1356E2] flex items-center justify-center">
                   <Rocket className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-[#002443]">V5.2 Tier-aware (BETA)</h2>
-                  <p className="text-xs text-[#002443]/40">
+                  <h2 className="text-base font-bold text-[#0A0A0A]">V5.2 Tier-aware (BETA)</h2>
+                  <p className="text-xs text-[#0A0A0A]/40">
                     Questionários V5.2 dinâmicos por tier + segmento + morfologia. Backend ainda em desenvolvimento — uso experimental.
                   </p>
                 </div>
-                <Badge className="bg-gradient-to-r from-[#002443] to-[#2bc196] text-white border-0 text-[10px] ml-2">V5.2 BETA</Badge>
+                <Badge className="bg-gradient-to-r from-[#0A0A0A] to-[#1356E2] text-white border-0 text-[10px] ml-2">V5.2 BETA</Badge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {quickLinksV5_2.map(item => <QuickLinkCard key={item.key} item={item} />)}
@@ -215,8 +215,8 @@ export default function LinksCompliance() {
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center"><CreditCard className="w-4 h-4 text-emerald-600" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">PIX v4 — Merchants & Intermediários</h2>
-                <p className="text-xs text-[#002443]/40">Questionários específicos para operação PIX + Conta de pagamento. Conformidade Res. BCB 80/494/501/518.</p>
+                <h2 className="text-base font-bold text-[#0A0A0A]">PIX v4 — Merchants & Intermediários</h2>
+                <p className="text-xs text-[#0A0A0A]/40">Questionários específicos para operação PIX + Conta de pagamento. Conformidade Res. BCB 80/494/501/518.</p>
               </div>
               <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px] ml-2">NOVO</Badge>
             </div>
@@ -230,8 +230,8 @@ export default function LinksCompliance() {
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center"><Shield className="w-4 h-4 text-indigo-600" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">Por Segmento v4 — Pré-preenchimento Lead</h2>
-                <p className="text-xs text-[#002443]/40">Questionários específicos por segmento com dados pré-preenchidos do questionário de lead</p>
+                <h2 className="text-base font-bold text-[#0A0A0A]">Por Segmento v4 — Pré-preenchimento Lead</h2>
+                <p className="text-xs text-[#0A0A0A]/40">Questionários específicos por segmento com dados pré-preenchidos do questionário de lead</p>
               </div>
               <Badge className="bg-indigo-100 text-indigo-700 border-0 text-[10px] ml-2">NOVO</Badge>
             </div>
@@ -248,51 +248,51 @@ export default function LinksCompliance() {
       {activeTab === 'historico' && (
         <div className="space-y-3">
           {isLoading ? (
-            <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div>
+            <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" /></div>
           ) : links.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-[#002443]/5">
-              <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><LinkIcon className="w-7 h-7 text-[#002443]/20" /></div>
-              <p className="text-sm text-[#002443]/50">{t('lc.no_links')}</p>
-              <p className="text-xs text-[#002443]/30 mt-1">{t('lc.no_links_hint')}</p>
+            <div className="text-center py-16 bg-white rounded-2xl border border-[#0A0A0A]/5">
+              <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><LinkIcon className="w-7 h-7 text-[#0A0A0A]/20" /></div>
+              <p className="text-sm text-[#0A0A0A]/50">{t('lc.no_links')}</p>
+              <p className="text-xs text-[#0A0A0A]/30 mt-1">{t('lc.no_links_hint')}</p>
             </div>
           ) : (
             links.map(link => {
               const isExpanded = expandedLinkId === link.id;
               const conversion = link.clickCount > 0 ? ((link.submissionCount / link.clickCount) * 100).toFixed(1) : 0;
               return (
-                <div key={link.id} className="bg-white border border-[#002443]/5 rounded-2xl overflow-hidden hover:shadow-sm transition-shadow">
+                <div key={link.id} className="bg-white border border-[#0A0A0A]/5 rounded-2xl overflow-hidden hover:shadow-sm transition-shadow">
                   <div className="p-4 cursor-pointer" onClick={() => setExpandedLinkId(isExpanded ? null : link.id)}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <Badge variant="outline" className="font-mono text-sm border-[#002443]/10">{link.uniqueCode}</Badge>
-                        <Badge className="bg-[#002443]/10 text-[#002443] text-xs border-0">{getLinkLabel(link)}</Badge>
-                        {link.commercialAgentName && <span className="text-xs text-[#002443]/40">{link.commercialAgentName}</span>}
-                        <span className="text-[10px] text-[#002443]/20">{link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}</span>
+                        <Badge variant="outline" className="font-mono text-sm border-[#0A0A0A]/10">{link.uniqueCode}</Badge>
+                        <Badge className="bg-[#0A0A0A]/10 text-[#0A0A0A] text-xs border-0">{getLinkLabel(link)}</Badge>
+                        {link.commercialAgentName && <span className="text-xs text-[#0A0A0A]/40">{link.commercialAgentName}</span>}
+                        <span className="text-[10px] text-[#0A0A0A]/20">{link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}</span>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="hidden md:flex items-center gap-3 text-xs">
-                          <span className="text-[#36706c] font-bold">{link.clickCount || 0} <span className="font-normal text-[#002443]/30">cliq</span></span>
-                          <span className="text-[#2bc196] font-bold">{link.submissionCount || 0} <span className="font-normal text-[#002443]/30">sub</span></span>
-                          <Badge className="text-[10px] bg-[#f4f4f4] text-[#002443]/50 border-0">{conversion}%</Badge>
+                          <span className="text-[#E84B1C] font-bold">{link.clickCount || 0} <span className="font-normal text-[#0A0A0A]/30">cliq</span></span>
+                          <span className="text-[#1356E2] font-bold">{link.submissionCount || 0} <span className="font-normal text-[#0A0A0A]/30">sub</span></span>
+                          <Badge className="text-[10px] bg-[#f4f4f4] text-[#0A0A0A]/50 border-0">{conversion}%</Badge>
                         </div>
                         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                           <button onClick={() => handleCopy(generateLinkUrl(link), link.id)} className="p-1.5 rounded-lg hover:bg-[#f4f4f4] transition-colors">
-                            {copiedKey === link.id ? <Check className="w-4 h-4 text-[#2bc196]" /> : <Copy className="w-4 h-4 text-[#002443]/30" />}
+                            {copiedKey === link.id ? <Check className="w-4 h-4 text-[#1356E2]" /> : <Copy className="w-4 h-4 text-[#0A0A0A]/30" />}
                           </button>
                           <button onClick={() => window.open(generateLinkUrl(link), '_blank')} className="p-1.5 rounded-lg hover:bg-[#f4f4f4] transition-colors">
-                            <ExternalLink className="w-4 h-4 text-[#002443]/30" />
+                            <ExternalLink className="w-4 h-4 text-[#0A0A0A]/30" />
                           </button>
                           <button onClick={() => deleteLinkMutation.mutate(link.id)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
                             <Trash2 className="w-4 h-4 text-red-300" />
                           </button>
                         </div>
-                        <button className="text-[#002443]/20">{isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</button>
+                        <button className="text-[#0A0A0A]/20">{isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</button>
                       </div>
                     </div>
                   </div>
                   {isExpanded && (
-                    <div className="border-t border-[#002443]/5 bg-[#f4f4f4] p-4">
-                      <h4 className="text-xs font-bold text-[#002443]/50 mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#2bc196]" /> Analytics</h4>
+                    <div className="border-t border-[#0A0A0A]/5 bg-[#f4f4f4] p-4">
+                      <h4 className="text-xs font-bold text-[#0A0A0A]/50 mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#1356E2]" /> Analytics</h4>
                       <LinkAnalyticsDashboard linkId={link.id} linkCode={link.uniqueCode} />
                     </div>
                   )}

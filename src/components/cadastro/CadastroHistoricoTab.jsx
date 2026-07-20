@@ -41,10 +41,10 @@ function ChangeDetail({ details }) {
             const oldVal = details.oldValues?.[key];
             return (
               <div key={key} className="text-xs">
-                <span className="font-medium text-[var(--pagsmile-blue)]/70">{key}:</span>
+                <span className="font-medium text-[var(--pinbank-blue)]/70">{key}:</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="text-red-500 line-through text-[11px]">{String(oldVal || '(vazio)')}</span>
-                  <ArrowRight className="w-3 h-3 text-[var(--pagsmile-blue)]/30" />
+                  <ArrowRight className="w-3 h-3 text-[var(--pinbank-blue)]/30" />
                   <span className="text-green-600 font-medium text-[11px]">{String(newVal || '(vazio)')}</span>
                 </div>
               </div>
@@ -59,9 +59,9 @@ function ChangeDetail({ details }) {
 export default function CadastroHistoricoTab({ auditLogs = [] }) {
   if (!auditLogs.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <History className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum registro de histórico encontrado</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <History className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum registro de histórico encontrado</p>
       </div>
     );
   }
@@ -70,10 +70,10 @@ export default function CadastroHistoricoTab({ auditLogs = [] }) {
 
   return (
     <div className="space-y-2 mt-4">
-      <p className="text-sm text-[var(--pagsmile-blue)]/60">{sorted.length} registro(s) de histórico</p>
+      <p className="text-sm text-[var(--pinbank-blue)]/60">{sorted.length} registro(s) de histórico</p>
       <div className="relative">
         {/* Timeline line */}
-        <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-[var(--pagsmile-blue)]/8" />
+        <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-[var(--pinbank-blue)]/8" />
         
         <div className="space-y-3">
           {sorted.map((log, i) => {
@@ -86,20 +86,20 @@ export default function CadastroHistoricoTab({ auditLogs = [] }) {
                 {/* Timeline dot */}
                 <div className={`absolute left-3.5 w-3 h-3 rounded-full border-2 border-white ${color.split(' ')[0]} top-4`} />
                 
-                <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-4">
+                <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge className={`text-[10px] ${color}`}>{label}</Badge>
-                        <span className="text-[10px] text-[var(--pagsmile-blue)]/40">{log.entityName}</span>
+                        <span className="text-[10px] text-[var(--pinbank-blue)]/40">{log.entityName}</span>
                       </div>
-                      <p className="text-sm text-[var(--pagsmile-blue)]/80 mt-1">{log.actionDescription}</p>
+                      <p className="text-sm text-[var(--pinbank-blue)]/80 mt-1">{log.actionDescription}</p>
                       <ChangeDetail details={log.details} />
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{date.toLocaleDateString('pt-BR')}</p>
-                      <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
-                      <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-1 font-medium">{log.changedBy}</p>
+                      <p className="text-[10px] text-[var(--pinbank-blue)]/40">{date.toLocaleDateString('pt-BR')}</p>
+                      <p className="text-[10px] text-[var(--pinbank-blue)]/40">{date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                      <p className="text-[10px] text-[var(--pinbank-blue)]/50 mt-1 font-medium">{log.changedBy}</p>
                     </div>
                   </div>
                 </div>

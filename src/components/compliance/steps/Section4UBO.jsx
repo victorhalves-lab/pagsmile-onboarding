@@ -66,7 +66,7 @@ export default function Section4UBO({ formData, handleChange, handleArrayChange,
               variant="outline"
               size="sm"
               onClick={addUBO}
-              className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]"
+              className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Adicionar UBO

@@ -28,7 +28,7 @@ export default function AceiteModal({ open, onClose, onConfirm, isPending }) {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-[#2bc196]" />
+            <CheckCircle2 className="w-5 h-5 text-[#1356E2]" />
             Confirmação de Aceite
           </DialogTitle>
           <DialogDescription>Para aceitar esta proposta, confirme os termos abaixo:</DialogDescription>
@@ -51,7 +51,7 @@ export default function AceiteModal({ open, onClose, onConfirm, isPending }) {
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={onConfirm} disabled={!allChecked || isPending} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+          <Button onClick={onConfirm} disabled={!allChecked || isPending} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
             {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Confirmar
           </Button>

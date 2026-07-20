@@ -54,8 +54,8 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
   return (
     <div className="space-y-4">
       {/* Action Buttons */}
-      <div className="flex items-center justify-between bg-white rounded-xl p-3 border border-[#002443]/5">
-        <span className="text-xs font-bold text-[#002443] uppercase tracking-wider">Ações Rápidas</span>
+      <div className="flex items-center justify-between bg-white rounded-xl p-3 border border-[#0A0A0A]/5">
+        <span className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider">Ações Rápidas</span>
         <CaseActionButtons
           caseId={caseData.id}
           merchantName={merchantMap?.[caseData.merchantId]?.fullName || ''}
@@ -64,12 +64,12 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* IA Summary */}
-      <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
+      <div className="bg-white rounded-xl p-4 border border-[#0A0A0A]/5">
         <div className="flex items-center gap-2 mb-3">
-          <Brain className="w-4 h-4 text-[#2bc196]" />
-          <h4 className="text-xs font-bold text-[#002443] uppercase tracking-wider">Resumo IA</h4>
+          <Brain className="w-4 h-4 text-[#1356E2]" />
+          <h4 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider">Resumo IA</h4>
         </div>
-        <p className="text-xs text-[#282828]/60 leading-relaxed">
+        <p className="text-xs text-[#0A0A0A]/60 leading-relaxed">
           {score?.sumario_executivo || score?.parecer_final || caseData.iaExplanation || 'Análise não disponível.'}
         </p>
         {(score?.red_flags || caseData.redFlags || []).length > 0 && (
@@ -88,11 +88,11 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
       </div>
 
       {/* Documents */}
-      <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
+      <div className="bg-white rounded-xl p-4 border border-[#0A0A0A]/5">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Paperclip className="w-4 h-4 text-indigo-500" />
-            <h4 className="text-xs font-bold text-[#002443] uppercase tracking-wider">Documentos</h4>
+            <h4 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider">Documentos</h4>
           </div>
           <Badge className="bg-indigo-50 text-indigo-600 text-[10px] border-0">
             {uploads.length}/{requiredDocs.length}
@@ -117,7 +117,7 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
                   sent ? 'bg-green-50/50' : 'bg-slate-50'
                 }`}>
                   <DocStatusIcon status={sent ? status : 'Pendente'} />
-                  <span className={`flex-1 truncate ${sent ? 'text-[#002443]' : 'text-slate-400'}`}>
+                  <span className={`flex-1 truncate ${sent ? 'text-[#0A0A0A]' : 'text-slate-400'}`}>
                     {docLabel}
                   </span>
                   {sent ? (
@@ -140,11 +140,11 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
       </div>
 
       {/* Validations & Scores */}
-      <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
+      <div className="bg-white rounded-xl p-4 border border-[#0A0A0A]/5">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-amber-500" />
-            <h4 className="text-xs font-bold text-[#002443] uppercase tracking-wider">Validações</h4>
+            <h4 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wider">Validações</h4>
           </div>
           <Badge className="bg-amber-50 text-amber-600 text-[10px] border-0">
             {validations.filter(v => v.status === 'Sucesso').length}/{validations.length || 0}
@@ -159,7 +159,7 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
             {validations.map((v, i) => (
               <div key={i} className="flex items-center justify-between px-2.5 py-1.5 bg-slate-50 rounded-lg text-[11px]">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-medium text-[#002443] truncate">{v.provider}</span>
+                  <span className="font-medium text-[#0A0A0A] truncate">{v.provider}</span>
                   <span className="text-slate-400 truncate">{v.validationType}</span>
                 </div>
                 <ValidationStatusBadge status={v.status} />
@@ -170,7 +170,7 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
 
         {/* Scores */}
         <div className="pt-3 border-t border-slate-100 space-y-1.5">
-          <p className="text-[10px] font-bold text-[#002443] uppercase tracking-wider mb-1">Scores</p>
+          <p className="text-[10px] font-bold text-[#0A0A0A] uppercase tracking-wider mb-1">Scores</p>
           {[
             { label: 'Questionário (SQ)', value: score?.score_questionario },
             { label: 'Validação Ext. (SVE)', value: score?.score_validacao_externa },
@@ -178,8 +178,8 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, 
             { label: 'Recomendação', value: score?.recomendacao_final || caseData.iaDecision, isText: true },
           ].map((s, i) => (
             <div key={i} className="flex justify-between text-[11px]">
-              <span className="text-[#282828]/50">{s.label}</span>
-              <span className={`font-bold ${s.highlight ? 'text-[#2bc196]' : ''}`}>
+              <span className="text-[#0A0A0A]/50">{s.label}</span>
+              <span className={`font-bold ${s.highlight ? 'text-[#1356E2]' : ''}`}>
                 {s.value || '-'}
               </span>
             </div>

@@ -94,16 +94,16 @@ export default function AnaliseResumoExecutivo({ merchant, latestCase, latestSco
   const assessment = getOverallAssessment();
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       {/* Title */}
       <div className="px-6 py-4 border-b border-slate-100">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-gradient-to-br from-purple-50 to-blue-50">
-            <Shield className="w-5 h-5 text-[var(--pagsmile-green)]" />
+            <Shield className="w-5 h-5 text-[var(--pinbank-blue)]" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-[var(--pagsmile-blue)]">Resumo Executivo — Validações Externas</h2>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40">Visão consolidada em linguagem de negócio e compliance</p>
+            <h2 className="text-base font-bold text-[var(--pinbank-blue)]">Resumo Executivo — Validações Externas</h2>
+            <p className="text-xs text-[var(--pinbank-blue)]/40">Visão consolidada em linguagem de negócio e compliance</p>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function AnaliseResumoExecutivo({ merchant, latestCase, latestSco
               Parecer: {assessment.level}
             </Badge>
             {scoreV4 != null && (
-              <Badge className="bg-[var(--pagsmile-blue)] text-white text-xs">Score V4: {scoreV4} — {subfaixa}</Badge>
+              <Badge className="bg-[var(--pinbank-blue)] text-white text-xs">Score V4: {scoreV4} — {subfaixa}</Badge>
             )}
             {recomendacao && <Badge variant="outline" className="text-xs">{recomendacao}</Badge>}
           </div>
@@ -133,7 +133,7 @@ export default function AnaliseResumoExecutivo({ merchant, latestCase, latestSco
 
         {/* Services Performed */}
         <div>
-          <h3 className="text-sm font-bold text-[var(--pagsmile-blue)] mb-3">Serviços de Validação Executados</h3>
+          <h3 className="text-sm font-bold text-[var(--pinbank-blue)] mb-3">Serviços de Validação Executados</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {cafServiceTypes.map(svc => {
               const records = allCafRecords.filter(r => (r.service_type || r.validationType) === svc);
@@ -144,8 +144,8 @@ export default function AnaliseResumoExecutivo({ merchant, latestCase, latestSco
                 <div key={svc} className={`flex items-center gap-3 p-3 rounded-lg border ${si.bg} border-slate-200`}>
                   <Icon className={`w-4 h-4 ${si.color} flex-shrink-0`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-[var(--pagsmile-blue)] truncate">{getServiceLabel(svc)}</p>
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{si.label} • {records.length}x executado</p>
+                    <p className="text-xs font-semibold text-[var(--pinbank-blue)] truncate">{getServiceLabel(svc)}</p>
+                    <p className="text-[10px] text-[var(--pinbank-blue)]/40">{si.label} • {records.length}x executado</p>
                   </div>
                 </div>
               );
@@ -196,10 +196,10 @@ function QuickMetric({ icon: Icon, label, value, sub, iconColor, bgColor }) {
     <div className="p-4 rounded-xl bg-white border border-slate-200">
       <div className="flex items-center gap-2 mb-2">
         <div className={`p-1.5 rounded-lg ${bgColor}`}><Icon className={`w-4 h-4 ${iconColor}`} /></div>
-        <span className="text-[10px] font-semibold text-[var(--pagsmile-blue)]/50 uppercase tracking-wide">{label}</span>
+        <span className="text-[10px] font-semibold text-[var(--pinbank-blue)]/50 uppercase tracking-wide">{label}</span>
       </div>
-      <p className="text-2xl font-black text-[var(--pagsmile-blue)]">{value}</p>
-      <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">{sub}</p>
+      <p className="text-2xl font-black text-[var(--pinbank-blue)]">{value}</p>
+      <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">{sub}</p>
     </div>
   );
 }

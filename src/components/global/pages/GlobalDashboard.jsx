@@ -41,16 +41,16 @@ export default function GlobalDashboard() {
   const formatUsd = v => `$${(v || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
   const formatPct = v => `${(v || 0).toFixed(1)}%`;
 
-  const KPI = ({ icon: Icon, label, value, hint, accent = 'bg-[#2bc196]/10 text-[#2bc196]' }) => (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-5">
+  const KPI = ({ icon: Icon, label, value, hint, accent = 'bg-[#1356E2]/10 text-[#1356E2]' }) => (
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-5">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">{label}</span>
         <div className={`p-2 rounded-lg ${accent}`}>
           <Icon className="w-4 h-4" />
         </div>
       </div>
-      <div className="text-2xl font-bold text-[#002443]">{value}</div>
-      {hint && <div className="text-xs text-[#002443]/50 mt-1">{hint}</div>}
+      <div className="text-2xl font-bold text-[#0A0A0A]">{value}</div>
+      {hint && <div className="text-xs text-[#0A0A0A]/50 mt-1">{hint}</div>}
     </div>
   );
 
@@ -69,17 +69,17 @@ export default function GlobalDashboard() {
       {/* Listas recentes */}
       <div className="grid lg:grid-cols-2 gap-4">
         {/* Propostas recentes */}
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm">
-          <div className="px-5 py-3 border-b border-[#002443]/5 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#2bc196]" />
-            <h3 className="text-sm font-semibold text-[#002443]">Propostas Recentes</h3>
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm">
+          <div className="px-5 py-3 border-b border-[#0A0A0A]/5 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#1356E2]" />
+            <h3 className="text-sm font-semibold text-[#0A0A0A]">Propostas Recentes</h3>
           </div>
-          <div className="divide-y divide-[#002443]/5">
+          <div className="divide-y divide-[#0A0A0A]/5">
             {proposals.slice(0, 6).map(p => (
               <div key={p.id} className="px-5 py-3 flex items-center justify-between">
                 <div className="min-w-0">
-                  <div className="text-sm font-medium text-[#002443] truncate">{p.client_name}</div>
-                  <div className="text-xs text-[#002443]/50">
+                  <div className="text-sm font-medium text-[#0A0A0A] truncate">{p.client_name}</div>
+                  <div className="text-xs text-[#0A0A0A]/50">
                     {p.created_date ? format(new Date(p.created_date), 'dd/MM/yyyy') : '—'} · {formatPct(p.final_rate_percentage)}
                   </div>
                 </div>
@@ -87,23 +87,23 @@ export default function GlobalDashboard() {
               </div>
             ))}
             {!loading && proposals.length === 0 && (
-              <div className="px-5 py-8 text-center text-sm text-[#002443]/50">Nenhuma proposta ainda.</div>
+              <div className="px-5 py-8 text-center text-sm text-[#0A0A0A]/50">Nenhuma proposta ainda.</div>
             )}
           </div>
         </div>
 
         {/* Questionários recentes */}
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm">
-          <div className="px-5 py-3 border-b border-[#002443]/5 flex items-center gap-2">
-            <ClipboardList className="w-4 h-4 text-[#2bc196]" />
-            <h3 className="text-sm font-semibold text-[#002443]">Questionários Recentes</h3>
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm">
+          <div className="px-5 py-3 border-b border-[#0A0A0A]/5 flex items-center gap-2">
+            <ClipboardList className="w-4 h-4 text-[#1356E2]" />
+            <h3 className="text-sm font-semibold text-[#0A0A0A]">Questionários Recentes</h3>
           </div>
-          <div className="divide-y divide-[#002443]/5">
+          <div className="divide-y divide-[#0A0A0A]/5">
             {questionnaires.slice(0, 6).map(q => (
               <div key={q.id} className="px-5 py-3 flex items-center justify-between">
                 <div className="min-w-0">
-                  <div className="text-sm font-medium text-[#002443] truncate">{q.company_name}</div>
-                  <div className="text-xs text-[#002443]/50">
+                  <div className="text-sm font-medium text-[#0A0A0A] truncate">{q.company_name}</div>
+                  <div className="text-xs text-[#0A0A0A]/50">
                     {q.created_date ? format(new Date(q.created_date), 'dd/MM/yyyy') : '—'} · {formatUsd(q.monthly_tpv)}
                   </div>
                 </div>
@@ -111,7 +111,7 @@ export default function GlobalDashboard() {
               </div>
             ))}
             {!loading && questionnaires.length === 0 && (
-              <div className="px-5 py-8 text-center text-sm text-[#002443]/50">Nenhum questionário ainda.</div>
+              <div className="px-5 py-8 text-center text-sm text-[#0A0A0A]/50">Nenhum questionário ainda.</div>
             )}
           </div>
         </div>

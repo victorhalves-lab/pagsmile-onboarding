@@ -45,7 +45,7 @@ export default function CaseSubsellersTab({ merchantId }) {
   if (loadingCases) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -54,8 +54,8 @@ export default function CaseSubsellersTab({ merchantId }) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
         <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-        <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-2">Nenhum subseller</h3>
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">
+        <h3 className="text-lg font-bold text-[var(--pinbank-blue)] mb-2">Nenhum subseller</h3>
+        <p className="text-sm text-[var(--pinbank-blue)]/50">
           Este merchant não possui subsellers vinculados. Gere um link de subconta para começar.
         </p>
       </div>
@@ -77,7 +77,7 @@ export default function CaseSubsellersTab({ merchantId }) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
-      <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-bold text-[var(--pinbank-blue)] mb-4 flex items-center gap-2">
         <Users className="w-5 h-5" /> Subsellers ({subsellerCases.length})
       </h3>
 
@@ -85,12 +85,12 @@ export default function CaseSubsellersTab({ merchantId }) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-200">
-              <th className="text-left text-xs font-semibold text-[var(--pagsmile-blue)]/50 pb-3 uppercase tracking-wider">Subseller</th>
-              <th className="text-left text-xs font-semibold text-[var(--pagsmile-blue)]/50 pb-3 uppercase tracking-wider">CNPJ</th>
-              <th className="text-left text-xs font-semibold text-[var(--pagsmile-blue)]/50 pb-3 uppercase tracking-wider">Status</th>
-              <th className="text-left text-xs font-semibold text-[var(--pagsmile-blue)]/50 pb-3 uppercase tracking-wider">Score</th>
-              <th className="text-left text-xs font-semibold text-[var(--pagsmile-blue)]/50 pb-3 uppercase tracking-wider">Data</th>
-              <th className="text-right text-xs font-semibold text-[var(--pagsmile-blue)]/50 pb-3 uppercase tracking-wider">Ações</th>
+              <th className="text-left text-xs font-semibold text-[var(--pinbank-blue)]/50 pb-3 uppercase tracking-wider">Subseller</th>
+              <th className="text-left text-xs font-semibold text-[var(--pinbank-blue)]/50 pb-3 uppercase tracking-wider">CNPJ</th>
+              <th className="text-left text-xs font-semibold text-[var(--pinbank-blue)]/50 pb-3 uppercase tracking-wider">Status</th>
+              <th className="text-left text-xs font-semibold text-[var(--pinbank-blue)]/50 pb-3 uppercase tracking-wider">Score</th>
+              <th className="text-left text-xs font-semibold text-[var(--pinbank-blue)]/50 pb-3 uppercase tracking-wider">Data</th>
+              <th className="text-right text-xs font-semibold text-[var(--pinbank-blue)]/50 pb-3 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -100,11 +100,11 @@ export default function CaseSubsellersTab({ merchantId }) {
               return (
                 <tr key={c.id} className="border-b border-slate-100 last:border-0">
                   <td className="py-3">
-                    <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">{sub?.fullName || '—'}</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/50">{sub?.email || ''}</p>
+                    <p className="text-sm font-semibold text-[var(--pinbank-blue)]">{sub?.fullName || '—'}</p>
+                    <p className="text-xs text-[var(--pinbank-blue)]/50">{sub?.email || ''}</p>
                   </td>
                   <td className="py-3">
-                    <span className="text-sm text-[var(--pagsmile-blue)]">{sub?.cpfCnpj || '—'}</span>
+                    <span className="text-sm text-[var(--pinbank-blue)]">{sub?.cpfCnpj || '—'}</span>
                   </td>
                   <td className="py-3">
                     <Badge className={statusColor(c.status)}>{c.status}</Badge>
@@ -119,7 +119,7 @@ export default function CaseSubsellersTab({ merchantId }) {
                     )}
                   </td>
                   <td className="py-3">
-                    <span className="text-xs text-[var(--pagsmile-blue)]/50">
+                    <span className="text-xs text-[var(--pinbank-blue)]/50">
                       {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '—'}
                     </span>
                   </td>

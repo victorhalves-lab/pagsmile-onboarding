@@ -40,7 +40,7 @@ export default function RiskScorePanel({ onboardingCase, complianceScore }) {
   if (score == null) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 overflow-hidden">
       <div className={`h-1.5 ${cfg.color}`} />
       <div className="p-6 space-y-5">
         <div className="flex items-center gap-3">
@@ -48,8 +48,8 @@ export default function RiskScorePanel({ onboardingCase, complianceScore }) {
             <Shield className={`w-5 h-5 ${cfg.text}`} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#002443]">Score V4 — Dados Objetivos (BDC + CAF)</h3>
-            <p className="text-[10px] text-[#002443]/40">
+            <h3 className="text-sm font-bold text-[#0A0A0A]">Score V4 — Dados Objetivos (BDC + CAF)</h3>
+            <p className="text-[10px] text-[#0A0A0A]/40">
               Score calculado por fórmula determinística sobre dados reais da Big Data Corp. Não é opinião de IA.
               {segmento && <> • Segmento: <strong>{segmento}</strong></>}
             </p>
@@ -59,27 +59,27 @@ export default function RiskScorePanel({ onboardingCase, complianceScore }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Score */}
           <div className={`p-5 rounded-xl ${cfg.bgLight} border ${cfg.border}`}>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">Score Final</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">Score Final</p>
             <div className="flex items-baseline gap-1.5">
               <span className={`text-4xl font-black ${cfg.text}`}>{score}</span>
-              <span className="text-sm text-[#002443]/30 font-medium">/849</span>
+              <span className="text-sm text-[#0A0A0A]/30 font-medium">/849</span>
             </div>
             <div className="w-full h-2 bg-white/60 rounded-full mt-3 overflow-hidden">
               <div className={`h-full rounded-full ${cfg.color} transition-all duration-1000`} style={{ width: `${pct}%` }} />
             </div>
-            <p className="text-[10px] text-[#002443]/40 mt-1">0 = mínimo risco • 849 = máximo</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 mt-1">0 = mínimo risco • 849 = máximo</p>
           </div>
 
           {/* Classification */}
-          <div className="p-5 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">Classificação</p>
+          <div className="p-5 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">Classificação</p>
             <Badge className={`${cfg.bgLight} ${cfg.text} ${cfg.border} border text-base font-black px-4 py-1.5`}>
               {subfaixa} — {cfg.label}
             </Badge>
             <div className="mt-3 space-y-1">
               {monitoramento && (
-                <div className="flex items-center gap-1.5 text-xs text-[#002443]/60">
-                  <Eye className="w-3.5 h-3.5 text-[#002443]/40" />
+                <div className="flex items-center gap-1.5 text-xs text-[#0A0A0A]/60">
+                  <Eye className="w-3.5 h-3.5 text-[#0A0A0A]/40" />
                   <span>Monitoramento: <strong>{monitoramento}</strong></span>
                 </div>
               )}
@@ -93,25 +93,25 @@ export default function RiskScorePanel({ onboardingCase, complianceScore }) {
           </div>
 
           {/* Decomposition */}
-          <div className="p-5 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-2">Composição</p>
+          <div className="p-5 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">Composição</p>
             {c1 != null && (
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-[#002443]/60">C1 — Base do Segmento</span>
-                  <span className="font-bold text-[#002443]">{c1} pts</span>
+                  <span className="text-[#0A0A0A]/60">C1 — Base do Segmento</span>
+                  <span className="font-bold text-[#0A0A0A]">{c1} pts</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#002443]/60">C2 — Variáveis BDC</span>
+                  <span className="text-[#0A0A0A]/60">C2 — Variáveis BDC</span>
                   <span className={`font-bold ${c2 > 0 ? 'text-red-600' : 'text-emerald-600'}`}>{c2 > 0 ? '+' : ''}{c2} pts</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#002443]/60">C3 — Enriquecimento</span>
+                  <span className="text-[#0A0A0A]/60">C3 — Enriquecimento</span>
                   <span className={`font-bold ${c3 > 0 ? 'text-red-600' : 'text-emerald-600'}`}>{c3 > 0 ? '+' : ''}{c3} pts</span>
                 </div>
-                <div className="border-t border-[#002443]/10 pt-1 flex justify-between">
-                  <span className="font-bold text-[#002443]">Total</span>
-                  <span className="font-black text-[#002443]">{score} pts</span>
+                <div className="border-t border-[#0A0A0A]/10 pt-1 flex justify-between">
+                  <span className="font-bold text-[#0A0A0A]">Total</span>
+                  <span className="font-black text-[#0A0A0A]">{score} pts</span>
                 </div>
               </div>
             )}
@@ -126,7 +126,7 @@ export default function RiskScorePanel({ onboardingCase, complianceScore }) {
             return (
               <div
                 key={item.key}
-                className={`flex-1 ${itemCfg.color} flex items-center justify-center text-[8px] font-bold text-white/90 relative ${isActive ? 'ring-2 ring-[#002443] ring-offset-1 z-10 scale-105' : 'opacity-50'}`}
+                className={`flex-1 ${itemCfg.color} flex items-center justify-center text-[8px] font-bold text-white/90 relative ${isActive ? 'ring-2 ring-[#0A0A0A] ring-offset-1 z-10 scale-105' : 'opacity-50'}`}
                 title={`${item.sublabel}: ${item.range} pts`}
               >
                 {item.label}

@@ -32,19 +32,19 @@ export default function InsightsLeadProfileSection({ leads }) {
     riskMap[risk] = (riskMap[risk] || 0) + 1;
   });
   const riskData = Object.entries(riskMap).map(([name, value]) => ({ name, value }));
-  const riskColors = { BAIXO: '#2bc196', MEDIO: '#f59e0b', ALTO: '#ef4444', CRITICO: '#7c2d12', EM_ANALISE: '#94a3b8' };
+  const riskColors = { BAIXO: '#1356E2', MEDIO: '#f59e0b', ALTO: '#ef4444', CRITICO: '#7c2d12', EM_ANALISE: '#94a3b8' };
 
   // Lead Qualifier Level
   const qualLevelMap = {};
   leads.forEach(l => { qualLevelMap[l.leadQualifierLevel || 'PENDENTE'] = (qualLevelMap[l.leadQualifierLevel || 'PENDENTE'] || 0) + 1; });
   const qualLevelData = Object.entries(qualLevelMap).map(([name, value]) => ({ name, value }));
-  const qualColors = { EXCELENTE: '#2bc196', BOM: '#36706c', REGULAR: '#f59e0b', FRACO: '#ef4444', INSUFICIENTE: '#7c2d12', PENDENTE: '#94a3b8' };
+  const qualColors = { EXCELENTE: '#1356E2', BOM: '#E84B1C', REGULAR: '#f59e0b', FRACO: '#ef4444', INSUFICIENTE: '#7c2d12', PENDENTE: '#94a3b8' };
 
   // IA Decision
   const iaDecMap = {};
   leads.forEach(l => { iaDecMap[l.iaDecision || 'PENDENTE'] = (iaDecMap[l.iaDecision || 'PENDENTE'] || 0) + 1; });
   const iaDecData = Object.entries(iaDecMap).map(([name, value]) => ({ name, value }));
-  const iaColors = { AUTO_APROVAR: '#2bc196', REVISAO_MANUAL: '#f59e0b', REJEITAR: '#ef4444', PENDENTE: '#94a3b8' };
+  const iaColors = { AUTO_APROVAR: '#1356E2', REVISAO_MANUAL: '#f59e0b', REJEITAR: '#ef4444', PENDENTE: '#94a3b8' };
 
   // IA Priority
   const priorMap = {};
@@ -121,7 +121,7 @@ export default function InsightsLeadProfileSection({ leads }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {growthData.length > 0 && <HorizontalBarList title="Expectativa de Crescimento" data={growthData} />}
-        {priorData.length > 0 && <DonutChart title="Prioridade IA" data={priorData} colorMap={{ URGENTE: '#ef4444', ALTA: '#f59e0b', MEDIA: '#94a3b8', BAIXA: '#2bc196' }} />}
+        {priorData.length > 0 && <DonutChart title="Prioridade IA" data={priorData} colorMap={{ URGENTE: '#ef4444', ALTA: '#f59e0b', MEDIA: '#94a3b8', BAIXA: '#1356E2' }} />}
       </div>
     </div>
   );

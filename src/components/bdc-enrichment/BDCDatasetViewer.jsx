@@ -119,29 +119,29 @@ const CATEGORY_CONFIG = {
 };
 
 function DataValue({ value, depth = 0 }) {
-  if (value === null || value === undefined) return <span className="text-[#002443]/30 italic text-xs">N/D</span>;
+  if (value === null || value === undefined) return <span className="text-[#0A0A0A]/30 italic text-xs">N/D</span>;
   if (typeof value === 'boolean') return <Badge variant="outline" className="text-[10px]">{value ? 'Sim' : 'Não'}</Badge>;
-  if (typeof value === 'number') return <span className="font-mono text-xs text-[#002443]">{value.toLocaleString('pt-BR')}</span>;
+  if (typeof value === 'number') return <span className="font-mono text-xs text-[#0A0A0A]">{value.toLocaleString('pt-BR')}</span>;
   if (typeof value === 'string') {
     if (value.length > 200) {
-      return <p className="text-xs text-[#002443]/80 leading-relaxed whitespace-pre-wrap">{value}</p>;
+      return <p className="text-xs text-[#0A0A0A]/80 leading-relaxed whitespace-pre-wrap">{value}</p>;
     }
-    return <span className="text-xs text-[#002443]/80">{value}</span>;
+    return <span className="text-xs text-[#0A0A0A]/80">{value}</span>;
   }
   if (Array.isArray(value)) {
-    if (value.length === 0) return <span className="text-[#002443]/30 italic text-xs">Lista vazia</span>;
+    if (value.length === 0) return <span className="text-[#0A0A0A]/30 italic text-xs">Lista vazia</span>;
     if (typeof value[0] === 'string' || typeof value[0] === 'number') {
-      return <span className="text-xs text-[#002443]/80">{value.join(', ')}</span>;
+      return <span className="text-xs text-[#0A0A0A]/80">{value.join(', ')}</span>;
     }
     return (
       <div className="space-y-2 mt-1">
         {value.slice(0, 20).map((item, i) => (
-          <div key={i} className="bg-white/50 rounded-lg p-2 border border-[#002443]/5">
+          <div key={i} className="bg-white/50 rounded-lg p-2 border border-[#0A0A0A]/5">
             <DataObject data={item} depth={depth + 1} />
           </div>
         ))}
         {value.length > 20 && (
-          <p className="text-[10px] text-[#002443]/40">... e mais {value.length - 20} itens</p>
+          <p className="text-[10px] text-[#0A0A0A]/40">... e mais {value.length - 20} itens</p>
         )}
       </div>
     );
@@ -155,13 +155,13 @@ function DataValue({ value, depth = 0 }) {
 function DataObject({ data, depth = 0 }) {
   if (!data || typeof data !== 'object') return null;
   const entries = Object.entries(data).filter(([k]) => !k.startsWith('_'));
-  if (entries.length === 0) return <span className="text-[#002443]/30 italic text-xs">Objeto vazio</span>;
+  if (entries.length === 0) return <span className="text-[#0A0A0A]/30 italic text-xs">Objeto vazio</span>;
 
   return (
-    <div className={`space-y-1.5 ${depth > 0 ? 'pl-3 border-l-2 border-[#002443]/5' : ''}`}>
+    <div className={`space-y-1.5 ${depth > 0 ? 'pl-3 border-l-2 border-[#0A0A0A]/5' : ''}`}>
       {entries.map(([key, val]) => (
         <div key={key} className="flex items-start gap-2">
-          <span className="text-[10px] font-semibold text-[#002443]/50 min-w-[100px] shrink-0 pt-0.5">
+          <span className="text-[10px] font-semibold text-[#0A0A0A]/50 min-w-[100px] shrink-0 pt-0.5">
             {key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim()}
           </span>
           <div className="flex-1 min-w-0">
@@ -193,30 +193,30 @@ export default function BDCDatasetViewer({ datasetKey, data }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[#002443]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[#0A0A0A]/8 overflow-hidden">
       <button
         onClick={() => !isEmpty && setExpanded(!expanded)}
         className={`w-full flex items-center gap-3 p-3.5 text-left transition-colors ${isEmpty ? 'opacity-50 cursor-default' : 'hover:bg-[#f4f4f4]/50'}`}
       >
         <div className="flex-1 min-w-0 flex items-center gap-2.5">
-          <span className="text-sm font-semibold text-[#002443]">{meta.label}</span>
+          <span className="text-sm font-semibold text-[#0A0A0A]">{meta.label}</span>
           <Badge className={`${catConfig.color} border text-[9px] px-1.5`}>{catConfig.label}</Badge>
           {!isEmpty && (
-            <span className="text-[10px] text-[#002443]/40">{itemCount} {isArray ? 'registros' : 'campos'}</span>
+            <span className="text-[10px] text-[#0A0A0A]/40">{itemCount} {isArray ? 'registros' : 'campos'}</span>
           )}
         </div>
         <div className="flex items-center gap-2">
           {!isEmpty && (
-            <button onClick={handleCopy} className="p-1 hover:bg-[#002443]/5 rounded" title="Copiar JSON">
-              {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-[#002443]/30" />}
+            <button onClick={handleCopy} className="p-1 hover:bg-[#0A0A0A]/5 rounded" title="Copiar JSON">
+              {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-[#0A0A0A]/30" />}
             </button>
           )}
           {isEmpty ? (
-            <span className="text-[10px] text-[#002443]/30">Sem dados</span>
+            <span className="text-[10px] text-[#0A0A0A]/30">Sem dados</span>
           ) : expanded ? (
-            <ChevronUp className="w-4 h-4 text-[#002443]/30" />
+            <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-[#002443]/30" />
+            <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />
           )}
         </div>
       </button>
@@ -232,7 +232,7 @@ export default function BDCDatasetViewer({ datasetKey, data }) {
       )}
 
       {expanded && !isEmpty && (
-        <div className="border-t border-[#002443]/5 p-4 bg-[#fafafa] max-h-[500px] overflow-y-auto">
+        <div className="border-t border-[#0A0A0A]/5 p-4 bg-[#fafafa] max-h-[500px] overflow-y-auto">
           <DataValue value={data} />
         </div>
       )}

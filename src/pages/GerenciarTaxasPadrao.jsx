@@ -62,7 +62,7 @@ export default function GerenciarTaxasPadrao() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -73,12 +73,12 @@ export default function GerenciarTaxasPadrao() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-[#2bc196]/10 rounded-xl">
-              <Settings2 className="w-5 h-5 text-[#2bc196]" />
+            <div className="p-2.5 bg-[#1356E2]/10 rounded-xl">
+              <Settings2 className="w-5 h-5 text-[#1356E2]" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-[#002443]">Taxas Padrão por Segmento</h1>
-              <p className="text-xs text-[#002443]/50">Edite as taxas base de cada segmento. As alterações serão propagadas automaticamente.</p>
+              <h1 className="text-xl font-bold text-[#0A0A0A]">Taxas Padrão por Segmento</h1>
+              <p className="text-xs text-[#0A0A0A]/50">Edite as taxas base de cada segmento. As alterações serão propagadas automaticamente.</p>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default function GerenciarTaxasPadrao() {
             <Button
               onClick={() => saveMutation.mutate()}
               disabled={saveMutation.isPending}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 font-bold"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 font-bold"
             >
               {saveMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -117,7 +117,7 @@ export default function GerenciarTaxasPadrao() {
         {/* Left — Segment List */}
         <div className="lg:col-span-3">
           <div className="bg-[#f4f4f4] rounded-xl p-3 sticky top-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#002443]/30 px-2 mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#0A0A0A]/30 px-2 mb-2">
               {segments.length} segmentos
             </p>
             <SegmentRatesList
@@ -133,7 +133,7 @@ export default function GerenciarTaxasPadrao() {
           {editData ? (
             <SegmentRateForm data={editData} onChange={handleChange} />
           ) : (
-            <div className="flex items-center justify-center h-64 text-[#002443]/30 text-sm">
+            <div className="flex items-center justify-center h-64 text-[#0A0A0A]/30 text-sm">
               Selecione um segmento para editar
             </div>
           )}
@@ -145,7 +145,7 @@ export default function GerenciarTaxasPadrao() {
             {editData ? (
               <SegmentRatePreview data={editData} />
             ) : (
-              <div className="flex items-center justify-center h-64 text-[#002443]/30 text-sm">
+              <div className="flex items-center justify-center h-64 text-[#0A0A0A]/30 text-sm">
                 Selecione um segmento para pré-visualizar
               </div>
             )}

@@ -22,18 +22,18 @@ export default function PercentDistributionRow({ title, fields, formData, update
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+      <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
         {title}
         {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
-      <p className="text-xs text-[var(--pagsmile-blue)]/60">
+      <p className="text-xs text-[var(--pinbank-blue)]/60">
         A soma dos percentuais deve ser igual a 100%.
       </p>
 
       <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${fields.length}, minmax(0, 1fr))` }}>
         {fields.map((field) => (
           <div key={field.id} className="space-y-1.5">
-            <label className="text-xs font-semibold text-[var(--pagsmile-blue)]/80 block">
+            <label className="text-xs font-semibold text-[var(--pinbank-blue)]/80 block">
               {field.label}
             </label>
             <div className="relative">
@@ -58,7 +58,7 @@ export default function PercentDistributionRow({ title, fields, formData, update
                 placeholder={field.placeholder || '0'}
                 className="h-11 rounded-xl pr-8 text-center font-semibold"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/40 font-semibold text-sm">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pinbank-blue)]/40 font-semibold text-sm">
                 %
               </span>
             </div>
@@ -78,7 +78,7 @@ export default function PercentDistributionRow({ title, fields, formData, update
       {hasAnyValue && (
         <div className={`flex items-center justify-between px-4 py-2 rounded-xl text-xs font-semibold ${
           isValid 
-            ? 'bg-[var(--pagsmile-green)]/10 text-[var(--pagsmile-green)]' 
+            ? 'bg-[var(--pinbank-blue)]/10 text-[var(--pinbank-blue)]' 
             : 'bg-amber-50 text-amber-600'
         }`}>
           <div className="flex items-center gap-1.5">

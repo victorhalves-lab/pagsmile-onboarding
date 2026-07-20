@@ -101,9 +101,9 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
 
   if (!score && !latestCase) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <Shield className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhuma análise de compliance disponível</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <Shield className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhuma análise de compliance disponível</p>
       </div>
     );
   }
@@ -131,31 +131,31 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
         <div className={`rounded-xl border-2 overflow-hidden ${getRiskBg(scoreVal, isV4)}`}>
           <div className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-[var(--pagsmile-green)]" />
-              <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">Resumo Executivo — Análise de Risco</h3>
-              {isV4 && <Badge className="bg-[var(--pagsmile-blue)] text-white text-[10px]">Framework v4.0</Badge>}
+              <Shield className="w-5 h-5 text-[var(--pinbank-blue)]" />
+              <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">Resumo Executivo — Análise de Risco</h3>
+              {isV4 && <Badge className="bg-[var(--pinbank-blue)] text-white text-[10px]">Framework v4.0</Badge>}
             </div>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
               <div className="bg-white/80 backdrop-blur rounded-xl p-4 text-center border border-white/50">
                 <p className={`text-3xl font-black ${getRiskColor(scoreVal, isV4)}`}>{scoreVal ?? '—'}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-bold">Score Final</p>
-                {isV4 && <p className="text-[9px] text-[var(--pagsmile-blue)]/30">escala 0-1000</p>}
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50 font-bold">Score Final</p>
+                {isV4 && <p className="text-[9px] text-[var(--pinbank-blue)]/30">escala 0-1000</p>}
               </div>
               <div className="bg-white/80 backdrop-blur rounded-xl p-4 text-center border border-white/50">
-                <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{effectiveSubfaixa || '—'}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-bold">{effectiveSubfaixaNome || 'Subfaixa'}</p>
+                <p className="text-xl font-bold text-[var(--pinbank-blue)]">{effectiveSubfaixa || '—'}</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50 font-bold">{effectiveSubfaixaNome || 'Subfaixa'}</p>
               </div>
               <div className="bg-white/80 backdrop-blur rounded-xl p-4 text-center border border-white/50">
-                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{effectiveRecomendacao || '—'}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-bold">Decisão</p>
+                <p className="text-sm font-bold text-[var(--pinbank-blue)]">{effectiveRecomendacao || '—'}</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50 font-bold">Decisão</p>
               </div>
               <div className="bg-white/80 backdrop-blur rounded-xl p-4 text-center border border-white/50">
-                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{(effectiveMonitoramento || '').replace(/_/g, ' ') || '—'}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-bold">Monitoramento</p>
+                <p className="text-sm font-bold text-[var(--pinbank-blue)]">{(effectiveMonitoramento || '').replace(/_/g, ' ') || '—'}</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50 font-bold">Monitoramento</p>
               </div>
               <div className="bg-white/80 backdrop-blur rounded-xl p-4 text-center border border-white/50">
-                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{effectiveConfianca != null ? `${effectiveConfianca}%` : '—'}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-bold">Confiança IA</p>
+                <p className="text-sm font-bold text-[var(--pinbank-blue)]">{effectiveConfianca != null ? `${effectiveConfianca}%` : '—'}</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50 font-bold">Confiança IA</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
@@ -260,9 +260,9 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
 
       {/* ═══ 19. HISTÓRICO ═══ */}
       {allCases.length > 1 && (
-        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-          <h3 className="text-sm font-bold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[var(--pagsmile-green)]" />Histórico de Casos ({allCases.length})
+        <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+          <h3 className="text-sm font-bold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-[var(--pinbank-blue)]" />Histórico de Casos ({allCases.length})
           </h3>
           <div className="space-y-2">
             {[...allCases].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).map(c => {
@@ -270,14 +270,14 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
               return (
                 <div key={c.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg text-xs">
                   <div className="flex items-center gap-3">
-                    <Shield className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/30" />
+                    <Shield className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/30" />
                     <span className="font-medium">{c.status}</span>
                     {c.subfaixaNome && <Badge variant="outline" className="text-[10px]">{c.subfaixaNome}</Badge>}
                     {(c.riskScoreV4 ?? cs?.score_final) != null && (
                       <span className={`font-bold ${getRiskColor(c.riskScoreV4 ?? cs?.score_final, true)}`}>V4: {c.riskScoreV4 ?? cs?.score_final}</span>
                     )}
                   </div>
-                  <span className="text-[var(--pagsmile-blue)]/40">{new Date(c.created_date).toLocaleDateString('pt-BR')}</span>
+                  <span className="text-[var(--pinbank-blue)]/40">{new Date(c.created_date).toLocaleDateString('pt-BR')}</span>
                 </div>
               );
             })}

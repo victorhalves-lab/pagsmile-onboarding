@@ -80,7 +80,7 @@ const LEAD_COMPLETO_V2_SECTIONS = [
   {
     id: 'I', title: 'Etapa 9 — Informações Complementares', objective: 'Coletar informações qualitativas: dores, motivo de mudança, expectativas.', questions: [
       { order: 40, text: 'Principais dores com o processador atual', type: 'TEXT', required: false },
-      { order: 41, text: 'O que espera da PagSmile?', type: 'TEXT', required: false },
+      { order: 41, text: 'O que espera da Pin Bank?', type: 'TEXT', required: false },
       { order: 42, text: 'Upload de proposta de concorrente', type: 'FILE_UPLOAD', required: false, note: 'Aceita PDF, JPG, PNG. Upload via base44.integrations.Core.UploadFile' },
     ]
   },
@@ -237,7 +237,7 @@ const LEAD_REUNIAO_SECTIONS = [
     id: 'E', title: 'Dores & Expectativas', objective: 'Informações qualitativas para personalização do approach comercial.', questions: [
       { order: 23, text: 'Processador atual', type: 'TEXT', required: false },
       { order: 24, text: 'Principais dores', type: 'TEXT', required: false },
-      { order: 25, text: 'O que busca na PagSmile', type: 'TEXT', required: false },
+      { order: 25, text: 'O que busca na Pin Bank', type: 'TEXT', required: false },
     ]
   },
 ];
@@ -258,8 +258,8 @@ function SectionBlock({ section, isOpen, onToggle }) {
     <div className="border border-slate-200 rounded-xl overflow-hidden mb-2">
       <button onClick={onToggle} className="w-full flex items-center justify-between p-3 hover:bg-slate-50/50 transition-colors text-left">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Badge className="bg-[#002443] text-white border-0 text-[10px] shrink-0">{section.id}</Badge>
-          <span className="text-xs font-bold text-[#002443] truncate">{section.title}</span>
+          <Badge className="bg-[#0A0A0A] text-white border-0 text-[10px] shrink-0">{section.id}</Badge>
+          <span className="text-xs font-bold text-[#0A0A0A] truncate">{section.title}</span>
           <Badge variant="outline" className="text-[10px] shrink-0">{section.questions.length} campos</Badge>
         </div>
         {isOpen ? <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" /> : <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />}
@@ -275,7 +275,7 @@ function SectionBlock({ section, isOpen, onToggle }) {
               <div key={i} className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 text-xs">
                 <Badge variant="outline" className="text-[9px] shrink-0 mt-0.5 font-mono w-7 justify-center">{q.order}</Badge>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[#002443]/80">{q.text}</span>
+                  <span className="text-[#0A0A0A]/80">{q.text}</span>
                   <div className="flex gap-1 mt-0.5 flex-wrap">
                     <Badge className="text-[8px] bg-slate-100 text-slate-600 border-0">{q.type}</Badge>
                     {q.required && <Badge className="text-[8px] bg-green-50 text-green-700 border-0">Obrigatório</Badge>}
@@ -283,7 +283,7 @@ function SectionBlock({ section, isOpen, onToggle }) {
                     {q.options && <Badge className="text-[8px] bg-purple-50 text-purple-600 border-0">{q.options.length} opções</Badge>}
                   </div>
                   {q.note && (
-                    <p className="text-[9px] text-[#2bc196] mt-0.5 leading-tight italic">⚡ {q.note}</p>
+                    <p className="text-[9px] text-[#1356E2] mt-0.5 leading-tight italic">⚡ {q.note}</p>
                   )}
                 </div>
               </div>
@@ -303,8 +303,8 @@ function FeaturesList({ features, color = 'emerald' }) {
       </h5>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
         {features.map((f, i) => (
-          <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#002443]/70">
-            <span className="text-[#2bc196] shrink-0 mt-0.5">✓</span>
+          <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#0A0A0A]/70">
+            <span className="text-[#1356E2] shrink-0 mt-0.5">✓</span>
             <span>{f}</span>
           </div>
         ))}
@@ -397,14 +397,14 @@ export default function LeadQuestionnaireSection() {
           <button
             key={tab.id}
             onClick={() => { setActiveTab(tab.id); setOpenSections({}); }}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${activeTab === tab.id ? 'bg-[#002443] text-white border-[#002443]' : 'bg-white text-[#002443] border-slate-200 hover:border-[#2bc196]'}`}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${activeTab === tab.id ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'bg-white text-[#0A0A0A] border-slate-200 hover:border-[#1356E2]'}`}
           >
             <div className="flex items-center gap-2">
               <tab.icon className="w-3.5 h-3.5" />
               <span>{tab.label}</span>
               <Badge className={`${tab.badgeColor} border-0 text-[10px]`}>{tab.badge}</Badge>
             </div>
-            <p className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-white/60' : 'text-[#002443]/40'}`}>{tab.desc}</p>
+            <p className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-white/60' : 'text-[#0A0A0A]/40'}`}>{tab.desc}</p>
           </button>
         ))}
       </div>
@@ -416,18 +416,18 @@ export default function LeadQuestionnaireSection() {
           <h4 className="font-bold text-sm">Lead — {active.label}</h4>
           <Badge className="bg-blue-200 text-blue-800 border-0 text-[10px]">{active.badge}</Badge>
         </div>
-        <p className="text-xs text-[#002443]/60 leading-relaxed">{active.summary}</p>
+        <p className="text-xs text-[#0A0A0A]/60 leading-relaxed">{active.summary}</p>
       </div>
 
       {/* Sections */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-bold text-[#002443]">Todas as Seções e Campos</h4>
+          <h4 className="text-sm font-bold text-[#0A0A0A]">Todas as Seções e Campos</h4>
           <button onClick={() => {
             const allOpen = {};
             active.sections.forEach(s => allOpen[s.id] = true);
             setOpenSections(allOpen);
-          }} className="text-[10px] text-[#2bc196] font-bold hover:underline">Expandir todas</button>
+          }} className="text-[10px] text-[#1356E2] font-bold hover:underline">Expandir todas</button>
         </div>
         {active.sections.map(section => (
           <SectionBlock key={section.id} section={section} isOpen={openSections[section.id]} onToggle={() => toggle(section.id)} />

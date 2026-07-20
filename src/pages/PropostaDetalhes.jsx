@@ -242,7 +242,7 @@ export default function PropostaDetalhes() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -250,8 +250,8 @@ export default function PropostaDetalhes() {
   if (!proposta) {
     return (
       <div className="text-center py-20">
-        <FileText className="w-12 h-12 mx-auto text-[#002443]/20 mb-4" />
-        <p className="text-[#002443]/60">{t('pd.not_found')}</p>
+        <FileText className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-4" />
+        <p className="text-[#0A0A0A]/60">{t('pd.not_found')}</p>
         <Button variant="link" onClick={() => navigate(createPageUrl('GestaoPropostas'))} className="mt-2">
           {t('pd.back_proposals')}
         </Button>
@@ -297,7 +297,7 @@ export default function PropostaDetalhes() {
           proposalId={proposta.id}
           codigo={proposta.codigo}
         />
-        <Button onClick={() => setShowRentabilidade(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
+        <Button onClick={() => setShowRentabilidade(true)} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 rounded-xl shadow-md">
           <DollarSign className="w-4 h-4" /> {t('pd.simulate_profitability')}
         </Button>
       </div>
@@ -310,12 +310,12 @@ export default function PropostaDetalhes() {
 
       {/* Histórico de Versões */}
       {versionHistory.length > 1 && (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-              <GitBranch className="w-4 h-4 text-[#2bc196]" />
+            <div className="w-8 h-8 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+              <GitBranch className="w-4 h-4 text-[#1356E2]" />
             </div>
-            <h2 className="text-base font-bold text-[#002443]">{t('pd.version_history')}</h2>
+            <h2 className="text-base font-bold text-[#0A0A0A]">{t('pd.version_history')}</h2>
           </div>
           <div className="space-y-2">
             {versionHistory.map(v => {
@@ -328,16 +328,16 @@ export default function PropostaDetalhes() {
                 recusada: { label: 'Recusada', color: 'bg-red-100 text-red-700' },
               }[v.status] || { label: v.status, color: 'bg-slate-100 text-slate-600' };
               return (
-                <div key={v.id} className={`flex items-center gap-4 p-3 rounded-xl border transition-colors ${isCurrent ? 'border-[#2bc196]/30 bg-[#2bc196]/5' : 'border-[#002443]/5 hover:bg-[#f4f4f4]'}`}>
-                  <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center text-sm font-bold text-[#002443]">
+                <div key={v.id} className={`flex items-center gap-4 p-3 rounded-xl border transition-colors ${isCurrent ? 'border-[#1356E2]/30 bg-[#1356E2]/5' : 'border-[#0A0A0A]/5 hover:bg-[#f4f4f4]'}`}>
+                  <div className="w-8 h-8 rounded-lg bg-[#0A0A0A]/5 flex items-center justify-center text-sm font-bold text-[#0A0A0A]">
                     V{v.version || 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#002443]">
-                      <span className="font-mono text-[#2bc196] mr-2">{v.codigo}</span>
-                      {isCurrent && <span className="text-[10px] bg-[#2bc196]/20 text-[#2bc196] px-1.5 py-0.5 rounded font-bold ml-1">{t('pd.current')}</span>}
+                    <p className="text-sm font-medium text-[#0A0A0A]">
+                      <span className="font-mono text-[#1356E2] mr-2">{v.codigo}</span>
+                      {isCurrent && <span className="text-[10px] bg-[#1356E2]/20 text-[#1356E2] px-1.5 py-0.5 rounded font-bold ml-1">{t('pd.current')}</span>}
                     </p>
-                    <p className="text-xs text-[#002443]/50 flex items-center gap-1">
+                    <p className="text-xs text-[#0A0A0A]/50 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {moment(v.created_date).format('DD/MM/YYYY HH:mm')}
                     </p>

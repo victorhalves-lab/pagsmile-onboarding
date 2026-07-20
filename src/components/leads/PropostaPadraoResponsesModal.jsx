@@ -40,12 +40,12 @@ function FieldRow({ label, value, isMoney, isPercent, isLink }) {
   };
 
   return (
-    <div className="group flex items-start justify-between gap-4 rounded-xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] hover:border-[#2bc196]/30 px-5 py-3.5 transition-all">
+    <div className="group flex items-start justify-between gap-4 rounded-xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] hover:border-[#1356E2]/30 px-5 py-3.5 transition-all">
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-[#002443]/55 font-medium mb-1">{label}</p>
+        <p className="text-xs text-[#0A0A0A]/55 font-medium mb-1">{label}</p>
         {isLink ? (
           <a href={String(value).startsWith('http') ? value : `https://${value}`} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[#2bc196] hover:text-[#2bc196]/80 text-sm font-semibold transition-colors break-all">
+            className="inline-flex items-center gap-1.5 text-[#1356E2] hover:text-[#1356E2]/80 text-sm font-semibold transition-colors break-all">
             <Globe className="w-3.5 h-3.5 shrink-0" />
             {value}
             <ExternalLink className="w-3 h-3 shrink-0" />
@@ -55,20 +55,20 @@ function FieldRow({ label, value, isMoney, isPercent, isLink }) {
         ) : isPercent ? (
           <span className="text-lg font-bold text-indigo-600">{displayValue}</span>
         ) : (
-          <p className="text-sm text-[#002443] font-semibold leading-relaxed">{displayValue}</p>
+          <p className="text-sm text-[#0A0A0A] font-semibold leading-relaxed">{displayValue}</p>
         )}
       </div>
       <button onClick={handleCopy}
-        className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-[#002443]/5 shrink-0 mt-0.5"
+        className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-[#0A0A0A]/5 shrink-0 mt-0.5"
         title="Copiar">
-        {copied ? <CheckCircle className="w-4 h-4 text-[#2bc196]" /> : <Copy className="w-4 h-4 text-[#002443]/25" />}
+        {copied ? <CheckCircle className="w-4 h-4 text-[#1356E2]" /> : <Copy className="w-4 h-4 text-[#0A0A0A]/25" />}
       </button>
     </div>
   );
 }
 
 function RatesGrid({ taxas }) {
-  if (!taxas || typeof taxas !== 'object') return <p className="text-sm text-[#002443]/40 italic">Nenhuma taxa registrada</p>;
+  if (!taxas || typeof taxas !== 'object') return <p className="text-sm text-[#0A0A0A]/40 italic">Nenhuma taxa registrada</p>;
 
   const rateEntries = [
     { label: 'MDR à Vista (1x)', key: 'mdrAvista', isPercent: true },
@@ -84,13 +84,13 @@ function RatesGrid({ taxas }) {
   ];
 
   const filled = rateEntries.filter(r => taxas[r.key] !== null && taxas[r.key] !== undefined);
-  if (filled.length === 0) return <p className="text-sm text-[#002443]/40 italic">Nenhuma taxa registrada</p>;
+  if (filled.length === 0) return <p className="text-sm text-[#0A0A0A]/40 italic">Nenhuma taxa registrada</p>;
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
       {filled.map(r => (
-        <div key={r.key} className="bg-white rounded-xl px-4 py-3 border border-[#e2e8f0] hover:border-[#2bc196]/30 transition-colors">
-          <span className="text-[10px] text-[#002443]/45 block font-medium">{r.label}</span>
+        <div key={r.key} className="bg-white rounded-xl px-4 py-3 border border-[#e2e8f0] hover:border-[#1356E2]/30 transition-colors">
+          <span className="text-[10px] text-[#0A0A0A]/45 block font-medium">{r.label}</span>
           {r.isPercent ? (
             <span className="text-base font-bold text-indigo-600">{formatRate(taxas[r.key])}</span>
           ) : (
@@ -157,18 +157,18 @@ export default function PropostaPadraoResponsesModal({ open, onClose, lead }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl p-0 gap-0 overflow-hidden bg-white border-[#e2e8f0] max-h-[92vh] rounded-2xl shadow-2xl">
         {/* Header */}
-        <div className="relative px-6 py-5 border-b border-[#e2e8f0] bg-gradient-to-r from-[#002443] to-[#003366]">
+        <div className="relative px-6 py-5 border-b border-[#e2e8f0] bg-gradient-to-r from-[#0A0A0A] to-[#003366]">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#2bc196]/20 flex items-center justify-center border border-[#2bc196]/30">
-                  <Rocket className="w-5 h-5 text-[#2bc196]" />
+                <div className="w-11 h-11 rounded-xl bg-[#1356E2]/20 flex items-center justify-center border border-[#1356E2]/30">
+                  <Rocket className="w-5 h-5 text-[#1356E2]" />
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">{lead?.fullName || lead?.companyName || 'Lead'}</h2>
                   <div className="flex items-center gap-2 mt-0.5">
                     {lead?.cpfCnpj && <span className="text-xs text-white/50 font-mono">{lead.cpfCnpj}</span>}
-                    <Badge className="bg-[#2bc196]/15 text-[#2bc196] border-[#2bc196]/30 text-[10px] px-2 py-0.5">
+                    <Badge className="bg-[#1356E2]/15 text-[#1356E2] border-[#1356E2]/30 text-[10px] px-2 py-0.5">
                       Proposta Padrão
                     </Badge>
                     {lead?.businessSubCategory && (
@@ -181,7 +181,7 @@ export default function PropostaPadraoResponsesModal({ open, onClose, lead }) {
               </div>
               <div className="flex items-center gap-4 text-xs text-white/50">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-[#2bc196]" />
+                  <CheckCircle className="w-3.5 h-3.5 text-[#1356E2]" />
                   <strong className="text-white/90">{totalFilled}</strong> campos preenchidos
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -216,14 +216,14 @@ export default function PropostaPadraoResponsesModal({ open, onClose, lead }) {
                     <button key={sec.id} onClick={() => setActiveSection(sec.id)}
                       className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs transition-all duration-150 ${
                         isActive
-                          ? 'bg-white text-[#002443] font-bold shadow-sm border border-[#e2e8f0]'
-                          : 'text-[#002443]/60 hover:text-[#002443] hover:bg-white/60'
+                          ? 'bg-white text-[#0A0A0A] font-bold shadow-sm border border-[#e2e8f0]'
+                          : 'text-[#0A0A0A]/60 hover:text-[#0A0A0A] hover:bg-white/60'
                       }`}>
                       <div className={`w-6 h-6 rounded-lg ${sec.accent} flex items-center justify-center shrink-0 ${isActive ? 'opacity-100' : 'opacity-40'}`}>
                         <Icon className="w-3 h-3 text-white" />
                       </div>
                       <span className="flex-1 text-left truncate">{sec.label}</span>
-                      <span className={`text-[10px] tabular-nums font-semibold ${isActive ? 'text-[#2bc196]' : 'text-[#002443]/30'}`}>
+                      <span className={`text-[10px] tabular-nums font-semibold ${isActive ? 'text-[#1356E2]' : 'text-[#0A0A0A]/30'}`}>
                         {count}
                       </span>
                     </button>
@@ -244,8 +244,8 @@ export default function PropostaPadraoResponsesModal({ open, onClose, lead }) {
                       <currentSection.icon className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-[#002443]">{currentSection.label}</h3>
-                      <p className="text-[11px] text-[#002443]/40">
+                      <h3 className="text-base font-bold text-[#0A0A0A]">{currentSection.label}</h3>
+                      <p className="text-[11px] text-[#0A0A0A]/40">
                         {countFilled(activeSection)} campos com dados
                       </p>
                     </div>
@@ -263,8 +263,8 @@ export default function PropostaPadraoResponsesModal({ open, onClose, lead }) {
                     ))}
                     {(sectionContent[activeSection] || []).every(f => !f.value) && (
                       <div className="text-center py-12">
-                        <FileText className="w-10 h-10 mx-auto text-[#002443]/10 mb-3" />
-                        <p className="text-[#002443]/30 text-sm">Nenhum dado nesta seção</p>
+                        <FileText className="w-10 h-10 mx-auto text-[#0A0A0A]/10 mb-3" />
+                        <p className="text-[#0A0A0A]/30 text-sm">Nenhum dado nesta seção</p>
                       </div>
                     )}
                   </div>

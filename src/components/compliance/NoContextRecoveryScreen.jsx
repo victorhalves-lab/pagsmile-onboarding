@@ -21,11 +21,11 @@ export default function NoContextRecoveryScreen({ linkSupport }) {
         <AlertTriangle className="w-10 h-10 text-amber-600" />
       </div>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-[#002443] mb-3">
+      <h1 className="text-2xl md:text-3xl font-bold text-[#0A0A0A] mb-3">
         Sessão não encontrada
       </h1>
 
-      <p className="text-[#002443]/70 mb-6 leading-relaxed">
+      <p className="text-[#0A0A0A]/70 mb-6 leading-relaxed">
         Parece que seu progresso foi perdido — isso acontece quando o cache do navegador
         é limpo ou quando você abre o link em um navegador diferente do que iniciou o preenchimento.
       </p>
@@ -50,7 +50,7 @@ export default function NoContextRecoveryScreen({ linkSupport }) {
         </Button>
         <Button
           onClick={() => window.location.reload()}
-          className="h-11 px-6 bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
+          className="h-11 px-6 bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
           Tentar novamente
@@ -58,8 +58,8 @@ export default function NoContextRecoveryScreen({ linkSupport }) {
       </div>
 
       {linkSupport && (
-        <p className="text-xs text-[#002443]/50 mt-8">
-          Precisa de ajuda? Entre em contato: <a href={`mailto:${linkSupport}`} className="text-[var(--pagsmile-green)] font-semibold">{linkSupport}</a>
+        <p className="text-xs text-[#0A0A0A]/50 mt-8">
+          Precisa de ajuda? Entre em contato: <a href={`mailto:${linkSupport}`} className="text-[var(--pinbank-blue)] font-semibold">{linkSupport}</a>
         </p>
       )}
     </div>

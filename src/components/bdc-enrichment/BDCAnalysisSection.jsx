@@ -55,7 +55,7 @@ function AnalysisItem({ item }) {
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-semibold text-[#002443]">{item.label}</span>
+            <span className="text-xs font-semibold text-[#0A0A0A]">{item.label}</span>
             {explanation && (
               <button 
                 onClick={(e) => { e.stopPropagation(); setShowExplanation(!showExplanation); }}
@@ -85,7 +85,7 @@ function AnalysisItem({ item }) {
           )}
         </div>
         {hasExpandable && (
-          <button onClick={() => setShowDetails(!isDetailsOpen)} className="text-[#002443]/30 hover:text-[#002443]/60 p-1">
+          <button onClick={() => setShowDetails(!isDetailsOpen)} className="text-[#0A0A0A]/30 hover:text-[#0A0A0A]/60 p-1">
             {isDetailsOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         )}
@@ -106,13 +106,13 @@ function AnalysisItem({ item }) {
         <div className="mt-2 ml-4 pl-3 border-l-2 border-slate-200 space-y-1.5">
           {Object.entries(item.details).map(([key, val]) => (
             <div key={key} className="flex items-start gap-2">
-              <span className="text-[10px] font-semibold text-[#002443]/40 min-w-[90px] shrink-0">{key}:</span>
-              <div className="text-[11px] text-[#002443]/70 leading-relaxed">
+              <span className="text-[10px] font-semibold text-[#0A0A0A]/40 min-w-[90px] shrink-0">{key}:</span>
+              <div className="text-[11px] text-[#0A0A0A]/70 leading-relaxed">
                 {Array.isArray(val) ? (
                   <div className="space-y-0.5">
                     {val.map((v, vi) => (
                       <div key={vi} className="flex items-start gap-1">
-                        <span className="text-[#002443]/25 mt-0.5">•</span>
+                        <span className="text-[#0A0A0A]/25 mt-0.5">•</span>
                         <span>{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
                       </div>
                     ))}
@@ -132,19 +132,19 @@ function AnalysisItem({ item }) {
           <table className="w-full text-[11px]">
             <thead>
               <tr className="border-b border-slate-200">
-                <th className="text-left py-1 px-2 text-[#002443]/50 font-semibold">Nome</th>
-                <th className="text-left py-1 px-2 text-[#002443]/50 font-semibold">Documento</th>
-                <th className="text-left py-1 px-2 text-[#002443]/50 font-semibold">Qualificação</th>
-                <th className="text-left py-1 px-2 text-[#002443]/50 font-semibold">Part. (%)</th>
+                <th className="text-left py-1 px-2 text-[#0A0A0A]/50 font-semibold">Nome</th>
+                <th className="text-left py-1 px-2 text-[#0A0A0A]/50 font-semibold">Documento</th>
+                <th className="text-left py-1 px-2 text-[#0A0A0A]/50 font-semibold">Qualificação</th>
+                <th className="text-left py-1 px-2 text-[#0A0A0A]/50 font-semibold">Part. (%)</th>
               </tr>
             </thead>
             <tbody>
               {item.owners.map((o, i) => (
                 <tr key={i} className="border-b border-slate-50">
-                  <td className="py-1 px-2 text-[#002443]">{o.name}</td>
-                  <td className="py-1 px-2 text-[#002443]/60 font-mono">{o.doc || '—'}</td>
-                  <td className="py-1 px-2 text-[#002443]/60">{o.role || '—'}</td>
-                  <td className="py-1 px-2 text-[#002443]/60">{o.participation || '—'}</td>
+                  <td className="py-1 px-2 text-[#0A0A0A]">{o.name}</td>
+                  <td className="py-1 px-2 text-[#0A0A0A]/60 font-mono">{o.doc || '—'}</td>
+                  <td className="py-1 px-2 text-[#0A0A0A]/60">{o.role || '—'}</td>
+                  <td className="py-1 px-2 text-[#0A0A0A]/60">{o.participation || '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -180,8 +180,8 @@ export default function BDCAnalysisSection({ title, icon: Icon, items, score, ac
           <Icon className={`w-4.5 h-4.5 text-${accentColor}-600`} />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-bold text-[#002443]">{title}</h4>
-          <p className="text-[10px] text-[#002443]/40">{items.length} item(ns) analisados</p>
+          <h4 className="text-sm font-bold text-[#0A0A0A]">{title}</h4>
+          <p className="text-[10px] text-[#0A0A0A]/40">{items.length} item(ns) analisados</p>
         </div>
         <div className="flex items-center gap-2">
           {criticalCount > 0 && (
@@ -198,7 +198,7 @@ export default function BDCAnalysisSection({ title, icon: Icon, items, score, ac
               {score > 0 ? '+' : ''}{score} pts
             </span>
           )}
-          {open ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+          {open ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
         </div>
       </button>
       {open && (

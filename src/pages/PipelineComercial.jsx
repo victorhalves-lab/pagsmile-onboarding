@@ -436,24 +436,24 @@ export default function PipelineComercial() {
   const closedTPV = filteredLeads.filter(l => dealClosedIds.has(l.id)).reduce((sum, l) => sum + (l.tpvMensal || 0), 0);
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" /></div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <BarChart3 className="w-6 h-6 text-[#5cf7cf]" />
+              <BarChart3 className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('pipeline_page.title')}</h1>
               <div className="flex gap-3 text-xs text-white/60 mt-1.5 flex-wrap">
                 <span className="bg-white/10 px-2 py-0.5 rounded-md">{t('pipeline_page.leads_count', { count: filteredLeads.length })}</span>
                 <span className="bg-white/10 px-2 py-0.5 rounded-md flex items-center gap-1"><DollarSign className="w-3 h-3" /> TPV Pipeline: {formatMoeda(totalTPV)}</span>
-                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md flex items-center gap-1 font-medium"><TrendingUp className="w-3 h-3" /> TPV Fechado: {formatMoeda(closedTPV)}</span>
+                <span className="bg-[#1356E2]/20 text-[#E84B1C] px-2 py-0.5 rounded-md flex items-center gap-1 font-medium"><TrendingUp className="w-3 h-3" /> TPV Fechado: {formatMoeda(closedTPV)}</span>
                 <span className="bg-white/10 px-2 py-0.5 rounded-md flex items-center gap-1">Fechados: {dealClosedIds.size}</span>
               </div>
             </div>
@@ -483,7 +483,7 @@ export default function PipelineComercial() {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('pipeline_page.search_placeholder')} className="pl-10 h-9" />
         {search && (
           <Button variant="ghost" size="sm" onClick={() => setSearch('')} className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0">
@@ -503,28 +503,28 @@ export default function PipelineComercial() {
             return (
               <div key={col.id} className="flex-shrink-0 w-[260px]">
               {/* Column header */}
-              <div className="mb-3 bg-white rounded-2xl p-3 border border-[#002443]/5 shadow-sm">
+              <div className="mb-3 bg-white rounded-2xl p-3 border border-[#0A0A0A]/5 shadow-sm">
                 <div className="h-1 rounded-full mb-2" style={{ backgroundColor: col.color }} />
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#002443]">{col.name}</span>
-                  <Badge className="text-[10px] bg-[#002443]/5 text-[#002443] border-0">{col.leads.length}</Badge>
+                  <span className="text-xs font-bold text-[#0A0A0A]">{col.name}</span>
+                  <Badge className="text-[10px] bg-[#0A0A0A]/5 text-[#0A0A0A] border-0">{col.leads.length}</Badge>
                 </div>
-                <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] bg-[#f4f4f4] rounded-xl p-2 border border-[#002443]/5">
+                <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] bg-[#f4f4f4] rounded-xl p-2 border border-[#0A0A0A]/5">
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.tpv_month')}</span>
-                      <p className="font-bold text-[var(--pagsmile-blue)]">{formatMoeda(colTPVMensal)}</p>
+                      <span className="text-[var(--pinbank-blue)]/40">{t('pipeline_page.tpv_month')}</span>
+                      <p className="font-bold text-[var(--pinbank-blue)]">{formatMoeda(colTPVMensal)}</p>
                     </div>
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.tpv_year')}</span>
-                      <p className="font-bold text-[var(--pagsmile-blue)]">{formatMoeda(colTPVAnual)}</p>
+                      <span className="text-[var(--pinbank-blue)]/40">{t('pipeline_page.tpv_year')}</span>
+                      <p className="font-bold text-[var(--pinbank-blue)]">{formatMoeda(colTPVAnual)}</p>
                     </div>
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.revenue_month')}</span>
-                      <p className="font-bold text-[var(--pagsmile-green)]">{formatMoeda(colReceitaMensal)}</p>
+                      <span className="text-[var(--pinbank-blue)]/40">{t('pipeline_page.revenue_month')}</span>
+                      <p className="font-bold text-[var(--pinbank-blue)]">{formatMoeda(colReceitaMensal)}</p>
                     </div>
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.revenue_year')}</span>
-                      <p className="font-bold text-[var(--pagsmile-green)]">{formatMoeda(colReceitaAnual)}</p>
+                      <span className="text-[var(--pinbank-blue)]/40">{t('pipeline_page.revenue_year')}</span>
+                      <p className="font-bold text-[var(--pinbank-blue)]">{formatMoeda(colReceitaAnual)}</p>
                     </div>
                   </div>
                 </div>
@@ -535,7 +535,7 @@ export default function PipelineComercial() {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className={`space-y-2 min-h-[100px] rounded-xl p-2 transition-colors ${
-                        snapshot.isDraggingOver ? 'bg-[#2bc196]/5 border-2 border-dashed border-[#2bc196]/30' : 'bg-[#f4f4f4]/50'
+                        snapshot.isDraggingOver ? 'bg-[#1356E2]/5 border-2 border-dashed border-[#1356E2]/30' : 'bg-[#f4f4f4]/50'
                       }`}
                     >
                       {col.leads.map((lead, idx) => (
@@ -545,8 +545,8 @@ export default function PipelineComercial() {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`bg-white rounded-xl border border-[#002443]/5 p-3 transition-all ${
-                                snapshot.isDragging ? 'shadow-lg ring-2 ring-[#2bc196]/30 -rotate-1' : 'hover:shadow-md hover:-translate-y-0.5'
+                              className={`bg-white rounded-xl border border-[#0A0A0A]/5 p-3 transition-all ${
+                                snapshot.isDragging ? 'shadow-lg ring-2 ring-[#1356E2]/30 -rotate-1' : 'hover:shadow-md hover:-translate-y-0.5'
                               }`}
                             >
                               <LeadKanbanCard lead={lead} onAction={handleCardAction} contract={lead._contract} proposal={lead._proposal} />
@@ -556,7 +556,7 @@ export default function PipelineComercial() {
                       ))}
                       {provided.placeholder}
                       {col.leads.length === 0 && (
-                        <p className="text-xs text-center text-[var(--pagsmile-blue)]/40 py-4">{t('pipeline_page.no_leads')}</p>
+                        <p className="text-xs text-center text-[var(--pinbank-blue)]/40 py-4">{t('pipeline_page.no_leads')}</p>
                       )}
                     </div>
                   )}

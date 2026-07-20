@@ -20,13 +20,13 @@ function renderValue(val, depth = 0) {
             if (!rendered) return null;
             return (
               <div key={k2} className="flex items-start gap-1.5 py-0.5">
-                <span className="text-[10px] font-semibold text-[#002443]/35 min-w-[100px] shrink-0">{formatKey(k2)}</span>
-                <span className="text-[11px] text-[#002443]/80 break-all">{rendered}</span>
+                <span className="text-[10px] font-semibold text-[#0A0A0A]/35 min-w-[100px] shrink-0">{formatKey(k2)}</span>
+                <span className="text-[11px] text-[#0A0A0A]/80 break-all">{rendered}</span>
               </div>
             );
           })
         ) : (
-          <span className="text-[11px] text-[#002443]/80">{String(v)}</span>
+          <span className="text-[11px] text-[#0A0A0A]/80">{String(v)}</span>
         )}
       </div>
     ));
@@ -42,8 +42,8 @@ function renderValue(val, depth = 0) {
           if (!rendered) return null;
           return (
             <div key={k} className="flex items-start gap-1.5 py-0.5">
-              <span className="text-[10px] font-semibold text-[#002443]/35 min-w-[100px] shrink-0">{formatKey(k)}</span>
-              <span className="text-[11px] text-[#002443]/80 break-all">{typeof rendered === 'string' ? rendered : rendered}</span>
+              <span className="text-[10px] font-semibold text-[#0A0A0A]/35 min-w-[100px] shrink-0">{formatKey(k)}</span>
+              <span className="text-[11px] text-[#0A0A0A]/80 break-all">{typeof rendered === 'string' ? rendered : rendered}</span>
             </div>
           );
         })}
@@ -61,8 +61,8 @@ function ContactCard({ icon: Icon, label, items, accentColor = 'blue' }) {
       <div className="bg-white rounded-xl border border-slate-200 p-4 opacity-60">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-slate-400" />
-          <span className="text-sm font-semibold text-[#002443]">{label}</span>
-          <span className="text-[10px] text-[#002443]/30">Sem dados</span>
+          <span className="text-sm font-semibold text-[#0A0A0A]">{label}</span>
+          <span className="text-[10px] text-[#0A0A0A]/30">Sem dados</span>
         </div>
       </div>
     );
@@ -78,10 +78,10 @@ function ContactCard({ icon: Icon, label, items, accentColor = 'blue' }) {
           <Icon className={`w-4 h-4 text-${accentColor}-600`} />
         </div>
         <div className="flex-1">
-          <h4 className="text-sm font-bold text-[#002443]">{label}</h4>
-          <p className="text-[10px] text-[#002443]/40">{items.length} registro(s)</p>
+          <h4 className="text-sm font-bold text-[#0A0A0A]">{label}</h4>
+          <p className="text-[10px] text-[#0A0A0A]/40">{items.length} registro(s)</p>
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
       </button>
       {open && (
         <div className="border-t border-slate-100 divide-y divide-slate-50">
@@ -92,10 +92,10 @@ function ContactCard({ icon: Icon, label, items, accentColor = 'blue' }) {
                 if (!rendered) return null;
                 return (
                   <div key={key} className="flex items-start gap-2">
-                    <span className="text-[10px] font-semibold text-[#002443]/40 min-w-[120px] shrink-0">
+                    <span className="text-[10px] font-semibold text-[#0A0A0A]/40 min-w-[120px] shrink-0">
                       {formatKey(key)}
                     </span>
-                    <div className="text-[#002443]/80 break-all flex-1">
+                    <div className="text-[#0A0A0A]/80 break-all flex-1">
                       {typeof rendered === 'string' ? <span>{rendered}</span> : rendered}
                     </div>
                   </div>
@@ -153,8 +153,8 @@ export default function BDCContactsSection({ rawResult }) {
       {(phones.length > 0 || emails.length > 0 || addresses.length > 0) && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Building2 className="w-4 h-4 text-[#002443]/40" />
-            <h4 className="text-xs font-bold text-[#002443]/60 uppercase tracking-wider">Contatos da Empresa</h4>
+            <Building2 className="w-4 h-4 text-[#0A0A0A]/40" />
+            <h4 className="text-xs font-bold text-[#0A0A0A]/60 uppercase tracking-wider">Contatos da Empresa</h4>
           </div>
           <div className="space-y-2">
             <ContactCard icon={Phone} label="Telefones" items={phones} accentColor="blue" />
@@ -168,8 +168,8 @@ export default function BDCContactsSection({ rawResult }) {
       {(relPhones.length > 0 || relEmails.length > 0 || relAddresses.length > 0) && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Users className="w-4 h-4 text-[#002443]/40" />
-            <h4 className="text-xs font-bold text-[#002443]/60 uppercase tracking-wider">Contatos dos Sócios</h4>
+            <Users className="w-4 h-4 text-[#0A0A0A]/40" />
+            <h4 className="text-xs font-bold text-[#0A0A0A]/60 uppercase tracking-wider">Contatos dos Sócios</h4>
           </div>
           <div className="space-y-2">
             <ContactCard icon={Phone} label="Telefones dos Sócios" items={relPhones} accentColor="violet" />
@@ -183,8 +183,8 @@ export default function BDCContactsSection({ rawResult }) {
       {(historyBasic.length > 0 || companyEvolution.length > 0) && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Clock className="w-4 h-4 text-[#002443]/40" />
-            <h4 className="text-xs font-bold text-[#002443]/60 uppercase tracking-wider">Histórico Cadastral</h4>
+            <Clock className="w-4 h-4 text-[#0A0A0A]/40" />
+            <h4 className="text-xs font-bold text-[#0A0A0A]/60 uppercase tracking-wider">Histórico Cadastral</h4>
           </div>
           <div className="space-y-2">
             <ContactCard icon={Clock} label="Histórico de Alterações" items={historyBasic} accentColor="amber" />

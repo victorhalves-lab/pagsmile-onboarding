@@ -29,12 +29,12 @@ export default function SegmentRatesTable({ segmentRates, segmentName }) {
       )}
 
       {/* ══════════════ BLOCO 1: MDR + Antecipação (destaque principal) ══════════════ */}
-      <div className="bg-[#002443] rounded-2xl p-6 md:p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-60 h-60 bg-[#2bc196]/8 rounded-full blur-[80px]" />
+      <div className="bg-[#0A0A0A] rounded-2xl p-6 md:p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-60 h-60 bg-[#1356E2]/8 rounded-full blur-[80px]" />
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
-            <CreditCard className="w-5 h-5" style={{ color: '#2bc196' }} />
+            <CreditCard className="w-5 h-5" style={{ color: '#1356E2' }} />
             <h3 className="text-lg font-bold" style={{ color: '#ffffff' }}>Cartão de Crédito</h3>
           </div>
 
@@ -52,7 +52,7 @@ export default function SegmentRatesTable({ segmentRates, segmentName }) {
                 className="flex-1 min-w-[120px] bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-4 text-center"
               >
                 <p className="text-xs font-semibold mb-2 uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.45)' }}>{row.label}</p>
-                <p className="text-2xl font-extrabold" style={{ color: '#2bc196' }}>
+                <p className="text-2xl font-extrabold" style={{ color: '#1356E2' }}>
                   {Number(row.value).toFixed(2)}<span className="text-sm font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>%</span>
                 </p>
               </motion.div>
@@ -60,16 +60,16 @@ export default function SegmentRatesTable({ segmentRates, segmentName }) {
           </div>
 
           {/* Antecipação — inline destaque */}
-          <div className="bg-[#2bc196]/10 border border-[#2bc196]/20 rounded-xl p-4 flex items-center justify-between flex-wrap gap-3">
+          <div className="bg-[#1356E2]/10 border border-[#1356E2]/20 rounded-xl p-4 flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <Repeat className="w-5 h-5" style={{ color: '#2bc196' }} />
+              <Repeat className="w-5 h-5" style={{ color: '#1356E2' }} />
               <div>
                 <p className="text-sm font-bold" style={{ color: '#ffffff' }}>Antecipação de Recebíveis</p>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>Taxa mensal para antecipação automática</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-extrabold" style={{ color: '#2bc196' }}>
+              <p className="text-2xl font-extrabold" style={{ color: '#1356E2' }}>
                 {(percentualAntecipacao != null && !isNaN(percentualAntecipacao)) ? Number(percentualAntecipacao).toFixed(2) : '0.00'}<span className="text-sm font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>% a.m.</span>
               </p>
             </div>
@@ -78,70 +78,70 @@ export default function SegmentRatesTable({ segmentRates, segmentName }) {
       </div>
 
       {/* ══════════════ BLOCO 2: PIX ══════════════ */}
-      <div className="bg-white border-2 border-[#2bc196]/20 rounded-2xl p-6 md:p-8">
+      <div className="bg-white border-2 border-[#1356E2]/20 rounded-2xl p-6 md:p-8">
         <div className="flex items-center gap-3 mb-5">
-          <div className="p-2.5 bg-[#2bc196]/10 rounded-xl">
-            <Smartphone className="w-5 h-5 text-[#2bc196]" />
+          <div className="p-2.5 bg-[#1356E2]/10 rounded-xl">
+            <Smartphone className="w-5 h-5 text-[#1356E2]" />
           </div>
-          <h3 className="text-lg font-bold text-[#002443]">PIX</h3>
-          <span className="ml-auto text-xs font-bold text-[#2bc196] bg-[#2bc196]/10 px-3 py-1 rounded-full">Recebimento D+0</span>
+          <h3 className="text-lg font-bold text-[#0A0A0A]">PIX</h3>
+          <span className="ml-auto text-xs font-bold text-[#1356E2] bg-[#1356E2]/10 px-3 py-1 rounded-full">Recebimento D+0</span>
         </div>
 
         <div className="flex items-center justify-center gap-8 md:gap-16 py-4">
           {(pixTaxaPercentual != null && !isNaN(pixTaxaPercentual)) && (
             <div className="text-center">
-              <p className="text-sm font-semibold text-[#002443]/60 mb-1">Taxa Percentual</p>
-              <p className="text-3xl font-extrabold text-[#2bc196]">
-                {Number(pixTaxaPercentual).toFixed(2)}<span className="text-lg font-bold text-[#2bc196]/60">%</span>
+              <p className="text-sm font-semibold text-[#0A0A0A]/60 mb-1">Taxa Percentual</p>
+              <p className="text-3xl font-extrabold text-[#1356E2]">
+                {Number(pixTaxaPercentual).toFixed(2)}<span className="text-lg font-bold text-[#1356E2]/60">%</span>
               </p>
             </div>
           )}
           {(pixTaxaPercentual != null && !isNaN(pixTaxaPercentual)) && (pixTaxaFixa != null && !isNaN(pixTaxaFixa)) && (
-            <span className="text-lg font-bold text-[#002443]/20">ou</span>
+            <span className="text-lg font-bold text-[#0A0A0A]/20">ou</span>
           )}
           {(pixTaxaFixa != null && !isNaN(pixTaxaFixa)) && (
             <div className="text-center">
-              <p className="text-sm font-semibold text-[#002443]/60 mb-1">Taxa Fixa</p>
-              <p className="text-3xl font-extrabold text-[#2bc196]">
-                <span className="text-lg font-bold text-[#2bc196]/60">R$ </span>{Number(pixTaxaFixa).toFixed(2).replace('.', ',')}
+              <p className="text-sm font-semibold text-[#0A0A0A]/60 mb-1">Taxa Fixa</p>
+              <p className="text-3xl font-extrabold text-[#1356E2]">
+                <span className="text-lg font-bold text-[#1356E2]/60">R$ </span>{Number(pixTaxaFixa).toFixed(2).replace('.', ',')}
               </p>
             </div>
           )}
         </div>
-        <p className="text-center text-sm text-[#002443]/50 mt-2">
-          Aplica-se <span className="font-bold text-[#002443]">o maior valor</span> entre as taxas
+        <p className="text-center text-sm text-[#0A0A0A]/50 mt-2">
+          Aplica-se <span className="font-bold text-[#0A0A0A]">o maior valor</span> entre as taxas
         </p>
       </div>
 
       {/* ══════════════ BLOCO 3: Taxas Adicionais (compacto, secundário) ══════════════ */}
       <div>
         <div className="flex items-center gap-3 mb-4">
-          <ReceiptText className="w-5 h-5 text-[#002443]/50" />
-          <h3 className="text-base font-bold text-[#002443]">Taxas Adicionais</h3>
+          <ReceiptText className="w-5 h-5 text-[#0A0A0A]/50" />
+          <h3 className="text-base font-bold text-[#0A0A0A]">Taxas Adicionais</h3>
         </div>
 
-        <div className="grid grid-cols-3 gap-px bg-[#002443]/[0.06] rounded-xl overflow-hidden">
+        <div className="grid grid-cols-3 gap-px bg-[#0A0A0A]/[0.06] rounded-xl overflow-hidden">
           {[
             { label: 'Fee por transação', value: fmtBrl(feeTransacao) },
             { label: 'Antifraude', value: fmtBrl(antifraude) },
             { label: '3DS (opcional)', value: fmtBrl(taxa3ds) },
           ].map((item) => (
             <div key={item.label} className="bg-white p-5 text-center">
-              <p className="text-xs font-semibold text-[#002443]/50 mb-2">{item.label}</p>
-              <p className="text-lg font-bold text-[#002443]">{item.value}</p>
-              <p className="text-[10px] font-semibold text-[#002443]/40 mt-1">por transação</p>
+              <p className="text-xs font-semibold text-[#0A0A0A]/50 mb-2">{item.label}</p>
+              <p className="text-lg font-bold text-[#0A0A0A]">{item.value}</p>
+              <p className="text-[10px] font-semibold text-[#0A0A0A]/40 mt-1">por transação</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* ══════════════ BLOCO 4: Setup Fee — Destaque Premium ══════════════ */}
-      <div className="relative overflow-hidden bg-[#002443] rounded-2xl p-6 md:p-8 text-center shadow-lg">
-        <div className="absolute -top-16 -right-16 w-40 h-40 bg-[#2bc196] rounded-full blur-3xl opacity-15 pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none" />
+      <div className="relative overflow-hidden bg-[#0A0A0A] rounded-2xl p-6 md:p-8 text-center shadow-lg">
+        <div className="absolute -top-16 -right-16 w-40 h-40 bg-[#1356E2] rounded-full blur-3xl opacity-15 pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#E84B1C] rounded-full blur-3xl opacity-10 pointer-events-none" />
         <div className="relative z-10">
           <p className="text-xs uppercase font-bold tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Taxa de Setup</p>
-          <p className="text-3xl md:text-4xl font-extrabold" style={{ color: '#2bc196' }}>R$ 6.000,00</p>
+          <p className="text-3xl md:text-4xl font-extrabold" style={{ color: '#1356E2' }}>R$ 6.000,00</p>
           <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Pagamento único</p>
         </div>
       </div>

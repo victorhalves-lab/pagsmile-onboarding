@@ -31,8 +31,8 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
     return (
       <div className="bg-slate-50 rounded-xl border border-slate-200 p-6 text-center">
         <Brain className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-        <p className="text-[var(--pagsmile-blue)]/70 font-medium">Análise da IA não disponível</p>
-        <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">O caso ainda não foi analisado pela IA</p>
+        <p className="text-[var(--pinbank-blue)]/70 font-medium">Análise da IA não disponível</p>
+        <p className="text-sm text-[var(--pinbank-blue)]/50 mt-1">O caso ainda não foi analisado pela IA</p>
       </div>
     );
   }
@@ -73,7 +73,7 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h3 className="font-bold text-lg text-[var(--pagsmile-blue)]">
+              <h3 className="font-bold text-lg text-[var(--pinbank-blue)]">
                 Recomendação da IA: {complianceScore.recomendacao_final}
               </h3>
               {complianceScore.nivel_confianca_ia && (
@@ -86,7 +86,7 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
             
             {/* Sumário Executivo */}
             {complianceScore.sumario_executivo && (
-              <p className="text-[var(--pagsmile-blue)]/80 font-medium mb-4">
+              <p className="text-[var(--pinbank-blue)]/80 font-medium mb-4">
                 {complianceScore.sumario_executivo}
               </p>
             )}
@@ -94,20 +94,20 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
             {/* Scores */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
               <div className="bg-white/60 rounded-lg p-3">
-                <p className="text-xs text-[var(--pagsmile-blue)]/60 font-semibold">Score Questionário</p>
-                <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{complianceScore.score_questionario || '-'}</p>
+                <p className="text-xs text-[var(--pinbank-blue)]/60 font-semibold">Score Questionário</p>
+                <p className="text-xl font-bold text-[var(--pinbank-blue)]">{complianceScore.score_questionario || '-'}</p>
               </div>
               <div className="bg-white/60 rounded-lg p-3">
-                <p className="text-xs text-[var(--pagsmile-blue)]/60 font-semibold">Score Validação Externa</p>
-                <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{complianceScore.score_validacao_externa || '-'}</p>
+                <p className="text-xs text-[var(--pinbank-blue)]/60 font-semibold">Score Validação Externa</p>
+                <p className="text-xl font-bold text-[var(--pinbank-blue)]">{complianceScore.score_validacao_externa || '-'}</p>
               </div>
               <div className="bg-white/60 rounded-lg p-3">
-                <p className="text-xs text-[var(--pagsmile-blue)]/60 font-semibold">Bônus Consistência</p>
-                <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{complianceScore.bonus_consistencia || '-'}</p>
+                <p className="text-xs text-[var(--pinbank-blue)]/60 font-semibold">Bônus Consistência</p>
+                <p className="text-xl font-bold text-[var(--pinbank-blue)]">{complianceScore.bonus_consistencia || '-'}</p>
               </div>
               <div className="bg-white/60 rounded-lg p-3">
-                <p className="text-xs text-[var(--pagsmile-blue)]/60 font-semibold">Score Geral</p>
-                <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{complianceScore.score_geral_composto || '-'}</p>
+                <p className="text-xs text-[var(--pinbank-blue)]/60 font-semibold">Score Geral</p>
+                <p className="text-2xl font-bold text-[var(--pinbank-blue)]">{complianceScore.score_geral_composto || '-'}</p>
               </div>
             </div>
           </div>
@@ -226,19 +226,19 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
             className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <Brain className="w-5 h-5 text-[var(--pagsmile-green)]" />
-              <h4 className="font-bold text-[var(--pagsmile-blue)]">Análise Completa da IA</h4>
+              <Brain className="w-5 h-5 text-[var(--pinbank-blue)]" />
+              <h4 className="font-bold text-[var(--pinbank-blue)]">Análise Completa da IA</h4>
             </div>
             {expandedAnalysis ? (
-              <ChevronUp className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
+              <ChevronUp className="w-5 h-5 text-[var(--pinbank-blue)]/50" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
+              <ChevronDown className="w-5 h-5 text-[var(--pinbank-blue)]/50" />
             )}
           </button>
           
           {expandedAnalysis && (
             <div className="px-5 pb-5 border-t border-slate-100">
-              <div className="mt-4 prose prose-sm max-w-none text-[var(--pagsmile-blue)]/80">
+              <div className="mt-4 prose prose-sm max-w-none text-[var(--pinbank-blue)]/80">
                 <div className="whitespace-pre-wrap bg-slate-50 p-4 rounded-lg text-sm leading-relaxed">
                   {complianceScore.analise_completa_ia}
                 </div>
@@ -252,10 +252,10 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
       {complianceScore.parecer_final && (
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
-            <Eye className="w-5 h-5 text-[var(--pagsmile-blue)]" />
-            <h4 className="font-bold text-[var(--pagsmile-blue)]">Parecer Final</h4>
+            <Eye className="w-5 h-5 text-[var(--pinbank-blue)]" />
+            <h4 className="font-bold text-[var(--pinbank-blue)]">Parecer Final</h4>
           </div>
-          <p className="text-[var(--pagsmile-blue)]/80 whitespace-pre-wrap">{complianceScore.parecer_final}</p>
+          <p className="text-[var(--pinbank-blue)]/80 whitespace-pre-wrap">{complianceScore.parecer_final}</p>
         </div>
       )}
 
@@ -273,7 +273,7 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
       {/* Findings */}
       {complianceScore.total_findings > 0 && (
         <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <h4 className="font-bold text-[var(--pagsmile-blue)] mb-3">
+          <h4 className="font-bold text-[var(--pinbank-blue)] mb-3">
             Findings Identificados ({complianceScore.total_findings})
           </h4>
           {complianceScore.findings_por_severidade && (
@@ -298,7 +298,7 @@ export default function IAAnalysisPanel({ complianceScore, onboardingCase }) {
       )}
 
       {/* Metadados */}
-      <div className="flex flex-wrap gap-4 text-xs text-[var(--pagsmile-blue)]/60">
+      <div className="flex flex-wrap gap-4 text-xs text-[var(--pinbank-blue)]/60">
         {complianceScore.versao_agente && (
           <span>Versão do Agente: {complianceScore.versao_agente}</span>
         )}

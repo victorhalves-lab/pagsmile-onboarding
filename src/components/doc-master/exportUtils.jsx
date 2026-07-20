@@ -58,11 +58,11 @@ export async function exportChapterToDocx(elementId, title) {
 <title>${title}</title>
 <style>
   body { font-family: 'Calibri', Arial, sans-serif; color: #1a1a1a; font-size: 11pt; line-height: 1.55; }
-  h1 { color: #002443; font-size: 22pt; border-bottom: 2px solid #2bc196; padding-bottom: 6pt; }
-  h2 { color: #002443; font-size: 16pt; margin-top: 18pt; }
-  h3 { color: #002443; font-size: 13pt; margin-top: 14pt; }
+  h1 { color: #0A0A0A; font-size: 22pt; border-bottom: 2px solid #1356E2; padding-bottom: 6pt; }
+  h2 { color: #0A0A0A; font-size: 16pt; margin-top: 18pt; }
+  h3 { color: #0A0A0A; font-size: 13pt; margin-top: 14pt; }
   table { border-collapse: collapse; width: 100%; margin: 8pt 0; }
-  th { background: #002443; color: #fff; text-align: left; padding: 6pt; font-size: 10pt; }
+  th { background: #0A0A0A; color: #fff; text-align: left; padding: 6pt; font-size: 10pt; }
   td { border: 1px solid #ddd; padding: 5pt; font-size: 10pt; vertical-align: top; }
   pre, code { font-family: 'Consolas', monospace; background: #f4f4f4; padding: 4pt; font-size: 9.5pt; }
   pre { border: 1px solid #ddd; white-space: pre-wrap; word-wrap: break-word; }

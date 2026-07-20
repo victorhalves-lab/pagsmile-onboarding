@@ -65,25 +65,25 @@ export default function ResponseCard({ question, value, type }) {
     <div className={cn(
       'group relative rounded-xl border p-4 transition-all duration-200',
       isEmpty
-        ? 'bg-[#f4f4f4]/50 border-[#002443]/4 opacity-50'
-        : 'bg-white border-[#002443]/6 hover:border-[#2bc196]/30 hover:shadow-sm'
+        ? 'bg-[#f4f4f4]/50 border-[#0A0A0A]/4 opacity-50'
+        : 'bg-white border-[#0A0A0A]/6 hover:border-[#1356E2]/30 hover:shadow-sm'
     )}>
       {/* Question label */}
       <div className="flex items-start gap-2.5 mb-2">
         <div className={cn(
           'shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5',
-          isEmpty ? 'bg-[#002443]/5' : 'bg-[#2bc196]/10'
+          isEmpty ? 'bg-[#0A0A0A]/5' : 'bg-[#1356E2]/10'
         )}>
-          <Icon className={cn('w-3.5 h-3.5', isEmpty ? 'text-[#002443]/30' : 'text-[#2bc196]')} />
+          <Icon className={cn('w-3.5 h-3.5', isEmpty ? 'text-[#0A0A0A]/30' : 'text-[#1356E2]')} />
         </div>
-        <p className="text-xs text-[#002443]/55 font-medium leading-relaxed flex-1 pt-1">{question}</p>
+        <p className="text-xs text-[#0A0A0A]/55 font-medium leading-relaxed flex-1 pt-1">{question}</p>
         {!isEmpty && (
           <button
             onClick={copyValue}
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-[#002443]/5 shrink-0"
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-[#0A0A0A]/5 shrink-0"
             title="Copiar"
           >
-            <Copy className="w-3 h-3 text-[#002443]/30" />
+            <Copy className="w-3 h-3 text-[#0A0A0A]/30" />
           </button>
         )}
       </div>
@@ -91,7 +91,7 @@ export default function ResponseCard({ question, value, type }) {
       {/* Value */}
       <div className="pl-9">
         {isEmpty ? (
-          <span className="text-xs text-[#002443]/25 italic">Não informado</span>
+          <span className="text-xs text-[#0A0A0A]/25 italic">Não informado</span>
         ) : isBool ? (
           <span className={cn(
             'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold',
@@ -103,14 +103,14 @@ export default function ResponseCard({ question, value, type }) {
         ) : Array.isArray(formatted) ? (
           <div className="flex flex-wrap gap-1.5">
             {formatted.map((item, i) => (
-              <span key={i} className="inline-flex px-2.5 py-1 rounded-lg bg-[#002443]/5 text-xs font-medium text-[#002443]/80">
+              <span key={i} className="inline-flex px-2.5 py-1 rounded-lg bg-[#0A0A0A]/5 text-xs font-medium text-[#0A0A0A]/80">
                 {String(item)}
               </span>
             ))}
           </div>
         ) : isUrl ? (
           <a href={value.startsWith('http') ? value : `https://${value}`} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[#2bc196] hover:text-[#2bc196]/80 text-sm font-medium transition-colors break-all">
+            className="inline-flex items-center gap-1.5 text-[#1356E2] hover:text-[#1356E2]/80 text-sm font-medium transition-colors break-all">
             <Globe className="w-3.5 h-3.5 shrink-0" />
             {value}
             <ExternalLink className="w-3 h-3 shrink-0" />
@@ -120,7 +120,7 @@ export default function ResponseCard({ question, value, type }) {
         ) : typeof formatted === 'string' && formatted.endsWith('%') ? (
           <span className="text-base font-bold text-blue-600">{formatted}</span>
         ) : (
-          <p className="text-sm text-[#002443] font-semibold leading-relaxed">{formatted}</p>
+          <p className="text-sm text-[#0A0A0A] font-semibold leading-relaxed">{formatted}</p>
         )}
       </div>
     </div>

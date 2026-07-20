@@ -27,14 +27,14 @@ export default function BdcSectionInterpreter({ sectionKey, sectionData }) {
     <div className="space-y-3">
       {/* Section header with explanation */}
       <div className="p-4 bg-gradient-to-r from-blue-50/80 to-indigo-50/40 rounded-xl border border-blue-100">
-        <h4 className="text-sm font-bold text-[var(--pagsmile-blue)] mb-1">{sectionInfo.title}</h4>
-        <p className="text-xs text-[var(--pagsmile-blue)]/60 leading-relaxed">{sectionInfo.desc}</p>
+        <h4 className="text-sm font-bold text-[var(--pinbank-blue)] mb-1">{sectionInfo.title}</h4>
+        <p className="text-xs text-[var(--pinbank-blue)]/60 leading-relaxed">{sectionInfo.desc}</p>
         {sectionInfo.importance && (
           <p className="text-[10px] text-indigo-600/70 mt-1 font-medium">⚖️ {sectionInfo.importance}</p>
         )}
         {score > 0 && (
           <div className="mt-2 flex items-center gap-2">
-            <Badge className="bg-[var(--pagsmile-blue)] text-white text-[10px]">Contribuição ao Score: +{score} pts</Badge>
+            <Badge className="bg-[var(--pinbank-blue)] text-white text-[10px]">Contribuição ao Score: +{score} pts</Badge>
           </div>
         )}
       </div>
@@ -64,7 +64,7 @@ function ItemInterpreter({ item }) {
           <Icon className={`w-4 h-4 ${cfg.text} flex-shrink-0 mt-0.5`} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-xs font-bold text-[var(--pagsmile-blue)]">{item.label}</span>
+              <span className="text-xs font-bold text-[var(--pinbank-blue)]">{item.label}</span>
               <Badge className={`${cfg.badge} text-[10px] border-0`}>{item.risk}</Badge>
               {item.points !== 0 && (
                 <span className={`text-[10px] font-bold ${item.points > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -72,15 +72,15 @@ function ItemInterpreter({ item }) {
                 </span>
               )}
             </div>
-            <p className="text-xs text-[var(--pagsmile-blue)]/80 leading-relaxed">{item.value}</p>
+            <p className="text-xs text-[var(--pinbank-blue)]/80 leading-relaxed">{item.value}</p>
 
             {/* Inline details */}
             {item.details && typeof item.details === 'object' && (
               <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-1.5">
                 {Object.entries(item.details).map(([k, v]) => (
                   <div key={k} className="text-[10px] p-2 bg-white/60 rounded-lg">
-                    <span className="text-[var(--pagsmile-blue)]/40 font-semibold">{k}: </span>
-                    <span className="text-[var(--pagsmile-blue)]/80">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
+                    <span className="text-[var(--pinbank-blue)]/40 font-semibold">{k}: </span>
+                    <span className="text-[var(--pinbank-blue)]/80">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
                   </div>
                 ))}
               </div>
@@ -156,11 +156,11 @@ function LawsuitDetail({ lawsuit, index }) {
           <Scale className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${isCriminal ? 'text-red-600' : 'text-slate-500'}`} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] font-bold text-[var(--pagsmile-blue)] font-mono">{lawsuit.number || 'N/I'}</span>
+              <span className="text-[11px] font-bold text-[var(--pinbank-blue)] font-mono">{lawsuit.number || 'N/I'}</span>
               {isCriminal && <Badge className="bg-red-100 text-red-700 text-[9px] border-0">CRIMINAL</Badge>}
               {lawsuit.status && <Badge variant="outline" className="text-[9px]">{lawsuit.status}</Badge>}
             </div>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/60 mt-0.5">
+            <p className="text-[10px] text-[var(--pinbank-blue)]/60 mt-0.5">
               {lawsuit.court || lawsuit.courtType || 'Tribunal N/I'}
               {lawsuit.subject ? ` • ${lawsuit.subject}` : ''}
               {lawsuit.value != null ? ` • R$ ${Number(lawsuit.value).toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}
@@ -188,13 +188,13 @@ function LawsuitDetail({ lawsuit, index }) {
           {/* Parties */}
           {lawsuit.parties && lawsuit.parties.length > 0 && (
             <div>
-              <p className="font-bold text-[var(--pagsmile-blue)]/60 mb-1">Partes ({lawsuit.parties.length})</p>
+              <p className="font-bold text-[var(--pinbank-blue)]/60 mb-1">Partes ({lawsuit.parties.length})</p>
               <div className="space-y-1">
                 {lawsuit.parties.slice(0, 10).map((p, pi) => (
                   <div key={pi} className="flex items-center gap-2 p-1.5 bg-slate-50 rounded">
                     <Badge variant="outline" className="text-[8px]">{p.polarity || p.type || 'N/I'}</Badge>
-                    <span className="text-[var(--pagsmile-blue)]/80 truncate">{p.name || 'N/I'}</span>
-                    {p.doc && <span className="text-[var(--pagsmile-blue)]/40 font-mono">{p.doc}</span>}
+                    <span className="text-[var(--pinbank-blue)]/80 truncate">{p.name || 'N/I'}</span>
+                    {p.doc && <span className="text-[var(--pinbank-blue)]/40 font-mono">{p.doc}</span>}
                   </div>
                 ))}
               </div>
@@ -204,12 +204,12 @@ function LawsuitDetail({ lawsuit, index }) {
           {/* Recent movements */}
           {lawsuit.recentUpdates && lawsuit.recentUpdates.length > 0 && (
             <div>
-              <p className="font-bold text-[var(--pagsmile-blue)]/60 mb-1">Movimentações Recentes</p>
+              <p className="font-bold text-[var(--pinbank-blue)]/60 mb-1">Movimentações Recentes</p>
               <div className="space-y-1">
                 {lawsuit.recentUpdates.slice(0, 5).map((u, ui) => (
                   <div key={ui} className="p-2 bg-blue-50/50 rounded text-[10px]">
                     <span className="text-blue-600/60 font-mono">{formatDate(u.date)}: </span>
-                    <span className="text-[var(--pagsmile-blue)]/70">{u.content}</span>
+                    <span className="text-[var(--pinbank-blue)]/70">{u.content}</span>
                   </div>
                 ))}
               </div>
@@ -228,8 +228,8 @@ function LawsuitDetail({ lawsuit, index }) {
 function Field({ label, value }) {
   return (
     <div className="p-1.5 bg-slate-50 rounded">
-      <span className="text-[var(--pagsmile-blue)]/40 font-semibold">{label}: </span>
-      <span className="text-[var(--pagsmile-blue)]/80">{value}</span>
+      <span className="text-[var(--pinbank-blue)]/40 font-semibold">{label}: </span>
+      <span className="text-[var(--pinbank-blue)]/80">{value}</span>
     </div>
   );
 }

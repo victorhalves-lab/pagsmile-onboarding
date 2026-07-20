@@ -26,7 +26,7 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-slate-200 bg-white text-[#002443]",
+        default: "border-slate-200 bg-white text-[#0A0A0A]",
         destructive:
           "destructive group border-red-500 bg-red-500 text-white",
       },
@@ -75,7 +75,7 @@ const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-transparent px-3 text-sm font-medium text-[#002443] ring-offset-white transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2bc196] focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-white/40 group-[.destructive]:hover:border-red-300 group-[.destructive]:hover:bg-red-600 group-[.destructive]:hover:text-white group-[.destructive]:focus:ring-red-400",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-transparent px-3 text-sm font-medium text-[#0A0A0A] ring-offset-white transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1356E2] focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-white/40 group-[.destructive]:hover:border-red-300 group-[.destructive]:hover:bg-red-600 group-[.destructive]:hover:text-white group-[.destructive]:focus:ring-red-400",
       className
     )}
     {...props}
@@ -87,7 +87,7 @@ const ToastClose = React.forwardRef(({ className, ...props }, ref) => (
   <button
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-[#002443]/50 opacity-100 transition-opacity hover:text-[#002443] hover:bg-slate-100 focus:opacity-100 focus:outline-none focus:ring-2 group-[.destructive]:text-white/70 group-[.destructive]:hover:text-white group-[.destructive]:hover:bg-red-600 group-[.destructive]:focus:ring-red-400 cursor-pointer",
+      "absolute right-2 top-2 rounded-md p-1 text-[#0A0A0A]/50 opacity-100 transition-opacity hover:text-[#0A0A0A] hover:bg-slate-100 focus:opacity-100 focus:outline-none focus:ring-2 group-[.destructive]:text-white/70 group-[.destructive]:hover:text-white group-[.destructive]:hover:bg-red-600 group-[.destructive]:focus:ring-red-400 cursor-pointer",
       className
     )}
     toast-close=""
@@ -101,7 +101,7 @@ ToastClose.displayName = "ToastClose";
 const ToastTitle = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm font-semibold text-[#002443]", className)}
+    className={cn("text-sm font-semibold text-[#0A0A0A]", className)}
     {...props}
   />
 ));
@@ -110,7 +110,7 @@ ToastTitle.displayName = "ToastTitle";
 const ToastDescription = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm text-[#002443]/80 opacity-90", className)}
+    className={cn("text-sm text-[#0A0A0A]/80 opacity-90", className)}
     {...props}
   />
 ));

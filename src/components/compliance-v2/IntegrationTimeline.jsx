@@ -18,13 +18,13 @@ export default function IntegrationTimeline({ integrationLogs = [], validations 
   const totalTime = allRecords.reduce((s, r) => s + (r.duration_ms || 0), 0);
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-slate-100"><Zap className="w-5 h-5 text-slate-600" /></div>
           <div>
-            <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Timeline de Integrações — O Que Foi Consultado</h3>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-0.5">Visão rápida de todas as consultas feitas a provedores externos</p>
+            <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Timeline de Integrações — O Que Foi Consultado</h3>
+            <p className="text-xs text-[var(--pinbank-blue)]/40 mt-0.5">Visão rápida de todas as consultas feitas a provedores externos</p>
           </div>
         </div>
       </div>
@@ -56,9 +56,9 @@ export default function IntegrationTimeline({ integrationLogs = [], validations 
                 <Badge className={`text-[9px] border-0 ${isBdc ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
                   {isBdc ? 'BDC' : 'CAF'}
                 </Badge>
-                <span className="font-medium text-[var(--pagsmile-blue)] truncate flex-1">{svcType.replace(/_/g, ' ')}</span>
-                {r.duration_ms && <span className="text-[var(--pagsmile-blue)]/30">{r.duration_ms}ms</span>}
-                <span className="text-[var(--pagsmile-blue)]/25">{date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                <span className="font-medium text-[var(--pinbank-blue)] truncate flex-1">{svcType.replace(/_/g, ' ')}</span>
+                {r.duration_ms && <span className="text-[var(--pinbank-blue)]/30">{r.duration_ms}ms</span>}
+                <span className="text-[var(--pinbank-blue)]/25">{date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
               </div>
             );
           })}
@@ -72,8 +72,8 @@ function Stat({ label, value, icon: Icon, colorClass = 'text-slate-500' }) {
   return (
     <div className="flex items-center gap-1.5">
       {Icon && <Icon className={`w-3.5 h-3.5 ${colorClass}`} />}
-      <span className="text-[10px] text-[var(--pagsmile-blue)]/40">{label}:</span>
-      <span className="text-xs font-bold text-[var(--pagsmile-blue)]">{value}</span>
+      <span className="text-[10px] text-[var(--pinbank-blue)]/40">{label}:</span>
+      <span className="text-xs font-bold text-[var(--pinbank-blue)]">{value}</span>
     </div>
   );
 }

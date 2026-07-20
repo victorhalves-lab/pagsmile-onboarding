@@ -25,14 +25,14 @@ export default function StepL2aModelo({ formData, handleChange }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 rounded-xl bg-[var(--pagsmile-green)]/10">
-          <Briefcase className="w-6 h-6 text-[var(--pagsmile-green)]" />
+        <div className="p-3 rounded-xl bg-[var(--pinbank-blue)]/10">
+          <Briefcase className="w-6 h-6 text-[var(--pinbank-blue)]" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Modelo de Negócio
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Como sua empresa opera
           </p>
         </div>
@@ -40,7 +40,7 @@ export default function StepL2aModelo({ formData, handleChange }) {
 
       <div className="grid gap-5">
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">Modelo de Negócio Principal</Label>
+          <Label className="text-[var(--pinbank-blue)] font-semibold">Modelo de Negócio Principal</Label>
           <Select
             value={formData.modeloNegocio || ''}
             onValueChange={(v) => handleChange('modeloNegocio', v)}
@@ -57,7 +57,7 @@ export default function StepL2aModelo({ formData, handleChange }) {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">Canal de Venda Principal</Label>
+          <Label className="text-[var(--pinbank-blue)] font-semibold">Canal de Venda Principal</Label>
           <Select
             value={formData.canalVenda || ''}
             onValueChange={(v) => handleChange('canalVenda', v)}

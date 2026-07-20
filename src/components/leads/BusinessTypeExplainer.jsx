@@ -6,7 +6,7 @@ const TYPES = [
     keywords: ['merchant', 'merchan'],
     icon: Store,
     label: 'Merchant',
-    color: '#2bc196',
+    color: '#1356E2',
     description: 'Empresa que vende de maneira online diretamente para o consumidor final. Possui seu próprio e-commerce e opera suas vendas sem intermediários.'
   },
   {
@@ -42,9 +42,9 @@ export default function BusinessTypeExplainer() {
               >
                 <Icon className="w-4 h-4" style={{ color: type.color }} />
               </div>
-              <span className="font-bold text-sm text-[#002443]">{type.label}</span>
+              <span className="font-bold text-sm text-[#0A0A0A]">{type.label}</span>
             </div>
-            <p className="text-xs leading-relaxed text-[#002443]/70">
+            <p className="text-xs leading-relaxed text-[#0A0A0A]/70">
               {type.description}
             </p>
           </div>

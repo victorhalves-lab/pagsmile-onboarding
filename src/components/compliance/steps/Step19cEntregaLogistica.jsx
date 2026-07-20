@@ -25,8 +25,8 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
                 </AlertDescription>
             </Alert>
             
-            <div className="mt-6 p-4 border border-[var(--pagsmile-blue)]/10 rounded-lg bg-white">
-                <Label className="text-sm font-medium text-[var(--pagsmile-blue)] mb-3 block">Deseja corrigir agora?</Label>
+            <div className="mt-6 p-4 border border-[var(--pinbank-blue)]/10 rounded-lg bg-white">
+                <Label className="text-sm font-medium text-[var(--pinbank-blue)] mb-3 block">Deseja corrigir agora?</Label>
                 <div className="flex flex-col gap-3">
                    <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
                       <span className="text-sm">Vende produto físico?</span>
@@ -56,13 +56,13 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
     >
       {/* Entrega Física */}
       {formData.vendeFisico === true && (
-        <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)] text-sm uppercase tracking-wide">Entrega Física</h3>
+        <div className="space-y-4 p-4 bg-[var(--pinbank-blue)]/5 rounded-xl border border-[var(--pinbank-blue)]/10">
+           <h3 className="font-semibold text-[var(--pinbank-blue)] text-sm uppercase tracking-wide">Entrega Física</h3>
            
            <div className="space-y-1.5">
-             <Label className="text-xs font-medium text-[var(--pagsmile-blue)]">Quem realiza a entrega? <span className="text-red-500">*</span></Label>
+             <Label className="text-xs font-medium text-[var(--pinbank-blue)]">Quem realiza a entrega? <span className="text-red-500">*</span></Label>
              <Select value={formData.quemEntrega} onValueChange={(val) => handleChange('quemEntrega', val)}>
-               <SelectTrigger className="h-9 text-xs border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)] bg-white"><SelectValue placeholder="Selecione" /></SelectTrigger>
+               <SelectTrigger className="h-9 text-xs border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)] bg-white"><SelectValue placeholder="Selecione" /></SelectTrigger>
                <SelectContent>
                  <SelectItem value="proprio">Próprio</SelectItem>
                  <SelectItem value="transportadora">Transportadora</SelectItem>
@@ -104,8 +104,8 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
 
       {/* Entrega Digital/Serviço */}
       {formData.vendeDigitalServico === true && (
-        <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10 mt-4">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)] text-sm uppercase tracking-wide">Entrega Digital/Serviço</h3>
+        <div className="space-y-4 p-4 bg-[var(--pinbank-blue)]/5 rounded-xl border border-[var(--pinbank-blue)]/10 mt-4">
+           <h3 className="font-semibold text-[var(--pinbank-blue)] text-sm uppercase tracking-wide">Entrega Digital/Serviço</h3>
            
            <YesNoQuestion
              question="Consegue comprovar entrega/prestação?"
@@ -138,13 +138,13 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
 
       {/* Prazos */}
       {formData.prazoEntregaMaior7 === true && (
-         <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10 mt-4">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)] text-sm uppercase tracking-wide">Prazos</h3>
+         <div className="space-y-4 p-4 bg-[var(--pinbank-blue)]/5 rounded-xl border border-[var(--pinbank-blue)]/10 mt-4">
+           <h3 className="font-semibold text-[var(--pinbank-blue)] text-sm uppercase tracking-wide">Prazos</h3>
            
            <div className="space-y-1.5">
-             <Label className="text-xs font-medium text-[var(--pagsmile-blue)]">Prazo típico de entrega <span className="text-red-500">*</span></Label>
+             <Label className="text-xs font-medium text-[var(--pinbank-blue)]">Prazo típico de entrega <span className="text-red-500">*</span></Label>
              <Select value={formData.prazoTipicoEntrega} onValueChange={(val) => handleChange('prazoTipicoEntrega', val)}>
-               <SelectTrigger className="h-9 text-xs border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)] bg-white"><SelectValue placeholder="Selecione" /></SelectTrigger>
+               <SelectTrigger className="h-9 text-xs border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)] bg-white"><SelectValue placeholder="Selecione" /></SelectTrigger>
                <SelectContent>
                  <SelectItem value="imediato">Imediato</SelectItem>
                  <SelectItem value="d1">D+1</SelectItem>

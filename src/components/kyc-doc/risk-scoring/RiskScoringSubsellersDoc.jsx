@@ -2,7 +2,7 @@ import React from 'react';
 import RiskDocShell from './RiskDocShell';
 
 const TOC = [
-  '1. Visão Geral — Subsellers no Modelo Pagsmile',
+  '1. Visão Geral — Subsellers no Modelo Pin Bank',
   '2. Diferença entre Seller Pai e Subseller / Subconta',
   '3. Responsabilidade do Seller Pai pelo KYC dos Subsellers',
   '4. Fluxo Operacional Completo (PJ e PF)',
@@ -33,7 +33,7 @@ export default function RiskScoringSubsellersDoc() {
     >
       {/* 1 */}
       <section className="risk-section">
-        <h1>1. Visão Geral — Subsellers no Modelo Pagsmile</h1>
+        <h1>1. Visão Geral — Subsellers no Modelo Pin Bank</h1>
         <p>
           <strong>Subseller</strong> (também chamado de <em>subconta</em> ou <em>seller secundário</em>) é
           uma pessoa jurídica (PJ) ou pessoa física (PF) que vende dentro da plataforma de um Seller pai já
@@ -52,7 +52,7 @@ export default function RiskScoringSubsellersDoc() {
 
         <h2>1.2 Princípios do Modelo Subseller</h2>
         <ol className="risk-list">
-          <li><strong>KYC/KYB sempre obrigatório:</strong> Pagsmile não permite subseller sem KYC, mesmo com volume baixo.</li>
+          <li><strong>KYC/KYB sempre obrigatório:</strong> Pin Bank não permite subseller sem KYC, mesmo com volume baixo.</li>
           <li><strong>Score independente, decisão isolada:</strong> um subseller recusado não impacta diretamente o seller pai (mas afeta sua score de governança).</li>
           <li><strong>Herança parcial de risco:</strong> sellers pai com subfaixa pior recebem subsellers com escrutínio mais rigoroso.</li>
           <li><strong>Monitoramento contínuo:</strong> chargeback do subseller, revalidação periódica, lista de sanções.</li>
@@ -66,7 +66,7 @@ export default function RiskScoringSubsellersDoc() {
         <table className="risk-table">
           <thead><tr><th>Dimensão</th><th>Seller Pai (Direto)</th><th>Subseller / Subconta</th></tr></thead>
           <tbody>
-            <tr><td>Contrato</td><td>Direto com Pagsmile</td><td>Indireto — via plataforma do Seller pai</td></tr>
+            <tr><td>Contrato</td><td>Direto com Pin Bank</td><td>Indireto — via plataforma do Seller pai</td></tr>
             <tr><td>Onboarding</td><td>Compliance V4 completo (10–13 steps)</td><td>Subseller V2 simplificado (4–5 steps)</td></tr>
             <tr><td>Score</td><td>Escala 0–849 (V4 — 3 camadas)</td><td>Escala 0–1000 (Subseller — modelo proprietário simplificado)</td></tr>
             <tr><td>Tipo de Pessoa</td><td>PJ ou PF</td><td>PJ ou PF (subseller_v2 ou subseller_pf)</td></tr>
@@ -74,7 +74,7 @@ export default function RiskScoringSubsellersDoc() {
             <tr><td>Biometria</td><td>Liveness + Facematch + Documentoscopia (representante)</td><td>Liveness + Facematch + Documentoscopia (titular)</td></tr>
             <tr><td>Política PLD</td><td>Exigida (V19-V24)</td><td>Herdada do Seller pai</td></tr>
             <tr><td>Rolling Reserve</td><td>0–15% por subfaixa</td><td>Aplicado dentro do volume do Seller pai</td></tr>
-            <tr><td>Responsabilidade Operacional</td><td>Direta com Pagsmile</td><td>Solidária — Seller pai responde por subseller fraudulento</td></tr>
+            <tr><td>Responsabilidade Operacional</td><td>Direta com Pin Bank</td><td>Solidária — Seller pai responde por subseller fraudulento</td></tr>
           </tbody>
         </table>
       </section>
@@ -83,7 +83,7 @@ export default function RiskScoringSubsellersDoc() {
       <section className="risk-section risk-break">
         <h1>3. Responsabilidade do Seller Pai pelo KYC dos Subsellers</h1>
         <p>
-          A Pagsmile <strong>processa o KYC/KYB do subseller</strong> mas o Seller pai <strong>permanece
+          A Pin Bank <strong>processa o KYC/KYB do subseller</strong> mas o Seller pai <strong>permanece
           formalmente responsável</strong> pela presença ativa, monitoramento e offboarding rápido em caso
           de fraude. Esta responsabilidade é capturada no questionário V4 do Seller pai (variáveis V31–V34)
           e revisitada em toda revalidação periódica.
@@ -92,15 +92,15 @@ export default function RiskScoringSubsellersDoc() {
         <h2>3.1 Obrigações Contratuais do Seller Pai</h2>
         <ul className="risk-list">
           <li>Manter política documentada de aceite e offboarding de subsellers.</li>
-          <li>Reportar à Pagsmile qualquer atividade suspeita identificada (canal de denúncia).</li>
-          <li>Aceitar offboarding compulsório de subsellers que a Pagsmile recuse.</li>
+          <li>Reportar à Pin Bank qualquer atividade suspeita identificada (canal de denúncia).</li>
+          <li>Aceitar offboarding compulsório de subsellers que a Pin Bank recuse.</li>
           <li>Assumir chargeback de subseller quando a fraude for detectável pela governança esperada.</li>
           <li>Permitir auditoria periódica das suas políticas de subseller.</li>
         </ul>
 
         <h2>3.2 Score de Governança do Seller Pai</h2>
         <p>
-          A Pagsmile mantém um <code>SubsellerGovernanceScore</code> agregado por Seller pai, calculado a
+          A Pin Bank mantém um <code>SubsellerGovernanceScore</code> agregado por Seller pai, calculado a
           partir do desempenho dos seus subsellers (chargeback, fraude, recusas). Este score é uma das
           entradas da revalidação periódica do Seller pai e pode mover sua subfaixa.
         </p>
@@ -324,7 +324,7 @@ export default function RiskScoringSubsellersDoc() {
 
         <h2>11.2 Detecção Anti-Sybil</h2>
         <p>
-          A Pagsmile mantém um <code>shared_faceset</code> CAF cross-tenant: se a mesma pessoa tentar criar
+          A Pin Bank mantém um <code>shared_faceset</code> CAF cross-tenant: se a mesma pessoa tentar criar
           múltiplos subsellers (próprios ou em sellers pais distintos) o sistema detecta e bloqueia. Esta é
           uma defesa específica contra fraude de "subsellers fantasma" que tipicamente serve para lavagem
           ou cash-out de cartão fraudado.
@@ -440,7 +440,7 @@ export default function RiskScoringSubsellersDoc() {
         <h2>16.3 Offboarding</h2>
         <ol className="risk-list">
           <li>Subseller pode ser desativado pelo Seller pai a qualquer momento (offboarding voluntário).</li>
-          <li>Pagsmile pode forçar offboarding (compulsório) em caso de fraude detectada — Seller pai é obrigado contratualmente a executar.</li>
+          <li>Pin Bank pode forçar offboarding (compulsório) em caso de fraude detectada — Seller pai é obrigado contratualmente a executar.</li>
           <li>Volumes em curso entram em hold de 90 dias para cobrir potenciais chargebacks.</li>
           <li>Caso de fraude grave (B-S05, B-S08) pode resultar em add do CPF/CNPJ do subseller a uma blocklist interna que impede recriação em outros sellers pai.</li>
         </ol>
@@ -456,7 +456,7 @@ export default function RiskScoringSubsellersDoc() {
           <dt>Herança de risco</dt><dd>Mecanismo que faz a subfaixa do Seller pai impactar o score do subseller.</dd>
           <dt>shared_faceset</dt><dd>Galeria CAF cross-tenant que detecta reuso de face em múltiplos subsellers.</dd>
           <dt>Anti-Sybil</dt><dd>Defesa contra criação de múltiplas identidades fictícias por uma mesma pessoa.</dd>
-          <dt>SubsellerGovernanceScore</dt><dd>Score agregado mantido pela Pagsmile sobre a qualidade da curadoria de subsellers do Seller pai.</dd>
+          <dt>SubsellerGovernanceScore</dt><dd>Score agregado mantido pela Pin Bank sobre a qualidade da curadoria de subsellers do Seller pai.</dd>
           <dt>Blocklist interna</dt><dd>Lista de CPFs/CNPJs banidos por fraude — bloqueia tentativa de recriação em qualquer outro Seller pai.</dd>
           <dt>Hold de 90 dias</dt><dd>Retenção financeira após offboarding para cobrir chargebacks remanescentes.</dd>
           <dt>Cap de TPV</dt><dd>Limite máximo absoluto de volume processável dado a faixa do subseller.</dd>

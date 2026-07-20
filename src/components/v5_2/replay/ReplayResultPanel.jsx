@@ -54,7 +54,7 @@ export default function ReplayResultPanel({ result }) {
                 ))}
               </ul>
             )}
-            <p className="text-[10px] text-[#002443]/55 mt-2 font-mono">
+            <p className="text-[10px] text-[#0A0A0A]/55 mt-2 font-mono">
               Executado em {new Date(replay_metadata.executed_at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })} · por {replay_metadata.executed_by}
             </p>
           </div>
@@ -74,11 +74,11 @@ export default function ReplayResultPanel({ result }) {
           title="Replay com regras atuais"
           subtitle={replay_metadata.rules_version}
           data={replay}
-          color="#2bc196"
+          color="#1356E2"
           changedFields={diff.changed_fields}
           compareWith={original}
           headerBadge={
-            <Badge className="bg-[#2bc196] text-white text-[10px]">
+            <Badge className="bg-[#1356E2] text-white text-[10px]">
               {new Date(replay_metadata.executed_at).toLocaleDateString('pt-BR')}
             </Badge>
           }
@@ -120,7 +120,7 @@ export default function ReplayResultPanel({ result }) {
               label="Replay (hoje)"
               value={`${(replay.score_pct * 100).toFixed(1)}%`}
               detail={`${replay.score_final}/${replay.score_max}`}
-              color="#2bc196"
+              color="#1356E2"
             />
           </div>
         </CardContent>
@@ -149,7 +149,7 @@ function ResultColumn({ title, subtitle, data, color, changedFields = [], compar
         <div className="flex items-center justify-between gap-2">
           <div>
             <CardTitle className="text-sm" style={{ color }}>{title}</CardTitle>
-            <p className="text-[10px] text-[#002443]/55 mt-0.5 font-mono">{subtitle}</p>
+            <p className="text-[10px] text-[#0A0A0A]/55 mt-0.5 font-mono">{subtitle}</p>
           </div>
           {headerBadge}
         </div>
@@ -184,8 +184,8 @@ function ResultColumn({ title, subtitle, data, color, changedFields = [], compar
 function Row({ label, value, highlight }) {
   return (
     <div className={`flex items-start justify-between gap-3 text-xs py-1 ${highlight ? 'bg-amber-50 -mx-2 px-2 rounded' : ''}`}>
-      <span className="text-[#002443]/60 font-medium">{label}</span>
-      <span className={`text-right font-mono ${highlight ? 'text-amber-900 font-bold' : 'text-[#002443]'}`}>
+      <span className="text-[#0A0A0A]/60 font-medium">{label}</span>
+      <span className={`text-right font-mono ${highlight ? 'text-amber-900 font-bold' : 'text-[#0A0A0A]'}`}>
         {value ?? '—'}
       </span>
     </div>
@@ -199,7 +199,7 @@ function ScoreCard({ label, value, detail, color }) {
         {label}
       </div>
       <div className="text-2xl font-bold font-mono" style={{ color }}>{value}</div>
-      <div className="text-[10px] text-[#002443]/50 font-mono mt-0.5">{detail}</div>
+      <div className="text-[10px] text-[#0A0A0A]/50 font-mono mt-0.5">{detail}</div>
     </div>
   );
 }

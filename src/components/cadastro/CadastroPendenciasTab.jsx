@@ -39,7 +39,7 @@ function PendencyCard({ pendency, defaultExpanded = false }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50/50 transition-colors"
@@ -50,7 +50,7 @@ function PendencyCard({ pendency, defaultExpanded = false }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-bold text-sm text-[var(--pagsmile-blue)]">Rodada {pendency.round}</span>
+              <span className="font-bold text-sm text-[var(--pinbank-blue)]">Rodada {pendency.round}</span>
               <Badge className={`text-[10px] gap-1 ${sc.color}`}>
                 <StatusIcon className="w-3 h-3" />
                 {sc.label}
@@ -59,7 +59,7 @@ function PendencyCard({ pendency, defaultExpanded = false }) {
                 {submittedItems}/{totalItems} respondidos
               </Badge>
             </div>
-            <div className="flex items-center gap-3 text-xs text-[var(--pagsmile-blue)]/50 mt-0.5 flex-wrap">
+            <div className="flex items-center gap-3 text-xs text-[var(--pinbank-blue)]/50 mt-0.5 flex-wrap">
               <span>Solicitada por {pendency.requestedBy}</span>
               {pendency.requestedAt && <span>• {new Date(pendency.requestedAt).toLocaleDateString('pt-BR')}</span>}
               {pendency.expiresAt && (
@@ -76,16 +76,16 @@ function PendencyCard({ pendency, defaultExpanded = false }) {
               <Copy className="w-3 h-3" /> Link
             </Button>
           )}
-          {expanded ? <ChevronUp className="w-4 h-4 text-[var(--pagsmile-blue)]/30" /> : <ChevronDown className="w-4 h-4 text-[var(--pagsmile-blue)]/30" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-[var(--pinbank-blue)]/30" /> : <ChevronDown className="w-4 h-4 text-[var(--pinbank-blue)]/30" />}
         </div>
       </button>
 
       {expanded && (
-        <div className="border-t border-[var(--pagsmile-blue)]/5 p-4 space-y-3">
+        <div className="border-t border-[var(--pinbank-blue)]/5 p-4 space-y-3">
           {pendency.generalMessage && (
             <div className="p-3 bg-slate-50 rounded-lg">
-              <p className="text-[10px] font-semibold text-[var(--pagsmile-blue)]/50 mb-1">Mensagem ao cliente</p>
-              <p className="text-xs text-[var(--pagsmile-blue)]/80 whitespace-pre-wrap">{pendency.generalMessage}</p>
+              <p className="text-[10px] font-semibold text-[var(--pinbank-blue)]/50 mb-1">Mensagem ao cliente</p>
+              <p className="text-xs text-[var(--pinbank-blue)]/80 whitespace-pre-wrap">{pendency.generalMessage}</p>
             </div>
           )}
 
@@ -114,11 +114,11 @@ function PendencyCard({ pendency, defaultExpanded = false }) {
                       <Badge className="bg-slate-200 text-slate-700 text-[10px]">Pendente</Badge>
                     )}
                   </div>
-                  <p className="text-sm font-semibold text-[var(--pagsmile-blue)] mt-2">{item.label}</p>
-                  {item.description && <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-0.5">{item.description}</p>}
+                  <p className="text-sm font-semibold text-[var(--pinbank-blue)] mt-2">{item.label}</p>
+                  {item.description && <p className="text-xs text-[var(--pinbank-blue)]/60 mt-0.5">{item.description}</p>}
 
                   {item.kind === 'document' && (
-                    <div className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-1.5 flex flex-wrap gap-2">
+                    <div className="text-[10px] text-[var(--pinbank-blue)]/50 mt-1.5 flex flex-wrap gap-2">
                       <span>Tipos: {(item.acceptedFileTypes || []).join(', ').toUpperCase() || 'qualquer'}</span>
                       <span>• Mínimo: {item.requiredQuantity || 1}</span>
                       <span>• Enviados: {(item.uploadedDocIds || []).length}</span>
@@ -127,12 +127,12 @@ function PendencyCard({ pendency, defaultExpanded = false }) {
 
                   {item.kind === 'question' && item.answerValue && (
                     <div className="mt-2 p-2 bg-white rounded border border-slate-200">
-                      <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mb-0.5">Resposta:</p>
-                      <p className="text-xs text-[var(--pagsmile-blue)] font-medium whitespace-pre-wrap">{item.answerValue}</p>
+                      <p className="text-[10px] text-[var(--pinbank-blue)]/50 mb-0.5">Resposta:</p>
+                      <p className="text-xs text-[var(--pinbank-blue)] font-medium whitespace-pre-wrap">{item.answerValue}</p>
                     </div>
                   )}
                   {item.kind === 'question' && !item.answerValue && (
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-1.5 italic">Aguardando resposta do cliente</p>
+                    <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-1.5 italic">Aguardando resposta do cliente</p>
                   )}
                 </div>
               );
@@ -157,18 +157,18 @@ export default function CadastroPendenciasTab({ allCaseIds = [] }) {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Carregando...</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Carregando...</p>
       </div>
     );
   }
 
   if (!pendencies.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <ClipboardList className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhuma solicitação de pendência registrada para este cliente</p>
-        <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-1">Use o botão "Solicitar Pendências" na aba Documentos quando o caso estiver em Revisão Manual.</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <ClipboardList className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhuma solicitação de pendência registrada para este cliente</p>
+        <p className="text-xs text-[var(--pinbank-blue)]/40 mt-1">Use o botão "Solicitar Pendências" na aba Documentos quando o caso estiver em Revisão Manual.</p>
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function CadastroPendenciasTab({ allCaseIds = [] }) {
   return (
     <div className="space-y-3 mt-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="text-sm text-[var(--pagsmile-blue)]/60">
+        <p className="text-sm text-[var(--pinbank-blue)]/60">
           {pendencies.length} solicitação(ões) registrada(s)
         </p>
         <div className="flex gap-2">

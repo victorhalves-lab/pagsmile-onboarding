@@ -31,26 +31,26 @@ export default function AnaliseTimelineIntegracoes({ integrationLogs, validation
   if (allRecords.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-slate-100">
-              <Clock className="w-5 h-5 text-[var(--pagsmile-blue)]/60" />
+              <Clock className="w-5 h-5 text-[var(--pinbank-blue)]/60" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[var(--pagsmile-blue)]">Timeline de Integrações</h2>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40">Ordem cronológica de todas as chamadas a CAF e Big Data Corp</p>
+              <h2 className="text-base font-bold text-[var(--pinbank-blue)]">Timeline de Integrações</h2>
+              <p className="text-xs text-[var(--pinbank-blue)]/40">Ordem cronológica de todas as chamadas a CAF e Big Data Corp</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/30" />
+            <Filter className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/30" />
             {['all', 'CAF', 'BigDataCorp'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
                 className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
-                  filter === f ? 'bg-[var(--pagsmile-blue)] text-white' : 'bg-slate-100 text-[var(--pagsmile-blue)]/50 hover:bg-slate-200'
+                  filter === f ? 'bg-[var(--pinbank-blue)] text-white' : 'bg-slate-100 text-[var(--pinbank-blue)]/50 hover:bg-slate-200'
                 }`}
               >
                 {f === 'all' ? 'Todos' : f === 'BigDataCorp' ? 'BDC' : f}
@@ -85,12 +85,12 @@ export default function AnaliseTimelineIntegracoes({ integrationLogs, validation
                   
                   <div className="flex-1 min-w-0 py-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-semibold text-[var(--pagsmile-blue)]">{svcType.replace(/_/g, ' ')}</span>
+                      <span className="text-xs font-semibold text-[var(--pinbank-blue)]">{svcType.replace(/_/g, ' ')}</span>
                       <Badge className={`text-[9px] ${pCfg.bg} ${pCfg.color} ${pCfg.border} border`}>{provider}</Badge>
                       <SIcon className={`w-3 h-3 ${sCfg.color}`} />
                       <span className={`text-[10px] font-medium ${sCfg.color}`}>{record.status || record.result_status || 'N/D'}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">
+                    <div className="flex items-center gap-3 text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">
                       <span>{date.toLocaleDateString('pt-BR')} {date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                       {record.duration_ms && <span>• {record.duration_ms}ms</span>}
                       {record.request_id && <span className="font-mono">• {record.request_id.substring(0, 12)}...</span>}
@@ -113,7 +113,7 @@ export default function AnaliseTimelineIntegracoes({ integrationLogs, validation
             <div className="text-center mt-4">
               <button
                 onClick={() => setShowLimit(prev => prev + 20)}
-                className="text-xs text-[var(--pagsmile-green)] hover:underline"
+                className="text-xs text-[var(--pinbank-blue)] hover:underline"
               >
                 Carregar mais ({filtered.length - showLimit} restantes)
               </button>

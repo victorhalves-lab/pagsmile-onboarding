@@ -152,11 +152,11 @@ export default function BDCRawDataTab({ validations, merchant }) {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#1a3a5c] rounded-2xl p-5">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#1a3a5c] rounded-2xl p-5">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-white/10">
-              <Database className="w-5 h-5 text-[#5cf7cf]" />
+              <Database className="w-5 h-5 text-[#E84B1C]" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white">Dados BigDataCorp — Visão Completa</h3>
@@ -217,7 +217,7 @@ export default function BDCRawDataTab({ validations, merchant }) {
           variant={activeView === 'dados' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setActiveView('dados')}
-          className={activeView === 'dados' ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white' : ''}
+          className={activeView === 'dados' ? 'bg-[#1356E2] hover:bg-[#1356E2]/90 text-white' : ''}
         >
           <Database className="w-3.5 h-3.5 mr-1.5" /> Dados por Dataset ({datasets.length})
         </Button>
@@ -225,7 +225,7 @@ export default function BDCRawDataTab({ validations, merchant }) {
           variant={activeView === 'timeline' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setActiveView('timeline')}
-          className={activeView === 'timeline' ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white' : ''}
+          className={activeView === 'timeline' ? 'bg-[#1356E2] hover:bg-[#1356E2]/90 text-white' : ''}
         >
           <Clock className="w-3.5 h-3.5 mr-1.5" /> Timeline ({bdcValidations.length})
         </Button>
@@ -237,10 +237,10 @@ export default function BDCRawDataTab({ validations, merchant }) {
         <>
           {/* Filters */}
           {datasets.length > 0 && (
-            <div className="bg-white rounded-xl border border-[#002443]/8 p-3 flex items-center gap-3">
-              <Filter className="w-4 h-4 text-[#002443]/30 shrink-0" />
+            <div className="bg-white rounded-xl border border-[#0A0A0A]/8 p-3 flex items-center gap-3">
+              <Filter className="w-4 h-4 text-[#0A0A0A]/30 shrink-0" />
               <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#002443]/30" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#0A0A0A]/30" />
                 <Input
                   placeholder="Buscar dataset..."
                   value={searchTerm}
@@ -264,9 +264,9 @@ export default function BDCRawDataTab({ validations, merchant }) {
 
           {/* Dataset list */}
           {filteredDatasets.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-[#002443]/8 p-8 text-center">
-              <Database className="w-10 h-10 text-[#002443]/15 mx-auto mb-3" />
-              <p className="text-sm text-[#002443]/50">
+            <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 p-8 text-center">
+              <Database className="w-10 h-10 text-[#0A0A0A]/15 mx-auto mb-3" />
+              <p className="text-sm text-[#0A0A0A]/50">
                 {datasets.length === 0
                   ? 'Nenhum dado BDC disponível. Execute o enriquecimento BDC primeiro.'
                   : 'Nenhum dataset corresponde aos filtros'}

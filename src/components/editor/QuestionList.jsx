@@ -103,7 +103,7 @@ export default function QuestionList({ questions, templateId, onAddQuestion, onE
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -113,12 +113,12 @@ export default function QuestionList({ questions, templateId, onAddQuestion, onE
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Perguntas do Questionário</h3>
-          <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
+          <h3 className="text-lg font-bold text-[var(--pinbank-blue)]">Perguntas do Questionário</h3>
+          <p className="text-sm text-[var(--pinbank-blue)]/70 font-medium">
             Arraste para reordenar. {questions.length} pergunta(s) cadastrada(s).
           </p>
         </div>
-        <Button onClick={onAddQuestion} className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+        <Button onClick={onAddQuestion} className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90">
           <Plus className="w-4 h-4 mr-2" />
           Adicionar Pergunta
         </Button>
@@ -127,14 +127,14 @@ export default function QuestionList({ questions, templateId, onAddQuestion, onE
       {/* Question List */}
       {questions.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <List className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-          <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-2">
+          <List className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/40 mb-4" />
+          <h3 className="text-lg font-bold text-[var(--pinbank-blue)] mb-2">
             Nenhuma pergunta cadastrada
           </h3>
-          <p className="text-[var(--pagsmile-blue)]/70 font-medium mb-6">
+          <p className="text-[var(--pinbank-blue)]/70 font-medium mb-6">
             Adicione perguntas para construir seu questionário.
           </p>
-          <Button onClick={onAddQuestion} className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+          <Button onClick={onAddQuestion} className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90">
             <Plus className="w-4 h-4 mr-2" />
             Adicionar Primeira Pergunta
           </Button>
@@ -157,26 +157,26 @@ export default function QuestionList({ questions, templateId, onAddQuestion, onE
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           className={`bg-white rounded-xl border ${
-                            snapshot.isDragging ? 'border-[var(--pagsmile-green)] shadow-lg' : 'border-slate-200'
+                            snapshot.isDragging ? 'border-[var(--pinbank-blue)] shadow-lg' : 'border-slate-200'
                           } p-4 transition-all`}
                         >
                           <div className="flex items-start gap-3">
                             {/* Drag Handle */}
                             <div
                               {...provided.dragHandleProps}
-                              className="mt-1 cursor-grab active:cursor-grabbing text-[var(--pagsmile-blue)]/50 hover:text-[var(--pagsmile-blue)]/80"
+                              className="mt-1 cursor-grab active:cursor-grabbing text-[var(--pinbank-blue)]/50 hover:text-[var(--pinbank-blue)]/80"
                             >
                               <GripVertical className="w-5 h-5" />
                             </div>
 
                             {/* Order Number */}
-                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-semibold text-[var(--pagsmile-blue)]/80">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-semibold text-[var(--pinbank-blue)]/80">
                               {index + 1}
                             </div>
 
                             {/* Question Content */}
                             <div className="flex-1 min-w-0">
-                              <p className="text-[var(--pagsmile-blue)] font-semibold line-clamp-2">
+                              <p className="text-[var(--pinbank-blue)] font-semibold line-clamp-2">
                                 {question.text}
                               </p>
                               <div className="flex items-center gap-2 mt-2 flex-wrap">

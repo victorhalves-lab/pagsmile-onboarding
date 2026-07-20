@@ -78,10 +78,10 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
     const name = merchant?.fullName || merchant?.companyName || 'Cliente';
     setMessageTemplate(
       `Olá ${name}, tudo bem?\n\n` +
-      `Para concluir sua análise de compliance na Pagsmile, precisamos que você acesse o link abaixo:\n\n` +
+      `Para concluir sua análise de compliance na Pin Bank, precisamos que você acesse o link abaixo:\n\n` +
       `[COLE O LINK AQUI]\n\n` +
       `O processo leva cerca de 5 minutos. Qualquer dúvida estamos à disposição.\n\n` +
-      `Atenciosamente,\nEquipe Pagsmile`
+      `Atenciosamente,\nEquipe Pin Bank`
     );
   }, [open, caseData, merchant]);
 
@@ -174,7 +174,7 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
 
   const openEmail = (link) => {
     const email = merchant?.email || '';
-    const subject = encodeURIComponent('Pagsmile — Etapa de compliance pendente');
+    const subject = encodeURIComponent('Pin Bank — Etapa de compliance pendente');
     const body = encodeURIComponent(messageTemplate.replace('[COLE O LINK AQUI]', link));
     window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
   };
@@ -183,11 +183,11 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#002443]">
-            <Link2 className="w-5 h-5 text-[#2bc196]" />
+          <DialogTitle className="flex items-center gap-2 text-[#0A0A0A]">
+            <Link2 className="w-5 h-5 text-[#1356E2]" />
             Gerar link para o cliente
           </DialogTitle>
-          <p className="text-sm text-[#002443]/60 mt-1">
+          <p className="text-sm text-[#0A0A0A]/60 mt-1">
             {merchant?.fullName || merchant?.companyName || 'Cliente'} · {merchant?.cpfCnpj || ''}
           </p>
         </DialogHeader>
@@ -195,8 +195,8 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
         {/* STATUS ATUAL */}
         <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
           <div className="flex items-center gap-2 mb-2">
-            <Info className="w-4 h-4 text-[#002443]/60" />
-            <p className="text-xs font-bold uppercase tracking-wider text-[#002443]/70">Status atual do caso</p>
+            <Info className="w-4 h-4 text-[#0A0A0A]/60" />
+            <p className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/70">Status atual do caso</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <StatusPill done={hasQuestionnaire} label={hasQuestionnaire ? 'Questionário preenchido' : 'Questionário pendente'} />
@@ -244,7 +244,7 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
               </Button>
             ) : (
               <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-[#002443]/70">Link gerado</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/70">Link gerado</p>
                 <CopyableLink url={docLink} label="Link Docs + CAF" />
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   <Button variant="outline" onClick={() => openWhatsApp(docLink)} className="gap-2">
@@ -284,7 +284,7 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
               </Button>
             ) : (
               <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-[#002443]/70">Link gerado</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/70">Link gerado</p>
                 <CopyableLink url={fullLink} label="Link Processo Completo" />
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   <Button variant="outline" onClick={() => openWhatsApp(fullLink)} className="gap-2">
@@ -303,8 +303,8 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
         {(docLink || fullLink) && (
           <div className="space-y-2 pt-4 border-t border-slate-200">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-[#002443]/60" />
-              <p className="text-xs font-bold uppercase tracking-wider text-[#002443]/70">
+              <FileText className="w-4 h-4 text-[#0A0A0A]/60" />
+              <p className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/70">
                 Mensagem para enviar (editável)
               </p>
             </div>
@@ -314,7 +314,7 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
               rows={6}
               className="text-xs font-mono"
             />
-            <p className="text-[10px] text-[#002443]/50">
+            <p className="text-[10px] text-[#0A0A0A]/50">
               Dica: "[COLE O LINK AQUI]" é substituído automaticamente quando você clica em WhatsApp ou E-mail.
             </p>
           </div>

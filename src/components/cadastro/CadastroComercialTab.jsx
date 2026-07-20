@@ -8,11 +8,11 @@ import { Briefcase, UserPlus, Presentation, Activity, ExternalLink, Calendar, Ma
 
 function Section({ icon: Icon, title, badge, children }) {
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
-        <Icon className="w-4 h-4 text-[var(--pagsmile-green)]" />
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
+        <Icon className="w-4 h-4 text-[var(--pinbank-blue)]" />
         {title}
-        {badge != null && <Badge className="bg-[var(--pagsmile-green)]/10 text-[var(--pagsmile-green)] text-[10px] ml-1">{badge}</Badge>}
+        {badge != null && <Badge className="bg-[var(--pinbank-blue)]/10 text-[var(--pinbank-blue)] text-[10px] ml-1">{badge}</Badge>}
       </h3>
       {children}
     </div>
@@ -82,9 +82,9 @@ export default function CadastroComercialTab({ lead, allLeads = [] }) {
 
   if (!hasData) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <Briefcase className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum dado comercial registrado</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <Briefcase className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum dado comercial registrado</p>
       </div>
     );
   }
@@ -95,10 +95,10 @@ export default function CadastroComercialTab({ lead, allLeads = [] }) {
       {(lead?.commercialAgentName || lead?.commercialAgentId) && (
         <Section icon={Briefcase} title="Responsável Comercial">
           <div className="text-sm">
-            <p className="font-semibold text-[var(--pagsmile-blue)]">{lead.commercialAgentName || lead.commercialAgentId}</p>
-            {lead.origemLead && <p className="text-xs text-[var(--pagsmile-blue)]/50 mt-1">Origem: {lead.origemLead}</p>}
-            {lead.onboardingLinkCode && <p className="text-xs text-[var(--pagsmile-blue)]/50">Link de captura: {lead.onboardingLinkCode}</p>}
-            {lead.protocolo && <p className="text-xs text-[var(--pagsmile-blue)]/50">Protocolo: {lead.protocolo}</p>}
+            <p className="font-semibold text-[var(--pinbank-blue)]">{lead.commercialAgentName || lead.commercialAgentId}</p>
+            {lead.origemLead && <p className="text-xs text-[var(--pinbank-blue)]/50 mt-1">Origem: {lead.origemLead}</p>}
+            {lead.onboardingLinkCode && <p className="text-xs text-[var(--pinbank-blue)]/50">Link de captura: {lead.onboardingLinkCode}</p>}
+            {lead.protocolo && <p className="text-xs text-[var(--pinbank-blue)]/50">Protocolo: {lead.protocolo}</p>}
           </div>
         </Section>
       )}
@@ -108,52 +108,52 @@ export default function CadastroComercialTab({ lead, allLeads = [] }) {
         <Section icon={UserPlus} title="Introducer (Indicação)">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="flex items-start gap-2">
-              <Building2 className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40 mt-0.5" />
+              <Building2 className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40 mt-0.5" />
               <div>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Nome</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50">Nome</p>
                 <p className="font-semibold">{introducer.name || introducer.companyName || '—'}</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Hash className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40 mt-0.5" />
+              <Hash className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40 mt-0.5" />
               <div>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Código de Referência</p>
+                <p className="text-[10px] text-[var(--pinbank-blue)]/50">Código de Referência</p>
                 <p className="font-mono text-xs font-semibold">{introducer.referralCode}</p>
               </div>
             </div>
             {introducer.contactEmail && (
               <div className="flex items-start gap-2">
-                <Mail className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40 mt-0.5" />
+                <Mail className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40 mt-0.5" />
                 <div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50">E-mail</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50">E-mail</p>
                   <p className="font-semibold text-xs">{introducer.contactEmail}</p>
                 </div>
               </div>
             )}
             {introducer.contactPhone && (
               <div className="flex items-start gap-2">
-                <Phone className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40 mt-0.5" />
+                <Phone className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40 mt-0.5" />
                 <div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Telefone</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50">Telefone</p>
                   <p className="font-semibold text-xs">{introducer.contactPhone}</p>
                 </div>
               </div>
             )}
             {introducer.commissionRate != null && (
               <div className="flex items-start gap-2">
-                <Percent className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40 mt-0.5" />
+                <Percent className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40 mt-0.5" />
                 <div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Comissão</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50">Comissão</p>
                   <p className="font-semibold">{introducer.commissionRate}%</p>
                 </div>
               </div>
             )}
             {introducer.uniqueLandingPageSlug && (
               <div className="flex items-start gap-2">
-                <Globe className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40 mt-0.5" />
+                <Globe className="w-3.5 h-3.5 text-[var(--pinbank-blue)]/40 mt-0.5" />
                 <div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Landing Page</p>
-                  <Link to={`/parceiro/${introducer.uniqueLandingPageSlug}`} target="_blank" className="text-xs font-semibold text-[var(--pagsmile-green)] hover:underline flex items-center gap-1">
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50">Landing Page</p>
+                  <Link to={`/parceiro/${introducer.uniqueLandingPageSlug}`} target="_blank" className="text-xs font-semibold text-[var(--pinbank-blue)] hover:underline flex items-center gap-1">
                     /parceiro/{introducer.uniqueLandingPageSlug} <ExternalLink className="w-3 h-3" />
                   </Link>
                 </div>
@@ -171,11 +171,11 @@ export default function CadastroComercialTab({ lead, allLeads = [] }) {
               <div key={k.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">{k.clientName}</p>
+                    <p className="text-sm font-semibold text-[var(--pinbank-blue)]">{k.clientName}</p>
                     {k.segment && <Badge variant="outline" className="text-[10px]">{k.segment}</Badge>}
                     {k.status === 'arquivada' && <Badge className="bg-slate-200 text-slate-600 text-[10px]">Arquivada</Badge>}
                   </div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">
                     {k.responsavelNome ? `Por ${k.responsavelNome} • ` : ''}{new Date(k.created_date).toLocaleDateString('pt-BR')}
                   </p>
                 </div>
@@ -196,7 +196,7 @@ export default function CadastroComercialTab({ lead, allLeads = [] }) {
       {activities.length > 0 && (
         <Section icon={Activity} title="Timeline Comercial" badge={activities.length}>
           <div className="relative">
-            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-[var(--pagsmile-blue)]/8" />
+            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-[var(--pinbank-blue)]/8" />
             <div className="space-y-2">
               {activities.slice(0, 30).map((a, i) => {
                 const date = new Date(a.activityDate || a.created_date);
@@ -208,19 +208,19 @@ export default function CadastroComercialTab({ lead, allLeads = [] }) {
                     <div className="bg-slate-50 rounded-lg p-3 flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <Badge className={`text-[10px] ${color}`}>{label}</Badge>
-                        {a.description && <p className="text-xs text-[var(--pagsmile-blue)]/80 mt-1">{a.description}</p>}
-                        <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">por {a.performedBy}</p>
+                        {a.description && <p className="text-xs text-[var(--pinbank-blue)]/80 mt-1">{a.description}</p>}
+                        <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">por {a.performedBy}</p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <Calendar className="w-3 h-3 text-[var(--pagsmile-blue)]/30 inline" />
-                        <span className="text-[10px] text-[var(--pagsmile-blue)]/40 ml-1">{date.toLocaleDateString('pt-BR')}</span>
+                        <Calendar className="w-3 h-3 text-[var(--pinbank-blue)]/30 inline" />
+                        <span className="text-[10px] text-[var(--pinbank-blue)]/40 ml-1">{date.toLocaleDateString('pt-BR')}</span>
                       </div>
                     </div>
                   </div>
                 );
               })}
               {activities.length > 30 && (
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/40 text-center pt-2">
+                <p className="text-[10px] text-[var(--pinbank-blue)]/40 text-center pt-2">
                   + {activities.length - 30} atividades mais antigas
                 </p>
               )}

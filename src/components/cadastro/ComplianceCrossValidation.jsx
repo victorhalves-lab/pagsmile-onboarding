@@ -18,10 +18,10 @@ export default function ComplianceCrossValidation({ crossValidation }) {
   const critical = crossValidation.filter(c => !c.consistente && (c.severidade === 'CRITICAL' || c.severidade === 'HIGH')).length;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-[var(--pagsmile-blue)] flex items-center gap-2">
-          <ArrowLeftRight className="w-4 h-4 text-[var(--pagsmile-green)]" />
+        <h3 className="text-sm font-bold text-[var(--pinbank-blue)] flex items-center gap-2">
+          <ArrowLeftRight className="w-4 h-4 text-[var(--pinbank-blue)]" />
           Cross-Validation: Declarado vs Confirmado
         </h3>
         <div className="flex gap-1.5">
@@ -52,23 +52,23 @@ export default function ComplianceCrossValidation({ crossValidation }) {
               <Icon className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${item.consistente ? 'text-green-500' : config.text}`} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-xs font-semibold text-[var(--pagsmile-blue)]">{item.campo}</span>
+                  <span className="text-xs font-semibold text-[var(--pinbank-blue)]">{item.campo}</span>
                   {!item.consistente && (
                     <Badge className={`text-[9px] ${config.badge}`}>{item.severidade}</Badge>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <div>
-                    <span className="text-[var(--pagsmile-blue)]/40">Declarado: </span>
-                    <span className="text-[var(--pagsmile-blue)]/70 font-medium">{item.valor_declarado || 'N/D'}</span>
+                    <span className="text-[var(--pinbank-blue)]/40">Declarado: </span>
+                    <span className="text-[var(--pinbank-blue)]/70 font-medium">{item.valor_declarado || 'N/D'}</span>
                   </div>
                   <div>
-                    <span className="text-[var(--pagsmile-blue)]/40">Confirmado: </span>
-                    <span className="text-[var(--pagsmile-blue)]/70 font-medium">{item.valor_confirmado || 'N/D'}</span>
+                    <span className="text-[var(--pinbank-blue)]/40">Confirmado: </span>
+                    <span className="text-[var(--pinbank-blue)]/70 font-medium">{item.valor_confirmado || 'N/D'}</span>
                   </div>
                 </div>
                 {item.observacao && (
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-0.5 italic">{item.observacao}</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50 mt-0.5 italic">{item.observacao}</p>
                 )}
               </div>
             </div>

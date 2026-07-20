@@ -43,7 +43,7 @@ export default function CaseRow({
         <td className="p-3" colSpan={5}>
           <div className="flex items-center gap-2 text-sm">
             <Building2 className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold text-[#002443]">{m.companyName || m.fullName || '— Seller sem caso visível —'}</span>
+            <span className="font-semibold text-[#0A0A0A]">{m.companyName || m.fullName || '— Seller sem caso visível —'}</span>
             <Badge variant="outline" className="text-[10px]">Seller</Badge>
             {subsellerCount > 0 && (
               <Badge className="bg-purple-50 text-purple-700 border-purple-200 text-[10px]">
@@ -81,7 +81,7 @@ export default function CaseRow({
             <Building2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
           )}
           <div className="min-w-0">
-            <div className="font-medium text-[#002443] flex items-center gap-2 flex-wrap">
+            <div className="font-medium text-[#0A0A0A] flex items-center gap-2 flex-wrap">
               <span>{m.companyName || m.fullName || '—'}</span>
               {isSubseller ? (
                 <Badge className="bg-purple-50 text-purple-700 border-purple-200 text-[10px]">Subseller</Badge>

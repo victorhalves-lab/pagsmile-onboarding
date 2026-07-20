@@ -43,7 +43,7 @@ export default function EngineDryRunPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Play className="w-5 h-5 text-[#2bc196]" />
+            <Play className="w-5 h-5 text-[#1356E2]" />
             Dry-Run Comparativo V5.1 → V5.2
           </CardTitle>
           <CardDescription>
@@ -55,7 +55,7 @@ export default function EngineDryRunPanel() {
         <CardContent className="space-y-4">
           <div className="flex items-end gap-3">
             <div>
-              <label className="text-xs font-bold text-[#002443]/70 block mb-1">Casos a amostrar</label>
+              <label className="text-xs font-bold text-[#0A0A0A]/70 block mb-1">Casos a amostrar</label>
               <Input
                 type="number"
                 value={limit}
@@ -65,7 +65,7 @@ export default function EngineDryRunPanel() {
                 max={100}
               />
             </div>
-            <Button onClick={runDryRun} disabled={running} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+            <Button onClick={runDryRun} disabled={running} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
               {running ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
               Comparar V5.1 vs V5.2
             </Button>
@@ -81,48 +81,48 @@ export default function EngineDryRunPanel() {
           )}
 
           {result?.results?.length > 0 && (
-            <div className="border border-[#002443]/5 rounded-xl bg-white overflow-hidden">
-              <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[#f4f4f4] text-[10px] uppercase font-bold text-[#002443]/60 border-b">
+            <div className="border border-[#0A0A0A]/5 rounded-xl bg-white overflow-hidden">
+              <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[#f4f4f4] text-[10px] uppercase font-bold text-[#0A0A0A]/60 border-b">
                 <div className="col-span-3">Merchant</div>
                 <div className="col-span-2">Segmento</div>
                 <div className="col-span-2">Tier V5.1 → V5.2</div>
                 <div className="col-span-2">Escala V5.1 → V5.2</div>
                 <div className="col-span-3">Mudanças</div>
               </div>
-              <div className="max-h-[480px] overflow-y-auto divide-y divide-[#002443]/5">
+              <div className="max-h-[480px] overflow-y-auto divide-y divide-[#0A0A0A]/5">
                 {result.results.map((r) => (
                   <div key={r.caseId} className="grid grid-cols-12 gap-2 px-3 py-2 text-xs">
                     <div className="col-span-3 truncate" title={r.merchantName}>
-                      <p className="font-semibold text-[#002443]">{r.merchantName}</p>
-                      <p className="text-[10px] text-[#002443]/40 font-mono">{r.cpfCnpj}</p>
+                      <p className="font-semibold text-[#0A0A0A]">{r.merchantName}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/40 font-mono">{r.cpfCnpj}</p>
                     </div>
                     <div className="col-span-2">
                       <Badge variant="outline" className="text-[10px]">{r.segmento}</Badge>
                       {r.tpvDeclarado > 0 && (
-                        <p className="text-[10px] text-[#002443]/50 mt-1">
+                        <p className="text-[10px] text-[#0A0A0A]/50 mt-1">
                           TPV: R$ {Number(r.tpvDeclarado).toLocaleString('pt-BR')}
                         </p>
                       )}
                     </div>
                     <div className="col-span-2 flex items-center gap-1">
                       <Badge variant="outline" className="text-[10px]">{r.tier_v5_1}</Badge>
-                      <ArrowRight className="w-3 h-3 text-[#002443]/40" />
+                      <ArrowRight className="w-3 h-3 text-[#0A0A0A]/40" />
                       <Badge
                         className={`text-[10px] border-0 ${
                           r.tier_v5_1 !== r.tier_v5_2
                             ? 'bg-amber-100 text-amber-700'
-                            : 'bg-[#f4f4f4] text-[#002443]/70'
+                            : 'bg-[#f4f4f4] text-[#0A0A0A]/70'
                         }`}
                       >
                         {r.tier_v5_2}
                       </Badge>
                     </div>
                     <div className="col-span-2 flex items-center gap-1">
-                      <span className="font-mono text-[10px] text-[#002443]/60">{r.score_max_v5_1}</span>
-                      <ArrowRight className="w-3 h-3 text-[#002443]/40" />
+                      <span className="font-mono text-[10px] text-[#0A0A0A]/60">{r.score_max_v5_1}</span>
+                      <ArrowRight className="w-3 h-3 text-[#0A0A0A]/40" />
                       <span
                         className={`font-mono text-[10px] font-bold ${
-                          r.score_max_v5_1 !== r.score_max_v5_2 ? 'text-amber-700' : 'text-[#002443]/60'
+                          r.score_max_v5_1 !== r.score_max_v5_2 ? 'text-amber-700' : 'text-[#0A0A0A]/60'
                         }`}
                       >
                         {r.score_max_v5_2}
@@ -170,11 +170,11 @@ function SummaryCard({ label, value, highlight }) {
   return (
     <div
       className={`p-3 rounded-xl border ${
-        highlight ? 'bg-amber-50 border-amber-200' : 'bg-white border-[#002443]/5'
+        highlight ? 'bg-amber-50 border-amber-200' : 'bg-white border-[#0A0A0A]/5'
       }`}
     >
-      <p className="text-[10px] uppercase font-bold text-[#002443]/50 tracking-wide">{label}</p>
-      <p className={`text-2xl font-bold mt-1 ${highlight ? 'text-amber-700' : 'text-[#002443]'}`}>
+      <p className="text-[10px] uppercase font-bold text-[#0A0A0A]/50 tracking-wide">{label}</p>
+      <p className={`text-2xl font-bold mt-1 ${highlight ? 'text-amber-700' : 'text-[#0A0A0A]'}`}>
         {value}
       </p>
     </div>

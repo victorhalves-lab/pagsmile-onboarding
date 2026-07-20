@@ -48,11 +48,11 @@ export default function Ch02_SiglasNegocio() {
 
       <H3 num="2.1.3">Atores Internos</H3>
       <Table headers={['Termo', 'Descrição', 'Persistência']} rows={[
-        ['Merchant', 'Cliente final PagSmile (PJ/PF)', 'Entity Merchant'],
+        ['Merchant', 'Cliente final Pin Bank (PJ/PF)', 'Entity Merchant'],
         ['Lead', 'Pré-comercial (questionário preenchido, sem contrato)', 'Entity Lead + sourceFlow'],
         ['Introducer', 'Parceiro indicação via landing page white-label', 'Entity Introducer + /parceiro/:slug'],
         ['CompliancePartner', 'Bureau externo via portal restrito', 'CompliancePartner + Users + PartnerAssignment'],
-        ['Analista', 'Funcionário PagSmile que executa revisão manual', 'User role=admin + AccessProfile compliance-*'],
+        ['Analista', 'Funcionário Pin Bank que executa revisão manual', 'User role=admin + AccessProfile compliance-*'],
         ['Vendedor', 'Funcionário comercial (prospect → contrato)', 'User role=admin + AccessProfile comercial-*'],
         ['SENTINEL', 'Agente IA RELATOR (não-decisor) — narrativa qualitativa', 'agents/sentinel.json + analyzeOnboarding.js (Cap. 7)'],
         ['PRISCILA', 'Agente IA específico análise inicial leads', 'analyzePriscila.js (Cap. 8)'],

@@ -41,7 +41,7 @@ export default function SiteValidationBadge({ siteUrl, updateField }) {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-xs text-[#002443]/50 mt-1">
+      <div className="flex items-center gap-2 text-xs text-[#0A0A0A]/50 mt-1">
         <Loader2 className="w-3 h-3 animate-spin" /> Verificando site...
       </div>
     );

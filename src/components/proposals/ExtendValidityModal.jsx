@@ -48,12 +48,12 @@ export default function ExtendValidityModal({ open, onClose, proposta, onConfirm
         <div className="space-y-4 py-2">
           <div>
             <Label className="text-xs text-slate-500">Validade atual</Label>
-            <p className="text-sm font-semibold text-[#002443]">
+            <p className="text-sm font-semibold text-[#0A0A0A]">
               {proposta?.validUntil ? moment(proposta.validUntil).format('DD/MM/YYYY') : '—'}
             </p>
           </div>
           <div>
-            <Label htmlFor="newValidUntil" className="text-sm font-semibold text-[#002443]">
+            <Label htmlFor="newValidUntil" className="text-sm font-semibold text-[#0A0A0A]">
               Nova validade
             </Label>
             <Input

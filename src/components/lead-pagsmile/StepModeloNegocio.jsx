@@ -25,19 +25,19 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-bold text-[#002443]">Modelo de Negócio</h2>
+        <h2 className="text-lg font-bold text-[#0A0A0A]">Modelo de Negócio</h2>
       </div>
 
       {/* P10 — Modelo de Cobrança */}
       <div className="space-y-2" data-field="modeloCobranca">
-        <label className="text-sm font-semibold text-[#002443]">Modelo de Cobrança *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Modelo de Cobrança *</label>
         <ButtonSelector options={MODELO_COBRANCA_OPTIONS} value={form.modeloCobranca} onChange={(v) => updateField('modeloCobranca', v)} columns={4} />
         {errors?.modeloCobranca && <p className="text-xs text-red-500">Selecione o modelo de cobrança</p>}
       </div>
 
       {/* P11 — Descrição do negócio */}
       <div className="space-y-1" data-field="descricaoNegocio">
-        <label className="text-sm font-semibold text-[#002443]">Breve descrição do negócio *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Breve descrição do negócio *</label>
         <Textarea
           value={form.descricaoNegocio || ''}
           onChange={(e) => updateField('descricaoNegocio', e.target.value.slice(0, 500))}
@@ -45,7 +45,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
           className={`rounded-xl min-h-[80px] ${errors?.descricaoNegocio ? 'border-red-400' : ''}`}
           maxLength={500}
         />
-        <p className="text-[10px] text-[#002443]/40 text-right">{(form.descricaoNegocio || '').length}/500</p>
+        <p className="text-[10px] text-[#0A0A0A]/40 text-right">{(form.descricaoNegocio || '').length}/500</p>
         {errors?.descricaoNegocio && <p className="text-xs text-red-500">Descreva seu negócio (mín. 10 caracteres)</p>}
       </div>
 
@@ -55,7 +55,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {/* P12 — Qtd sub-sellers (condicional: intermediários) */}
       {isIntermediario && (
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-[#002443]">Quantidade de sub-sellers/merchants</label>
+          <label className="text-sm font-semibold text-[#0A0A0A]">Quantidade de sub-sellers/merchants</label>
           <ButtonSelector options={SUB_SELLERS_OPTIONS} value={form.qtdSubSellers} onChange={(v) => updateField('qtdSubSellers', v)} columns={5} />
         </div>
       )}
@@ -63,7 +63,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {/* P13 — Plataforma (condicional) */}
       {showPlataforma && plataformaOpts.length > 0 && (
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-[#002443]">
+          <label className="text-sm font-semibold text-[#0A0A0A]">
             {seg === 'infoprodutos' ? 'Plataforma de infoprodutos' : seg === 'plataforma_vertical' ? 'Plataforma / PDV' : 'Plataforma e-commerce'}
           </label>
           <ButtonSelector options={plataformaOpts} value={form.plataforma} onChange={(v) => updateField('plataforma', v)} />
@@ -73,7 +73,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {/* P14 — Antifraude / 3DS (condicional) */}
       {showAntifraude && (
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-[#002443]">Antifraude / 3DS</label>
+          <label className="text-sm font-semibold text-[#0A0A0A]">Antifraude / 3DS</label>
           <ButtonSelector options={ANTIFRAUDE_OPTIONS} value={form.antifraude} onChange={(v) => updateField('antifraude', v)} columns={4} />
         </div>
       )}
@@ -84,11 +84,11 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'gateway' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Possui licença BCB ou opera via BaaS?</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Possui licença BCB ou opera via BaaS?</label>
             <ButtonSelector options={LICENCA_BCB_OPTIONS} value={form.licencaBCB} onChange={(v) => updateField('licencaBCB', v)} columns={4} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Faz split de pagamento?</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Faz split de pagamento?</label>
             <ButtonSelector options={SPLIT_PAGAMENTO_OPTIONS} value={form.splitPagamento} onChange={(v) => updateField('splitPagamento', v)} columns={3} />
           </div>
           <PrincipaisSellersInput form={form} updateField={updateField} errors={errors} />
@@ -99,11 +99,11 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'marketplace' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Qual é a take rate média (%)?</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Qual é a take rate média (%)?</label>
             <ButtonSelector options={TAKE_RATE_OPTIONS} value={form.takeRate} onChange={(v) => updateField('takeRate', v)} columns={5} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">KYC de sub-sellers?</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">KYC de sub-sellers?</label>
             <ButtonSelector options={KYC_SUB_SELLERS_OPTIONS} value={form.kycSubSellers} onChange={(v) => updateField('kycSubSellers', v)} columns={4} />
           </div>
         </>
@@ -113,11 +113,11 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'saas' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Churn mensal médio (%)</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Churn mensal médio (%)</label>
             <ButtonSelector options={CHURN_OPTIONS} value={form.churn} onChange={(v) => updateField('churn', v)} columns={5} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Modelo de pricing</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Modelo de pricing</label>
             <ButtonSelector options={PRICING_SAAS_OPTIONS} value={form.pricingSaas} onChange={(v) => updateField('pricingSaas', v)} columns={5} />
           </div>
         </>
@@ -127,15 +127,15 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'infoprodutos' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Modelo de afiliados</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Modelo de afiliados</label>
             <ButtonSelector options={AFILIADOS_OPTIONS} value={form.modeloAfiliados} onChange={(v) => updateField('modeloAfiliados', v)} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Política de garantia/reembolso</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Política de garantia/reembolso</label>
             <ButtonSelector options={GARANTIA_OPTIONS} value={form.garantia} onChange={(v) => updateField('garantia', v)} columns={5} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">% do faturamento vindo de afiliados</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">% do faturamento vindo de afiliados</label>
             <ButtonSelector options={PCT_AFILIADOS_OPTIONS} value={form.pctAfiliados} onChange={(v) => updateField('pctAfiliados', v)} columns={4} />
           </div>
         </>
@@ -144,7 +144,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {/* Plataforma Vertical */}
       {seg === 'plataforma_vertical' && (
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-[#002443]">Vertical principal</label>
+          <label className="text-sm font-semibold text-[#0A0A0A]">Vertical principal</label>
           <ButtonSelector options={VERTICAL_OPTIONS} value={form.verticalPrincipal} onChange={(v) => updateField('verticalPrincipal', v)} allowOther otherValue={form.verticalOutro} onOtherChange={(v) => updateField('verticalOutro', v)} columns={3} />
         </div>
       )}
@@ -153,15 +153,15 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'ecommerce' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">O que vende / tipo de produto *</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">O que vende / tipo de produto *</label>
             <ButtonSelector options={TIPO_PRODUTO_ECOMMERCE_OPTIONS} value={form.tipoProdutoEcommerce} onChange={(v) => updateField('tipoProdutoEcommerce', v)} allowOther otherValue={form.tipoProdutoEcommerceOutro} onOtherChange={(v) => updateField('tipoProdutoEcommerceOutro', v)} columns={3} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Entrega própria ou terceirizada?</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Entrega própria ou terceirizada?</label>
             <ButtonSelector options={ENTREGA_OPTIONS} value={form.modeloEntrega} onChange={(v) => updateField('modeloEntrega', v)} columns={4} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Política de devolução</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Política de devolução</label>
             <ButtonSelector options={POLITICA_DEVOLUCAO_OPTIONS} value={form.politicaDevolucao} onChange={(v) => updateField('politicaDevolucao', v)} columns={4} />
           </div>
         </>
@@ -171,15 +171,15 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'dropshipping' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">O que vende / tipo de produto *</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">O que vende / tipo de produto *</label>
             <ButtonSelector options={TIPO_PRODUTO_DROP_OPTIONS} value={form.tipoProdutoDrop} onChange={(v) => updateField('tipoProdutoDrop', v)} allowOther otherValue={form.tipoProdutoDropOutro} onOtherChange={(v) => updateField('tipoProdutoDropOutro', v)} columns={3} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Origem dos fornecedores</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Origem dos fornecedores</label>
             <ButtonSelector options={ORIGEM_FORNECEDORES_OPTIONS} value={form.origemFornecedores} onChange={(v) => updateField('origemFornecedores', v)} columns={4} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Prazo médio de entrega</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Prazo médio de entrega</label>
             <ButtonSelector options={PRAZO_ENTREGA_OPTIONS} value={form.prazoEntrega} onChange={(v) => updateField('prazoEntrega', v)} columns={4} />
           </div>
         </>
@@ -189,12 +189,12 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'link_pagamento' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Tipo de produto/serviço *</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Tipo de produto/serviço *</label>
             <ButtonSelector options={TIPO_PRODUTO_LINK_OPTIONS} value={form.tipoProdutoLink} onChange={(v) => updateField('tipoProdutoLink', v)} allowOther otherValue={form.tipoProdutoLinkOutro} onOtherChange={(v) => updateField('tipoProdutoLinkOutro', v)} columns={3} />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Canais por onde envia o link *</label>
-            <p className="text-xs text-[#002443]/50">Selecione todos que se aplicam</p>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Canais por onde envia o link *</label>
+            <p className="text-xs text-[#0A0A0A]/50">Selecione todos que se aplicam</p>
             <div className="flex flex-wrap gap-2">
               {CANAIS_LINK_OPTIONS.map(canal => {
                 const selected = (form.canaisLink || []).includes(canal);
@@ -209,8 +209,8 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
                     }}
                     className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
                       selected
-                        ? 'bg-[#2bc196]/10 border-[#2bc196] text-[#002443] font-semibold'
-                        : 'bg-white border-[#002443]/10 text-[#002443]/60 hover:border-[#002443]/20'
+                        ? 'bg-[#1356E2]/10 border-[#1356E2] text-[#0A0A0A] font-semibold'
+                        : 'bg-white border-[#0A0A0A]/10 text-[#0A0A0A]/60 hover:border-[#0A0A0A]/20'
                     }`}
                   >
                     {canal}
@@ -224,7 +224,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
                 value={form.canaisLinkOutro || ''}
                 onChange={(e) => updateField('canaisLinkOutro', e.target.value)}
                 placeholder="Outros canais (opcional)"
-                className="w-full h-10 rounded-xl border border-[#002443]/10 px-4 text-sm"
+                className="w-full h-10 rounded-xl border border-[#0A0A0A]/10 px-4 text-sm"
               />
             </div>
           </div>
@@ -235,11 +235,11 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       {seg === 'mpe' && (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Tipo de negócio *</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Tipo de negócio *</label>
             <ButtonSelector options={TIPO_MPE_OPTIONS} value={form.tipoMpe} onChange={(v) => updateField('tipoMpe', v)} columns={4} />
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-semibold text-[#002443]">O que vende? *</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">O que vende? *</label>
             <Textarea
               value={form.oQueVendeMpe || ''}
               onChange={(e) => updateField('oQueVendeMpe', e.target.value.slice(0, 300))}
@@ -249,7 +249,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-[#002443]">Aceita cartão presencial, só online, ou ambos?</label>
+            <label className="text-sm font-semibold text-[#0A0A0A]">Aceita cartão presencial, só online, ou ambos?</label>
             <ButtonSelector options={MODALIDADE_CARTAO_OPTIONS} value={form.modalidadeCartao} onChange={(v) => updateField('modalidadeCartao', v)} columns={3} />
           </div>
         </>

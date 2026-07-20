@@ -8,15 +8,15 @@ import FindingsWithFallback from './FindingsWithFallback';
 function Section({ icon: Icon, title, iconBg, iconColor, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-[#002443]/8 rounded-xl overflow-hidden">
+    <div className="border border-[#0A0A0A]/8 rounded-xl overflow-hidden">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 transition-colors">
         <div className="flex items-center gap-2.5">
           <div className={`p-1.5 rounded-lg ${iconBg}`}><Icon className={`w-4 h-4 ${iconColor}`} /></div>
-          <span className="text-sm font-bold text-[#002443]">{title}</span>
+          <span className="text-sm font-bold text-[#0A0A0A]">{title}</span>
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-[#002443]/30" /> : <ChevronDown className="w-4 h-4 text-[#002443]/30" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[#0A0A0A]/30" /> : <ChevronDown className="w-4 h-4 text-[#0A0A0A]/30" />}
       </button>
-      {open && <div className="px-4 pb-4 border-t border-[#002443]/5">{children}</div>}
+      {open && <div className="px-4 pb-4 border-t border-[#0A0A0A]/5">{children}</div>}
     </div>
   );
 }
@@ -28,16 +28,16 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
   const hasFindings = complianceScore.total_findings > 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 overflow-hidden">
-      <div className="h-1 bg-gradient-to-r from-[#002443] via-[#2bc196] to-[#5cf7cf]" />
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 overflow-hidden">
+      <div className="h-1 bg-gradient-to-r from-[#0A0A0A] via-[#1356E2] to-[#E84B1C]" />
       <div className="p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#002443] to-[#2bc196]">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#0A0A0A] to-[#1356E2]">
             <Brain className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#002443]">Parecer SENTINEL — Análise Qualitativa</h3>
-            <p className="text-[10px] text-[#002443]/40">
+            <h3 className="text-sm font-bold text-[#0A0A0A]">Parecer SENTINEL — Análise Qualitativa</h3>
+            <p className="text-[10px] text-[#0A0A0A]/40">
               O SENTINEL analisa dados de 3 fontes (Questionário + BDC + CAF) e sugere condições. NÃO tem poder de recusa.
               {complianceScore.versao_agente && <> • {complianceScore.versao_agente}</>}
             </p>
@@ -46,10 +46,10 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
 
         {/* Parecer Final */}
         {complianceScore.parecer_final && (
-          <div className="p-4 bg-[#002443]/[0.03] rounded-xl border border-[#002443]/8">
+          <div className="p-4 bg-[#0A0A0A]/[0.03] rounded-xl border border-[#0A0A0A]/8">
             <div className="flex items-center gap-2 mb-2">
-              <Eye className="w-4 h-4 text-[#002443]/60" />
-              <span className="text-xs font-bold uppercase tracking-wider text-[#002443]/50">Parecer Final</span>
+              <Eye className="w-4 h-4 text-[#0A0A0A]/60" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A]/50">Parecer Final</span>
             </div>
             <SentinelTextFormatter text={complianceScore.parecer_final} />
           </div>
@@ -116,7 +116,7 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
         {/* Full analysis — navigable document with TOC + section cards */}
         {complianceScore.analise_completa_ia && (
           <div data-sentinel-full-analysis>
-            <Section icon={Brain} title="Análise Completa SENTINEL" iconBg="bg-[#002443]/5" iconColor="text-[#002443]/60" defaultOpen={true}>
+            <Section icon={Brain} title="Análise Completa SENTINEL" iconBg="bg-[#0A0A0A]/5" iconColor="text-[#0A0A0A]/60" defaultOpen={true}>
               <div className="mt-3">
                 <SentinelDocumentRenderer
                   text={complianceScore.analise_completa_ia}
@@ -128,7 +128,7 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
         )}
 
         {/* Metadata */}
-        <div className="flex flex-wrap gap-4 text-[10px] text-[#002443]/40 pt-2 border-t border-[#002443]/5">
+        <div className="flex flex-wrap gap-4 text-[10px] text-[#0A0A0A]/40 pt-2 border-t border-[#0A0A0A]/5">
           {complianceScore.versao_agente && <span>Agent: {complianceScore.versao_agente}</span>}
           {complianceScore.framework_version && <span>Framework: {complianceScore.framework_version}</span>}
           {complianceScore.data_analise_fase_1 && <span>Fase 1: {new Date(complianceScore.data_analise_fase_1).toLocaleDateString('pt-BR')}</span>}

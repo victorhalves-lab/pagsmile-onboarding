@@ -21,7 +21,7 @@ export default function ProfileSectionGroup({ section, pagePermissions, onChange
       >
         <div className="flex items-center gap-3">
           {expanded ? <ChevronDown className="w-4 h-4 text-slate-500" /> : <ChevronRight className="w-4 h-4 text-slate-500" />}
-          <Icon className="w-4 h-4 text-[#2bc196]" />
+          <Icon className="w-4 h-4 text-[#1356E2]" />
           <span className="font-semibold text-sm text-slate-800">{section.sectionLabel}</span>
         </div>
         <span className="text-xs text-slate-500">{selectedCount} de {section.pages.length} páginas</span>

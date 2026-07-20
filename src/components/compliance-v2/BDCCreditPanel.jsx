@@ -41,13 +41,13 @@ export default function BDCCreditPanel({ integrationLogs = [], validations = [] 
   const pct = Math.min(creditData.score / 1000, 1) * 100;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-emerald-100"><Landmark className="w-5 h-5 text-emerald-600" /></div>
           <div>
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">Score de Crédito BDC</h3>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/40">Avaliação de crédito e capacidade financeira via Big Data Corp</p>
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">Score de Crédito BDC</h3>
+            <p className="text-[10px] text-[var(--pinbank-blue)]/40">Avaliação de crédito e capacidade financeira via Big Data Corp</p>
           </div>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default function BDCCreditPanel({ integrationLogs = [], validations = [] 
           {/* Score visual */}
           <div className="text-center">
             <p className={`text-4xl font-black ${faixa.color}`}>{creditData.score}</p>
-            <p className="text-xs font-bold text-[var(--pagsmile-blue)]/40">/ 1000</p>
+            <p className="text-xs font-bold text-[var(--pinbank-blue)]/40">/ 1000</p>
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
@@ -93,8 +93,8 @@ export default function BDCCreditPanel({ integrationLogs = [], validations = [] 
 function MetricCard({ label, value, warn }) {
   return (
     <div className={`p-3 rounded-xl border text-center ${warn ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>
-      <p className="text-[10px] text-[var(--pagsmile-blue)]/40 font-bold">{label}</p>
-      <p className={`text-sm font-bold mt-0.5 ${warn ? 'text-red-700' : 'text-[var(--pagsmile-blue)]'}`}>{value}</p>
+      <p className="text-[10px] text-[var(--pinbank-blue)]/40 font-bold">{label}</p>
+      <p className={`text-sm font-bold mt-0.5 ${warn ? 'text-red-700' : 'text-[var(--pinbank-blue)]'}`}>{value}</p>
     </div>
   );
 }

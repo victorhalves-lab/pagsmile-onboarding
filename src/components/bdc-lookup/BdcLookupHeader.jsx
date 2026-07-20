@@ -40,11 +40,11 @@ export default function BdcLookupHeader({ result, docType, elapsedMs, datasetsOk
       <div className="p-5 border-b border-slate-100">
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="p-2.5 rounded-lg bg-[#2bc196]/10">
-              <Icon className="w-6 h-6 text-[#2bc196]" />
+            <div className="p-2.5 rounded-lg bg-[#1356E2]/10">
+              <Icon className="w-6 h-6 text-[#1356E2]" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold text-[#002443] truncate">{name}</h1>
+              <h1 className="text-xl font-bold text-[#0A0A0A] truncate">{name}</h1>
               {tradeName && <p className="text-sm text-slate-500 truncate">{tradeName}</p>}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-slate-600">
                 {status && (
@@ -102,7 +102,7 @@ function KpiCard({ icon: Icon, label, value, color }) {
       </div>
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{label}</p>
-        <p className="text-sm font-semibold text-[#002443]">{value}</p>
+        <p className="text-sm font-semibold text-[#0A0A0A]">{value}</p>
       </div>
     </div>
   );

@@ -317,22 +317,22 @@ export default function CadastroTimelineUnificadaTab({
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-5 h-5 text-[var(--pagsmile-green)]" />
-          <h3 className="text-base font-semibold text-[var(--pagsmile-blue)]">Timeline Unificada</h3>
-          <Badge className="bg-[var(--pagsmile-green)]/10 text-[var(--pagsmile-green-dark)] text-[10px]">
+          <Sparkles className="w-5 h-5 text-[var(--pinbank-blue)]" />
+          <h3 className="text-base font-semibold text-[var(--pinbank-blue)]">Timeline Unificada</h3>
+          <Badge className="bg-[var(--pinbank-blue)]/10 text-[var(--pinbank-blue-dark)] text-[10px]">
             {events.length} eventos
           </Badge>
         </div>
-        <p className="text-xs text-[var(--pagsmile-blue)]/60 mb-4">
+        <p className="text-xs text-[var(--pinbank-blue)]/60 mb-4">
           Cronologia unificada de todos os eventos do ciclo de vida deste cliente — desde a captação até o monitoramento contínuo.
         </p>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-2 items-center">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--pagsmile-blue)]/40" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--pinbank-blue)]/40" />
             <Input
               placeholder="Buscar na timeline..."
               value={search}
@@ -371,26 +371,26 @@ export default function CadastroTimelineUnificadaTab({
 
       {/* Timeline */}
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-12 text-center text-sm text-[var(--pagsmile-blue)]/50">
+        <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-12 text-center text-sm text-[var(--pinbank-blue)]/50">
           Nenhum evento encontrado para os filtros atuais.
         </div>
       ) : (
         <div className="space-y-6">
           {grouped.map(([day, dayEvents]) => (
             <div key={day}>
-              <div className="sticky top-0 z-10 bg-[#f4f4f4]/95 backdrop-blur-sm py-2 mb-3 border-b border-[var(--pagsmile-blue)]/10">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--pagsmile-blue)]/70">
-                  {day} <span className="font-normal text-[var(--pagsmile-blue)]/40 normal-case ml-1">· {dayEvents.length} evento(s)</span>
+              <div className="sticky top-0 z-10 bg-[#f4f4f4]/95 backdrop-blur-sm py-2 mb-3 border-b border-[var(--pinbank-blue)]/10">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--pinbank-blue)]/70">
+                  {day} <span className="font-normal text-[var(--pinbank-blue)]/40 normal-case ml-1">· {dayEvents.length} evento(s)</span>
                 </h4>
               </div>
-              <div className="space-y-2 relative pl-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-[var(--pagsmile-blue)]/10">
+              <div className="space-y-2 relative pl-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-[var(--pinbank-blue)]/10">
                 {dayEvents.map((e, idx) => {
                   const cfg = TIPO_CONFIG[e.type] || TIPO_CONFIG.auditoria;
                   const Icon = cfg.icon;
                   return (
                     <div key={`${day}-${idx}`} className="relative">
                       <div className={`absolute -left-[18px] top-3 w-3 h-3 rounded-full border-2 border-white ${cfg.color.split(' ')[0]}`} />
-                      <div className="bg-white rounded-lg border border-[var(--pagsmile-blue)]/8 p-3 hover:shadow-sm transition-shadow">
+                      <div className="bg-white rounded-lg border border-[var(--pinbank-blue)]/8 p-3 hover:shadow-sm transition-shadow">
                         <div className="flex items-start gap-2.5">
                           <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${cfg.color}`}>
                             <Icon className="w-3.5 h-3.5" />
@@ -398,16 +398,16 @@ export default function CadastroTimelineUnificadaTab({
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap mb-0.5">
                               <Badge variant="outline" className={`text-[10px] ${cfg.color}`}>{cfg.label}</Badge>
-                              <span className="text-[10px] text-[var(--pagsmile-blue)]/40">
+                              <span className="text-[10px] text-[var(--pinbank-blue)]/40">
                                 {new Date(e.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                               </span>
                               {e.meta && (
                                 <Badge variant="outline" className="text-[10px] opacity-70">{e.meta}</Badge>
                               )}
                             </div>
-                            <p className="text-sm font-medium text-[var(--pagsmile-blue)]">{e.title}</p>
+                            <p className="text-sm font-medium text-[var(--pinbank-blue)]">{e.title}</p>
                             {e.description && (
-                              <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-0.5 break-words">{e.description}</p>
+                              <p className="text-xs text-[var(--pinbank-blue)]/60 mt-0.5 break-words">{e.description}</p>
                             )}
                           </div>
                         </div>

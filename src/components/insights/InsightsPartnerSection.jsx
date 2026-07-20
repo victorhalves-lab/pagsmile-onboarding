@@ -8,7 +8,7 @@ import { Handshake, DollarSign, TrendingUp, BarChart3, Percent, Layers, Star } f
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const TT = { borderRadius: 12, border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', padding: '8px 14px', fontSize: 12 };
-const COLORS = ['#002443', '#2bc196', '#36706c', '#5cf7cf', '#94a3b8', '#f59e0b', '#8b5cf6', '#ef4444'];
+const COLORS = ['#0A0A0A', '#1356E2', '#E84B1C', '#E84B1C', '#94a3b8', '#f59e0b', '#8b5cf6', '#ef4444'];
 
 export default function InsightsPartnerSection({ partners, proposals, pixProposals, leads }) {
   const { t } = useTranslation();
@@ -114,9 +114,9 @@ export default function InsightsPartnerSection({ partners, proposals, pixProposa
   if (totalPartners === 0) {
     return (
       <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center mt-2">
-        <Handshake className="w-10 h-10 text-[#002443]/15 mx-auto mb-3" />
-        <p className="text-sm text-[#002443]/50">{t('ip.no_partners')}</p>
-        <p className="text-xs text-[#002443]/30 mt-1">{t('ip.no_partners_hint')}</p>
+        <Handshake className="w-10 h-10 text-[#0A0A0A]/15 mx-auto mb-3" />
+        <p className="text-sm text-[#0A0A0A]/50">{t('ip.no_partners')}</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">{t('ip.no_partners_hint')}</p>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function InsightsPartnerSection({ partners, proposals, pixProposa
         <StatCard label={t('ip.total_partners')} value={totalPartners} subtitle={`${activePartners} ${t('ip.active')}`} icon={Handshake} />
         <StatCard label={t('ip.principal')} value={principalPartner?.name || '—'} subtitle={t('ip.main_partner')} icon={Star} accentColor="#f59e0b" />
         <StatCard label={t('ip.proposals_with_partner')} value={proposalsWithPartner} subtitle={`${currentProposals.length > 0 ? Math.round((proposalsWithPartner / currentProposals.length) * 100) : 0}% ${t('ip.of_total')}`} icon={BarChart3} />
-        <StatCard label={t('ip.accepted_revenue')} value={formatCurrency(totalAcceptedRevenue)} subtitle={t('ip.from_accepted')} icon={DollarSign} accentColor="#2bc196" />
+        <StatCard label={t('ip.accepted_revenue')} value={formatCurrency(totalAcceptedRevenue)} subtitle={t('ip.from_accepted')} icon={DollarSign} accentColor="#1356E2" />
         <StatCard label={t('ip.mccs_covered')} value={mccCoverage.reduce((s, p) => s + p.mccs, 0)} subtitle={t('ip.across_partners')} icon={Layers} />
       </div>
 
@@ -153,12 +153,12 @@ export default function InsightsPartnerSection({ partners, proposals, pixProposa
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={acceptanceData} barCategoryGap="20%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#002443' }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={TT} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey={t('ip.proposals')} fill="#002443" radius={[8, 8, 0, 0]} />
-                <Bar dataKey={t('ip.accepted')} fill="#2bc196" radius={[8, 8, 0, 0]} />
+                <Bar dataKey={t('ip.proposals')} fill="#0A0A0A" radius={[8, 8, 0, 0]} />
+                <Bar dataKey={t('ip.accepted')} fill="#1356E2" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -172,12 +172,12 @@ export default function InsightsPartnerSection({ partners, proposals, pixProposa
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={mdrBarData} barCategoryGap="20%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#002443' }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
                 <Tooltip contentStyle={TT} formatter={v => `${v}%`} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey={t('ip.minimum')} fill="#5cf7cf" radius={[8, 8, 0, 0]} />
-                <Bar dataKey={t('ip.median')} fill="#002443" radius={[8, 8, 0, 0]} />
+                <Bar dataKey={t('ip.minimum')} fill="#E84B1C" radius={[8, 8, 0, 0]} />
+                <Bar dataKey={t('ip.median')} fill="#0A0A0A" radius={[8, 8, 0, 0]} />
                 <Bar dataKey={t('ip.maximum')} fill="#94a3b8" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -189,13 +189,13 @@ export default function InsightsPartnerSection({ partners, proposals, pixProposa
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={feeComparison} barCategoryGap="20%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#002443' }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
                 <Tooltip contentStyle={TT} formatter={v => `R$ ${v.toFixed(2)}`} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey={t('ip.transaction_fee')} fill="#002443" radius={[8, 8, 0, 0]} />
-                <Bar dataKey={t('ip.antifraud')} fill="#2bc196" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="3DS" fill="#36706c" radius={[8, 8, 0, 0]} />
+                <Bar dataKey={t('ip.transaction_fee')} fill="#0A0A0A" radius={[8, 8, 0, 0]} />
+                <Bar dataKey={t('ip.antifraud')} fill="#1356E2" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="3DS" fill="#E84B1C" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -209,12 +209,12 @@ export default function InsightsPartnerSection({ partners, proposals, pixProposa
 
       {/* Partner detail table */}
       <div className="rounded-2xl bg-white border border-slate-100 p-5 overflow-x-auto">
-        <h3 className="text-sm font-bold text-[#002443] mb-4">{t('ip.partner_overview')}</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">{t('ip.partner_overview')}</h3>
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-slate-100">
               {[t('ip.col_partner'), t('ip.col_status'), t('ip.col_model'), t('ip.col_mccs'), t('ip.col_fee'), t('ip.col_antifraud'), t('ip.col_antecipacao'), t('ip.col_proposals'), t('ip.col_revenue')].map((h, i) => (
-                <th key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider pb-3 pr-4 ${i >= 3 ? 'text-right' : ''}`}>{h}</th>
+                <th key={i} className={`text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider pb-3 pr-4 ${i >= 3 ? 'text-right' : ''}`}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -222,25 +222,25 @@ export default function InsightsPartnerSection({ partners, proposals, pixProposa
             {partners.map((p, i) => {
               const usage = partnerUsage[p.name] || { total: 0, accepted: 0, revenue: 0 };
               return (
-                <tr key={i} className="border-b border-slate-50 hover:bg-[#2bc196]/[0.02] transition-colors">
+                <tr key={i} className="border-b border-slate-50 hover:bg-[#1356E2]/[0.02] transition-colors">
                   <td className="py-2.5 pr-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-[#002443]">{p.name}</span>
+                      <span className="text-xs font-semibold text-[#0A0A0A]">{p.name}</span>
                       {p.isPrincipal && <span className="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">{t('ip.principal_badge')}</span>}
                     </div>
                   </td>
                   <td className="py-2.5 pr-4">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.isActive !== false ? 'bg-[#2bc196]/10 text-[#2bc196]' : 'bg-red-50 text-red-400'}`}>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.isActive !== false ? 'bg-[#1356E2]/10 text-[#1356E2]' : 'bg-red-50 text-red-400'}`}>
                       {p.isActive !== false ? t('ip.active') : t('ip.inactive')}
                     </span>
                   </td>
-                  <td className="py-2.5 pr-4 text-[10px] text-[#002443]/50">{p.modelo || '—'}</td>
-                  <td className="py-2.5 pr-4 text-xs text-[#002443] text-right font-bold">{p.mdrByMcc?.length || 0}</td>
-                  <td className="py-2.5 pr-4 text-xs text-[#002443] text-right">{p.transactionFee ? `R$${p.transactionFee.toFixed(2)}` : '—'}</td>
-                  <td className="py-2.5 pr-4 text-xs text-[#002443] text-right">{p.antifraudCost ? `R$${p.antifraudCost.toFixed(2)}` : '—'}</td>
-                  <td className="py-2.5 pr-4 text-xs text-[#002443] text-right">{p.percentualAntecipacao ? `${p.percentualAntecipacao}%` : '—'}</td>
-                  <td className="py-2.5 pr-4 text-xs font-bold text-[#002443] text-right">{usage.total}</td>
-                  <td className="py-2.5 text-xs font-bold text-[#2bc196] text-right">{usage.revenue > 0 ? formatCurrency(usage.revenue) : '—'}</td>
+                  <td className="py-2.5 pr-4 text-[10px] text-[#0A0A0A]/50">{p.modelo || '—'}</td>
+                  <td className="py-2.5 pr-4 text-xs text-[#0A0A0A] text-right font-bold">{p.mdrByMcc?.length || 0}</td>
+                  <td className="py-2.5 pr-4 text-xs text-[#0A0A0A] text-right">{p.transactionFee ? `R$${p.transactionFee.toFixed(2)}` : '—'}</td>
+                  <td className="py-2.5 pr-4 text-xs text-[#0A0A0A] text-right">{p.antifraudCost ? `R$${p.antifraudCost.toFixed(2)}` : '—'}</td>
+                  <td className="py-2.5 pr-4 text-xs text-[#0A0A0A] text-right">{p.percentualAntecipacao ? `${p.percentualAntecipacao}%` : '—'}</td>
+                  <td className="py-2.5 pr-4 text-xs font-bold text-[#0A0A0A] text-right">{usage.total}</td>
+                  <td className="py-2.5 text-xs font-bold text-[#1356E2] text-right">{usage.revenue > 0 ? formatCurrency(usage.revenue) : '—'}</td>
                 </tr>
               );
             })}

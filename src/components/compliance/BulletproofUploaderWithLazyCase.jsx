@@ -190,8 +190,8 @@ export default function BulletproofUploaderWithLazyCase({
   if (isCreating) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
-        <span className="ml-3 text-[#002443]/70">Preparando envio de documentos...</span>
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
+        <span className="ml-3 text-[#0A0A0A]/70">Preparando envio de documentos...</span>
       </div>
     );
   }
@@ -203,10 +203,10 @@ export default function BulletproofUploaderWithLazyCase({
           <div className="inline-flex p-3 rounded-full bg-amber-100 mb-4">
             <AlertTriangle className="w-8 h-8 text-amber-600" />
           </div>
-          <h2 className="text-lg font-bold text-[#002443] mb-2">
+          <h2 className="text-lg font-bold text-[#0A0A0A] mb-2">
             Não foi possível preparar o envio
           </h2>
-          <p className="text-sm text-[#002443]/70 mb-4">
+          <p className="text-sm text-[#0A0A0A]/70 mb-4">
             {error}
           </p>
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4 text-left">
@@ -224,19 +224,19 @@ export default function BulletproofUploaderWithLazyCase({
                 // re-dispara o effect de lazy-create
                 setCaseId(localStorage.getItem('created_onboarding_case_id'));
               }}
-              className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
+              className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
               Tentar novamente
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="w-full text-xs text-[#002443]/60 hover:text-[#002443] underline"
+              className="w-full text-xs text-[#0A0A0A]/60 hover:text-[#0A0A0A] underline"
             >
               Recarregar a página
             </button>
           </div>
-          <p className="text-[10px] text-[#002443]/40 mt-4">
+          <p className="text-[10px] text-[#0A0A0A]/40 mt-4">
             Se o problema persistir, entre em contato com nosso suporte.
           </p>
         </div>

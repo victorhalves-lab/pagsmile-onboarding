@@ -12,12 +12,12 @@ const FAIXAS = [
 
 function Section({ icon: Icon, title, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-6 space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-          <Icon className="w-4 h-4 text-[#2bc196]" />
+        <div className="w-8 h-8 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+          <Icon className="w-4 h-4 text-[#1356E2]" />
         </div>
-        <h2 className="text-base font-bold text-[#002443]">{title}</h2>
+        <h2 className="text-base font-bold text-[#0A0A0A]">{title}</h2>
       </div>
       {children}
     </div>
@@ -37,9 +37,9 @@ function InfoRow({ label, value, prefix, suffix }) {
   if (prefix && typeof value !== 'number') display = `${prefix} ${display}`;
   if (suffix && typeof value !== 'number') display = `${display} ${suffix}`;
   return (
-    <div className="flex justify-between items-center py-2 border-b border-[#002443]/5 last:border-0">
-      <span className="text-xs text-[#002443]/60 font-medium">{label}</span>
-      <span className="text-sm font-semibold text-[#002443]">{display}</span>
+    <div className="flex justify-between items-center py-2 border-b border-[#0A0A0A]/5 last:border-0">
+      <span className="text-xs text-[#0A0A0A]/60 font-medium">{label}</span>
+      <span className="text-sm font-semibold text-[#0A0A0A]">{display}</span>
     </div>
   );
 }
@@ -81,8 +81,8 @@ export default function PropostaRevisaoResumo({ proposta }) {
           <InfoRow label="Valor de Setup" value={rates.setup} prefix="R$" />
           {rates.minimoGarantido && (
             <>
-              <div className="pt-2 mt-2 border-t border-[#002443]/5">
-                <p className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider mb-2">TPV Mínimo Mensal Garantido</p>
+              <div className="pt-2 mt-2 border-t border-[#0A0A0A]/5">
+                <p className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider mb-2">TPV Mínimo Mensal Garantido</p>
               </div>
               <InfoRow label="Mês 1" value={rates.minimoGarantido.mes1} prefix="R$" />
               <InfoRow label="Mês 2" value={rates.minimoGarantido.mes2} prefix="R$" />
@@ -114,10 +114,10 @@ export default function PropostaRevisaoResumo({ proposta }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#002443]/10">
-                  <th className="text-left py-2 text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider">Bandeira</th>
+                <tr className="border-b border-[#0A0A0A]/10">
+                  <th className="text-left py-2 text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider">Bandeira</th>
                   {FAIXAS.map(f => (
-                    <th key={f.id} className="text-center py-2 text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider">{f.label}</th>
+                    <th key={f.id} className="text-center py-2 text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider">{f.label}</th>
                   ))}
                 </tr>
               </thead>
@@ -128,10 +128,10 @@ export default function PropostaRevisaoResumo({ proposta }) {
                   const hasValues = FAIXAS.some(f => bandData[f.id] !== undefined && bandData[f.id] !== null && bandData[f.id] !== '' && bandData[f.id] !== 0);
                   if (!hasValues) return null;
                   return (
-                    <tr key={b} className="border-b border-[#002443]/5 last:border-0">
-                      <td className="py-2.5 font-semibold capitalize text-[#002443]">{b}</td>
+                    <tr key={b} className="border-b border-[#0A0A0A]/5 last:border-0">
+                      <td className="py-2.5 font-semibold capitalize text-[#0A0A0A]">{b}</td>
                       {FAIXAS.map(f => (
-                        <td key={f.id} className="text-center py-2.5 font-mono font-semibold text-[#002443]">
+                        <td key={f.id} className="text-center py-2.5 font-mono font-semibold text-[#0A0A0A]">
                           {formatRate(bandData[f.id])}
                         </td>
                       ))}
@@ -157,8 +157,8 @@ export default function PropostaRevisaoResumo({ proposta }) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {BANDEIRAS.filter(b => rates.debito[b] !== undefined && rates.debito[b] !== null && rates.debito[b] !== '' && rates.debito[b] !== 0).map(b => (
               <div key={b} className="bg-[#f4f4f4] rounded-xl p-3 text-center">
-                <p className="text-[10px] font-bold text-[#002443]/40 uppercase mb-1 capitalize">{b}</p>
-                <p className="text-lg font-bold text-[#002443]">{formatRate(rates.debito[b])}</p>
+                <p className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase mb-1 capitalize">{b}</p>
+                <p className="text-lg font-bold text-[#0A0A0A]">{formatRate(rates.debito[b])}</p>
               </div>
             ))}
           </div>
@@ -175,14 +175,14 @@ export default function PropostaRevisaoResumo({ proposta }) {
       {/* Mensagem de envio */}
       {proposta.mensagemEnvio && (
         <Section icon={Send} title="Mensagem de Envio">
-          <p className="text-sm text-[#002443]/70 whitespace-pre-wrap">{proposta.mensagemEnvio}</p>
+          <p className="text-sm text-[#0A0A0A]/70 whitespace-pre-wrap">{proposta.mensagemEnvio}</p>
         </Section>
       )}
 
       {/* Termos */}
       {proposta.terms && (
         <Section icon={FileText} title="Termos e Condições">
-          <p className="text-sm text-[#002443]/70 whitespace-pre-wrap leading-relaxed">{proposta.terms}</p>
+          <p className="text-sm text-[#0A0A0A]/70 whitespace-pre-wrap leading-relaxed">{proposta.terms}</p>
         </Section>
       )}
     </>

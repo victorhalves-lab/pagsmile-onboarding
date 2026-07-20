@@ -36,7 +36,7 @@ export default function DatasetSection({ title, data, emptyMessage, children }) 
     return (
       <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
         <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
-          <h3 className="text-sm font-semibold text-[#002443]">{title}</h3>
+          <h3 className="text-sm font-semibold text-[#0A0A0A]">{title}</h3>
         </div>
         <div className="p-4">{children}</div>
       </div>
@@ -47,7 +47,7 @@ export default function DatasetSection({ title, data, emptyMessage, children }) 
     return (
       <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
         <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
-          <h3 className="text-sm font-semibold text-[#002443]">{title}</h3>
+          <h3 className="text-sm font-semibold text-[#0A0A0A]">{title}</h3>
         </div>
         <div className="p-6 text-center">
           <AlertCircle className="w-5 h-5 text-slate-300 mx-auto mb-2" />
@@ -62,13 +62,13 @@ export default function DatasetSection({ title, data, emptyMessage, children }) 
   return (
     <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
-        <h3 className="text-sm font-semibold text-[#002443]">{title}</h3>
+        <h3 className="text-sm font-semibold text-[#0A0A0A]">{title}</h3>
       </div>
       <div className="divide-y divide-slate-50">
         {rows.slice(0, 50).map((row, i) => (
           <div key={i} className="px-4 py-2 flex items-start gap-3 text-xs hover:bg-slate-50/50">
             <span className="text-slate-500 font-medium min-w-[180px]">{row._group ? `${row._group} ` : ''}{row.key}</span>
-            <span className="text-[#002443] flex-1">{renderValue(row.value)}</span>
+            <span className="text-[#0A0A0A] flex-1">{renderValue(row.value)}</span>
           </div>
         ))}
         {rows.length > 50 && (

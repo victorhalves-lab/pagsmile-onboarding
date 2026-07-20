@@ -46,69 +46,69 @@ export default function ProposalMetrics({ propostas }) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+      <Card className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <FileText className="w-4 h-4 text-[#36706c]" />
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('prop_metrics.total')}</span>
+            <FileText className="w-4 h-4 text-[#E84B1C]" />
+            <span className="text-xs text-[var(--pinbank-blue)]/60">{t('prop_metrics.total')}</span>
           </div>
-          <p className="text-xl font-bold text-[var(--pagsmile-blue)] mt-1">{metrics.total}</p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{t('prop_metrics.drafts', { count: metrics.rascunhos })}</p>
+          <p className="text-xl font-bold text-[var(--pinbank-blue)] mt-1">{metrics.total}</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{t('prop_metrics.drafts', { count: metrics.rascunhos })}</p>
         </CardContent>
       </Card>
-      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+      <Card className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <TrendingUp className="w-4 h-4 text-[#2bc196]" />
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('prop_metrics.acceptance_rate')}</span>
+            <TrendingUp className="w-4 h-4 text-[#1356E2]" />
+            <span className="text-xs text-[var(--pinbank-blue)]/60">{t('prop_metrics.acceptance_rate')}</span>
           </div>
-          <p className="text-xl font-bold text-[#2bc196] mt-1">{metrics.taxaAceite.toFixed(0)}%</p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{t('prop_metrics.accepted', { count: metrics.aceitas })}</p>
+          <p className="text-xl font-bold text-[#1356E2] mt-1">{metrics.taxaAceite.toFixed(0)}%</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{t('prop_metrics.accepted', { count: metrics.aceitas })}</p>
         </CardContent>
       </Card>
-      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+      <Card className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-[#36706c]" />
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('prop_metrics.acceptance_time')}</span>
+            <Clock className="w-4 h-4 text-[#E84B1C]" />
+            <span className="text-xs text-[var(--pinbank-blue)]/60">{t('prop_metrics.acceptance_time')}</span>
           </div>
-          <p className="text-xl font-bold text-[#36706c] mt-1">
+          <p className="text-xl font-bold text-[#E84B1C] mt-1">
             {metrics.tempoMedioAceite != null ? `${metrics.tempoMedioAceite}d` : '-'}
           </p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{t('prop_metrics.avg_days')}</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{t('prop_metrics.avg_days')}</p>
         </CardContent>
       </Card>
-      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+      <Card className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <DollarSign className="w-4 h-4 text-[#2bc196]" />
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('prop_metrics.revenue_won')}</span>
+            <DollarSign className="w-4 h-4 text-[#1356E2]" />
+            <span className="text-xs text-[var(--pinbank-blue)]/60">{t('prop_metrics.revenue_won')}</span>
           </div>
-          <p className="text-lg font-bold text-[var(--pagsmile-green)] mt-1">
+          <p className="text-lg font-bold text-[var(--pinbank-blue)] mt-1">
             R$ {(metrics.revenueGanha / 1000).toFixed(0)}k
           </p>
         </CardContent>
       </Card>
-      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+      <Card className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
             <XCircle className="w-4 h-4 text-red-500" />
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('prop_metrics.rejected')}</span>
+            <span className="text-xs text-[var(--pinbank-blue)]/60">{t('prop_metrics.rejected')}</span>
           </div>
           <p className="text-xl font-bold text-red-600 mt-1">{metrics.recusadas}</p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{t('prop_metrics.expired', { count: metrics.expiradas })}</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{t('prop_metrics.expired', { count: metrics.expiradas })}</p>
         </CardContent>
       </Card>
-      <Card className={`rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow ${metrics.expirando > 0 ? 'border-amber-300 bg-amber-50' : ''}`}>
+      <Card className={`rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow ${metrics.expirando > 0 ? 'border-amber-300 bg-amber-50' : ''}`}>
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
             <Clock className="w-4 h-4 text-amber-500" />
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('prop_metrics.expiring')}</span>
+            <span className="text-xs text-[var(--pinbank-blue)]/60">{t('prop_metrics.expiring')}</span>
           </div>
-          <p className={`text-xl font-bold mt-1 ${metrics.expirando > 0 ? 'text-amber-600' : 'text-[var(--pagsmile-blue)]'}`}>
+          <p className={`text-xl font-bold mt-1 ${metrics.expirando > 0 ? 'text-amber-600' : 'text-[var(--pinbank-blue)]'}`}>
             {metrics.expirando}
           </p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{t('prop_metrics.next_3_days')}</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40">{t('prop_metrics.next_3_days')}</p>
         </CardContent>
       </Card>
     </div>

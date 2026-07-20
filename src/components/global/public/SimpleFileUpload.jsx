@@ -22,24 +22,24 @@ export default function SimpleFileUpload({ label, value, onChange, t }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[#002443]/10 p-3">
+    <div className="bg-white rounded-xl border border-[#0A0A0A]/10 p-3">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-[#002443]">{label}</span>
+        <span className="text-xs font-medium text-[#0A0A0A]">{label}</span>
         {value && <CheckCircle2 className="w-4 h-4 text-green-600" />}
       </div>
 
       {value ? (
         <div className="flex items-center justify-between">
-          <a href={value} target="_blank" rel="noreferrer" className="text-[#2bc196] text-xs underline truncate max-w-[200px]">
+          <a href={value} target="_blank" rel="noreferrer" className="text-[#1356E2] text-xs underline truncate max-w-[200px]">
             {t('uploaded')}
           </a>
-          <label className="text-xs cursor-pointer text-[#002443]/60 hover:text-[#002443]">
+          <label className="text-xs cursor-pointer text-[#0A0A0A]/60 hover:text-[#0A0A0A]">
             <input type="file" className="hidden" onChange={handle} />
             ↻
           </label>
         </div>
       ) : (
-        <label className="flex items-center justify-center gap-2 px-3 py-2 border-2 border-dashed border-[#002443]/15 rounded-lg text-xs text-[#002443]/60 cursor-pointer hover:border-[#2bc196] hover:text-[#2bc196] transition-colors">
+        <label className="flex items-center justify-center gap-2 px-3 py-2 border-2 border-dashed border-[#0A0A0A]/15 rounded-lg text-xs text-[#0A0A0A]/60 cursor-pointer hover:border-[#1356E2] hover:text-[#1356E2] transition-colors">
           <input type="file" className="hidden" onChange={handle} disabled={busy} />
           {busy ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('uploading')}</> : <><Upload className="w-3.5 h-3.5" /> {t('upload_file')}</>}
         </label>

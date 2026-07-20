@@ -1,5 +1,5 @@
 // =============================================================================
-// TODOS OS PROCESSOS DA PLATAFORMA PAGSMILE — MODELO FORMAL v2.0
+// TODOS OS PROCESSOS DA PLATAFORMA PIN BANK — MODELO FORMAL v2.0
 // Formato: Identificação, Objetivo, Escopo, Passo a Passo, Regras de Negócio,
 // Compliance & Segurança, Governança, Matriz RACI
 // =============================================================================
@@ -9,16 +9,16 @@ import { PROCESSOS_EXTRA } from './processosDataExtra';
 const PROCESSOS_BASE = [
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 1. CAPTAÇÃO DE LEAD VIA QUESTIONÁRIO V5 PAGSMILE
+  // 1. CAPTAÇÃO DE LEAD VIA QUESTIONÁRIO V5 PIN BANK
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'PROC-001',
-    nome: 'Captação de Lead via Questionário Pagsmile v5 (Questionário Principal)',
+    nome: 'Captação de Lead via Questionário Pin Bank v5 (Questionário Principal)',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Marketing / Sistema / IA',
-    objetivo: 'Definir o fluxo completo de captação de leads através do Questionário Pagsmile v5 (11 etapas, 10 segmentos, 45+ perguntas, flags silenciosas e lead score), garantindo:',
+    objetivo: 'Definir o fluxo completo de captação de leads através do Questionário Pin Bank v5 (11 etapas, 10 segmentos, 45+ perguntas, flags silenciosas e lead score), garantindo:',
     objetivoItens: [
       'Questionário completo em 11 steps: Segmento, Dados Empresa, Endereço, Contato, Modelo Negócio, Distribuição TPV, Volumetria, Processador Atual, Taxas Atuais, Compliance/Risco e Fechamento.',
       'Segmentação automática (10 segmentos) que determina perguntas condicionais dinâmicas.',
@@ -48,7 +48,7 @@ const PROCESSOS_BASE = [
       'Captação via Landing Page de Introducer (ver PROC-002).',
     ],
     steps: [
-      { id: '01', resp: 'Comercial', atividade: 'Gera link rastreável na página LinksQuestionariosLeads (tipo: Pagsmile v5)', decisao: 'Informa nome do vendedor para rastreamento', gate: '', sla: '', saida: 'OnboardingLink criado com uniqueCode, commercialAgentName, UTMs', proximo: '02' },
+      { id: '01', resp: 'Comercial', atividade: 'Gera link rastreável na página LinksQuestionariosLeads (tipo: Pin Bank v5)', decisao: 'Informa nome do vendedor para rastreamento', gate: '', sla: '', saida: 'OnboardingLink criado com uniqueCode, commercialAgentName, UTMs', proximo: '02' },
       { id: '02', resp: 'Comercial', atividade: 'Envia link ao cliente potencial via WhatsApp, e-mail ou outro canal', decisao: '', gate: '', sla: '', saida: 'Link /QuestionarioLeadsPagsmile?ref=xxx enviado', proximo: '03' },
       { id: '03', resp: 'Cliente', atividade: 'Acessa link e seleciona segmento de negócio (10 cards visuais: Gateway, Marketplace, E-commerce, SaaS, Educação, etc)', decisao: 'Segmento determina perguntas condicionais e compliance model', gate: '', sla: '', saida: 'StepSegmento: segmento selecionado (educacao, ecommerce, saas, gateway, etc)', proximo: '04' },
       { id: '04', resp: 'Cliente', atividade: 'Preenche CNPJ → autocomplete BrasilAPI (3 APIs cascata) preenche 14+ campos', decisao: 'CNPJ válido? Situação cadastral ativa? Flags silenciosas calculadas.', gate: 'G1', sla: '', saida: 'StepDadosEmpresa: Razão Social, Nome Fantasia, CNAE, Porte, Capital Social + flags (YOUNG_COMPANY, SPECIAL_SITUATION, etc)', proximo: '05' },
@@ -112,7 +112,7 @@ const PROCESSOS_BASE = [
     nome: 'Captação de Lead via Landing Page de Introducer',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Parcerias / Marketing / Sistema',
     objetivo: 'Definir o fluxo de captação de leads via landing pages co-branded de Introducers (parceiros de indicação), assegurando:',
     objetivoItens: [
@@ -138,7 +138,7 @@ const PROCESSOS_BASE = [
     ],
     steps: [
       { id: '01', resp: 'Introducer', atividade: 'Compartilha link /parceiro/{slug} com cliente potencial', decisao: '', gate: '', sla: '', saida: 'Link compartilhado via WhatsApp/e-mail/redes', proximo: '02' },
-      { id: '02', resp: 'Cliente', atividade: 'Acessa landing page co-branded: LandingHeader (logo Introducer + Pagsmile, frase de impacto), PagsmileHeader (benefícios internacionais), InternationalPaymentsBanner (países atendidos). Estilo visual com gradiente azul + verde Pagsmile.', decisao: '', gate: '', sla: '', saida: 'LandingPageEvent (page_view, sessionId, deviceType, referrer) registrado', proximo: '03' },
+      { id: '02', resp: 'Cliente', atividade: 'Acessa landing page co-branded: LandingHeader (logo Introducer + Pin Bank, frase de impacto), PinBankHeader (benefícios internacionais), InternationalPaymentsBanner (países atendidos). Estilo visual com gradiente azul + verde Pin Bank.', decisao: '', gate: '', sla: '', saida: 'LandingPageEvent (page_view, sessionId, deviceType, referrer) registrado', proximo: '03' },
       { id: '03', resp: 'Cliente', atividade: 'Navega SegmentSelector: cards visuais dos segmentos (Educação, Infoprodutos, E-commerce, SaaS, Gateway, Marketplace, MPE, Dropshipping, Plataformas Verticais, Link de Pagamento). Ao clicar: SegmentRatesTable exibe tabela completa de taxas do segmento selecionado: MDR por bandeira × 4 faixas, PIX (% ou fixo), boleto, antifraude, fee transação, 3DS, antecipação.', decisao: '', gate: '', sla: '', saida: 'LandingPageEvent (segment_view com segmentName) registrado', proximo: '04' },
       { id: '04', resp: 'Cliente', atividade: 'Utiliza RateCalculator: simulador interativo. Informa TPV mensal, ticket médio, distribuição (cartão/PIX/boleto). Calculadora exibe custo estimado total, custo por transação, comparativo entre métodos de pagamento. Gráficos visuais.', decisao: '', gate: '', sla: '', saida: 'LandingPageEvent (calculator_interact com tpv e segment) registrado', proximo: '05' },
       { id: '05', resp: 'Cliente', atividade: 'Clica botão "Quero Contratar" no card do segmento desejado. ComplianceDisclaimer exibe informações de compliance e termos antes de prosseguir.', decisao: 'Segmento selecionado?', gate: '', sla: '', saida: 'LandingPageEvent (cta_contratar com segment) + redirect para FechamentoLandingPage com params (segment, slug, introducerId)', proximo: '06' },
@@ -193,7 +193,7 @@ const PROCESSOS_BASE = [
     nome: 'Criação e Envio de Proposta Comercial Personalizada',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Financeiro / Sistema',
     objetivo: 'Definir o fluxo de criação, validação e envio de propostas comerciais personalizadas, assegurando:',
     objetivoItens: [
@@ -279,7 +279,7 @@ const PROCESSOS_BASE = [
     nome: 'Aceite, Recusa e Contraproposta pelo Cliente',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Cliente / Comercial / Sistema / Compliance',
     objetivo: 'Definir o fluxo de decisão do cliente ao receber uma proposta comercial (personalizada, padrão ou PIX), assegurando:',
     objetivoItens: [
@@ -355,7 +355,7 @@ const PROCESSOS_BASE = [
     nome: 'Compliance e KYC — Onboarding do Cliente',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / IA (SENTINEL) / Jurídico / Cliente',
     objetivo: 'Definir o fluxo completo de compliance e KYC para onboarding de novos clientes após aceite da proposta, assegurando:',
     objetivoItens: [
@@ -450,7 +450,7 @@ const PROCESSOS_BASE = [
     nome: 'Geração, Revisão e Assinatura de Contrato',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Jurídico / Comercial / Sistema (IA) / Cliente',
     objetivo: 'Definir o fluxo de geração automática de contrato por IA, revisão pelo comercial, envio e assinatura digital pelo cliente, assegurando:',
     objetivoItens: [
@@ -479,7 +479,7 @@ const PROCESSOS_BASE = [
       { id: '03', resp: 'Comercial', atividade: 'Complementa: clientRepresentativeName, clientRepresentativeRole, clientRepresentativeCPF (representante legal). Dados bancários: bankInstitution, bankAgency, bankAccountNumber. Testemunhas: witness1Name/CPF, witness2Name/CPF. Cláusulas customizadas se necessário.', decisao: '', gate: '', sla: '', saida: 'Contract.status = "ready"', proximo: '03b' },
       { id: '03b', resp: 'Comercial', atividade: 'Revisa preview do contrato com todas as cláusulas: 1. Objeto, 2. Definições, 3. Obrigações Contratante, 4. Obrigações Contratada, 5. Preços (taxas cartão, PIX, boleto, fees), 6. Pagamento, 7. Prazo, 8. Confidencialidade, 9. Propriedade Intelectual, 10. Limitação Responsabilidade, 11-14. Compliance/PLD/Sanções, 15-20. Operacional (SLAs, Suporte, Chargeback, Rolling Reserve), 21-27. Jurídico (Rescisão, Multa, Foro, Disposições Finais).', decisao: 'Tudo correto para envio?', gate: 'G1b', sla: '', saida: 'Preview validado', proximo: '04' },
       { id: '04', resp: 'Comercial', atividade: 'Clica "Enviar para Assinatura". Sistema gera link público /ContratoPublico?code=xxx. Envia ao cliente via WhatsApp/e-mail. Contract.status → "sent". sentDate registrada. AuditLog criado com ação "contrato_enviado".', decisao: '', gate: '', sla: '', saida: 'Link público enviado, Contract.status=sent', proximo: '05' },
-      { id: '05', resp: 'Cliente', atividade: 'Acessa ContratoPublico. Visualiza contrato completo: cabeçalho com logos, dados das partes (Pagsmile e Contratante), módulos contratados, tabela de taxas por bandeira × faixa, Rolling Reserve (% e dias), SLAs (uptime, suporte por severidade), 27 seções de cláusulas, dados bancários, campos de assinatura.', decisao: '', gate: '', sla: '', saida: 'Contrato visualizado integralmente pelo cliente', proximo: '06' },
+      { id: '05', resp: 'Cliente', atividade: 'Acessa ContratoPublico. Visualiza contrato completo: cabeçalho com logos, dados das partes (Pin Bank e Contratante), módulos contratados, tabela de taxas por bandeira × faixa, Rolling Reserve (% e dias), SLAs (uptime, suporte por severidade), 27 seções de cláusulas, dados bancários, campos de assinatura.', decisao: '', gate: '', sla: '', saida: 'Contrato visualizado integralmente pelo cliente', proximo: '06' },
       { id: '06', resp: 'Cliente', atividade: 'Assina digitalmente: preenche nome completo + checkbox de aceite. Sistema registra IP, data/hora (ISO), user-agent, nome do signatário. Contract.status → "signed", signedDate registrada.', decisao: 'Cliente aceita termos?', gate: 'G2', sla: '5 DU', saida: 'Assinatura digital registrada', proximo: '07' },
       { id: '07', resp: 'Sistema', atividade: 'Pós-assinatura: Lead.status → "ativado". AuditLog criado com ação "contrato_assinado", IP e nome. LeadActivity registrada. RevalidationSchedule agendada automaticamente baseada na subfaixa do ComplianceScore: 1A-1B→12 meses, 2A-2B→9 meses, 3A-3B→6 meses, 4→3 meses.', decisao: '', gate: '', sla: 'Imediato', saida: 'Lead ativado + RevalidationSchedule + AuditLog + LeadActivity', proximo: '07b' },
       { id: '07b', resp: 'Sistema', atividade: 'Slack notificado (notifyContractUpdate) com dados do contrato assinado. Comercial pode gerar Kick-Off Presentation para o cliente via GerarKickOff.', decisao: '', gate: '', sla: 'Imediato', saida: 'Notificação enviada, fluxo concluído', proximo: 'FIM' },
@@ -525,7 +525,7 @@ const PROCESSOS_BASE = [
     nome: 'Gestão do Pipeline Comercial (Kanban)',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Gestão',
     objetivo: 'Definir o fluxo de gerenciamento do funil de vendas via board Kanban, assegurando:',
     objetivoItens: [
@@ -590,7 +590,7 @@ const PROCESSOS_BASE = [
     nome: 'Captação via Questionário de Reunião (Preenchimento Interno)',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Sistema',
     objetivo: 'Definir o fluxo de captação de leads a partir de reuniões presenciais ou remotas, onde o comercial preenche internamente os dados do cliente, assegurando:',
     objetivoItens: [
@@ -649,7 +649,7 @@ const PROCESSOS_BASE = [
     nome: 'Processamento de Notas de Reunião por IA (Robô)',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / IA / Sistema',
     objetivo: 'Definir o fluxo de extração automática de dados estruturados a partir de texto livre (notas de reunião, transcrições, e-mails) usando IA, assegurando:',
     objetivoItens: [
@@ -709,7 +709,7 @@ const PROCESSOS_BASE = [
     nome: 'Gestão de Introducers (Parceiros de Indicação)',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Parcerias / Comercial / Admin',
     objetivo: 'Definir o fluxo de cadastro, configuração e monitoramento de Introducers, assegurando:',
     objetivoItens: [
@@ -774,7 +774,7 @@ const PROCESSOS_BASE = [
     nome: 'Captação de Lead PIX v4 (Merchant Direto / Intermediário)',
     versao: '2.0.0',
     data: '02/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Sistema / IA',
     objetivo: 'Definir o fluxo de captação de leads PIX v4 com perfilamento (Merchant Direto vs Intermediário), flags automáticas e scoring, assegurando:',
     objetivoItens: [
@@ -841,7 +841,7 @@ const PROCESSOS_BASE = [
     nome: 'Edição, Duplicação e Versionamento de Propostas Comerciais',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Sistema',
     objetivo: 'Definir os fluxos de modificação de propostas já criadas, cobrindo todas as ações possíveis:',
     objetivoItens: [
@@ -920,7 +920,7 @@ const PROCESSOS_BASE = [
     nome: 'Captação via Proposta Padrão por Segmento (Link Rápido)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Admin / Sistema',
     objetivo: 'Definir o fluxo de captação de leads através de links de propostas padrão por segmento, assegurando:',
     objetivoItens: [
@@ -983,7 +983,7 @@ const PROCESSOS_BASE = [
     nome: 'Criação e Gestão de Propostas PIX',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Sistema',
     objetivo: 'Definir o fluxo de criação, envio e gestão de propostas PIX Only, assegurando:',
     objetivoItens: [
@@ -1034,16 +1034,16 @@ const PROCESSOS_BASE = [
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 15. CAPTAÇÃO VIA LANDING PAGE PAGSMILE (FECHAMENTO)
+  // 15. CAPTAÇÃO VIA LANDING PAGE PIN BANK (FECHAMENTO)
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'PROC-015',
     nome: 'Captação via Formulário de Fechamento Landing Page (FechamentoLandingPage)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Marketing / Sistema',
-    objetivo: 'Definir o fluxo de captação de leads via formulário de fechamento da landing page PagSmile ou de Introducer, assegurando:',
+    objetivo: 'Definir o fluxo de captação de leads via formulário de fechamento da landing page Pin Bank ou de Introducer, assegurando:',
     objetivoItens: [
       'Formulário multi-step para captura de dados da empresa (CNPJ, volumetria, modelo negócio).',
       'Criação automática de LandingPageLead com dados completos.',
@@ -1099,7 +1099,7 @@ const PROCESSOS_BASE = [
     nome: 'Geração e Gestão de Links de Subcontas (Subseller)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Comercial / Admin / Sistema',
     objetivo: 'Definir o fluxo de geração de links de onboarding para subsellers vinculados a merchants principais, assegurando:',
     objetivoItens: [
@@ -1111,7 +1111,7 @@ const PROCESSOS_BASE = [
     ],
     escopoInclui: [
       'Dashboard GerenciarSubsellerLinks com lista de merchants aprovados.',
-      'Modal de geração de link (GenerateLinkModal) com opções PagSmile ou White-Label.',
+      'Modal de geração de link (GenerateLinkModal) com opções Pin Bank ou White-Label.',
       'Editor de branding (BrandingEditor) para customização visual.',
       'Backend generateSubsellerLink para criação do OnboardingLink.',
       'Ativação/desativação de links.',
@@ -1122,7 +1122,7 @@ const PROCESSOS_BASE = [
     ],
     steps: [
       { id: '01', resp: 'Admin/Comercial', atividade: 'Acessa GerenciarSubsellerLinks e seleciona merchant aprovado', decisao: 'Merchant deve ter status "Aprovado"', gate: 'G1', sla: '', saida: 'Merchant selecionado', proximo: '02' },
-      { id: '02', resp: 'Admin/Comercial', atividade: 'Clica "Gerar Novo Link" e escolhe modo (PagSmile ou White-Label)', decisao: 'White-Label: configura logo, cores, nome', gate: '', sla: '', saida: 'GenerateLinkModal com configurações', proximo: '03' },
+      { id: '02', resp: 'Admin/Comercial', atividade: 'Clica "Gerar Novo Link" e escolhe modo (Pin Bank ou White-Label)', decisao: 'White-Label: configura logo, cores, nome', gate: '', sla: '', saida: 'GenerateLinkModal com configurações', proximo: '03' },
       { id: '03', resp: 'Admin/Comercial', atividade: 'Configura branding (se white-label): logo, cores, nome, slug opcional', decisao: '', gate: '', sla: '', saida: 'Configurações de branding definidas', proximo: '04' },
       { id: '04', resp: 'Sistema', atividade: 'generateSubsellerLink cria OnboardingLink (tipo=SUBSELLER_COMPLIANCE)', decisao: '', gate: '', sla: 'Imediato', saida: 'OnboardingLink com uniqueCode, brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, customSlug', proximo: '05' },
       { id: '05', resp: 'Sistema', atividade: 'Cria AuditLog da geração do link', decisao: '', gate: '', sla: 'Imediato', saida: 'AuditLog registrado', proximo: '06' },
@@ -1165,7 +1165,7 @@ const PROCESSOS_BASE = [
     nome: 'Captação via Questionário Simplificado (Reunião + Link Rápido)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Sistema',
     objetivo: 'Definir o fluxo de captação rápida de leads via questionário simplificado, usado após reuniões para captura mínima de dados:',
     objetivoItens: [
@@ -1221,7 +1221,7 @@ const PROCESSOS_BASE = [
     nome: 'Onboarding de Subseller via Link de Subconta (PF e PJ)',
     versao: '3.0.0',
     data: '06/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Sistema / Merchant / Subseller',
     objetivo: 'Definir o fluxo completo de onboarding de subsellers (Pessoa Física e Pessoa Jurídica) que acessam links de subconta gerados por merchants, assegurando:',
     objetivoItens: [
@@ -1273,7 +1273,7 @@ const PROCESSOS_BASE = [
       { bold: 'Template PF (33 perguntas): ', text: 'O template subseller_pf possui 33 perguntas com campo "Complemento" configurado como opcional (isRequired=false).' },
       { bold: 'Campos exclusivos PF: ', text: 'Merchant criado com type=PF inclui dateOfBirth, nationality e motherName extraídos das respostas do questionário.' },
       { bold: 'Sem duplicação: ', text: 'createMerchantAndCase() salva IDs em localStorage (created_merchant_id, created_onboarding_case_id). DocumentUploadFull detecta esses IDs e reutiliza o case existente, criando apenas DocumentUpload[]. Ao concluir, localStorage é limpo.' },
-      { bold: 'White-label: ', text: 'brandPrimaryColor e brandSecondaryColor do OnboardingLink substituem todas as cores PagSmile em ambos os fluxos PF e PJ.' },
+      { bold: 'White-label: ', text: 'brandPrimaryColor e brandSecondaryColor do OnboardingLink substituem todas as cores Pin Bank em ambos os fluxos PF e PJ.' },
       { bold: 'Enriquecimento oculto: ', text: 'O painel CnpjEnrichmentPanel é oculto para o subseller (isPublicView=true).' },
       { bold: 'Admin: sub-abas PF/PJ: ', text: 'SubsellerCasesTab exibe sub-abas separadas para PF e PJ com badges visuais (🟣 PF roxo, 🔵 PJ azul).' },
       { bold: 'Documentos visíveis no admin: ', text: 'CaseDocumentsTab (aba "Documentos" do caso) exibe todos os DocumentUpload com documentName, fileType, fileSize, uploadDate, validationStatus, botão "Ver" (abre URL) e "Baixar Todos (ZIP)".' },
@@ -1316,7 +1316,7 @@ const PROCESSOS_BASE = [
     nome: 'Risk Scoring v4 — Motor de 3 Camadas (Score 0-1000)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / IA / Sistema',
     objetivo: 'Definir o funcionamento do motor Risk Scoring v4 que calcula score de risco 0-1000 em 3 camadas, assegurando:',
     objetivoItens: [
@@ -1390,7 +1390,7 @@ const PROCESSOS_BASE = [
     nome: 'Gestão de Parceiros Adquirentes e Custos (PartnerCost)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Admin / Financeiro / Comercial',
     objetivo: 'Definir o fluxo de cadastro e manutenção de parceiros adquirentes e seus custos operacionais, que servem como base para validação de propostas:',
     objetivoItens: [
@@ -1449,7 +1449,7 @@ const PROCESSOS_BASE = [
     nome: 'Revalidação Periódica de Compliance',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Sistema',
     objetivo: 'Definir o fluxo de revalidação periódica de compliance para clientes já aprovados, assegurando:',
     objetivoItens: [
@@ -1506,7 +1506,7 @@ const PROCESSOS_BASE = [
     nome: 'Geração de Apresentação Kick-Off',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Sistema',
     objetivo: 'Definir o fluxo de geração de apresentações de kick-off para clientes com contrato assinado:',
     objetivoItens: [
@@ -1654,7 +1654,7 @@ const PROCESSOS_BASE = [
     nome: 'Geração e Gestão de Links de Compliance Diretos',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Comercial / Admin',
     objetivo: 'Definir o fluxo de geração de links de compliance diretos (sem passar por proposta), para onboarding avulso:',
     objetivoItens: [
@@ -1711,7 +1711,7 @@ const PROCESSOS_BASE = [
     nome: 'Análise e Triagem de Casos de Compliance (Questionários Recebidos)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Compliance / Admin',
     objetivo: 'Definir o fluxo de análise e triagem dos questionários de compliance recebidos, incluindo:',
     objetivoItens: [
@@ -1772,7 +1772,7 @@ const PROCESSOS_BASE = [
     nome: 'Gestão de Templates de Questionário (Editor de Perguntas)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Admin / Compliance / Sistema',
     objetivo: 'Definir o fluxo de criação e manutenção de templates de questionário usados em compliance e captação:',
     objetivoItens: [
@@ -1842,14 +1842,14 @@ const PROCESSOS_BASE = [
     nome: 'Triagem de Leads Recebidos (QuestionariosLeads)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Comercial / Sistema',
     objetivo: 'Definir o fluxo de triagem dos leads recebidos via diferentes canais, centralizados na página QuestionariosLeads:',
     objetivoItens: [
-      'Centralização de todos os leads em abas por origem (Completo, PIX, Simplificado, Reunião, Robô IA, Introducer, Landing Page, Proposta Padrão, Pagsmile v5).',
+      'Centralização de todos os leads em abas por origem (Completo, PIX, Simplificado, Reunião, Robô IA, Introducer, Landing Page, Proposta Padrão, Pin Bank v5).',
       'Visualização de scores (PRISCILA, Lead Qualifier, Risco IA) e SLA.',
       'Ações rápidas: Iniciar contato, Gerar proposta, Ver detalhes do questionário.',
-      'Expandir respostas completas do questionário (QuestionnaireResponsesModal, PagsmileV5ResponsesModal).',
+      'Expandir respostas completas do questionário (QuestionnaireResponsesModal, PinBankV5ResponsesModal).',
     ],
     escopoInclui: [
       'QuestionariosLeads com abas por origem.',
@@ -1869,7 +1869,7 @@ const PROCESSOS_BASE = [
       { id: '04', resp: 'Comercial', atividade: 'Clica "Iniciar Contato" (muda status para em_contato_comercial) ou "Gerar Proposta"', decisao: 'Lead qualificado?', gate: 'G1', sla: '', saida: 'Lead movido para próxima etapa do funil', proximo: 'FIM' },
     ],
     regrasNegocio: [
-      { bold: '9+ abas: ', text: 'Completo, PIX, Simplificado, Reunião, Robô IA, Introducer, Landing Page, Proposta Padrão, Pagsmile v5 — cada aba filtra por origem.' },
+      { bold: '9+ abas: ', text: 'Completo, PIX, Simplificado, Reunião, Robô IA, Introducer, Landing Page, Proposta Padrão, Pin Bank v5 — cada aba filtra por origem.' },
       { bold: 'SLA: ', text: 'Indicador visual de tempo sem contato. Vermelho se ultrapassou limite.' },
       { bold: 'Quick Actions: ', text: 'Iniciar Contato, Gerar Proposta, Ver Detalhes — ações rápidas sem sair da tabela.' },
     ],
@@ -1899,7 +1899,7 @@ const PROCESSOS_BASE = [
     nome: 'Portal do Introducer (Dashboard de Performance)',
     versao: '2.0.0',
     data: '03/04/2026',
-    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    elaboradoPor: 'Pin Bank — Compliance & Operações',
     area: 'Parcerias / Introducer',
     objetivo: 'Definir o acesso e funcionalidades do portal do Introducer para acompanhamento de indicações:',
     objetivoItens: [

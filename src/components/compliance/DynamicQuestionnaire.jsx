@@ -984,8 +984,8 @@ export default function DynamicQuestionnaire({
   if (sessionLoading || loadingTemplate || loadingQuestions) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
-        <span className="ml-3 text-[#002443]/70">Carregando questionário...</span>
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
+        <span className="ml-3 text-[#0A0A0A]/70">Carregando questionário...</span>
       </div>
     );
   }
@@ -994,8 +994,8 @@ export default function DynamicQuestionnaire({
     return (
       <div className="text-center py-12">
         <AlertTriangle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
-        <h2 className="text-xl font-bold text-[#002443] mb-2">Questionário não encontrado</h2>
-        <p className="text-[#002443]/70">O template de questionário solicitado não está disponível.</p>
+        <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Questionário não encontrado</h2>
+        <p className="text-[#0A0A0A]/70">O template de questionário solicitado não está disponível.</p>
       </div>
     );
   }
@@ -1004,8 +1004,8 @@ export default function DynamicQuestionnaire({
     return (
       <div className="text-center py-12">
         <FileText className="w-12 h-12 mx-auto text-slate-400 mb-4" />
-        <h2 className="text-xl font-bold text-[#002443] mb-2">Nenhuma pergunta configurada</h2>
-        <p className="text-[#002443]/70">Este questionário ainda não possui perguntas.</p>
+        <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Nenhuma pergunta configurada</h2>
+        <p className="text-[#0A0A0A]/70">Este questionário ainda não possui perguntas.</p>
       </div>
     );
   }
@@ -1041,8 +1041,8 @@ export default function DynamicQuestionnaire({
     );
   }
 
-  const bPrimary = branding?.primaryColor || '#2bc196';
-  const bSecondary = branding?.secondaryColor || '#002443';
+  const bPrimary = branding?.primaryColor || '#1356E2';
+  const bSecondary = branding?.secondaryColor || '#0A0A0A';
   const hasBranding = !!branding?.name;
 
   // Generate lighter variant of primary color for backgrounds
@@ -1100,7 +1100,7 @@ export default function DynamicQuestionnaire({
         ) : (
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
-            alt="Pagsmile" 
+            alt="Pin Bank" 
             className="h-7 mx-auto mb-4"
           />
         )}
@@ -1114,7 +1114,7 @@ export default function DynamicQuestionnaire({
               : (badgeLabel || templateModel?.toUpperCase() || '').replace(/\s*v?\d+(\.\d+)?\s*$/i, '').trim()}
           </div>
         </div>
-        <h1 className="text-xl md:text-2xl font-bold mt-2" style={hasBranding ? { color: bSecondary } : { color: '#002443' }}>
+        <h1 className="text-xl md:text-2xl font-bold mt-2" style={hasBranding ? { color: bSecondary } : { color: '#0A0A0A' }}>
           {(template.name || '').replace(/\s*v?\d+(\.\d+)?\s*$/i, '').trim()}
         </h1>
         <div className="mt-3 flex justify-center">
@@ -1139,12 +1139,12 @@ export default function DynamicQuestionnaire({
       <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
           {/* Step title com ícone */}
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-            <div className="p-2.5 rounded-xl brand-step-icon-bg bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/10">
-              <StepIcon className="w-5 h-5 brand-step-icon text-[#002443]/70" />
+            <div className="p-2.5 rounded-xl brand-step-icon-bg bg-gradient-to-br from-[#0A0A0A]/5 to-[#1356E2]/10">
+              <StepIcon className="w-5 h-5 brand-step-icon text-[#0A0A0A]/70" />
             </div>
             <div>
-              <h2 className="text-lg font-bold brand-text-primary text-[#002443]">{currentStepData.title}</h2>
-              <p className="text-xs brand-text-muted text-[#002443]/50">Etapa {currentStep} de {steps.length}</p>
+              <h2 className="text-lg font-bold brand-text-primary text-[#0A0A0A]">{currentStepData.title}</h2>
+              <p className="text-xs brand-text-muted text-[#0A0A0A]/50">Etapa {currentStep} de {steps.length}</p>
             </div>
           </div>
 
@@ -1192,7 +1192,7 @@ export default function DynamicQuestionnaire({
             <Button
               variant="outline"
               onClick={currentStep === 1 ? () => navigate(-1) : handlePrevious}
-              className="brand-btn-back text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl"
+              className="brand-btn-back text-[#0A0A0A]/60 hover:text-[#0A0A0A] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {currentStep === 1 ? 'Voltar' : 'Voltar'}
@@ -1200,7 +1200,7 @@ export default function DynamicQuestionnaire({
             
             <Button
               onClick={isLastStep ? handleSubmit : handleNext}
-              className={`brand-btn-next ${hasBranding ? '' : 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90'} text-white px-8 h-12 rounded-xl shadow-lg transition-all hover:scale-[1.02]`}
+              className={`brand-btn-next ${hasBranding ? '' : 'bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90'} text-white px-8 h-12 rounded-xl shadow-lg transition-all hover:scale-[1.02]`}
               style={hasBranding ? { backgroundColor: bPrimary, boxShadow: `0 10px 15px -3px ${bPrimary}33` } : undefined}
             >
               {isLastStep ? (
@@ -1220,13 +1220,13 @@ export default function DynamicQuestionnaire({
 
       {/* Footer de segurança */}
       <div className="text-center mt-6">
-        <p className="text-xs brand-security-text flex items-center justify-center gap-1" style={{ color: (hasBranding ? bSecondary : '#002443') + '66' }}>
+        <p className="text-xs brand-security-text flex items-center justify-center gap-1" style={{ color: (hasBranding ? bSecondary : '#0A0A0A') + '66' }}>
           <ShieldCheck className="w-3 h-3" />
           Seus dados estão protegidos e serão tratados com confidencialidade.
         </p>
         {hasBranding && (
           <p className="text-[10px] mt-2 opacity-30" style={{ color: bSecondary }}>
-            Powered by PagSmile
+            Powered by Pin Bank
           </p>
         )}
       </div>

@@ -78,28 +78,28 @@ export default function PullMerchantModal({ open, onClose, onPull }) {
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6">
       <div
-        className="absolute inset-0 bg-[#002443]/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#0A0A0A]/60 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
 
       <div className="relative w-full max-w-2xl max-h-[calc(100vh-2rem)] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#002443]/8 flex items-center justify-between flex-shrink-0">
+        <div className="px-6 py-4 border-b border-[#0A0A0A]/8 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-[#2bc196]/10 flex items-center justify-center flex-shrink-0">
-              <Download className="w-4 h-4 text-[#2bc196]" />
+            <div className="w-9 h-9 rounded-xl bg-[#1356E2]/10 flex items-center justify-center flex-shrink-0">
+              <Download className="w-4 h-4 text-[#1356E2]" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base font-bold text-[#002443] truncate">Puxar cliente existente</h2>
-              <p className="text-[11px] text-[#002443]/50 truncate">
+              <h2 className="text-base font-bold text-[#0A0A0A] truncate">Puxar cliente existente</h2>
+              <p className="text-[11px] text-[#0A0A0A]/50 truncate">
                 Pré-preenche os dados e documentos já coletados na plataforma.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#002443]/40 hover:bg-[#002443]/5 hover:text-[#002443] transition-colors flex-shrink-0"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0A0A0A]/40 hover:bg-[#0A0A0A]/5 hover:text-[#0A0A0A] transition-colors flex-shrink-0"
             aria-label="Fechar"
           >
             <X className="w-4 h-4" />
@@ -107,9 +107,9 @@ export default function PullMerchantModal({ open, onClose, onPull }) {
         </div>
 
         {/* Search */}
-        <div className="px-6 py-3 border-b border-[#002443]/8 flex-shrink-0">
+        <div className="px-6 py-3 border-b border-[#0A0A0A]/8 flex-shrink-0">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
             <Input
               autoFocus
               value={search}
@@ -124,14 +124,14 @@ export default function PullMerchantModal({ open, onClose, onPull }) {
         <div className="flex-1 overflow-y-auto min-h-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+              <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-12 text-sm text-[#002443]/50">
+            <div className="text-center py-12 text-sm text-[#0A0A0A]/50">
               Nenhum cliente encontrado.
             </div>
           ) : (
-            <ul className="divide-y divide-[#002443]/5">
+            <ul className="divide-y divide-[#0A0A0A]/5">
               {filtered.map(m => {
                 const isPJ = m.type === 'PJ';
                 const isPulling = pullingId === m.id;
@@ -141,21 +141,21 @@ export default function PullMerchantModal({ open, onClose, onPull }) {
                     className="px-6 py-3 flex items-center gap-3 hover:bg-[#f4f4f4]/60 transition-colors"
                   >
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      isPJ ? 'bg-[#2bc196]/10 text-[#2bc196]' : 'bg-[#002443]/8 text-[#002443]'
+                      isPJ ? 'bg-[#1356E2]/10 text-[#1356E2]' : 'bg-[#0A0A0A]/8 text-[#0A0A0A]'
                     }`}>
                       {isPJ ? <Building2 className="w-4 h-4" /> : <User className="w-4 h-4" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-[#002443] truncate">
+                      <div className="text-sm font-semibold text-[#0A0A0A] truncate">
                         {m.companyName || m.fullName}
                       </div>
-                      <div className="text-[11px] text-[#002443]/50 truncate">
+                      <div className="text-[11px] text-[#0A0A0A]/50 truncate">
                         {m.cpfCnpj}
                         {m.onboardingStatus && (
                           <span className="ml-2 inline-flex items-center gap-1">
-                            <span className="w-1 h-1 rounded-full bg-[#002443]/30" />
+                            <span className="w-1 h-1 rounded-full bg-[#0A0A0A]/30" />
                             {m.onboardingStatus}
-                            {m.onboardingStatus === 'Aprovado' && <CheckCircle2 className="w-3 h-3 text-[#2bc196]" />}
+                            {m.onboardingStatus === 'Aprovado' && <CheckCircle2 className="w-3 h-3 text-[#1356E2]" />}
                           </span>
                         )}
                       </div>
@@ -175,7 +175,7 @@ export default function PullMerchantModal({ open, onClose, onPull }) {
           )}
         </div>
 
-        <div className="px-6 py-3 border-t border-[#002443]/8 bg-[#f4f4f4]/40 text-[11px] text-[#002443]/50 flex-shrink-0">
+        <div className="px-6 py-3 border-t border-[#0A0A0A]/8 bg-[#f4f4f4]/40 text-[11px] text-[#0A0A0A]/50 flex-shrink-0">
           Mostrando até 200 clientes mais recentes. Use a busca para encontrar mais rápido.
         </div>
       </div>

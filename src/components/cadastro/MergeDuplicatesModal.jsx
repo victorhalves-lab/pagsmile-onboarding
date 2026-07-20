@@ -62,7 +62,7 @@ export default function MergeDuplicatesModal({ open, onOpenChange, onMerged }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[var(--pagsmile-blue)]">
+          <DialogTitle className="flex items-center gap-2 text-[var(--pinbank-blue)]">
             <AlertTriangle className="w-5 h-5 text-amber-500" />
             Mesclagem de Cadastros Duplicados
           </DialogTitle>
@@ -70,16 +70,16 @@ export default function MergeDuplicatesModal({ open, onOpenChange, onMerged }) {
 
         {loading && (
           <div className="py-12 text-center">
-            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[var(--pagsmile-green)]" />
-            <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-3">Escaneando base de Merchants...</p>
+            <Loader2 className="w-8 h-8 mx-auto animate-spin text-[var(--pinbank-blue)]" />
+            <p className="text-sm text-[var(--pinbank-blue)]/60 mt-3">Escaneando base de Merchants...</p>
           </div>
         )}
 
         {!loading && report && report.totalGroupsWithDuplicates === 0 && (
           <div className="py-12 text-center">
             <CheckCircle2 className="w-12 h-12 mx-auto text-green-500 mb-3" />
-            <p className="font-semibold text-[var(--pagsmile-blue)]">Nenhuma duplicata encontrada</p>
-            <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">Sua base está limpa.</p>
+            <p className="font-semibold text-[var(--pinbank-blue)]">Nenhuma duplicata encontrada</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/60 mt-1">Sua base está limpa.</p>
           </div>
         )}
 
@@ -98,10 +98,10 @@ export default function MergeDuplicatesModal({ open, onOpenChange, onMerged }) {
 
             <div className="space-y-3 mb-4">
               {report.groups.map((g, idx) => (
-                <div key={idx} className="border border-[var(--pagsmile-blue)]/10 rounded-lg p-3 bg-white">
+                <div key={idx} className="border border-[var(--pinbank-blue)]/10 rounded-lg p-3 bg-white">
                   <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="w-4 h-4 text-[var(--pagsmile-blue)]/40" />
-                    <code className="text-xs font-mono text-[var(--pagsmile-blue)]/60">{g.cpfCnpj}</code>
+                    <Building2 className="w-4 h-4 text-[var(--pinbank-blue)]/40" />
+                    <code className="text-xs font-mono text-[var(--pinbank-blue)]/60">{g.cpfCnpj}</code>
                     <Badge variant="outline" className="text-[10px]">{g.duplicates.length + 1} registros</Badge>
                   </div>
 
@@ -111,10 +111,10 @@ export default function MergeDuplicatesModal({ open, onOpenChange, onMerged }) {
                       <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
                       <span className="text-[10px] font-bold text-green-700 uppercase">Manter (canônico)</span>
                     </div>
-                    <p className="text-sm font-semibold text-[var(--pagsmile-blue)] mt-1">
+                    <p className="text-sm font-semibold text-[var(--pinbank-blue)] mt-1">
                       {g.canonical.companyName || g.canonical.fullName}
                     </p>
-                    <div className="flex flex-wrap gap-2 text-[11px] text-[var(--pagsmile-blue)]/60 mt-0.5">
+                    <div className="flex flex-wrap gap-2 text-[11px] text-[var(--pinbank-blue)]/60 mt-0.5">
                       <span>{g.canonical.email}</span>
                       <span>•</span>
                       <span>{g.canonical.onboardingStatus}</span>
@@ -130,10 +130,10 @@ export default function MergeDuplicatesModal({ open, onOpenChange, onMerged }) {
                         <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
                         <span className="text-[10px] font-bold text-red-700 uppercase">Remover</span>
                       </div>
-                      <p className="text-sm font-semibold text-[var(--pagsmile-blue)] mt-1">
+                      <p className="text-sm font-semibold text-[var(--pinbank-blue)] mt-1">
                         {d.companyName || d.fullName}
                       </p>
-                      <div className="flex flex-wrap gap-2 text-[11px] text-[var(--pagsmile-blue)]/60 mt-0.5">
+                      <div className="flex flex-wrap gap-2 text-[11px] text-[var(--pinbank-blue)]/60 mt-0.5">
                         <span>{d.email}</span>
                         <span>•</span>
                         <span>{d.onboardingStatus}</span>
@@ -146,7 +146,7 @@ export default function MergeDuplicatesModal({ open, onOpenChange, onMerged }) {
               ))}
             </div>
 
-            <div className="flex gap-2 sticky bottom-0 bg-white pt-3 border-t border-[var(--pagsmile-blue)]/10">
+            <div className="flex gap-2 sticky bottom-0 bg-white pt-3 border-t border-[var(--pinbank-blue)]/10">
               <Button variant="outline" onClick={() => onOpenChange(false)} disabled={executing}>
                 Cancelar
               </Button>

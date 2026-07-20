@@ -61,7 +61,7 @@ export default function AIQuestionnaireTab() {
   const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" /></div>;
   }
 
   return (
@@ -69,11 +69,11 @@ export default function AIQuestionnaireTab() {
       {/* Actions bar */}
       <div className="flex flex-wrap gap-3 items-center justify-between">
         <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/40" />
           <Input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Buscar por nome, CNPJ, email, protocolo..." className="pl-10 h-10" />
         </div>
         <Link to={createPageUrl('ProcessMeetingNotes')}>
-          <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+          <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
             <Bot className="w-4 h-4 mr-1" /> Processar Notas com IA
           </Button>
         </Link>
@@ -82,17 +82,17 @@ export default function AIQuestionnaireTab() {
       {/* Table */}
       {questionnaires.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <Bot className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-          <p className="text-[var(--pagsmile-blue)]/60 mb-2">Nenhum questionário IA gerado ainda</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/40 mb-4">Cole anotações ou transcrições de reunião e a IA preencherá automaticamente</p>
+          <Bot className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/30 mb-3" />
+          <p className="text-[var(--pinbank-blue)]/60 mb-2">Nenhum questionário IA gerado ainda</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/40 mb-4">Cole anotações ou transcrições de reunião e a IA preencherá automaticamente</p>
           <Link to={createPageUrl('ProcessMeetingNotes')}>
-            <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+            <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
               <Bot className="w-4 h-4 mr-1" /> Processar Notas com IA
             </Button>
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -109,7 +109,7 @@ export default function AIQuestionnaireTab() {
               <TableBody>
                 {paginated.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-[var(--pagsmile-blue)]/50">
+                    <TableCell colSpan={7} className="text-center py-8 text-[var(--pinbank-blue)]/50">
                       Nenhum resultado encontrado
                     </TableCell>
                   </TableRow>
@@ -119,10 +119,10 @@ export default function AIQuestionnaireTab() {
                   const isAiStatus = q.status === 'ai_preenchido';
                   return (
                     <TableRow key={q.id} className="hover:bg-[#f4f4f4] transition-colors">
-                      <TableCell><span className="font-mono text-xs text-[var(--pagsmile-green)]">{q.protocolo || '-'}</span></TableCell>
+                      <TableCell><span className="font-mono text-xs text-[var(--pinbank-blue)]">{q.protocolo || '-'}</span></TableCell>
                       <TableCell>
                         <p className="font-medium text-sm">{q.clientFullName}</p>
-                        <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{q.clientCpfCnpj || q.clientEmail}</p>
+                        <p className="text-[10px] text-[var(--pinbank-blue)]/50">{q.clientCpfCnpj || q.clientEmail}</p>
                       </TableCell>
                       <TableCell>
                         {biz && <div className="flex items-center gap-1"><BizIcon className="w-3 h-3" /><span className="text-xs">{biz.label}</span></div>}
@@ -138,7 +138,7 @@ export default function AIQuestionnaireTab() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-[var(--pagsmile-blue)]/60">
+                        <span className="text-xs text-[var(--pinbank-blue)]/60">
                           {q.created_date ? moment(q.created_date).format('DD/MM/YY HH:mm') : '-'}
                         </span>
                       </TableCell>
@@ -147,7 +147,7 @@ export default function AIQuestionnaireTab() {
                           <Button
                             variant="default"
                             size="sm"
-                            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-7 text-xs"
+                            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-7 text-xs"
                             onClick={() => navigate(createPageUrl('QuestionarioReuniao') + `?id=${q.id}`)}
                           >
                             <Pencil className="w-3 h-3 mr-1" /> Revisar
@@ -174,9 +174,9 @@ export default function AIQuestionnaireTab() {
             </Table>
           </div>
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#0A0A0A]/5">
               <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
-              <span className="text-xs text-[var(--pagsmile-blue)]/60">Página {page} de {totalPages}</span>
+              <span className="text-xs text-[var(--pinbank-blue)]/60">Página {page} de {totalPages}</span>
               <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
             </div>
           )}

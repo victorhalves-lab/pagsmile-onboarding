@@ -118,7 +118,7 @@ export default function RedFlagCard({ flag, defaultOpen = false }) {
               {flag.sourceBadge}
             </Badge>
             {dim && (
-              <Badge className="text-[9px] font-semibold bg-white/60 text-[#002443]/70 border border-[#002443]/10">
+              <Badge className="text-[9px] font-semibold bg-white/60 text-[#0A0A0A]/70 border border-[#0A0A0A]/10">
                 {dim.icon} {dim.label}
               </Badge>
             )}

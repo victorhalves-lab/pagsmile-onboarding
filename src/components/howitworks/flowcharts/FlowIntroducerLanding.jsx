@@ -6,17 +6,17 @@ export default function FlowIntroducerLanding() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h4 className="font-bold text-[#002443] text-sm">Fluxo 5: Introducer & Landing Page</h4>
-          <p className="text-[10px] text-[#002443]/50">Do cadastro do parceiro até a captação de leads via landing page co-branded</p>
+          <h4 className="font-bold text-[#0A0A0A] text-sm">Fluxo 5: Introducer & Landing Page</h4>
+          <p className="text-[10px] text-[#0A0A0A]/50">Do cadastro do parceiro até a captação de leads via landing page co-branded</p>
         </div>
         <div className="flex gap-1.5">
-          <ResponsibleBadge label="Admin" color="bg-[#002443]" />
+          <ResponsibleBadge label="Admin" color="bg-[#0A0A0A]" />
           <ResponsibleBadge label="Introducer" color="bg-purple-600" />
-          <ResponsibleBadge label="Prospect" color="bg-[#2bc196]" />
+          <ResponsibleBadge label="Prospect" color="bg-[#1356E2]" />
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 overflow-x-auto">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 overflow-x-auto">
         <div className="flex flex-col items-center min-w-[400px]">
           <StartEndNode label="INÍCIO — Cadastro do Introducer" />
           <Arrow />
@@ -54,12 +54,12 @@ export default function FlowIntroducerLanding() {
           <Arrow />
 
           <div className="flex items-center gap-2 mb-1">
-            <div className="h-px bg-[#2bc196] w-16" />
-            <span className="text-[9px] text-[#2bc196] font-bold">PROSPECT ACESSA A LANDING PAGE</span>
-            <div className="h-px bg-[#2bc196] w-16" />
+            <div className="h-px bg-[#1356E2] w-16" />
+            <span className="text-[9px] text-[#1356E2] font-bold">PROSPECT ACESSA A LANDING PAGE</span>
+            <div className="h-px bg-[#1356E2] w-16" />
           </div>
 
-          <ProcessNode label="LandingHeader" sublabel="Logo Pagsmile + Logo Parceiro co-branded" borderColor="border-[#2bc196]" color="bg-emerald-50" />
+          <ProcessNode label="LandingHeader" sublabel="Logo Pin Bank + Logo Parceiro co-branded" borderColor="border-[#1356E2]" color="bg-emerald-50" />
           <Arrow />
 
           <SubprocessNode label="Conteúdo da Landing Page" items={[
@@ -71,7 +71,7 @@ export default function FlowIntroducerLanding() {
           ]} />
           <Arrow />
 
-          <ProcessNode label="Prospect Clica 'Solicitar Proposta'" sublabel="CTA → /LeadQuestionnaire?ref={referralCode}" borderColor="border-[#2bc196]" color="bg-emerald-50" />
+          <ProcessNode label="Prospect Clica 'Solicitar Proposta'" sublabel="CTA → /LeadQuestionnaire?ref={referralCode}" borderColor="border-[#1356E2]" color="bg-emerald-50" />
           <Arrow />
 
           <ProcessNode label="Questionário Lead Preenchido" sublabel="Lead criado com introducerId + introducerReferralCode" />
@@ -83,7 +83,7 @@ export default function FlowIntroducerLanding() {
           <ProcessNode label="Introducer Acompanha" sublabel="IntroducerDashboard: KPIs, leads gerados, status, performance" borderColor="border-purple-200" />
           <Arrow />
 
-          <StartEndNode label="FIM — Lead no Pipeline Vinculado" color="bg-[#002443]" />
+          <StartEndNode label="FIM — Lead no Pipeline Vinculado" color="bg-[#0A0A0A]" />
         </div>
       </div>
     </div>

@@ -50,7 +50,7 @@ export default function CaseDryRunPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-[#2bc196]" />
+            <Zap className="w-5 h-5 text-[#1356E2]" />
             Pipeline V5.2 Dry-Run (caso único)
           </CardTitle>
           <CardDescription>
@@ -62,7 +62,7 @@ export default function CaseDryRunPanel() {
         <CardContent className="space-y-4">
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <label className="text-xs font-bold text-[#002443]/70 block mb-1">OnboardingCase ID</label>
+              <label className="text-xs font-bold text-[#0A0A0A]/70 block mb-1">OnboardingCase ID</label>
               <Input
                 value={caseId}
                 onChange={(e) => setCaseId(e.target.value)}
@@ -70,7 +70,7 @@ export default function CaseDryRunPanel() {
                 className="font-mono"
               />
             </div>
-            <Button onClick={run} disabled={running} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+            <Button onClick={run} disabled={running} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
               {running ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
               Rodar Pipeline
             </Button>
@@ -79,23 +79,23 @@ export default function CaseDryRunPanel() {
           {result && !result.error && (
             <div className="space-y-3 pt-2">
               {/* Tier resolution */}
-              <Card className="border-[#2bc196]/20">
+              <Card className="border-[#1356E2]/20">
                 <CardContent className="p-4">
-                  <p className="text-[10px] uppercase font-bold text-[#002443]/50 tracking-wide mb-2">
+                  <p className="text-[10px] uppercase font-bold text-[#0A0A0A]/50 tracking-wide mb-2">
                     1. Resolução de Tier
                   </p>
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="outline" className="text-xs">{result.tier_base}</Badge>
-                    <ArrowRight className="w-4 h-4 text-[#002443]/40" />
+                    <ArrowRight className="w-4 h-4 text-[#0A0A0A]/40" />
                     <Badge
                       className={`text-xs border-0 ${
-                        result.escalado ? 'bg-amber-100 text-amber-700' : 'bg-[#f4f4f4] text-[#002443]/70'
+                        result.escalado ? 'bg-amber-100 text-amber-700' : 'bg-[#f4f4f4] text-[#0A0A0A]/70'
                       }`}
                     >
                       {result.tier} {result.escalado && '↑ ESCALADO'}
                     </Badge>
                   </div>
-                  <p className="text-xs text-[#002443]/60 mt-2">{result.motivo_escalada}</p>
+                  <p className="text-xs text-[#0A0A0A]/60 mt-2">{result.motivo_escalada}</p>
                   {result.triggers_disparados?.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1">
                       {result.triggers_disparados.map((t) => (
@@ -111,7 +111,7 @@ export default function CaseDryRunPanel() {
               {/* Contexto */}
               <Card>
                 <CardContent className="p-4">
-                  <p className="text-[10px] uppercase font-bold text-[#002443]/50 tracking-wide mb-2">
+                  <p className="text-[10px] uppercase font-bold text-[#0A0A0A]/50 tracking-wide mb-2">
                     2. Contexto resolvido
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
@@ -129,23 +129,23 @@ export default function CaseDryRunPanel() {
               {/* Score */}
               <Card>
                 <CardContent className="p-4">
-                  <p className="text-[10px] uppercase font-bold text-[#002443]/50 tracking-wide mb-2">
+                  <p className="text-[10px] uppercase font-bold text-[#0A0A0A]/50 tracking-wide mb-2">
                     3. Score V5.2 (5 camadas)
                   </p>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="text-3xl font-bold text-[#002443]">
+                    <div className="text-3xl font-bold text-[#0A0A0A]">
                       {result.score}
-                      <span className="text-base text-[#002443]/40 font-normal"> / {result.score_max}</span>
+                      <span className="text-base text-[#0A0A0A]/40 font-normal"> / {result.score_max}</span>
                     </div>
-                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">
+                    <Badge className="bg-[#1356E2]/10 text-[#1356E2] border-0">
                       {Math.round((result.score / result.score_max) * 100)}%
                     </Badge>
                   </div>
                   <div className="space-y-1 text-xs">
                     {result.camadas && Object.entries(result.camadas).map(([k, v]) => (
-                      <div key={k} className="flex justify-between border-b border-[#002443]/5 py-1">
-                        <span className="text-[#002443]/60">{k.replace(/_/g, ' ')}</span>
-                        <span className={`font-mono font-bold ${v.valor < 0 ? 'text-red-600' : v.valor > 0 ? 'text-emerald-600' : 'text-[#002443]/40'}`}>
+                      <div key={k} className="flex justify-between border-b border-[#0A0A0A]/5 py-1">
+                        <span className="text-[#0A0A0A]/60">{k.replace(/_/g, ' ')}</span>
+                        <span className={`font-mono font-bold ${v.valor < 0 ? 'text-red-600' : v.valor > 0 ? 'text-emerald-600' : 'text-[#0A0A0A]/40'}`}>
                           {v.valor > 0 ? '+' : ''}{v.valor}
                         </span>
                       </div>
@@ -157,7 +157,7 @@ export default function CaseDryRunPanel() {
               {/* Bloqueios */}
               <Card className={result.bloqueios_ativos?.length > 0 ? 'border-red-200 bg-red-50/30' : ''}>
                 <CardContent className="p-4">
-                  <p className="text-[10px] uppercase font-bold text-[#002443]/50 tracking-wide mb-2 flex items-center gap-2">
+                  <p className="text-[10px] uppercase font-bold text-[#0A0A0A]/50 tracking-wide mb-2 flex items-center gap-2">
                     <ShieldAlert className="w-3 h-3" /> 4. Bloqueios avaliados (catálogo dinâmico)
                   </p>
                   {result.bloqueios_ativos?.length > 0 ? (
@@ -170,9 +170,9 @@ export default function CaseDryRunPanel() {
                             {b.nucleo_duro_regulatorio && (
                               <Badge className="bg-purple-100 text-purple-700 border-0 text-[10px]">NÚCLEO DURO</Badge>
                             )}
-                            <span className="text-[#002443]/70">{b.titulo}</span>
+                            <span className="text-[#0A0A0A]/70">{b.titulo}</span>
                           </div>
-                          <p className="text-[10px] text-[#002443]/50 mt-1">Razão: {b.razao}</p>
+                          <p className="text-[10px] text-[#0A0A0A]/50 mt-1">Razão: {b.razao}</p>
                         </div>
                       ))}
                     </div>
@@ -183,7 +183,7 @@ export default function CaseDryRunPanel() {
               </Card>
 
               {/* Decisão final */}
-              <Card className="bg-[#002443] text-white">
+              <Card className="bg-[#0A0A0A] text-white">
                 <CardContent className="p-4">
                   <p className="text-[10px] uppercase font-bold text-white/40 tracking-wide mb-2">
                     5. Decisão final
@@ -218,8 +218,8 @@ export default function CaseDryRunPanel() {
 function Field({ label, value }) {
   return (
     <div>
-      <p className="text-[10px] uppercase text-[#002443]/40 font-bold tracking-wide">{label}</p>
-      <p className="text-[#002443] font-semibold mt-0.5">{value || '—'}</p>
+      <p className="text-[10px] uppercase text-[#0A0A0A]/40 font-bold tracking-wide">{label}</p>
+      <p className="text-[#0A0A0A] font-semibold mt-0.5">{value || '—'}</p>
     </div>
   );
 }

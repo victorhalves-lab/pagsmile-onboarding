@@ -69,7 +69,7 @@ export default function ResponsesSectionNav({ sections, activeSection, onSelect 
               'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all duration-200',
               isActive
                 ? colorSet + ' shadow-sm scale-[1.02]'
-                : 'bg-white text-[#002443]/60 border-[#002443]/8 hover:bg-[#f4f4f4] hover:border-[#002443]/12'
+                : 'bg-white text-[#0A0A0A]/60 border-[#0A0A0A]/8 hover:bg-[#f4f4f4] hover:border-[#0A0A0A]/12'
             )}
           >
             <Icon className="w-3.5 h-3.5" />

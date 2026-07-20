@@ -56,7 +56,7 @@ const SEVERITY_COLOR = {
 };
 
 function EmptyState({ children }) {
-  return <p className="text-xs text-[#002443]/50 italic">{children}</p>;
+  return <p className="text-xs text-[#0A0A0A]/50 italic">{children}</p>;
 }
 
 export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) {
@@ -107,24 +107,24 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Rocket className="w-4 h-4 text-[#2bc196]" />
+            <Rocket className="w-4 h-4 text-[#1356E2]" />
             Análise <Term code="framework_version" inline>V5.2</Term> — Score <Term code="tier_1" inline>Tier-Aware</Term>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <p className="text-[11px] uppercase text-[#002443]/50 font-semibold tracking-wide mb-1">Score Final V5.2</p>
-              <p className="text-3xl font-bold text-[#002443] font-mono">
+              <p className="text-[11px] uppercase text-[#0A0A0A]/50 font-semibold tracking-wide mb-1">Score Final V5.2</p>
+              <p className="text-3xl font-bold text-[#0A0A0A] font-mono">
                 {scoreFinal != null ? scoreFinal : '—'}
               </p>
               {latestScore.subfaixa_tier_aware && (
-                <p className="text-xs text-[#002443]/60 mt-1">Subfaixa: {latestScore.subfaixa_tier_aware}</p>
+                <p className="text-xs text-[#0A0A0A]/60 mt-1">Subfaixa: {latestScore.subfaixa_tier_aware}</p>
               )}
             </div>
             {latestScore.categoria_decisao_v5_1 && (
               <Term code={latestScore.categoria_decisao_v5_1} inline>
-                <Badge className="bg-[#2bc196]/15 text-[#36706c] border-0 text-xs cursor-help">
+                <Badge className="bg-[#1356E2]/15 text-[#E84B1C] border-0 text-xs cursor-help">
                   {latestScore.categoria_decisao_v5_1}
                 </Badge>
               </Term>
@@ -137,19 +137,19 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-[#002443]/60" />
+            <BarChart3 className="w-4 h-4 text-[#0A0A0A]/60" />
             Decomposição em 5 Camadas
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             {camadas.map((c) => (
-              <div key={c.key} className="flex items-center justify-between border-b border-[#002443]/5 last:border-0 py-1.5">
-                <span className="text-xs text-[#002443]/75 flex items-center gap-1.5">
-                  <c.Icon className="w-3 h-3 text-[#002443]/40" />
+              <div key={c.key} className="flex items-center justify-between border-b border-[#0A0A0A]/5 last:border-0 py-1.5">
+                <span className="text-xs text-[#0A0A0A]/75 flex items-center gap-1.5">
+                  <c.Icon className="w-3 h-3 text-[#0A0A0A]/40" />
                   {c.label}
                 </span>
-                <span className={`text-sm font-mono font-semibold ${c.value > 0 ? 'text-emerald-700' : c.value < 0 ? 'text-red-700' : 'text-[#002443]/40'}`}>
+                <span className={`text-sm font-mono font-semibold ${c.value > 0 ? 'text-emerald-700' : c.value < 0 ? 'text-red-700' : 'text-[#0A0A0A]/40'}`}>
                   {c.value != null ? (c.value > 0 ? '+' : '') + c.value : '—'}
                 </span>
               </div>
@@ -172,20 +172,20 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
           ) : (
             <div className="space-y-3">
               {topAlerts.map((a, idx) => (
-                <div key={a.red_flag_id || idx} className="border border-[#002443]/8 rounded-lg p-3">
+                <div key={a.red_flag_id || idx} className="border border-[#0A0A0A]/8 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-                    <span className="text-sm font-semibold text-[#002443]">{a.title || a.red_flag_id || `Alerta #${idx + 1}`}</span>
+                    <span className="text-sm font-semibold text-[#0A0A0A]">{a.title || a.red_flag_id || `Alerta #${idx + 1}`}</span>
                     {a.severity && (
                       <Badge className={`text-[10px] border ${SEVERITY_COLOR[a.severity] || SEVERITY_COLOR.INFO}`}>
                         {a.severity}
                       </Badge>
                     )}
                   </div>
-                  {a.why_it_matters && <p className="text-xs text-[#002443]/70 mb-1">{a.why_it_matters}</p>}
+                  {a.why_it_matters && <p className="text-xs text-[#0A0A0A]/70 mb-1">{a.why_it_matters}</p>}
                   {a.suggested_action && (
-                    <p className="text-xs text-[#002443]/55 italic">→ {a.suggested_action}</p>
+                    <p className="text-xs text-[#0A0A0A]/55 italic">→ {a.suggested_action}</p>
                   )}
-                  <div className="flex items-center gap-3 mt-2 text-[10px] text-[#002443]/40">
+                  <div className="flex items-center gap-3 mt-2 text-[10px] text-[#0A0A0A]/40">
                     {a.source && <span>Fonte: {a.source}</span>}
                     {a.impact_score != null && <span>Impact: {a.impact_score}</span>}
                   </div>
@@ -208,7 +208,7 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
           <CardContent>
             <ul className="space-y-1.5">
               {topPositivos.map((p, idx) => (
-                <li key={idx} className="text-xs text-[#002443]/75 flex gap-2">
+                <li key={idx} className="text-xs text-[#0A0A0A]/75 flex gap-2">
                   <span className="text-emerald-500">✓</span>
                   <span>{p.title || p.description || JSON.stringify(p)}</span>
                 </li>
@@ -222,7 +222,7 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <GitCompare className="w-4 h-4 text-[#002443]/60" />
+            <GitCompare className="w-4 h-4 text-[#0A0A0A]/60" />
             <Term code="cross_validation_16" inline>Cross-Validation 16 Campos V5.2</Term>
           </CardTitle>
         </CardHeader>
@@ -239,22 +239,22 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
                 {cvSummary.unknown_count != null && <Badge className="bg-slate-50 text-slate-600 border-slate-200 text-[10px]">? Sem dado: {cvSummary.unknown_count}</Badge>}
               </div>
               {/* Tabela compacta */}
-              <div className="border border-[#002443]/8 rounded-lg overflow-hidden">
+              <div className="border border-[#0A0A0A]/8 rounded-lg overflow-hidden">
                 <table className="w-full text-xs">
-                  <thead className="bg-[#002443]/4">
+                  <thead className="bg-[#0A0A0A]/4">
                     <tr>
-                      <th className="text-left p-2 font-semibold text-[#002443]/60">Campo</th>
-                      <th className="text-left p-2 font-semibold text-[#002443]/60">Declarado</th>
-                      <th className="text-left p-2 font-semibold text-[#002443]/60">BDC</th>
-                      <th className="text-left p-2 font-semibold text-[#002443]/60">Status</th>
+                      <th className="text-left p-2 font-semibold text-[#0A0A0A]/60">Campo</th>
+                      <th className="text-left p-2 font-semibold text-[#0A0A0A]/60">Declarado</th>
+                      <th className="text-left p-2 font-semibold text-[#0A0A0A]/60">BDC</th>
+                      <th className="text-left p-2 font-semibold text-[#0A0A0A]/60">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {cvFields.map((f, idx) => (
-                      <tr key={f.field_id || idx} className="border-t border-[#002443]/5">
-                        <td className="p-2 text-[#002443]/75">{f.label || f.field_id}</td>
-                        <td className="p-2 text-[#002443]/60 font-mono">{String(f.declared_value ?? '—').slice(0, 30)}</td>
-                        <td className="p-2 text-[#002443]/60 font-mono">{String(f.bdc_value ?? '—').slice(0, 30)}</td>
+                      <tr key={f.field_id || idx} className="border-t border-[#0A0A0A]/5">
+                        <td className="p-2 text-[#0A0A0A]/75">{f.label || f.field_id}</td>
+                        <td className="p-2 text-[#0A0A0A]/60 font-mono">{String(f.declared_value ?? '—').slice(0, 30)}</td>
+                        <td className="p-2 text-[#0A0A0A]/60 font-mono">{String(f.bdc_value ?? '—').slice(0, 30)}</td>
                         <td className="p-2">
                           <Badge className={`text-[10px] border ${CV_STATUS_COLOR[f.status] || CV_STATUS_COLOR.unknown}`}>
                             {f.status || 'unknown'}
@@ -275,7 +275,7 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Database className="w-4 h-4 text-[#002443]/60" />
+              <Database className="w-4 h-4 text-[#0A0A0A]/60" />
               <Term code="patch_financeiro" inline>Patch Financeiro — 5 Dimensões</Term>
             </CardTitle>
           </CardHeader>
@@ -285,14 +285,14 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
                 const dim = patchDimensoes[d.key];
                 if (!dim) return null;
                 return (
-                  <div key={d.key} className="border border-[#002443]/8 rounded-md p-2.5">
+                  <div key={d.key} className="border border-[#0A0A0A]/8 rounded-md p-2.5">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-semibold text-[#002443]">{d.label}</span>
+                      <span className="text-xs font-semibold text-[#0A0A0A]">{d.label}</span>
                       {dim.bloqueio_disparado && (
                         <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px]">Bloqueio</Badge>
                       )}
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-[11px] text-[#002443]/60 font-mono">
+                    <div className="grid grid-cols-3 gap-2 text-[11px] text-[#0A0A0A]/60 font-mono">
                       <div>Declarado: {dim.valor_declarado ?? '—'}</div>
                       <div>Observado: {dim.valor_observado ?? '—'}</div>
                       <div>Divergência: {dim.divergencia_pct != null ? dim.divergencia_pct + '%' : '—'}</div>
@@ -351,9 +351,9 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
                 const [codigo, blocos, email, data] = String(o).split(':');
                 return (
                   <li key={idx} className="text-[11px] border-l-2 border-amber-300 pl-2 py-1">
-                    <p className="font-semibold text-[#002443]">{codigo}</p>
-                    <p className="text-[#002443]/60">Bloqueios: <code className="font-mono">{blocos}</code></p>
-                    <p className="text-[#002443]/50">Por {email} em {data ? new Date(data).toLocaleString('pt-BR') : '—'}</p>
+                    <p className="font-semibold text-[#0A0A0A]">{codigo}</p>
+                    <p className="text-[#0A0A0A]/60">Bloqueios: <code className="font-mono">{blocos}</code></p>
+                    <p className="text-[#0A0A0A]/50">Por {email} em {data ? new Date(data).toLocaleString('pt-BR') : '—'}</p>
                   </li>
                 );
               })}

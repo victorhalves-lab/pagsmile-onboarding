@@ -61,7 +61,7 @@ export const MOTIVO_BUSCA_OPTIONS = [
 export const SERVICOS_PIX_OPTIONS = [
   'PIX Recebimentos', 'PIX Pagamentos (cash-out)', 'PIX QR Code estático',
   'PIX QR Code dinâmico', 'PIX Cobrança (com vencimento)', 'PIX Garantido (parcelado)',
-  'Split PIX', 'Conta Digital PagSmile', 'Outro'
+  'Split PIX', 'Conta Digital Pin Bank', 'Outro'
 ];
 
 export const URGENCIA_OPTIONS = ['Imediato', 'Até 30 dias', '1-3 meses', 'Pesquisando'];

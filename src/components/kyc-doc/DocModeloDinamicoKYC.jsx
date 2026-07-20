@@ -107,7 +107,7 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
             num="1"
             title="Perguntas Comuns a Todos os Segmentos"
             subtitle={`${analysis.commonQuestions.length} perguntas aparecem nos ${v4Templates.length} questionários V4, em ordem do questionário.`}
-            color="#2bc196"
+            color="#1356E2"
           >
             <CommonItemsList items={analysis.commonQuestions} kind="question" />
           </Section>
@@ -134,7 +134,7 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
             num="3"
             title="Documentos Comuns a Todos os Segmentos"
             subtitle={`${analysis.commonDocs.length} documentos são solicitados em todos os ${v4Templates.length} questionários V4.`}
-            color="#2bc196"
+            color="#1356E2"
           >
             <CommonItemsList items={analysis.commonDocs} kind="doc" />
           </Section>
@@ -346,19 +346,19 @@ function normalizeText(s) {
    ═══════════════════════════════════════════════════════════════════════ */
 function Header({ activeTemplates, stats, onDownloadPdf }) {
   return (
-    <div className="bg-gradient-to-br from-[#002443] via-[#003366] to-[#002443] rounded-2xl p-8 text-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#2bc196]/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+    <div className="bg-gradient-to-br from-[#0A0A0A] via-[#003366] to-[#0A0A0A] rounded-2xl p-8 text-white relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-[#1356E2]/10 rounded-full -mr-20 -mt-20 blur-3xl" />
       <div className="relative">
         <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-[#5cf7cf]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5cf7cf]">
+              <Sparkles className="w-5 h-5 text-[#E84B1C]" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E84B1C]">
                 Modelo Dinâmico KYC/KYB — Visão por Segmento
               </span>
             </div>
             <h1 className="text-3xl font-black tracking-tight">
-              Perguntas & Documentos <span className="text-[#5cf7cf]">por Questionário</span>
+              Perguntas & Documentos <span className="text-[#E84B1C]">por Questionário</span>
             </h1>
             <p className="text-white/70 text-sm mt-2 max-w-3xl leading-relaxed">
               Análise de <strong className="text-white">todos os questionários de Compliance ativos</strong> hoje
@@ -370,7 +370,7 @@ function Header({ activeTemplates, stats, onDownloadPdf }) {
 
           <button
             onClick={onDownloadPdf}
-            className="no-print inline-flex items-center gap-2 px-4 py-2 bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] rounded-lg text-sm font-bold transition-colors shadow-lg"
+            className="no-print inline-flex items-center gap-2 px-4 py-2 bg-[#1356E2] hover:bg-[#E84B1C] text-[#0A0A0A] rounded-lg text-sm font-bold transition-colors shadow-lg"
           >
             <Download className="w-4 h-4" />
             Baixar PDF
@@ -391,7 +391,7 @@ function Header({ activeTemplates, stats, onDownloadPdf }) {
 function StatBox({ label, value, hint }) {
   return (
     <div className="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/10">
-      <p className="text-[10px] uppercase tracking-wider text-[#5cf7cf] font-bold mb-1">{label}</p>
+      <p className="text-[10px] uppercase tracking-wider text-[#E84B1C] font-bold mb-1">{label}</p>
       <p className="text-xl font-black text-white">{value}</p>
       {hint && <p className="text-[10px] text-white/40 mt-1">{hint}</p>}
     </div>
@@ -417,7 +417,7 @@ function Legend({ segmentLabels, segmentIds }) {
               className="inline-flex items-center gap-1.5 bg-[#f4f4f4] border border-[#e8e8e8] rounded-md px-2.5 py-1 text-[11px]"
               title={l.full}
             >
-              <span className="font-bold text-[#002443]">{l.short}</span>
+              <span className="font-bold text-[#0A0A0A]">{l.short}</span>
             </span>
           );
         })}
@@ -441,7 +441,7 @@ function Section({ icon: IconCmp, num, title, subtitle, color, children }) {
             <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: `${color}20`, color }}>
               {num}
             </span>
-            <h2 className="text-xl font-bold text-[#002443]">{title}</h2>
+            <h2 className="text-xl font-bold text-[#0A0A0A]">{title}</h2>
           </div>
           <p className="text-sm text-[#1a1a1a]/60">{subtitle}</p>
         </div>
@@ -462,15 +462,15 @@ function CommonItemsList({ items, kind }) {
   return (
     <div className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden shadow-sm">
       <table className="w-full text-sm">
-        <thead className="bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] border-b-2 border-[#2bc196]">
+        <thead className="bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] border-b-2 border-[#1356E2]">
           <tr>
-            <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-10">#</th>
-            <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider">
+            <th className="text-left px-4 py-3 text-[10px] font-bold text-[#0A0A0A] uppercase tracking-wider w-10">#</th>
+            <th className="text-left px-4 py-3 text-[10px] font-bold text-[#0A0A0A] uppercase tracking-wider">
               {isQuestion ? 'Pergunta' : 'Documento'}
             </th>
-            {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Tipo</th>}
-            {!isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-56">documentTypeId</th>}
-            <th className="text-center px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Obrigatório</th>
+            {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#0A0A0A] uppercase tracking-wider w-24">Tipo</th>}
+            {!isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#0A0A0A] uppercase tracking-wider w-56">documentTypeId</th>}
+            <th className="text-center px-4 py-3 text-[10px] font-bold text-[#0A0A0A] uppercase tracking-wider w-24">Obrigatório</th>
           </tr>
         </thead>
         <tbody>
@@ -493,7 +493,7 @@ function CommonItemsList({ items, kind }) {
               </td>
               {isQuestion && (
                 <td className="px-4 py-3">
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#002443]/5 text-[#002443]">{it.type || '—'}</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0A0A0A]/5 text-[#0A0A0A]">{it.type || '—'}</span>
                 </td>
               )}
               {!isQuestion && (
@@ -562,12 +562,12 @@ function SegmentBlock({ index, label, items, segmentLabels, kind }) {
             {index}
           </div>
           <div>
-            <h3 className="text-base font-bold text-[#002443]">{label?.short || '—'}</h3>
+            <h3 className="text-base font-bold text-[#0A0A0A]">{label?.short || '—'}</h3>
             <p className="text-[10px] font-mono text-[#1a1a1a]/40">{label?.model}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold text-[#002443]/70">
+          <span className="text-[11px] font-bold text-[#0A0A0A]/70">
             {items.length} {isQuestion ? 'pergunta' : 'documento'}{items.length !== 1 ? 's' : ''} condicionai{items.length !== 1 ? 's' : 'l'}
           </span>
         </div>
@@ -604,7 +604,7 @@ function SegmentBlock({ index, label, items, segmentLabels, kind }) {
                   {/* Tags: tipo, documentTypeId, obrigatório, peso, conditional, opções */}
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                     {isQuestion && it.type && (
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#002443]/5 text-[#002443]">
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0A0A0A]/5 text-[#0A0A0A]">
                         {it.type}
                       </span>
                     )}

@@ -35,10 +35,10 @@ export default function LeadsPixV4QuestionnaireDoc() {
           <div key={t.id} className="bg-[#f4f4f4] rounded-lg p-3">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xl">{t.icon}</span>
-              <strong className="text-sm text-[#002443]">{t.label}</strong>
+              <strong className="text-sm text-[#0A0A0A]">{t.label}</strong>
             </div>
-            <p className="text-xs text-[#002443]/70">{t.description}</p>
-            <p className="text-[11px] text-[#002443]/50 italic mt-1">{t.examples}</p>
+            <p className="text-xs text-[#0A0A0A]/70">{t.description}</p>
+            <p className="text-[11px] text-[#0A0A0A]/50 italic mt-1">{t.examples}</p>
           </div>
         ))}
         <Question
@@ -98,14 +98,14 @@ export default function LeadsPixV4QuestionnaireDoc() {
       <StepBlock number="7" title="Serviços Complementares & Fechamento" description="O que precisa + urgência">
         <Question id="servicosPix" label="Quais serviços Pix precisa?" type="multiselect" required options={SERVICOS_PIX_OPTIONS} hint="Intermediário + 'Split PIX' ativa flag INTERMEDIARY_WANTS_SPLIT" />
         <Question id="urgencia" label="Qual a urgência?" type="select" required options={URGENCIA_OPTIONS} />
-        <Question id="comoConheceu" label="Como conheceu a Pagsmile?" type="select" options={COMO_CONHECEU_OPTIONS} />
+        <Question id="comoConheceu" label="Como conheceu a Pin Bank?" type="select" options={COMO_CONHECEU_OPTIONS} />
         <Question id="observacoes" label="Observações" type="textarea" />
       </StepBlock>
 
       {/* SCORE 0-100 */}
-      <div className="bg-white border-2 border-[#2bc196] rounded-2xl p-6">
-        <h3 className="text-lg font-bold text-[#002443] mb-3">📊 Cálculo do Lead Score Pix (0–100)</h3>
-        <p className="text-xs text-[#002443]/70 mb-4">Score inicial = <strong>40</strong>. Aplicam-se bônus e penalidades.</p>
+      <div className="bg-white border-2 border-[#1356E2] rounded-2xl p-6">
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-3">📊 Cálculo do Lead Score Pix (0–100)</h3>
+        <p className="text-xs text-[#0A0A0A]/70 mb-4">Score inicial = <strong>40</strong>. Aplicam-se bônus e penalidades.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
@@ -136,7 +136,7 @@ export default function LeadsPixV4QuestionnaireDoc() {
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-[#002443]/10 grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
+        <div className="mt-4 pt-4 border-t border-[#0A0A0A]/10 grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
           <div className="bg-red-50 rounded p-2"><div className="text-xs font-bold text-red-700">Muito Quente</div><div className="text-[11px] text-red-600">≥ 80</div></div>
           <div className="bg-orange-50 rounded p-2"><div className="text-xs font-bold text-orange-700">Quente</div><div className="text-[11px] text-orange-600">60–79</div></div>
           <div className="bg-yellow-50 rounded p-2"><div className="text-xs font-bold text-yellow-700">Morno</div><div className="text-[11px] text-yellow-600">40–59</div></div>
@@ -146,8 +146,8 @@ export default function LeadsPixV4QuestionnaireDoc() {
 
       {/* FLAGS SILENCIOSAS */}
       <div className="bg-white border-2 border-amber-300 rounded-2xl p-6">
-        <h3 className="text-lg font-bold text-[#002443] mb-1">🚩 11 Flags Silenciosas Pix</h3>
-        <p className="text-xs text-[#002443]/70 mb-4">Levantadas em background. <strong>Não aparecem para o lead</strong>, só no painel interno.</p>
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-1">🚩 11 Flags Silenciosas Pix</h3>
+        <p className="text-xs text-[#0A0A0A]/70 mb-4">Levantadas em background. <strong>Não aparecem para o lead</strong>, só no painel interno.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <FlagCard code="ACCOUNT_TERMINATED" name="Conta encerrada antes" description="Lead declarou que já teve conta Pix encerrada" penalty="-15 pts" />
           <FlagCard code="TPV_EXCEEDS_REVENUE" name="TPV > Faturamento" description="(TPV × 12) > 1,3× faturamento anual estimado pelo porte" />

@@ -23,7 +23,7 @@ export default function StepServicosComplementar({ form, updateField }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-lg font-bold text-[#002443]">Serviços & Informações Complementares</h2>
+      <h2 className="text-lg font-bold text-[#0A0A0A]">Serviços & Informações Complementares</h2>
 
       <div>
         <Label className="text-xs mb-2 block">Serviços PIX desejados * (selecione todos que se aplicam)</Label>
@@ -42,7 +42,7 @@ export default function StepServicosComplementar({ form, updateField }) {
       </div>
 
       <div>
-        <Label className="text-xs mb-2 block">Como conheceu a PagSmile? *</Label>
+        <Label className="text-xs mb-2 block">Como conheceu a Pin Bank? *</Label>
         <ButtonSelector options={COMO_CONHECEU_OPTIONS} value={form.comoConheceu} onChange={v => updateField('comoConheceu', v)} columns={3} />
       </div>
 
@@ -55,7 +55,7 @@ export default function StepServicosComplementar({ form, updateField }) {
               <span>{uploading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Upload className="w-4 h-4 mr-1" />}Selecionar</span>
             </Button>
           </label>
-          {form.competitorFileUrl && <span className="text-xs text-[#2bc196] flex items-center gap-1"><Check className="w-3 h-3" />Enviado</span>}
+          {form.competitorFileUrl && <span className="text-xs text-[#1356E2] flex items-center gap-1"><Check className="w-3 h-3" />Enviado</span>}
         </div>
       </div>
 

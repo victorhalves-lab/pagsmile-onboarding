@@ -58,12 +58,12 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
           <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 inline-block mb-4">
             <Database className="w-10 h-10 text-indigo-600" />
           </div>
-          <h3 className="text-lg font-bold text-[#002443] mb-2">Enriquecimento Big Data Corp</h3>
-          <p className="text-sm text-[#002443]/60 mb-1">
+          <h3 className="text-lg font-bold text-[#0A0A0A] mb-2">Enriquecimento Big Data Corp</h3>
+          <p className="text-sm text-[#0A0A0A]/60 mb-1">
             Consulta automática a até 45 datasets da BDC para validar dados declarados, 
             identificar riscos ocultos e gerar score de compliance.
           </p>
-          <p className="text-xs text-[#002443]/40 mb-6">
+          <p className="text-xs text-[#0A0A0A]/40 mb-6">
             {merchant?.type === 'PF' ? 'Endpoint: /pessoas (CPF)' : 'Endpoint: /empresas (CNPJ)'} — 
             Documento: {merchant?.cpfCnpj || 'N/D'}
           </p>
@@ -76,7 +76,7 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
           <Button 
             onClick={runEnrichment} 
             disabled={isRunning || !merchant?.cpfCnpj}
-            className="bg-[#002443] hover:bg-[#003366] text-white px-6 py-2.5 rounded-xl"
+            className="bg-[#0A0A0A] hover:bg-[#003366] text-white px-6 py-2.5 rounded-xl"
           >
             {isRunning ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Consultando BDC... (pode levar até 30s)</>

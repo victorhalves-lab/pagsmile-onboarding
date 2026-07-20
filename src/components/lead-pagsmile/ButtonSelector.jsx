@@ -26,8 +26,8 @@ export default function ButtonSelector({ options, value, onChange, allowOther, o
             onClick={() => onChange(opt)}
             className={`px-4 py-3 rounded-xl text-sm font-medium border-2 transition-all duration-200 text-left
               ${value === opt 
-                ? 'border-[#2bc196] bg-[#2bc196]/10 text-[#002443] shadow-sm' 
-                : 'border-[#002443]/10 bg-white text-[#002443]/70 hover:border-[#2bc196]/40 hover:bg-[#2bc196]/5'
+                ? 'border-[#1356E2] bg-[#1356E2]/10 text-[#0A0A0A] shadow-sm' 
+                : 'border-[#0A0A0A]/10 bg-white text-[#0A0A0A]/70 hover:border-[#1356E2]/40 hover:bg-[#1356E2]/5'
               }`}
           >
             {opt}
@@ -39,8 +39,8 @@ export default function ButtonSelector({ options, value, onChange, allowOther, o
             onClick={() => onChange('__other__')}
             className={`px-4 py-3 rounded-xl text-sm font-medium border-2 transition-all duration-200 text-left
               ${isOtherSelected
-                ? 'border-[#2bc196] bg-[#2bc196]/10 text-[#002443] shadow-sm' 
-                : 'border-[#002443]/10 bg-white text-[#002443]/70 hover:border-[#2bc196]/40 hover:bg-[#2bc196]/5'
+                ? 'border-[#1356E2] bg-[#1356E2]/10 text-[#0A0A0A] shadow-sm' 
+                : 'border-[#0A0A0A]/10 bg-white text-[#0A0A0A]/70 hover:border-[#1356E2]/40 hover:bg-[#1356E2]/5'
               }`}
           >
             Outro
@@ -53,7 +53,7 @@ export default function ButtonSelector({ options, value, onChange, allowOther, o
           value={otherValue || ''}
           onChange={(e) => onOtherChange?.(e.target.value)}
           placeholder="Especifique..."
-          className="w-full h-11 px-4 rounded-xl border-2 border-[#2bc196]/30 bg-[#2bc196]/5 text-sm focus:outline-none focus:border-[#2bc196]"
+          className="w-full h-11 px-4 rounded-xl border-2 border-[#1356E2]/30 bg-[#1356E2]/5 text-sm focus:outline-none focus:border-[#1356E2]"
           autoFocus
         />
       )}

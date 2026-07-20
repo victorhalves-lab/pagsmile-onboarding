@@ -62,7 +62,7 @@ export default function Ch02_RedFlags() {
 
 function P_Intro() {
   return (
-    <p style={{ color: '#002443', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
+    <p style={{ color: '#0A0A0A', lineHeight: 1.65, margin: '8px 0 14px 0' }}>
       A plataforma usa <B>3 fontes</B> distintas de red flags, todas mescladas no campo <C>red_flags</C> de <C>ComplianceScore</C> com prefixos para rastreabilidade.
     </p>
   );

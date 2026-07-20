@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 
 /** Início / Fim (oval) */
 export function TerminalNode({ label, type = 'start', className = '' }) {
-  const bg = type === 'start' ? 'bg-[#2bc196] text-white' : 'bg-[#002443] text-white';
+  const bg = type === 'start' ? 'bg-[#1356E2] text-white' : 'bg-[#0A0A0A] text-white';
   return (
     <div className={`flex justify-center ${className}`}>
       <div className={`${bg} rounded-full px-6 py-2 text-xs font-bold shadow-md text-center min-w-[140px]`}>
@@ -17,12 +17,12 @@ export function TerminalNode({ label, type = 'start', className = '' }) {
 
 /** Processo (retângulo) */
 export function ProcessNode({ label, sublabel, actor, highlight, className = '' }) {
-  const border = highlight ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-slate-300 bg-white';
+  const border = highlight ? 'border-[#1356E2] bg-[#1356E2]/5' : 'border-slate-300 bg-white';
   return (
     <div className={`flex justify-center ${className}`}>
       <div className={`border-2 ${border} rounded-lg px-4 py-2.5 text-center shadow-sm min-w-[180px] max-w-[280px]`}>
-        <p className="text-[11px] font-bold text-[#002443] leading-snug">{label}</p>
-        {sublabel && <p className="text-[9px] text-[#002443]/50 mt-0.5 leading-tight">{sublabel}</p>}
+        <p className="text-[11px] font-bold text-[#0A0A0A] leading-snug">{label}</p>
+        {sublabel && <p className="text-[9px] text-[#0A0A0A]/50 mt-0.5 leading-tight">{sublabel}</p>}
         {actor && <Badge className="mt-1.5 text-[8px] bg-slate-100 text-slate-600 border-0 font-medium">{actor}</Badge>}
       </div>
     </div>
@@ -119,12 +119,12 @@ export function FlowchartContainer({ title, description, actor, icon: Icon, colo
     <div className={`border-2 ${color} rounded-2xl overflow-hidden bg-white shadow-sm`}>
       <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
         <div className="flex items-center gap-3">
-          {Icon && <div className="p-2 bg-[#002443]/5 rounded-lg"><Icon className="w-5 h-5 text-[#002443]" /></div>}
+          {Icon && <div className="p-2 bg-[#0A0A0A]/5 rounded-lg"><Icon className="w-5 h-5 text-[#0A0A0A]" /></div>}
           <div className="flex-1">
-            <h4 className="font-bold text-[#002443] text-sm">{title}</h4>
-            {description && <p className="text-[10px] text-[#002443]/50 mt-0.5">{description}</p>}
+            <h4 className="font-bold text-[#0A0A0A] text-sm">{title}</h4>
+            {description && <p className="text-[10px] text-[#0A0A0A]/50 mt-0.5">{description}</p>}
           </div>
-          {actor && <Badge className="bg-[#002443] text-white border-0 text-[9px]">{actor}</Badge>}
+          {actor && <Badge className="bg-[#0A0A0A] text-white border-0 text-[9px]">{actor}</Badge>}
         </div>
       </div>
       <div className="p-5">

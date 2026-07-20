@@ -72,8 +72,8 @@ export default function SegmentRatesLoader({ onApply }) {
   return (
     <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-5 space-y-3">
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-          <LayoutGrid className="w-3.5 h-3.5 text-[#2bc196]" />
+        <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+          <LayoutGrid className="w-3.5 h-3.5 text-[#1356E2]" />
         </div>
         <div>
           <h2 className="text-sm font-bold text-white/80">Taxas Padrão por Segmento</h2>
@@ -90,8 +90,8 @@ export default function SegmentRatesLoader({ onApply }) {
             onClick={() => handleSelect(s)}
             className={`px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 border flex items-center justify-center gap-1.5 ${
               selected === s
-                ? 'bg-[#2bc196] border-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/25'
-                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-[#2bc196]/40 hover:text-white cursor-pointer'
+                ? 'bg-[#1356E2] border-[#1356E2] text-[#0A0A0A] shadow-lg shadow-[#1356E2]/25'
+                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-[#1356E2]/40 hover:text-white cursor-pointer'
             }`}
           >
             {selected === s && <Check className="w-3 h-3" />}
@@ -101,7 +101,7 @@ export default function SegmentRatesLoader({ onApply }) {
       </div>
 
       {selected && (
-        <p className="text-[10px] text-[#2bc196]/50 flex items-center gap-1">
+        <p className="text-[10px] text-[#1356E2]/50 flex items-center gap-1">
           <Info className="w-3 h-3" />
           Taxas do segmento "{selected}" aplicadas. Você pode editar livremente abaixo.
         </p>

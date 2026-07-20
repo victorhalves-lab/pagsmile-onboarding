@@ -113,22 +113,22 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
     <div className="space-y-6">
        <div>
         <div className="flex items-center gap-3 mb-2">
-          <Building2 className="w-5 h-5 text-[#002443]/50" />
-          <h3 className="text-lg font-semibold text-[#002443]">Dados da Empresa e Contato</h3>
+          <Building2 className="w-5 h-5 text-[#0A0A0A]/50" />
+          <h3 className="text-lg font-semibold text-[#0A0A0A]">Dados da Empresa e Contato</h3>
         </div>
-        <p className="text-sm text-[#002443]/70">Comece informando o CNPJ para pré-preenchermos os dados.</p>
+        <p className="text-sm text-[#0A0A0A]/70">Comece informando o CNPJ para pré-preenchermos os dados.</p>
       </div>
 
       {/* CNPJ */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <Label className="text-sm font-semibold text-[#002443]">CNPJ <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-semibold text-[#0A0A0A]">CNPJ <span className="text-red-500">*</span></Label>
           {isActive && <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-1"><CheckCircle className="w-3 h-3" />Ativo na RF</Badge>}
           {isInactive && <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px] gap-1"><XCircle className="w-3 h-3" />{cnpjData.descricao_situacao_cadastral}</Badge>}
         </div>
         <div className="relative">
           <Input value={cnpjDisplay} onChange={handleCnpjChange} placeholder="XX.XXX.XXX/XXXX-XX" className={`h-12 rounded-xl font-mono text-base tracking-wide ${isActive ? 'border-emerald-400 ring-1 ring-emerald-200' : isInactive ? 'border-red-400 ring-1 ring-red-300' : ''}`} maxLength={18} />
-          {cnpjLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
+          {cnpjLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />}
         </div>
         {validationError && <p className="text-xs text-red-600 flex items-center gap-1"><AlertTriangle className="w-3 h-3" />{validationError}</p>}
         {cnpjError && <p className="text-xs text-red-600 flex items-center gap-1"><AlertTriangle className="w-3 h-3" />{cnpjError}</p>}
@@ -140,11 +140,11 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
       {hasConsulted && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Label className="text-xs font-medium text-[#002443]/70">Razão Social <span className="text-red-500">*</span></Label>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">Razão Social <span className="text-red-500">*</span></Label>
             <Input value={formData.razaoSocial || ''} onChange={e => update('razaoSocial', e.target.value)} className="h-11 rounded-xl text-sm" />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs font-medium text-[#002443]/70">Nome Fantasia</Label>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">Nome Fantasia</Label>
             <Input value={formData.nomeFantasia || ''} onChange={e => update('nomeFantasia', e.target.value)} className="h-11 rounded-xl text-sm" />
           </div>
         </div>
@@ -154,8 +154,8 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
       {hasPrefillAddr && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#002443]/40" />
-            <Label className="text-sm font-semibold text-[#002443]">Endereço <span className="text-red-500">*</span></Label>
+            <MapPin className="w-4 h-4 text-[#0A0A0A]/40" />
+            <Label className="text-sm font-semibold text-[#0A0A0A]">Endereço <span className="text-red-500">*</span></Label>
             {addressConfirmed && <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-1"><ShieldCheck className="w-3 h-3" />Confirmado</Badge>}
             {!addressConfirmed && !editingAddress && <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] gap-1"><CheckCircle className="w-3 h-3" />Via CNPJ</Badge>}
           </div>
@@ -163,9 +163,9 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
           {addressConfirmed && !editingAddress ? (
             <div>
               <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-xl">
-                <p className="text-sm font-medium text-[#002443]">{addr.logradouro}{addr.numero ? `, ${addr.numero}` : ''}{addr.complemento ? ` - ${addr.complemento}` : ''}</p>
-                <p className="text-sm text-[#002443]/70">{addr.bairro} — {addr.cidade}/{addr.uf}</p>
-                <p className="text-xs text-[#002443]/50">CEP: {formatCep(addr.cep)}</p>
+                <p className="text-sm font-medium text-[#0A0A0A]">{addr.logradouro}{addr.numero ? `, ${addr.numero}` : ''}{addr.complemento ? ` - ${addr.complemento}` : ''}</p>
+                <p className="text-sm text-[#0A0A0A]/70">{addr.bairro} — {addr.cidade}/{addr.uf}</p>
+                <p className="text-xs text-[#0A0A0A]/50">CEP: {formatCep(addr.cep)}</p>
               </div>
               <Button type="button" variant="outline" size="sm" onClick={() => { setEditingAddress(true); setAddressConfirmed(false); }} className="text-xs gap-1 mt-2"><Pencil className="w-3 h-3" />Alterar</Button>
             </div>
@@ -177,38 +177,38 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
                 <p className="mt-2 text-blue-600">Se estiver correto, clique em "Confirmar". Caso precise alterar, clique em "Editar".</p>
               </div>
               <div className="flex gap-3 mt-3">
-                <Button type="button" onClick={() => setAddressConfirmed(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 h-10 rounded-xl px-5 text-sm"><ShieldCheck className="w-4 h-4" />Confirmar endereço</Button>
+                <Button type="button" onClick={() => setAddressConfirmed(true)} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 h-10 rounded-xl px-5 text-sm"><ShieldCheck className="w-4 h-4" />Confirmar endereço</Button>
                 <Button type="button" variant="outline" onClick={() => setEditingAddress(true)} className="gap-2 h-10 rounded-xl text-sm"><Pencil className="w-4 h-4" />Editar</Button>
               </div>
             </div>
           ) : (
-            <div className="space-y-4 p-4 bg-[#f4f4f4] rounded-xl border border-[#002443]/[0.06]">
-              <p className="text-xs text-[#002443]/60">Digite o novo CEP ou edite manualmente.</p>
+            <div className="space-y-4 p-4 bg-[#f4f4f4] rounded-xl border border-[#0A0A0A]/[0.06]">
+              <p className="text-xs text-[#0A0A0A]/60">Digite o novo CEP ou edite manualmente.</p>
               <div className="space-y-1">
-                <Label className="text-xs font-medium text-[#002443]/70">CEP <span className="text-red-500">*</span></Label>
+                <Label className="text-xs font-medium text-[#0A0A0A]/70">CEP <span className="text-red-500">*</span></Label>
                 <div className="relative w-48">
                   <Input value={cepDisplay} onChange={e => handleCepChange(e.target.value)} placeholder="00000-000" className="h-10 rounded-xl font-mono text-sm" maxLength={9} />
-                  {cepLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
+                  {cepLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />}
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-2 space-y-1"><Label className="text-xs font-medium text-[#002443]/70">Logradouro *</Label><Input value={addr.logradouro || ''} onChange={e => updateAddr('logradouro', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
-                <div className="space-y-1"><Label className="text-xs font-medium text-[#002443]/70">Número *</Label><Input value={addr.numero || ''} onChange={e => updateAddr('numero', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
+                <div className="col-span-2 space-y-1"><Label className="text-xs font-medium text-[#0A0A0A]/70">Logradouro *</Label><Input value={addr.logradouro || ''} onChange={e => updateAddr('logradouro', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
+                <div className="space-y-1"><Label className="text-xs font-medium text-[#0A0A0A]/70">Número *</Label><Input value={addr.numero || ''} onChange={e => updateAddr('numero', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1"><Label className="text-xs font-medium text-[#002443]/70">Complemento</Label><Input value={addr.complemento || ''} onChange={e => updateAddr('complemento', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
-                <div className="space-y-1"><Label className="text-xs font-medium text-[#002443]/70">Bairro *</Label><Input value={addr.bairro || ''} onChange={e => updateAddr('bairro', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
+                <div className="space-y-1"><Label className="text-xs font-medium text-[#0A0A0A]/70">Complemento</Label><Input value={addr.complemento || ''} onChange={e => updateAddr('complemento', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
+                <div className="space-y-1"><Label className="text-xs font-medium text-[#0A0A0A]/70">Bairro *</Label><Input value={addr.bairro || ''} onChange={e => updateAddr('bairro', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-2 space-y-1"><Label className="text-xs font-medium text-[#002443]/70">Cidade *</Label><Input value={addr.cidade || ''} onChange={e => updateAddr('cidade', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
-                <div className="space-y-1"><Label className="text-xs font-medium text-[#002443]/70">UF *</Label>
+                <div className="col-span-2 space-y-1"><Label className="text-xs font-medium text-[#0A0A0A]/70">Cidade *</Label><Input value={addr.cidade || ''} onChange={e => updateAddr('cidade', e.target.value)} className="h-10 rounded-xl text-sm" /></div>
+                <div className="space-y-1"><Label className="text-xs font-medium text-[#0A0A0A]/70">UF *</Label>
                   <Select value={addr.uf || ''} onValueChange={v => updateAddr('uf', v)}>
                     <SelectTrigger className="h-10 rounded-xl text-sm"><SelectValue placeholder="UF" /></SelectTrigger>
                     <SelectContent>{UF_LIST.map(uf => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
               </div>
-              <Button type="button" onClick={() => { setAddressConfirmed(true); setEditingAddress(false); }} disabled={!addr.cep || !addr.logradouro || !addr.cidade || !addr.uf} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 h-10 rounded-xl px-5 text-sm"><ShieldCheck className="w-4 h-4" />Confirmar endereço</Button>
+              <Button type="button" onClick={() => { setAddressConfirmed(true); setEditingAddress(false); }} disabled={!addr.cep || !addr.logradouro || !addr.cidade || !addr.uf} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 h-10 rounded-xl px-5 text-sm"><ShieldCheck className="w-4 h-4" />Confirmar endereço</Button>
             </div>
           )}
         </div>
@@ -218,34 +218,34 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Label className="text-xs font-medium text-[#002443]/70">Nome do Responsável <span className="text-red-500">*</span></Label>
-            <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input value={formData.contactName || ''} onChange={e => update('contactName', e.target.value)} placeholder="Seu nome completo" className="h-11 rounded-xl text-sm pl-10" /></div>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">Nome do Responsável <span className="text-red-500">*</span></Label>
+            <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" /><Input value={formData.contactName || ''} onChange={e => update('contactName', e.target.value)} placeholder="Seu nome completo" className="h-11 rounded-xl text-sm pl-10" /></div>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs font-medium text-[#002443]/70">E-mail Corporativo <span className="text-red-500">*</span></Label>
-            <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input type="email" value={formData.email || ''} onChange={e => update('email', e.target.value)} placeholder="contato@empresa.com" className="h-11 rounded-xl text-sm pl-10" /></div>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">E-mail Corporativo <span className="text-red-500">*</span></Label>
+            <div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" /><Input type="email" value={formData.email || ''} onChange={e => update('email', e.target.value)} placeholder="contato@empresa.com" className="h-11 rounded-xl text-sm pl-10" /></div>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs font-medium text-[#002443]/70">Telefone / WhatsApp <span className="text-red-500">*</span></Label>
-            <div className="relative"><Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input value={formData.phone || ''} onChange={e => update('phone', e.target.value)} placeholder="(11) 99999-9999" className="h-11 rounded-xl text-sm pl-10" /></div>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">Telefone / WhatsApp <span className="text-red-500">*</span></Label>
+            <div className="relative"><Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" /><Input value={formData.phone || ''} onChange={e => update('phone', e.target.value)} placeholder="(11) 99999-9999" className="h-11 rounded-xl text-sm pl-10" /></div>
           </div>
            <div className="space-y-1">
-            <Label className="text-xs font-medium text-[#002443]/70">Cargo do Responsável <span className="text-red-500">*</span></Label>
-            <div className="relative"><Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input value={formData.contactRole || ''} onChange={e => update('contactRole', e.target.value)} placeholder="Ex: CEO, Diretor Financeiro" className="h-11 rounded-xl text-sm pl-10" /></div>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">Cargo do Responsável <span className="text-red-500">*</span></Label>
+            <div className="relative"><Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" /><Input value={formData.contactRole || ''} onChange={e => update('contactRole', e.target.value)} placeholder="Ex: CEO, Diretor Financeiro" className="h-11 rounded-xl text-sm pl-10" /></div>
           </div>
           <div className="space-y-1 col-span-1 md:col-span-2">
-            <Label className="text-xs font-medium text-[#002443]/70">Website <span className="text-[#002443]/40">(opcional)</span></Label>
-            <div className="relative"><Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input value={formData.website || ''} onChange={e => update('website', e.target.value)} placeholder="https://www.suaempresa.com" className="h-11 rounded-xl text-sm pl-10" /></div>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">Website <span className="text-[#0A0A0A]/40">(opcional)</span></Label>
+            <div className="relative"><Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/30" /><Input value={formData.website || ''} onChange={e => update('website', e.target.value)} placeholder="https://www.suaempresa.com" className="h-11 rounded-xl text-sm pl-10" /></div>
           </div>
         </div>
       </div>
 
       {/* Submit */}
        <div className="flex justify-end items-center pt-4">
-        <Button onClick={nextStep} disabled={!canProceed} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2">Próximo <ArrowRight /></Button>
+        <Button onClick={nextStep} disabled={!canProceed} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2">Próximo <ArrowRight /></Button>
       </div>
        {!canProceed && (
-        <p className="text-xs text-center text-[#002443]/40">Preencha todos os campos obrigatórios e confirme o endereço para continuar.</p>
+        <p className="text-xs text-center text-[#0A0A0A]/40">Preencha todos os campos obrigatórios e confirme o endereço para continuar.</p>
       )}
     </div>
   );

@@ -50,10 +50,10 @@ export default function PipelineAgingAlerts({ leads }) {
     <div className="bg-white rounded-xl border border-amber-200 p-4">
       <div className="flex items-center gap-2 mb-3">
         <AlertTriangle className="w-4 h-4 text-amber-500" />
-        <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">
+        <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">
           {t('pipe_aging.title', { count: staleLeads.length })}
         </h3>
-        <span className="text-[10px] text-[var(--pagsmile-blue)]/50">{t('pipe_aging.subtitle')}</span>
+        <span className="text-[10px] text-[var(--pinbank-blue)]/50">{t('pipe_aging.subtitle')}</span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {staleLeads.map(lead => (

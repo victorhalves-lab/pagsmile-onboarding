@@ -68,7 +68,7 @@ export default function DocOnlyLinkModal({ open, onOpenChange, caseData, merchan
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileUp className="w-5 h-5 text-[#2bc196]" />
+            <FileUp className="w-5 h-5 text-[#1356E2]" />
             Gerar Link de Upload de Documentos
           </DialogTitle>
           <DialogDescription>
@@ -82,9 +82,9 @@ export default function DocOnlyLinkModal({ open, onOpenChange, caseData, merchan
           {/* Case info */}
           {caseData && (
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-              <p className="font-semibold text-[#002443]">{merchant?.fullName || '—'}</p>
-              <p className="text-xs text-[#002443]/60 mt-0.5">{merchant?.cpfCnpj || '—'}</p>
-              <p className="text-xs text-[#002443]/50 mt-1">Caso: {caseData.id}</p>
+              <p className="font-semibold text-[#0A0A0A]">{merchant?.fullName || '—'}</p>
+              <p className="text-xs text-[#0A0A0A]/60 mt-0.5">{merchant?.cpfCnpj || '—'}</p>
+              <p className="text-xs text-[#0A0A0A]/50 mt-1">Caso: {caseData.id}</p>
             </div>
           )}
 
@@ -111,7 +111,7 @@ export default function DocOnlyLinkModal({ open, onOpenChange, caseData, merchan
                 <Button
                   type="button"
                   onClick={handleCopy}
-                  className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white shrink-0"
+                  className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white shrink-0"
                 >
                   {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
@@ -125,7 +125,7 @@ export default function DocOnlyLinkModal({ open, onOpenChange, caseData, merchan
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </div>
-              <p className="text-[11px] text-[#002443]/50">
+              <p className="text-[11px] text-[#0A0A0A]/50">
                 Template: <strong>{result.templateName}</strong>
                 {result.templateModel ? ` (${result.templateModel})` : ''}
               </p>
@@ -141,7 +141,7 @@ export default function DocOnlyLinkModal({ open, onOpenChange, caseData, merchan
             <Button
               onClick={handleGenerate}
               disabled={loading || caseData?.docCompleted}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando...</>

@@ -19,7 +19,7 @@ export default function TemplateDocumentsBlock({ requiredDocs = [], conditionalD
     <>
       {requiredDocs.length > 0 && (
         <>
-          <h4 className="text-[11px] font-bold text-[#002443] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <h4 className="text-[11px] font-bold text-[#0A0A0A] uppercase tracking-wider mb-2 flex items-center gap-1.5">
             <FileText className="w-3.5 h-3.5" />
             Documentos Base (obrigatórios para todos)
           </h4>
@@ -31,7 +31,7 @@ export default function TemplateDocumentsBlock({ requiredDocs = [], conditionalD
               d.description || '—',
               (d.allowedFormats || []).join(', ') || 'Qualquer',
               d.maxSizeMB ? `${d.maxSizeMB} MB` : '10 MB (padrão)',
-              d.cafSdk ? <span className="inline-flex items-center gap-1 text-[#2bc196] font-semibold"><Camera className="w-3 h-3" />{d.cafSdk}</span> : '—',
+              d.cafSdk ? <span className="inline-flex items-center gap-1 text-[#1356E2] font-semibold"><Camera className="w-3 h-3" />{d.cafSdk}</span> : '—',
             ])}
           />
 
@@ -45,7 +45,7 @@ export default function TemplateDocumentsBlock({ requiredDocs = [], conditionalD
 
       {conditionalDocs.length > 0 && (
         <>
-          <h4 className="text-[11px] font-bold text-[#002443] uppercase tracking-wider mb-2 mt-5 flex items-center gap-1.5">
+          <h4 className="text-[11px] font-bold text-[#0A0A0A] uppercase tracking-wider mb-2 mt-5 flex items-center gap-1.5">
             <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
             Documentos Condicionais (solicitados apenas em condições específicas)
           </h4>
@@ -69,12 +69,12 @@ function DocumentDetailCard({ doc }) {
   return (
     <div className="border border-[#e8e8e8] rounded p-3 bg-white">
       <div className="flex items-start justify-between gap-2 mb-1">
-        <p className="text-[12px] font-bold text-[#002443] flex-1 leading-tight">
+        <p className="text-[12px] font-bold text-[#0A0A0A] flex-1 leading-tight">
           {doc.label || doc.documentTypeId}
         </p>
         <div className="flex gap-1 flex-shrink-0">
           {doc.cafSdk && (
-            <span className="inline-flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded bg-[#2bc196]/15 text-[#2bc196] font-semibold">
+            <span className="inline-flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded bg-[#1356E2]/15 text-[#1356E2] font-semibold">
               <Camera className="w-2.5 h-2.5" />SDK
             </span>
           )}
@@ -96,12 +96,12 @@ function DocumentDetailCard({ doc }) {
       {doc.allowedFormats?.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1">
           {doc.allowedFormats.map(f => (
-            <span key={f} className="text-[9px] px-1.5 py-0.5 bg-[#f4f4f4] rounded font-mono text-[#002443]">
+            <span key={f} className="text-[9px] px-1.5 py-0.5 bg-[#f4f4f4] rounded font-mono text-[#0A0A0A]">
               {f}
             </span>
           ))}
           {doc.maxSizeMB && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-[#f4f4f4] rounded font-mono text-[#002443]">
+            <span className="text-[9px] px-1.5 py-0.5 bg-[#f4f4f4] rounded font-mono text-[#0A0A0A]">
               ≤ {doc.maxSizeMB}MB
             </span>
           )}

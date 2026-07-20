@@ -140,7 +140,7 @@ export default function LeadDetails() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -148,7 +148,7 @@ export default function LeadDetails() {
   if (!lead) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">{t('ld.not_found')}</h2>
+        <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">{t('ld.not_found')}</h2>
       </div>
     );
   }
@@ -164,7 +164,7 @@ export default function LeadDetails() {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">{lead.fullName || lead.email}</h1>
+          <h1 className="text-2xl font-bold text-[var(--pinbank-blue)]">{lead.fullName || lead.email}</h1>
           <div className="flex items-center gap-2 mt-1">
             <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
             {lead.businessSubCategory && (
@@ -173,7 +173,7 @@ export default function LeadDetails() {
                 {segmentLabel}
               </Badge>
             )}
-            {lead.protocolo && <span className="text-xs font-mono text-[var(--pagsmile-blue)]/50">{lead.protocolo}</span>}
+            {lead.protocolo && <span className="text-xs font-mono text-[var(--pinbank-blue)]/50">{lead.protocolo}</span>}
             <LeadSLAIndicator lead={lead} />
           </div>
         </div>
@@ -227,14 +227,14 @@ export default function LeadDetails() {
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Building2 className="w-4 h-4" /> {t('ld.company_data')}</CardTitle></CardHeader>
               <CardContent className="space-y-3 text-sm">
-                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.legal_name')}:</span><p className="font-medium">{lead.fullName || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.trade_name')}:</span><p className="font-medium">{lead.companyName || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">CNPJ:</span><p className="font-medium">{lead.cpfCnpj || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">MCC:</span><p className="font-medium">{lead.mcc || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">{t('ld.legal_name')}:</span><p className="font-medium">{lead.fullName || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">{t('ld.trade_name')}:</span><p className="font-medium">{lead.companyName || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">CNPJ:</span><p className="font-medium">{lead.cpfCnpj || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">MCC:</span><p className="font-medium">{lead.mcc || '-'}</p></div>
                 {lead.website && (
                   <div className="flex items-center gap-1">
-                    <Globe className="w-3 h-3 text-[var(--pagsmile-blue)]/60" />
-                    <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-[var(--pagsmile-green)] text-xs">{lead.website}</a>
+                    <Globe className="w-3 h-3 text-[var(--pinbank-blue)]/60" />
+                    <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-[var(--pinbank-blue)] text-xs">{lead.website}</a>
                   </div>
                 )}
               </CardContent>
@@ -244,8 +244,8 @@ export default function LeadDetails() {
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-2"><User className="w-4 h-4" /> {t('ld.contact')}</CardTitle></CardHeader>
               <CardContent className="space-y-3 text-sm">
-                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.contact_name')}:</span><p className="font-medium">{lead.contactName || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.contact_role')}:</span><p className="font-medium">{lead.contactRole || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">{t('ld.contact_name')}:</span><p className="font-medium">{lead.contactName || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">{t('ld.contact_role')}:</span><p className="font-medium">{lead.contactRole || '-'}</p></div>
                 <div className="flex items-center gap-1"><Mail className="w-3 h-3" /><span>{lead.email || '-'}</span></div>
                 <div className="flex items-center gap-1"><Phone className="w-3 h-3" /><span>{lead.phone || '-'}</span></div>
               </CardContent>
@@ -256,15 +256,15 @@ export default function LeadDetails() {
               <CardHeader><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="w-4 h-4" /> {t('ld.score_financial')}</CardTitle></CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-[var(--pagsmile-blue)]/60">{t('ld.score_priscila')}:</span>
+                  <span className="text-[var(--pinbank-blue)]/60">{t('ld.score_priscila')}:</span>
                   <span className={`text-2xl font-bold ${
                     (lead.priscilaQualityScore || 0) >= 70 ? 'text-green-600' :
                     (lead.priscilaQualityScore || 0) >= 40 ? 'text-amber-600' : 'text-red-600'
                   }`}>{lead.priscilaQualityScore ?? '-'}</span>
                 </div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.monthly_tpv')}:</span><p className="font-medium">R$ {lead.tpvMensal?.toLocaleString() || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.avg_ticket')}:</span><p className="font-medium">R$ {lead.ticketMedio?.toLocaleString() || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.growth_expectation')}:</span><p className="font-medium">{lead.expectativaCrescimento || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">{t('ld.monthly_tpv')}:</span><p className="font-medium">R$ {lead.tpvMensal?.toLocaleString() || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">{t('ld.avg_ticket')}:</span><p className="font-medium">R$ {lead.ticketMedio?.toLocaleString() || '-'}</p></div>
+                <div><span className="text-[var(--pinbank-blue)]/60">{t('ld.growth_expectation')}:</span><p className="font-medium">{lead.expectativaCrescimento || '-'}</p></div>
               </CardContent>
             </Card>
           </div>
@@ -284,7 +284,7 @@ export default function LeadDetails() {
                 <Button 
                   onClick={() => addNoteMutation.mutate()} 
                   disabled={!note.trim() || addNoteMutation.isPending}
-                  className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 self-end"
+                  className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 self-end"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
@@ -319,20 +319,20 @@ export default function LeadDetails() {
                     if (fileEntries.length === 0) return null;
                     return (
                       <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                        <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4 text-[var(--pagsmile-green)]" /> {t('ld.documents_sent')}</h4>
+                        <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4 text-[var(--pinbank-blue)]" /> {t('ld.documents_sent')}</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {fileEntries.map(([key, value]) => (
                             <div key={key} className="flex items-center gap-3 bg-white rounded-lg border border-slate-200 p-3">
-                              <FileText className="w-5 h-5 text-[var(--pagsmile-blue)]/40 shrink-0" />
+                              <FileText className="w-5 h-5 text-[var(--pinbank-blue)]/40 shrink-0" />
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs text-[var(--pagsmile-blue)]/50 font-medium truncate">{key}</p>
+                                <p className="text-xs text-[var(--pinbank-blue)]/50 font-medium truncate">{key}</p>
                               </div>
                               <div className="flex gap-1 shrink-0">
                                 <a href={value} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-md hover:bg-slate-100 transition-colors" title="Visualizar">
-                                  <ExternalLink className="w-4 h-4 text-[var(--pagsmile-blue)]/60" />
+                                  <ExternalLink className="w-4 h-4 text-[var(--pinbank-blue)]/60" />
                                 </a>
                                 <a href={value} download className="p-1.5 rounded-md hover:bg-slate-100 transition-colors" title="Baixar">
-                                  <Download className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                                  <Download className="w-4 h-4 text-[var(--pinbank-blue)]" />
                                 </a>
                               </div>
                             </div>
@@ -348,8 +348,8 @@ export default function LeadDetails() {
                       .filter(([k, v]) => !k.startsWith('aceite_') && !(typeof v === 'string' && v.startsWith('http') && (v.includes('/storage/') || v.includes('supabase'))))
                       .map(([key, value]) => (
                       <div key={key} className="border-b border-slate-100 pb-2">
-                        <p className="text-xs text-[var(--pagsmile-blue)]/50 font-medium">{key}</p>
-                        <p className="text-sm text-[var(--pagsmile-blue)]">
+                        <p className="text-xs text-[var(--pinbank-blue)]/50 font-medium">{key}</p>
+                        <p className="text-sm text-[var(--pinbank-blue)]">
                           {Array.isArray(value) ? value.join(', ') : typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : String(value || '-')}
                         </p>
                       </div>
@@ -357,7 +357,7 @@ export default function LeadDetails() {
                   </div>
                 </div>
               ) : (
-                <p className="text-center py-8 text-[var(--pagsmile-blue)]/60">{t('ld.questionnaire_unavailable')}</p>
+                <p className="text-center py-8 text-[var(--pinbank-blue)]/60">{t('ld.questionnaire_unavailable')}</p>
               )}
             </CardContent>
           </Card>
@@ -372,19 +372,19 @@ export default function LeadDetails() {
             <CardHeader><CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" /> {t('ld.activity_history')}</CardTitle></CardHeader>
             <CardContent>
               {activities.length === 0 ? (
-                <p className="text-center py-8 text-[var(--pagsmile-blue)]/60">{t('ld.no_activities')}</p>
+                <p className="text-center py-8 text-[var(--pinbank-blue)]/60">{t('ld.no_activities')}</p>
               ) : (
                 <div className="space-y-4">
                   {activities.map(act => (
                     <div key={act.id} className="flex gap-3 border-l-2 border-slate-200 pl-4 pb-4">
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-[var(--pagsmile-blue)]">{act.description}</p>
+                        <p className="text-sm font-medium text-[var(--pinbank-blue)]">{act.description}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs">{act.activityType}</Badge>
-                          <span className="text-xs text-[var(--pagsmile-blue)]/50">
+                          <span className="text-xs text-[var(--pinbank-blue)]/50">
                             {act.activityDate ? moment(act.activityDate).format('DD/MM/YY HH:mm') : act.created_date ? moment(act.created_date).format('DD/MM/YY HH:mm') : ''}
                           </span>
-                          <span className="text-xs text-[var(--pagsmile-blue)]/40">{t('ld.by')} {act.performedBy}</span>
+                          <span className="text-xs text-[var(--pinbank-blue)]/40">{t('ld.by')} {act.performedBy}</span>
                         </div>
                       </div>
                     </div>

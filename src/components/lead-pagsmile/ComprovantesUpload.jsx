@@ -61,19 +61,19 @@ export default function ComprovantesUpload({ value = [], onChange }) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border-2 border-dashed border-[#2bc196]/30 bg-[#2bc196]/5 p-4 space-y-3">
+      <div className="rounded-xl border-2 border-dashed border-[#1356E2]/30 bg-[#1356E2]/5 p-4 space-y-3">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#2bc196]/15 flex items-center justify-center shrink-0">
-            <Upload className="w-5 h-5 text-[#2bc196]" />
+          <div className="w-10 h-10 rounded-xl bg-[#1356E2]/15 flex items-center justify-center shrink-0">
+            <Upload className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-[#002443]">
-              Anexar propostas ou extratos de outros players <span className="text-[#002443]/50 font-normal">(opcional)</span>
+            <p className="text-sm font-semibold text-[#0A0A0A]">
+              Anexar propostas ou extratos de outros players <span className="text-[#0A0A0A]/50 font-normal">(opcional)</span>
             </p>
-            <p className="text-xs text-[#002443]/60 mt-1 leading-relaxed">
+            <p className="text-xs text-[#0A0A0A]/60 mt-1 leading-relaxed">
               Suba PDFs ou imagens com taxas que você já paga em outros processadores. Vai nos ajudar a fazer uma proposta ainda mais competitiva.
             </p>
-            <p className="text-[10px] text-[#002443]/40 mt-1">
+            <p className="text-[10px] text-[#0A0A0A]/40 mt-1">
               PDF, JPG, PNG · até {MAX_FILES} arquivos · máx {MAX_SIZE_MB}MB cada
             </p>
           </div>
@@ -109,17 +109,17 @@ export default function ComprovantesUpload({ value = [], onChange }) {
       {value.length > 0 && (
         <div className="space-y-2">
           {value.map((f, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#002443]/10">
-              <CheckCircle className="w-4 h-4 text-[#2bc196] shrink-0" />
-              <FileText className="w-4 h-4 text-[#002443]/40 shrink-0" />
+            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#0A0A0A]/10">
+              <CheckCircle className="w-4 h-4 text-[#1356E2] shrink-0" />
+              <FileText className="w-4 h-4 text-[#0A0A0A]/40 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-[#002443] truncate">{f.name}</p>
-                <p className="text-[10px] text-[#002443]/40">{(f.size / 1024).toFixed(0)} KB</p>
+                <p className="text-xs font-medium text-[#0A0A0A] truncate">{f.name}</p>
+                <p className="text-[10px] text-[#0A0A0A]/40">{(f.size / 1024).toFixed(0)} KB</p>
               </div>
               <button
                 type="button"
                 onClick={() => remove(i)}
-                className="text-[#002443]/30 hover:text-red-500 transition-colors"
+                className="text-[#0A0A0A]/30 hover:text-red-500 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>

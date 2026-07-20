@@ -15,7 +15,7 @@ import CaseRow from '@/components/doc-comp-parceiros/CaseRow';
  * Lists all compliance cases (Aprovado+Manual auto-selected, Recusado opt-in),
  * shows bank data collection status per case, lets admin:
  *   1. generate bank-data links (individual or bulk)
- *   2. export XLSX in "Pré KYC Pagsmile" format (enriches missing address via BDC)
+ *   2. export XLSX in "Pré KYC Pin Bank" format (enriches missing address via BDC)
  */
 
 const AUTO_STATUSES = ['Aprovado', 'Manual'];
@@ -403,7 +403,7 @@ export default function DocCompParceiros() {
       const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = fileName || 'PreKYC-Pagsmile.xlsx';
+      a.href = url; a.download = fileName || 'PreKYC-Pin Bank.xlsx';
       document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
 
@@ -432,9 +432,9 @@ export default function DocCompParceiros() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#002443]">Doc Compliance Parceiros</h1>
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Doc Compliance Parceiros</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Gere a planilha "Pré KYC Pagsmile" com todos os clientes aprovados. Endereço e razão social são enriquecidos via BigDataCorp automaticamente. Para dados bancários, envie um link de coleta para cada cliente.
+          Gere a planilha "Pré KYC Pin Bank" com todos os clientes aprovados. Endereço e razão social são enriquecidos via BigDataCorp automaticamente. Para dados bancários, envie um link de coleta para cada cliente.
         </p>
       </div>
 
@@ -442,11 +442,11 @@ export default function DocCompParceiros() {
       <Card className="p-4">
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-[200px]">
-            <label className="text-xs font-semibold text-[#002443] mb-1 block">Buscar</label>
+            <label className="text-xs font-semibold text-[#0A0A0A] mb-1 block">Buscar</label>
             <Input placeholder="CNPJ, razão social, email..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <div className="w-48">
-            <label className="text-xs font-semibold text-[#002443] mb-1 block">Filtro de Status</label>
+            <label className="text-xs font-semibold text-[#0A0A0A] mb-1 block">Filtro de Status</label>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -462,7 +462,7 @@ export default function DocCompParceiros() {
             </Select>
           </div>
           <div className="w-44">
-            <label className="text-xs font-semibold text-[#002443] mb-1 block">Hierarquia</label>
+            <label className="text-xs font-semibold text-[#0A0A0A] mb-1 block">Hierarquia</label>
             <Select value={hierarchyFilter} onValueChange={setHierarchyFilter}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -486,7 +486,7 @@ export default function DocCompParceiros() {
             Gerar Links ({selected.size})
           </Button>
           <Button
-            className="bg-[#2bc196] hover:bg-[#239b78]"
+            className="bg-[#1356E2] hover:bg-[#239b78]"
             disabled={selected.size === 0 || exporting}
             onClick={exportXlsx}
           >
@@ -500,7 +500,7 @@ export default function DocCompParceiros() {
       <Card className="overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#2bc196]" />
+            <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#1356E2]" />
             <p className="text-sm text-muted-foreground mt-2">Carregando casos...</p>
           </div>
         ) : visibleCount === 0 ? (
@@ -512,11 +512,11 @@ export default function DocCompParceiros() {
                 <th className="p-3 text-left w-10">
                   <Checkbox checked={allVisibleChecked} onCheckedChange={toggleAll} />
                 </th>
-                <th className="p-3 text-left font-semibold text-[#002443]">Cliente</th>
-                <th className="p-3 text-left font-semibold text-[#002443]">CPF/CNPJ</th>
-                <th className="p-3 text-left font-semibold text-[#002443]">Status Caso</th>
-                <th className="p-3 text-left font-semibold text-[#002443]">Dados Bancários</th>
-                <th className="p-3 text-right font-semibold text-[#002443]">Ações</th>
+                <th className="p-3 text-left font-semibold text-[#0A0A0A]">Cliente</th>
+                <th className="p-3 text-left font-semibold text-[#0A0A0A]">CPF/CNPJ</th>
+                <th className="p-3 text-left font-semibold text-[#0A0A0A]">Status Caso</th>
+                <th className="p-3 text-left font-semibold text-[#0A0A0A]">Dados Bancários</th>
+                <th className="p-3 text-right font-semibold text-[#0A0A0A]">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -533,12 +533,12 @@ export default function DocCompParceiros() {
                         <td className="p-2 pl-3" colSpan={6}>
                           <button
                             onClick={() => toggleSellerGroup(g.sellerMerchantId)}
-                            className="flex items-center gap-2 text-xs font-semibold text-[#002443] hover:text-[#2bc196] transition-colors"
+                            className="flex items-center gap-2 text-xs font-semibold text-[#0A0A0A] hover:text-[#1356E2] transition-colors"
                           >
                             {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                             <Building2 className="w-3.5 h-3.5" />
                             <span>{sellerMerchant.companyName || sellerMerchant.fullName || 'Seller'}</span>
-                            <span className="text-[#002443]/50 font-normal">→</span>
+                            <span className="text-[#0A0A0A]/50 font-normal">→</span>
                             <Users className="w-3.5 h-3.5 text-purple-500" />
                             <span className="text-purple-700">{subCount} subseller{subCount > 1 ? 's' : ''}</span>
                             <Button

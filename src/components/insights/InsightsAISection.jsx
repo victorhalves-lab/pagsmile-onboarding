@@ -66,17 +66,17 @@ MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merch
   if (!insights && !loading) {
     return (
       <div className="mt-2">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-50 via-white to-[#2bc196]/5 border border-slate-100 p-16 text-center">
-          <div className="absolute top-8 right-12 w-40 h-40 bg-[#2bc196]/10 rounded-full blur-[60px] pointer-events-none" />
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-50 via-white to-[#1356E2]/5 border border-slate-100 p-16 text-center">
+          <div className="absolute top-8 right-12 w-40 h-40 bg-[#1356E2]/10 rounded-full blur-[60px] pointer-events-none" />
           <div className="relative z-10">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-[#2bc196]/20">
+            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-[#1356E2]/20">
               <Brain className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-xl font-extrabold text-[#002443] mb-2">Insights Gerados por IA</h3>
-            <p className="text-sm text-[#002443]/40 mb-8 max-w-lg mx-auto leading-relaxed">
-              Análise inteligente de <span className="font-bold text-[#002443]/60">{leads.length} leads</span>, <span className="font-bold text-[#002443]/60">{allProposals.length} propostas</span> e <span className="font-bold text-[#002443]/60">{cases.length} casos</span> para extrair tendências, riscos e oportunidades estratégicas.
+            <h3 className="text-xl font-extrabold text-[#0A0A0A] mb-2">Insights Gerados por IA</h3>
+            <p className="text-sm text-[#0A0A0A]/40 mb-8 max-w-lg mx-auto leading-relaxed">
+              Análise inteligente de <span className="font-bold text-[#0A0A0A]/60">{leads.length} leads</span>, <span className="font-bold text-[#0A0A0A]/60">{allProposals.length} propostas</span> e <span className="font-bold text-[#0A0A0A]/60">{cases.length} casos</span> para extrair tendências, riscos e oportunidades estratégicas.
             </p>
-            <Button onClick={generateInsights} size="lg" className="gap-2.5 px-8 rounded-xl shadow-lg shadow-[#2bc196]/25 hover:shadow-xl hover:shadow-[#2bc196]/30 transition-all">
+            <Button onClick={generateInsights} size="lg" className="gap-2.5 px-8 rounded-xl shadow-lg shadow-[#1356E2]/25 hover:shadow-xl hover:shadow-[#1356E2]/30 transition-all">
               <Sparkles className="w-5 h-5" />
               Gerar Insights com IA
             </Button>
@@ -91,12 +91,12 @@ MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merch
       <div className="mt-2">
         <div className="rounded-3xl bg-white border border-slate-100 p-16 text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-2xl bg-[#2bc196]/10 animate-ping" />
-            <div className="relative w-full h-full rounded-2xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center">
+            <div className="absolute inset-0 rounded-2xl bg-[#1356E2]/10 animate-ping" />
+            <div className="relative w-full h-full rounded-2xl bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center">
               <Loader2 className="w-7 h-7 animate-spin text-white" />
             </div>
           </div>
-          <p className="text-sm text-[#002443]/50 font-medium">Processando dados e gerando insights...</p>
+          <p className="text-sm text-[#0A0A0A]/50 font-medium">Processando dados e gerando insights...</p>
         </div>
       </div>
     );
@@ -105,7 +105,7 @@ MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merch
   const cards = [
     { title: 'Tendências', icon: TrendingUp, color: '#3b82f6', bg: 'bg-blue-50', items: insights.trends || [], marker: '→' },
     { title: 'Riscos & Alertas', icon: AlertTriangle, color: '#ef4444', bg: 'bg-red-50', items: insights.risks || [], marker: '⚠' },
-    { title: 'Oportunidades', icon: Lightbulb, color: '#2bc196', bg: 'bg-emerald-50', items: insights.opportunities || [], marker: '✦' },
+    { title: 'Oportunidades', icon: Lightbulb, color: '#1356E2', bg: 'bg-emerald-50', items: insights.opportunities || [], marker: '✦' },
   ];
 
   return (
@@ -118,17 +118,17 @@ MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merch
 
       {/* Executive Summary */}
       <div className="relative rounded-3xl overflow-hidden bg-white border border-slate-100 p-8">
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#2bc196] to-[#002443]" />
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#1356E2] to-[#0A0A0A]" />
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center">
             <Brain className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-extrabold text-[#002443]">Resumo Executivo</h3>
-            <p className="text-[10px] text-[#002443]/30 font-medium uppercase tracking-wider">Gerado por IA</p>
+            <h3 className="text-lg font-extrabold text-[#0A0A0A]">Resumo Executivo</h3>
+            <p className="text-[10px] text-[#0A0A0A]/30 font-medium uppercase tracking-wider">Gerado por IA</p>
           </div>
         </div>
-        <div className="prose prose-sm max-w-none text-[#002443]/70 leading-relaxed">
+        <div className="prose prose-sm max-w-none text-[#0A0A0A]/70 leading-relaxed">
           <ReactMarkdown>{insights.executive_summary}</ReactMarkdown>
         </div>
       </div>
@@ -141,11 +141,11 @@ MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merch
               <div className={`w-9 h-9 rounded-xl ${card.bg} flex items-center justify-center`}>
                 <card.icon className="w-4.5 h-4.5" style={{ color: card.color }} />
               </div>
-              <h3 className="text-sm font-extrabold text-[#002443]">{card.title}</h3>
+              <h3 className="text-sm font-extrabold text-[#0A0A0A]">{card.title}</h3>
             </div>
             <ul className="space-y-3">
               {card.items.map((item, i) => (
-                <li key={i} className="flex gap-2.5 text-xs text-[#002443]/60 leading-relaxed">
+                <li key={i} className="flex gap-2.5 text-xs text-[#0A0A0A]/60 leading-relaxed">
                   <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: card.color }}>{card.marker}</span>
                   <span>{item}</span>
                 </li>
@@ -158,18 +158,18 @@ MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merch
       {/* Recommendations */}
       <div className="rounded-2xl bg-white border border-slate-100 p-6">
         <div className="flex items-center gap-2.5 mb-5">
-          <div className="w-9 h-9 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-            <Sparkles className="w-4.5 h-4.5 text-[#2bc196]" />
+          <div className="w-9 h-9 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+            <Sparkles className="w-4.5 h-4.5 text-[#1356E2]" />
           </div>
-          <h3 className="text-sm font-extrabold text-[#002443]">Recomendações Estratégicas</h3>
+          <h3 className="text-sm font-extrabold text-[#0A0A0A]">Recomendações Estratégicas</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {(insights.recommendations || []).map((r, i) => (
-            <div key={i} className="flex gap-3 p-4 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-50 hover:border-[#2bc196]/20 transition-colors duration-200">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2bc196] to-[#36706c] flex items-center justify-center flex-shrink-0">
+            <div key={i} className="flex gap-3 p-4 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-50 hover:border-[#1356E2]/20 transition-colors duration-200">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#1356E2] to-[#E84B1C] flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-[10px] font-extrabold">{i + 1}</span>
               </div>
-              <p className="text-xs text-[#002443]/60 leading-relaxed">{r}</p>
+              <p className="text-xs text-[#0A0A0A]/60 leading-relaxed">{r}</p>
             </div>
           ))}
         </div>

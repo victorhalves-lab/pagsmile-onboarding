@@ -5,7 +5,7 @@ import { ShieldAlert, AlertTriangle, Globe } from 'lucide-react';
 
 const YesNoQuestion = ({ label, value, onChange, helpText, required = true }) => (
   <div className="space-y-2">
-    <Label className="text-[var(--pagsmile-blue)] font-semibold">
+    <Label className="text-[var(--pinbank-blue)] font-semibold">
       {label} {required && <span className="text-red-500">*</span>}
     </Label>
     <div className="flex gap-4">
@@ -18,21 +18,21 @@ const YesNoQuestion = ({ label, value, onChange, helpText, required = true }) =>
             : 'border-slate-200 hover:border-slate-300'
         }`}
       >
-        <p className={`font-semibold ${value === true ? 'text-red-600' : 'text-[var(--pagsmile-blue)]'}`}>Sim</p>
+        <p className={`font-semibold ${value === true ? 'text-red-600' : 'text-[var(--pinbank-blue)]'}`}>Sim</p>
       </button>
       <button
         type="button"
         onClick={() => onChange(false)}
         className={`flex-1 p-3 rounded-xl border-2 transition-all ${
           value === false
-            ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+            ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
             : 'border-slate-200 hover:border-slate-300'
         }`}
       >
-        <p className={`font-semibold ${value === false ? 'text-[var(--pagsmile-green)]' : 'text-[var(--pagsmile-blue)]'}`}>Não</p>
+        <p className={`font-semibold ${value === false ? 'text-[var(--pinbank-blue)]' : 'text-[var(--pinbank-blue)]'}`}>Não</p>
       </button>
     </div>
-    {helpText && <p className="text-xs text-[var(--pagsmile-blue)]/60">{helpText}</p>}
+    {helpText && <p className="text-xs text-[var(--pinbank-blue)]/60">{helpText}</p>}
   </div>
 );
 
@@ -44,10 +44,10 @@ export default function StepL4ComplianceRisco({ formData, handleChange }) {
           <ShieldAlert className="w-6 h-6 text-orange-600" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Compliance de Risco
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Perguntas importantes para avaliação de risco e compliance
           </p>
         </div>
@@ -71,7 +71,7 @@ export default function StepL4ComplianceRisco({ formData, handleChange }) {
 
         {formData.exigeLicenca === true && (
           <div className="space-y-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <Label className="text-[var(--pagsmile-blue)] font-semibold">
+            <Label className="text-[var(--pinbank-blue)] font-semibold">
               Qual licença/registro? <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -132,7 +132,7 @@ export default function StepL4ComplianceRisco({ formData, handleChange }) {
 
         {formData.operacaoExterior === true && (
           <div className="space-y-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <Label className="text-[var(--pagsmile-blue)] font-semibold flex items-center gap-2">
+            <Label className="text-[var(--pinbank-blue)] font-semibold flex items-center gap-2">
               <Globe className="w-4 h-4" />
               Quais países? <span className="text-red-500">*</span>
             </Label>

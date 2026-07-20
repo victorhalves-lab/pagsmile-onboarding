@@ -70,13 +70,13 @@ export default function LandingPageLeadsTab() {
     }
   });
 
-  if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+  if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>;
 
   if (lpLeads.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-        <Globe className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-[#002443]/50 font-medium">Nenhum lead via Landing Page ainda</p>
+        <Globe className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-3" />
+        <p className="text-[#0A0A0A]/50 font-medium">Nenhum lead via Landing Page ainda</p>
       </div>
     );
   }
@@ -89,13 +89,13 @@ export default function LandingPageLeadsTab() {
 
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por empresa, CNPJ, introducer..." className="pl-10 h-10" />
         </div>
         {search && <Button variant="ghost" size="sm" onClick={() => setSearch('')}><X className="w-4 h-4 mr-1" /> Limpar</Button>}
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -112,14 +112,14 @@ export default function LandingPageLeadsTab() {
             </TableHeader>
             <TableBody>
               {paginated.length === 0 ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-12 text-[#002443]/40">Nenhum resultado</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-12 text-[#0A0A0A]/40">Nenhum resultado</TableCell></TableRow>
               ) : paginated.map(record => {
                 const sCfg = STATUS_CONFIG[record.status] || STATUS_CONFIG.novo;
                 return (
                   <TableRow key={record.id} className="hover:bg-[#f4f4f4]">
                     <TableCell>
                       <p className="font-medium text-sm">{record.razaoSocial || record.email}</p>
-                      <p className="text-[10px] text-[#002443]/50">{record.cnpj}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50">{record.cnpj}</p>
                     </TableCell>
                     <TableCell>
                       {record.introducerName ? (
@@ -128,16 +128,16 @@ export default function LandingPageLeadsTab() {
                           {record.introducerName}
                         </Badge>
                       ) : <span className="text-[10px] text-slate-300">—</span>}
-                      {record.slug && <p className="text-[10px] text-[#002443]/40 mt-0.5">/parceiro/{record.slug}</p>}
+                      {record.slug && <p className="text-[10px] text-[#0A0A0A]/40 mt-0.5">/parceiro/{record.slug}</p>}
                     </TableCell>
-                    <TableCell><Badge className="bg-[#002443]/5 text-[#002443] text-xs border-0">{record.segment || '-'}</Badge></TableCell>
+                    <TableCell><Badge className="bg-[#0A0A0A]/5 text-[#0A0A0A] text-xs border-0">{record.segment || '-'}</Badge></TableCell>
                     <TableCell><Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge></TableCell>
                     <TableCell>
                       <p className="text-xs">{record.contactName || '-'}</p>
-                      <p className="text-[10px] text-[#002443]/50">{record.email}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/50">{record.email}</p>
                     </TableCell>
                     <TableCell><span className="text-sm font-mono">{record.tpvMensal ? `R$ ${record.tpvMensal.toLocaleString('pt-BR')}` : '-'}</span></TableCell>
-                    <TableCell><span className="text-xs text-[#002443]/60">{record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}</span></TableCell>
+                    <TableCell><span className="text-xs text-[#0A0A0A]/60">{record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}</span></TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setResponsesRecord(record)}>
@@ -168,9 +168,9 @@ export default function LandingPageLeadsTab() {
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#0A0A0A]/5">
             <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
-            <span className="text-xs text-[#002443]/60">Página {page} de {totalPages}</span>
+            <span className="text-xs text-[#0A0A0A]/60">Página {page} de {totalPages}</span>
             <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
           </div>
         )}

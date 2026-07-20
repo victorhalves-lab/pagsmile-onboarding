@@ -53,7 +53,7 @@ export default function DocSegmentos() {
       />
 
       <InfoBox title="Como o segmento é determinado automaticamente" color="blue">
-        <p>Quando o lead preenche o questionário comercial, ele seleciona seu segmento. Esse segmento é mapeado automaticamente para o modelo de compliance correspondente pela função <code>resolveComplianceModel</code>. Se o lead veio do questionário PagSmile V5, o segmento granular é usado. Se veio da landing page de um introducer, o segmento da landing é mapeado. Se nenhum segmento é identificado, o fallback é E-commerce (ComplianceEcommerceV4).</p>
+        <p>Quando o lead preenche o questionário comercial, ele seleciona seu segmento. Esse segmento é mapeado automaticamente para o modelo de compliance correspondente pela função <code>resolveComplianceModel</code>. Se o lead veio do questionário Pin Bank V5, o segmento granular é usado. Se veio da landing page de um introducer, o segmento da landing é mapeado. Se nenhum segmento é identificado, o fallback é E-commerce (ComplianceEcommerceV4).</p>
       </InfoBox>
 
       <InfoBox title="Subsellers NÃO recebem todos os 11 segmentos" color="amber">

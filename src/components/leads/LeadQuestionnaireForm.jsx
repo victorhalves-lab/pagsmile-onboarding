@@ -46,10 +46,10 @@ function MCCNameDisplay({ mccCode }) {
   const found = MCC_LIST.find(m => m.mcc === mccCode.padStart(4, '0'));
   if (!found) return null;
   return (
-    <div className="flex items-center gap-2 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl px-4 py-2.5">
-      <CheckCircle className="w-4 h-4 text-[#2bc196] shrink-0" />
-      <span className="text-sm font-medium text-[#002443]">{found.name}</span>
-      <span className="text-xs text-[#002443]/50">({found.nameEn})</span>
+    <div className="flex items-center gap-2 bg-[#1356E2]/5 border border-[#1356E2]/20 rounded-xl px-4 py-2.5">
+      <CheckCircle className="w-4 h-4 text-[#1356E2] shrink-0" />
+      <span className="text-sm font-medium text-[#0A0A0A]">{found.name}</span>
+      <span className="text-xs text-[#0A0A0A]/50">({found.nameEn})</span>
     </div>
   );
 }
@@ -753,7 +753,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
     return (
       <div key={question.id} className="space-y-2" data-field-error={hasError ? "true" : undefined}>
-        <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+        <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
           {question.text}
           {question.type !== 'FILE_UPLOAD' && <span className="text-red-500 ml-1">*</span>}
           {question.type === 'FILE_UPLOAD' && question.isRequired && <span className="text-red-500 ml-1">*</span>}
@@ -763,7 +763,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           <CnaeCoherenceAlert cnpjData={cnpjApiData} selectedType={value} />
         )}
         {question.helpText && (
-          <p className="text-xs text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
+          <p className="text-xs text-[var(--pinbank-blue)]/60 flex items-center gap-1">
             <HelpCircle className="w-3 h-3" />
             {question.helpText}
           </p>
@@ -784,14 +784,14 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   {(() => {
                     const minLen = question.validationRules?.minLength || 75;
                     return (
-                      <span className={`${String(value).length < minLen ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
+                      <span className={`${String(value).length < minLen ? 'text-amber-600' : 'text-[var(--pinbank-blue)]'}`}>
                         {String(value).length < minLen 
                           ? `Faltam ${minLen - String(value).length} caracteres (mínimo ${minLen})` 
                           : '✓ Mínimo atingido'}
                       </span>
                     );
                   })()}
-                  <span className="text-[var(--pagsmile-blue)]/50">
+                  <span className="text-[var(--pinbank-blue)]/50">
                     {String(value).length}/500
                   </span>
                 </div>
@@ -839,7 +839,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             <>
               <div className="relative">
                 {prefix && (
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/60 font-semibold text-sm">
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--pinbank-blue)]/60 font-semibold text-sm">
                     {prefix}
                   </span>
                 )}
@@ -925,7 +925,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           <div className="space-y-3">
             <div className="flex gap-3">
               <div className="relative flex-1">
-                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
                 <Input
                   value={value}
                   onChange={(e) => {
@@ -975,26 +975,26 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                     onClick={() => updateField(question.id, opt)}
                     className={`relative p-4 text-left rounded-2xl border transition-all duration-200 flex items-start gap-3 ${
                       isSelected 
-                        ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-sm ring-1 ring-[#2bc196]' 
-                        : 'border-slate-200 bg-white hover:border-[#2bc196]/30 hover:bg-slate-50'
+                        ? 'border-[#1356E2] bg-[#1356E2]/5 shadow-sm ring-1 ring-[#1356E2]' 
+                        : 'border-slate-200 bg-white hover:border-[#1356E2]/30 hover:bg-slate-50'
                     }`}
                   >
                     <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                      isSelected ? 'border-[#2bc196] bg-[#2bc196]' : 'border-slate-300 bg-white'
+                      isSelected ? 'border-[#1356E2] bg-[#1356E2]' : 'border-slate-300 bg-white'
                     }`}>
                       {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
                     </div>
                     {parts ? (
                       <div className="flex-1 min-w-0">
-                        <span className={`font-semibold text-sm block ${isSelected ? 'text-[#002443]' : 'text-[#002443]/80'}`}>
+                        <span className={`font-semibold text-sm block ${isSelected ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]/80'}`}>
                           {parts[0]}
                         </span>
-                        <span className={`text-xs leading-relaxed mt-1 block ${isSelected ? 'text-[#002443]/70' : 'text-[#002443]/50'}`}>
+                        <span className={`text-xs leading-relaxed mt-1 block ${isSelected ? 'text-[#0A0A0A]/70' : 'text-[#0A0A0A]/50'}`}>
                           {parts[1]}
                         </span>
                       </div>
                     ) : (
-                      <span className={`font-medium text-sm leading-tight ${isSelected ? 'text-[#002443]' : 'text-[#002443]/70'}`}>
+                      <span className={`font-medium text-sm leading-tight ${isSelected ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]/70'}`}>
                         {opt}
                       </span>
                     )}
@@ -1006,7 +1006,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             {/* Campo de descrição para "Outros" */}
             {QUESTIONS_WITH_OTHER_DESCRIPTION.includes(question.id) && needsOtherDescription(question.id, value) && (
               <div className={`mt-4 p-4 bg-slate-50 rounded-xl border ${validationErrors[`${question.id}_outro`] ? 'border-red-300' : 'border-slate-200'}`}>
-                <Label className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 block">
+                <Label className="text-sm font-semibold text-[var(--pinbank-blue)] mb-2 block">
                   Descreva o que seria "Outros" <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
@@ -1041,8 +1041,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                     }}
                     className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${
                       selected
-                        ? 'bg-[#2bc196] text-white border-[#2bc196] shadow-sm scale-[1.02]'
-                        : 'bg-white text-[#002443]/70 border-slate-200 hover:border-[#2bc196]/50 hover:bg-slate-50'
+                        ? 'bg-[#1356E2] text-white border-[#1356E2] shadow-sm scale-[1.02]'
+                        : 'bg-white text-[#0A0A0A]/70 border-slate-200 hover:border-[#1356E2]/50 hover:bg-slate-50'
                     }`}
                   >
                     {opt}
@@ -1054,7 +1054,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             {/* Campo de descrição para "Outros" */}
             {QUESTIONS_WITH_OTHER_DESCRIPTION.includes(question.id) && needsOtherDescription(question.id, value) && (
               <div className={`mt-4 p-4 bg-slate-50 rounded-xl border ${validationErrors[`${question.id}_outro`] ? 'border-red-300' : 'border-slate-200'}`}>
-                <Label className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 block">
+                <Label className="text-sm font-semibold text-[var(--pinbank-blue)] mb-2 block">
                   Descreva o que seria "Outros" <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
@@ -1084,7 +1084,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           }
           return (
             <div className="space-y-2">
-              <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-[#2bc196]/50 transition-colors">
+              <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-[#1356E2]/50 transition-colors">
                 <input
                   type="file"
                   accept=".pdf,.png,.jpg,.jpeg"
@@ -1101,18 +1101,18 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                 />
                 {formData[question.id] ? (
                   <div className="space-y-2">
-                    <CheckCircle className="w-8 h-8 text-[var(--pagsmile-green)] mx-auto" />
-                    <p className="text-sm font-medium text-[var(--pagsmile-green)]">Arquivo enviado</p>
+                    <CheckCircle className="w-8 h-8 text-[var(--pinbank-blue)] mx-auto" />
+                    <p className="text-sm font-medium text-[var(--pinbank-blue)]">Arquivo enviado</p>
                     <div className="flex gap-2 justify-center">
-                      <a href={formData[question.id]} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--pagsmile-green)] underline">Ver arquivo</a>
+                      <a href={formData[question.id]} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--pinbank-blue)] underline">Ver arquivo</a>
                       <button type="button" onClick={() => updateField(question.id, '')} className="text-xs text-red-500 underline">Remover</button>
                     </div>
                   </div>
                 ) : (
                   <label htmlFor={`file-${question.id}`} className="cursor-pointer space-y-2">
-                    <FileText className="w-8 h-8 text-[var(--pagsmile-blue)]/30 mx-auto" />
-                    <p className="text-sm font-medium text-[var(--pagsmile-blue)]/70">Clique para enviar arquivo</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/40">PDF, PNG, JPG (máx. 10MB)</p>
+                    <FileText className="w-8 h-8 text-[var(--pinbank-blue)]/30 mx-auto" />
+                    <p className="text-sm font-medium text-[var(--pinbank-blue)]/70">Clique para enviar arquivo</p>
+                    <p className="text-xs text-[var(--pinbank-blue)]/40">PDF, PNG, JPG (máx. 10MB)</p>
                   </label>
                 )}
               </div>
@@ -1127,7 +1127,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                 type="button"
                 onClick={() => updateField(question.id, true)}
                 className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
-                  value === true ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
+                  value === true ? 'text-white' : 'text-[#0A0A0A]/50 hover:text-[#0A0A0A]'
                 }`}
               >
                 Sim
@@ -1136,14 +1136,14 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                 type="button"
                 onClick={() => updateField(question.id, false)}
                 className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
-                  value === false ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
+                  value === false ? 'text-white' : 'text-[#0A0A0A]/50 hover:text-[#0A0A0A]'
                 }`}
               >
                 Não
               </button>
               {/* Fundo animado (Pílula) */}
               <div 
-                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-[#2bc196] rounded-lg transition-all duration-300 ease-in-out shadow-sm"
+                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-[#1356E2] rounded-lg transition-all duration-300 ease-in-out shadow-sm"
                 style={{
                   left: value === true ? '6px' : value === false ? 'calc(50% + 0px)' : '6px',
                   opacity: value === '' || value === undefined ? 0 : 1
@@ -1313,13 +1313,13 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       <div className="text-center mb-8">
         <img 
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
-          alt="Pagsmile" 
+          alt="Pin Bank" 
           className="h-8 mx-auto mb-6"
         />
-        <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)]">
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--pinbank-blue)]">
           {template.name || 'Questionário Comercial'}
         </h1>
-        <p className="text-[var(--pagsmile-blue)]/70 mt-2">
+        <p className="text-[var(--pinbank-blue)]/70 mt-2">
           {template.description || 'Preencha os dados abaixo para iniciar seu cadastro'}
         </p>
         <div className="mt-3 flex justify-center">
@@ -1366,9 +1366,9 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   <React.Fragment key={q.id}>
                     {rendered}
                     <div className="space-y-2">
-                      <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+                      <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
                         Estimativa de transações por mês
-                        <span className="text-xs font-normal text-[var(--pagsmile-blue)]/50 ml-2">(calculado automaticamente: TPV ÷ Ticket Médio)</span>
+                        <span className="text-xs font-normal text-[var(--pinbank-blue)]/50 ml-2">(calculado automaticamente: TPV ÷ Ticket Médio)</span>
                       </Label>
                       <div className="relative">
                         <Input
@@ -1380,7 +1380,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                         />
                       </div>
                       {transacoes > 0 && (
-                        <p className="text-xs text-[var(--pagsmile-green)] flex items-center gap-1">
+                        <p className="text-xs text-[var(--pinbank-blue)] flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" />
                           ≈ {transacoes.toLocaleString('pt-BR')} transações/mês
                         </p>
@@ -1401,7 +1401,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             variant="outline"
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl disabled:opacity-40"
+            className="text-[#0A0A0A]/60 hover:text-[#0A0A0A] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl disabled:opacity-40"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Anterior
@@ -1411,7 +1411,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
+              className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
             >
               {isSubmitting ? (
                 <>
@@ -1428,7 +1428,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           ) : (
             <Button
               onClick={handleNext}
-              className="bg-[var(--pagsmile-blue)] hover:bg-[var(--pagsmile-blue)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-blue-900/10 transition-all hover:scale-[1.02]"
+              className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-blue-900/10 transition-all hover:scale-[1.02]"
             >
               Próximo
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -1439,7 +1439,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
       {/* Segurança */}
       <div className="text-center mt-6">
-        <p className="text-xs text-[var(--pagsmile-blue)]/40 flex items-center justify-center gap-1">
+        <p className="text-xs text-[var(--pinbank-blue)]/40 flex items-center justify-center gap-1">
           <ShieldCheck className="w-3 h-3" />
           Seus dados estão protegidos e serão tratados com confidencialidade.
         </p>

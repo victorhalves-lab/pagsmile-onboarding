@@ -132,8 +132,8 @@ export default function MccTabsManager({
       {/* Toggle Multi-MCC */}
       <div className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-            <Layers className="w-3.5 h-3.5 text-[#2bc196]" />
+          <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+            <Layers className="w-3.5 h-3.5 text-[#1356E2]" />
           </div>
           <div>
             <p className="text-xs font-bold text-white">Propor para múltiplos MCCs</p>
@@ -143,7 +143,7 @@ export default function MccTabsManager({
         <Switch
           checked={isMulti}
           onCheckedChange={(checked) => checked ? enableMulti() : disableMulti()}
-          className="data-[state=checked]:bg-[#2bc196]"
+          className="data-[state=checked]:bg-[#1356E2]"
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function MccTabsManager({
                 onClick={() => setActiveIdx(idx)}
                 className={`group flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeIdx === idx
-                    ? 'bg-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
+                    ? 'bg-[#1356E2] text-[#0A0A0A] shadow-lg shadow-[#1356E2]/20'
                     : 'bg-white/5 text-white/50 hover:text-white/80 hover:bg-white/[0.08] border border-white/5'
                 }`}
               >
@@ -165,7 +165,7 @@ export default function MccTabsManager({
                 <span className="opacity-80 truncate max-w-[140px]">{entry.mccLabel}</span>
                 {cartaoPorMcc.length > 1 && (
                   <X
-                    className={`w-3 h-3 ${activeIdx === idx ? 'text-[#002443]/60 hover:text-[#002443]' : 'text-white/30 hover:text-red-400'}`}
+                    className={`w-3 h-3 ${activeIdx === idx ? 'text-[#0A0A0A]/60 hover:text-[#0A0A0A]' : 'text-white/30 hover:text-red-400'}`}
                     onClick={(e) => { e.stopPropagation(); removeMcc(idx); }}
                   />
                 )}
@@ -175,7 +175,7 @@ export default function MccTabsManager({
               variant="ghost"
               size="sm"
               onClick={() => setSearchOpen(true)}
-              className="h-8 text-[11px] text-[#2bc196] hover:bg-[#2bc196]/10 rounded-xl"
+              className="h-8 text-[11px] text-[#1356E2] hover:bg-[#1356E2]/10 rounded-xl"
             >
               <Plus className="w-3.5 h-3.5 mr-1" /> Adicionar MCC
             </Button>
@@ -191,7 +191,7 @@ export default function MccTabsManager({
                   <button
                     key={`copy-${idx}`}
                     onClick={() => copyFromActive(idx)}
-                    className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[#2bc196] hover:bg-[#2bc196]/5 px-2 py-1 rounded-md transition-all"
+                    className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[#1356E2] hover:bg-[#1356E2]/5 px-2 py-1 rounded-md transition-all"
                   >
                     <Copy className="w-3 h-3" /> {entry.mcc}
                   </button>

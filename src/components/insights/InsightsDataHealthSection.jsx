@@ -10,7 +10,7 @@ const TT = { borderRadius: 12, border: 'none', boxShadow: '0 8px 30px rgba(0,0,0
 
 export default function InsightsDataHealthSection({ leads }) {
   const total = leads.length;
-  if (total === 0) return <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center"><p className="text-sm text-[#002443]/50">Sem dados.</p></div>;
+  if (total === 0) return <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center"><p className="text-sm text-[#0A0A0A]/50">Sem dados.</p></div>;
 
   // Field completeness
   const fields = [
@@ -87,7 +87,7 @@ export default function InsightsDataHealthSection({ leads }) {
   return (
     <div className="space-y-6 mt-2">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Completude Média" value={`${avgCompleteness}%`} subtitle="Campos preenchidos" icon={Database} accentColor={avgCompleteness >= 70 ? '#2bc196' : '#f59e0b'} />
+        <StatCard label="Completude Média" value={`${avgCompleteness}%`} subtitle="Campos preenchidos" icon={Database} accentColor={avgCompleteness >= 70 ? '#1356E2' : '#f59e0b'} />
         <StatCard label="Email Corporativo" value={`${total > 0 ? ((emailTypeMap.corporativo / total) * 100).toFixed(0) : 0}%`} subtitle={`${emailTypeMap.corporativo} leads`} icon={Mail} />
         <StatCard label="Enriquecimento CNPJ" value={`${total > 0 ? ((withEnrichment / total) * 100).toFixed(0) : 0}%`} subtitle={`${withEnrichment} leads`} icon={CheckCircle2} />
         <StatCard label="Silent Flags" value={withSilentFlags} subtitle="Leads com flags automáticas" icon={AlertTriangle} accentColor="#f59e0b" />
@@ -98,11 +98,11 @@ export default function InsightsDataHealthSection({ leads }) {
           <BarChart data={completeness} layout="vertical" barCategoryGap="15%">
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
             <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} domain={[0, 100]} unit="%" />
-            <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#002443' }} width={120} axisLine={false} tickLine={false} />
+            <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#0A0A0A' }} width={120} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={TT} formatter={v => `${v}%`} />
             <Bar dataKey="value" radius={[0, 8, 8, 0]} name="Completude">
               {completeness.map((entry, i) => (
-                <Bar key={i} fill={entry.value >= 80 ? '#2bc196' : entry.value >= 50 ? '#f59e0b' : '#ef4444'} />
+                <Bar key={i} fill={entry.value >= 80 ? '#1356E2' : entry.value >= 50 ? '#f59e0b' : '#ef4444'} />
               ))}
             </Bar>
           </BarChart>
@@ -110,9 +110,9 @@ export default function InsightsDataHealthSection({ leads }) {
       </ChartCard>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {emailData.length > 0 && <DonutChart title="Tipo de E-mail" data={emailData} colorMap={{ Corporativo: '#2bc196', Pessoal: '#f59e0b' }} />}
+        {emailData.length > 0 && <DonutChart title="Tipo de E-mail" data={emailData} colorMap={{ Corporativo: '#1356E2', Pessoal: '#f59e0b' }} />}
         {Object.keys(porteMap).length > 0 && <DonutChart title="Porte da Empresa (CNPJ)" data={Object.entries(porteMap).map(([n, v]) => ({ name: n, value: v }))} />}
-        {simplesMap.Sim + simplesMap.Não > 0 && <DonutChart title="Simples Nacional" data={[{ name: 'Sim', value: simplesMap.Sim }, { name: 'Não', value: simplesMap.Não }].filter(d => d.value > 0)} colorMap={{ Sim: '#2bc196', Não: '#002443' }} />}
+        {simplesMap.Sim + simplesMap.Não > 0 && <DonutChart title="Simples Nacional" data={[{ name: 'Sim', value: simplesMap.Sim }, { name: 'Não', value: simplesMap.Não }].filter(d => d.value > 0)} colorMap={{ Sim: '#1356E2', Não: '#0A0A0A' }} />}
       </div>
 
       {idadeData.some(d => d.Empresas > 0) && (
@@ -120,10 +120,10 @@ export default function InsightsDataHealthSection({ leads }) {
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={idadeData} barCategoryGap="25%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} />
-              <Bar dataKey="Empresas" fill="#002443" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="Empresas" fill="#0A0A0A" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

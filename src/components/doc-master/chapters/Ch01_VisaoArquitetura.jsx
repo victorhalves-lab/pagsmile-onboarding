@@ -16,7 +16,7 @@ import Ch01_Secrets from './ch01/Ch01_Secrets';
  *   §1.2  Bootstrap da aplicação (main.jsx → ensureSdkLoaded → App)
  *   §1.3  Roteamento (App.jsx pagesConfig + rotas explícitas + PUBLIC_PATHS)
  *   §1.4  Autenticação em 7 camadas (verifyUserAuth + 2FA + JWT + Anti-Brute-Force)
- *   §1.5  Design System (CSS tokens HSL + Tailwind theme + Pagsmile brand overlay)
+ *   §1.5  Design System (CSS tokens HSL + Tailwind theme + Pin Bank brand overlay)
  *   §1.6  Layouts (público vs admin) e o padrão SidebarPreview
  *   §1.7  Secrets (catálogo de env vars Deno)
  *
@@ -27,7 +27,7 @@ export default function Ch01_VisaoArquitetura() {
     <Sec id="ch-01">
       <H1 num="01">Arquitetura — Stack, Bootstrap, Roteamento, Auth, Design e Secrets</H1>
 
-      <P>Este capítulo descreve <B>com profundidade microscópica</B> como a aplicação PagSmile é montada — desde o primeiro byte carregado pelo navegador até o ponto em que o usuário admin (autenticado, com 2FA validado) acessa o dashboard. Cada decisão arquitetural é justificada com referência ao arquivo real e à linha exata onde a decisão é implementada.</P>
+      <P>Este capítulo descreve <B>com profundidade microscópica</B> como a aplicação Pin Bank é montada — desde o primeiro byte carregado pelo navegador até o ponto em que o usuário admin (autenticado, com 2FA validado) acessa o dashboard. Cada decisão arquitetural é justificada com referência ao arquivo real e à linha exata onde a decisão é implementada.</P>
 
       <Note title="Princípios não-negociáveis" kind="rule">
         <ul className="list-disc ml-5 mt-1 space-y-0.5 text-[12px]">

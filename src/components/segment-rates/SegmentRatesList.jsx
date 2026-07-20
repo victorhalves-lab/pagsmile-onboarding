@@ -24,21 +24,21 @@ export default function SegmentRatesList({ segments, activeId, onSelect }) {
             onClick={() => onSelect(seg.id)}
             className={`w-full text-left p-4 rounded-xl border transition-all duration-200 group
               ${isActive
-                ? 'bg-[#2bc196]/10 border-[#2bc196]/40 shadow-sm'
-                : 'bg-white border-[#002443]/8 hover:border-[#2bc196]/20 hover:bg-[#2bc196]/5'
+                ? 'bg-[#1356E2]/10 border-[#1356E2]/40 shadow-sm'
+                : 'bg-white border-[#0A0A0A]/8 hover:border-[#1356E2]/20 hover:bg-[#1356E2]/5'
               }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className={`text-sm font-bold truncate ${isActive ? 'text-[#2bc196]' : 'text-[#002443]'}`}>
+                  <h3 className={`text-sm font-bold truncate ${isActive ? 'text-[#1356E2]' : 'text-[#0A0A0A]'}`}>
                     {seg.segmentName}
                   </h3>
                   <Badge className={`text-[10px] px-1.5 py-0 ${RISK_COLORS[seg.riskLevel] || 'bg-gray-100 text-gray-600'}`}>
                     {seg.riskLevel}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] text-[#002443]/50">
+                <div className="flex items-center gap-3 text-[11px] text-[#0A0A0A]/50">
                   <span className="flex items-center gap-1">
                     <CreditCard className="w-3 h-3" />
                     MDR: {seg.mdrAvista}%
@@ -53,7 +53,7 @@ export default function SegmentRatesList({ segments, activeId, onSelect }) {
                   </span>
                 </div>
               </div>
-              <ChevronRight className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#2bc196]' : 'text-[#002443]/20 group-hover:text-[#002443]/40'}`} />
+              <ChevronRight className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#1356E2]' : 'text-[#0A0A0A]/20 group-hover:text-[#0A0A0A]/40'}`} />
             </div>
           </button>
         );

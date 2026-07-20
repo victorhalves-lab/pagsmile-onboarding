@@ -136,7 +136,7 @@ export default function Ch11_Parceiros() {
 
       <H2 num="11.3">Pré-KYC Bancário (BankDataCollection)</H2>
 
-      <P>Após aprovação do KYC, o cliente precisa abrir conta operacional no banco parceiro (BaaS). Pagsmile coleta os dados bancários via página pública dedicada e exporta para o BaaS em XLSX padronizado.</P>
+      <P>Após aprovação do KYC, o cliente precisa abrir conta operacional no banco parceiro (BaaS). Pin Bank coleta os dados bancários via página pública dedicada e exporta para o BaaS em XLSX padronizado.</P>
 
       <H3 num="11.3.1">BankDataCollection Schema</H3>
       <Table dense headers={['Campo', 'Tipo', 'Descrição']} rows={[

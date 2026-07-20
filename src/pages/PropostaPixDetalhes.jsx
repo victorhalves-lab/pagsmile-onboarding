@@ -27,12 +27,12 @@ const STATUS_CONFIG = {
 
 function Section({ icon: Icon, title, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-6 space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
-          <Icon className="w-4 h-4 text-[#2bc196]" />
+        <div className="w-8 h-8 rounded-xl bg-[#1356E2]/10 flex items-center justify-center">
+          <Icon className="w-4 h-4 text-[#1356E2]" />
         </div>
-        <h2 className="text-base font-bold text-[#002443]">{title}</h2>
+        <h2 className="text-base font-bold text-[#0A0A0A]">{title}</h2>
       </div>
       {children}
     </div>
@@ -48,9 +48,9 @@ function InfoRow({ label, value, prefix, suffix }) {
       : suffix === '%' ? `${String(value).replace('.', ',')}%` : value;
   }
   return (
-    <div className="flex justify-between items-center py-2 border-b border-[#002443]/5 last:border-0">
-      <span className="text-xs text-[#002443]/60 font-medium">{label}</span>
-      <span className="text-sm font-semibold text-[#002443]">{display}</span>
+    <div className="flex justify-between items-center py-2 border-b border-[#0A0A0A]/5 last:border-0">
+      <span className="text-xs text-[#0A0A0A]/60 font-medium">{label}</span>
+      <span className="text-sm font-semibold text-[#0A0A0A]">{display}</span>
     </div>
   );
 }
@@ -125,13 +125,13 @@ export default function PropostaPixDetalhes() {
     navigate(`/CriarPropostaPix?edit=${created.id}`);
   };
 
-  if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+  if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" /></div>;
 
   if (!proposta) {
     return (
       <div className="text-center py-20">
-        <FileText className="w-12 h-12 mx-auto text-[#002443]/20 mb-4" />
-        <p className="text-[#002443]/60">{t('pxd.not_found')}</p>
+        <FileText className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-4" />
+        <p className="text-[#0A0A0A]/60">{t('pxd.not_found')}</p>
         <Button variant="link" onClick={() => navigate('/GestaoPropostasPix')} className="mt-2">{t('spd.back')}</Button>
       </div>
     );
@@ -158,7 +158,7 @@ export default function PropostaPixDetalhes() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/GestaoPropostasPix')} className="text-white/70 hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-5 h-5" />
@@ -169,7 +169,7 @@ export default function PropostaPixDetalhes() {
               <Badge className={sCfg.color}>{sCfg.label}</Badge>
               <Badge className="bg-cyan-100 text-cyan-700 border-0">PIX</Badge>
               {(proposta.version || 1) > 1 && (
-                <span className="text-[10px] bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-bold">v{proposta.version}</span>
+                <span className="text-[10px] bg-[#1356E2]/20 text-[#E84B1C] px-2 py-0.5 rounded-md font-bold">v{proposta.version}</span>
               )}
             </div>
             <p className="text-white/50 text-sm mt-1">{proposta.clienteNome || t('pxd.no_client')} — {t('pxd.internal_review')}</p>
@@ -203,23 +203,23 @@ export default function PropostaPixDetalhes() {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><Link2 className="w-5 h-5 text-amber-600" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">{t('pxd.link_unavailable')}</h2>
-              <p className="text-sm text-[#002443]/60">{t('pxd.generate_for_link')}</p>
+              <h2 className="text-base font-bold text-[#0A0A0A]">{t('pxd.link_unavailable')}</h2>
+              <p className="text-sm text-[#0A0A0A]/60">{t('pxd.generate_for_link')}</p>
             </div>
           </div>
         </div>
       ) : publicLink && (
-        <div className="bg-white rounded-2xl border border-[#2bc196]/30 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-[#1356E2]/30 shadow-sm p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Link2 className="w-5 h-5 text-[#2bc196]" /></div>
+            <div className="w-10 h-10 rounded-xl bg-[#1356E2]/10 flex items-center justify-center"><Link2 className="w-5 h-5 text-[#1356E2]" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">{t('pxd.client_link')}</h2>
-              <p className="text-sm text-[#002443]/60">{t('pxd.copy_send')}</p>
+              <h2 className="text-base font-bold text-[#0A0A0A]">{t('pxd.client_link')}</h2>
+              <p className="text-sm text-[#0A0A0A]/60">{t('pxd.copy_send')}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 bg-[#f4f4f4] rounded-xl p-3 mb-4">
-            <code className="flex-1 text-sm text-[#002443]/70 truncate select-all font-mono">{publicLink}</code>
-            <Button onClick={handleCopy} size="sm" className={`gap-2 rounded-lg shrink-0 ${copied ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white'}`}>
+            <code className="flex-1 text-sm text-[#0A0A0A]/70 truncate select-all font-mono">{publicLink}</code>
+            <Button onClick={handleCopy} size="sm" className={`gap-2 rounded-lg shrink-0 ${copied ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-[#1356E2] hover:bg-[#1356E2]/90 text-white'}`}>
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               {copied ? t('spd.copied') : t('spd.copy_link')}
             </Button>
@@ -254,8 +254,8 @@ export default function PropostaPixDetalhes() {
           <InfoRow label={t('pxd.value')} value={rates.pix?.valor} prefix={rates.pix?.tipo === 'fixo' ? 'R$' : undefined} suffix={rates.pix?.tipo === 'percentual' ? '%' : undefined} />
           {rates.minimoGarantido && (
             <>
-              <div className="pt-2 mt-2 border-t border-[#002443]/5">
-                <p className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider mb-2">{t('pxd.min_tpv_monthly')}</p>
+              <div className="pt-2 mt-2 border-t border-[#0A0A0A]/5">
+                <p className="text-[10px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider mb-2">{t('pxd.min_tpv_monthly')}</p>
               </div>
               <InfoRow label={t('pp.month1')} value={rates.minimoGarantido.mes1} prefix="R$" />
               <InfoRow label={t('pp.month2')} value={rates.minimoGarantido.mes2} prefix="R$" />
@@ -280,14 +280,14 @@ export default function PropostaPixDetalhes() {
               const isCurrent = v.id === proposalId;
               const vStatus = STATUS_CONFIG[v.status] || { label: v.status, color: 'bg-slate-100 text-slate-600' };
               return (
-                <div key={v.id} className={`flex items-center gap-4 p-3 rounded-xl border transition-colors ${isCurrent ? 'border-[#2bc196]/30 bg-[#2bc196]/5' : 'border-[#002443]/5 hover:bg-[#f4f4f4]'}`}>
-                  <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center text-sm font-bold text-[#002443]">V{v.version || 1}</div>
+                <div key={v.id} className={`flex items-center gap-4 p-3 rounded-xl border transition-colors ${isCurrent ? 'border-[#1356E2]/30 bg-[#1356E2]/5' : 'border-[#0A0A0A]/5 hover:bg-[#f4f4f4]'}`}>
+                  <div className="w-8 h-8 rounded-lg bg-[#0A0A0A]/5 flex items-center justify-center text-sm font-bold text-[#0A0A0A]">V{v.version || 1}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#002443]">
-                      <span className="font-mono text-[#2bc196] mr-2">{v.codigo}</span>
-                      {isCurrent && <span className="text-[10px] bg-[#2bc196]/20 text-[#2bc196] px-1.5 py-0.5 rounded font-bold ml-1">{t('pd.current')}</span>}
+                    <p className="text-sm font-medium text-[#0A0A0A]">
+                      <span className="font-mono text-[#1356E2] mr-2">{v.codigo}</span>
+                      {isCurrent && <span className="text-[10px] bg-[#1356E2]/20 text-[#1356E2] px-1.5 py-0.5 rounded font-bold ml-1">{t('pd.current')}</span>}
                     </p>
-                    <p className="text-xs text-[#002443]/50 flex items-center gap-1"><Clock className="w-3 h-3" />{moment(v.created_date).format('DD/MM/YYYY HH:mm')}</p>
+                    <p className="text-xs text-[#0A0A0A]/50 flex items-center gap-1"><Clock className="w-3 h-3" />{moment(v.created_date).format('DD/MM/YYYY HH:mm')}</p>
                   </div>
                   <Badge className={vStatus.color}>{vStatus.label}</Badge>
                   {!isCurrent && <Button variant="ghost" size="sm" onClick={() => navigate(`/PropostaPixDetalhes?id=${v.id}`)}><Eye className="w-4 h-4" /></Button>}

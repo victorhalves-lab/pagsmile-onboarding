@@ -9,7 +9,7 @@ import { CARGO_OPTIONS } from './pixQuestionnaireData';
 export default function StepContato({ form, updateField, errors }) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-bold text-[#002443]">Contato</h2>
+      <h2 className="text-lg font-bold text-[#0A0A0A]">Contato</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>

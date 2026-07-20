@@ -11,14 +11,14 @@ export default function StepL2bEntrega({ formData, handleChange }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 rounded-xl bg-[var(--pagsmile-green)]/10">
-          <Package className="w-6 h-6 text-[var(--pagsmile-green)]" />
+        <div className="p-3 rounded-xl bg-[var(--pinbank-blue)]/10">
+          <Package className="w-6 h-6 text-[var(--pinbank-blue)]" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
+          <h2 className="text-2xl font-bold text-[var(--pinbank-blue)]">
             Entrega de Produtos
           </h2>
-          <p className="text-[var(--pagsmile-blue)]/70">
+          <p className="text-[var(--pinbank-blue)]/70">
             Como você entrega ao cliente
           </p>
         </div>
@@ -27,31 +27,31 @@ export default function StepL2bEntrega({ formData, handleChange }) {
       <div className="grid gap-5">
         {/* Entrega Produto Físico */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">Vocês entregam produto físico?</Label>
+          <Label className="text-[var(--pinbank-blue)] font-semibold">Vocês entregam produto físico?</Label>
           <div className="flex gap-4">
             <button
               type="button"
               onClick={() => handleChange('entregaProdutoFisico', true)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaProdutoFisico === true
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
-              <Package className="w-5 h-5 mx-auto mb-1 text-[var(--pagsmile-blue)]" />
-              <p className="font-semibold text-[var(--pagsmile-blue)] text-sm">Sim</p>
+              <Package className="w-5 h-5 mx-auto mb-1 text-[var(--pinbank-blue)]" />
+              <p className="font-semibold text-[var(--pinbank-blue)] text-sm">Sim</p>
             </button>
             <button
               type="button"
               onClick={() => handleChange('entregaProdutoFisico', false)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaProdutoFisico === false
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <Package className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className="font-semibold text-[var(--pagsmile-blue)] text-sm">Não</p>
+              <p className="font-semibold text-[var(--pinbank-blue)] text-sm">Não</p>
             </button>
           </div>
         </div>
@@ -60,7 +60,7 @@ export default function StepL2bEntrega({ formData, handleChange }) {
         {formData.entregaProdutoFisico === true && (
           <div className="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div className="space-y-2">
-              <Label className="text-[var(--pagsmile-blue)] font-semibold text-sm">Quem realiza a entrega?</Label>
+              <Label className="text-[var(--pinbank-blue)] font-semibold text-sm">Quem realiza a entrega?</Label>
               <Select
                 value={formData.quemRealizaEntrega || ''}
                 onValueChange={(v) => handleChange('quemRealizaEntrega', v)}
@@ -77,7 +77,7 @@ export default function StepL2bEntrega({ formData, handleChange }) {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[var(--pagsmile-blue)] font-semibold text-sm">Como vocês comprovam entrega?</Label>
+              <Label className="text-[var(--pinbank-blue)] font-semibold text-sm">Como vocês comprovam entrega?</Label>
               <Select
                 value={formData.comoComprovaEntregaFisica || ''}
                 onValueChange={(v) => handleChange('comoComprovaEntregaFisica', v)}
@@ -97,31 +97,31 @@ export default function StepL2bEntrega({ formData, handleChange }) {
 
         {/* Entrega Digital/Serviço */}
         <div className="space-y-2">
-          <Label className="text-[var(--pagsmile-blue)] font-semibold">Vocês entregam produto digital ou prestam serviço?</Label>
+          <Label className="text-[var(--pinbank-blue)] font-semibold">Vocês entregam produto digital ou prestam serviço?</Label>
           <div className="flex gap-4">
             <button
               type="button"
               onClick={() => handleChange('entregaDigitalServico', true)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaDigitalServico === true
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
-              <Laptop className="w-5 h-5 mx-auto mb-1 text-[var(--pagsmile-blue)]" />
-              <p className="font-semibold text-[var(--pagsmile-blue)] text-sm">Sim</p>
+              <Laptop className="w-5 h-5 mx-auto mb-1 text-[var(--pinbank-blue)]" />
+              <p className="font-semibold text-[var(--pinbank-blue)] text-sm">Sim</p>
             </button>
             <button
               type="button"
               onClick={() => handleChange('entregaDigitalServico', false)}
               className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                 formData.entregaDigitalServico === false
-                  ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5'
+                  ? 'border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)]/5'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <Laptop className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className="font-semibold text-[var(--pagsmile-blue)] text-sm">Não</p>
+              <p className="font-semibold text-[var(--pinbank-blue)] text-sm">Não</p>
             </button>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function StepL2bEntrega({ formData, handleChange }) {
         {formData.entregaDigitalServico === true && (
           <div className="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div className="space-y-2">
-              <Label className="text-[var(--pagsmile-blue)] font-semibold text-sm">Como vocês comprovam entrega/prestação?</Label>
+              <Label className="text-[var(--pinbank-blue)] font-semibold text-sm">Como vocês comprovam entrega/prestação?</Label>
               <Select
                 value={formData.comoComprovaEntregaDigital || ''}
                 onValueChange={(v) => handleChange('comoComprovaEntregaDigital', v)}

@@ -12,13 +12,13 @@ export default function ConditionsSection({ score, latestCase }) {
   if (!conditions.length && !rollingReserve && !monitoring && !hasReview) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-amber-50/50 to-white">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-amber-100"><ShieldCheck className="w-5 h-5 text-amber-600" /></div>
           <div>
-            <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Condições, Mitigações & Recomendações</h3>
-            <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-0.5">Restrições impostas pelo framework de risco e sugestões para revisão manual</p>
+            <h3 className="text-base font-bold text-[var(--pinbank-blue)]">Condições, Mitigações & Recomendações</h3>
+            <p className="text-xs text-[var(--pinbank-blue)]/40 mt-0.5">Restrições impostas pelo framework de risco e sugestões para revisão manual</p>
           </div>
         </div>
       </div>

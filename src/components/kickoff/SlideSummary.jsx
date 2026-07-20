@@ -31,14 +31,14 @@ export default function SlideSummary({ proposal = {}, contract = {}, slideNumber
 
   return (
     <SlideLayout slideNumber={slideNumber} totalSlides={totalSlides}>
-      <h2 className="text-xl font-extrabold text-[#002443] mb-0.5">Resumo do Cliente</h2>
-      <p className="text-[10px] text-[#002443]/60 mb-4">Visão geral da operação e condições negociadas</p>
+      <h2 className="text-xl font-extrabold text-[#0A0A0A] mb-0.5">Resumo do Cliente</h2>
+      <p className="text-[10px] text-[#0A0A0A]/60 mb-4">Visão geral da operação e condições negociadas</p>
 
       <div className="flex-1 grid grid-cols-3 gap-4 content-start">
         {/* Client card - dark */}
-        <div className="bg-gradient-to-br from-[#002443] to-[#003a6b] rounded-2xl p-4 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#2bc196] rounded-full blur-[60px] opacity-[0.12]" />
-          <Building2 className="w-6 h-6 text-[#2bc196] mb-3" />
+        <div className="bg-gradient-to-br from-[#0A0A0A] to-[#003a6b] rounded-2xl p-4 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#1356E2] rounded-full blur-[60px] opacity-[0.12]" />
+          <Building2 className="w-6 h-6 text-[#1356E2] mb-3" />
           <h3 className="text-sm font-bold mb-1">{proposal.clienteNome || contract.clientName || 'Cliente'}</h3>
           <p className="text-[10px] text-white/40 mb-3">{proposal.clienteCnpj || contract.clientDocument || '—'}</p>
           <div className="space-y-1.5">
@@ -50,7 +50,7 @@ export default function SlideSummary({ proposal = {}, contract = {}, slideNumber
             ].map((r, i) => (
               <div key={i} className="flex justify-between">
                 <span className="text-[9px] text-white/35">{r.k}</span>
-                <span className={`text-[10px] font-semibold ${r.green ? 'text-[#2bc196]' : 'text-white/75'}`}>{r.v}</span>
+                <span className={`text-[10px] font-semibold ${r.green ? 'text-[#1356E2]' : 'text-white/75'}`}>{r.v}</span>
               </div>
             ))}
           </div>
@@ -69,13 +69,13 @@ export default function SlideSummary({ proposal = {}, contract = {}, slideNumber
                 transition={{ delay: i * 0.06, duration: 0.3 }}
                 className={`rounded-2xl p-3 flex flex-col items-center justify-center text-center border ${
                   card.accent
-                    ? 'bg-gradient-to-br from-[#2bc196]/10 to-[#2bc196]/5 border-[#2bc196]/20'
-                    : 'bg-gradient-to-br from-[#002443]/[0.04] to-[#002443]/[0.02] border-[#002443]/[0.06]'
+                    ? 'bg-gradient-to-br from-[#1356E2]/10 to-[#1356E2]/5 border-[#1356E2]/20'
+                    : 'bg-gradient-to-br from-[#0A0A0A]/[0.04] to-[#0A0A0A]/[0.02] border-[#0A0A0A]/[0.06]'
                 }`}
               >
-                <Icon className={`w-5 h-5 mb-1 ${card.accent ? 'text-[#2bc196]' : 'text-[#002443]/60'}`} />
-                <span className="text-[9px] text-[#002443]/60">{card.label}</span>
-                <span className={`text-lg font-bold font-mono ${card.accent ? 'text-[#2bc196]' : 'text-[#002443]'}`}>{card.value}</span>
+                <Icon className={`w-5 h-5 mb-1 ${card.accent ? 'text-[#1356E2]' : 'text-[#0A0A0A]/60'}`} />
+                <span className="text-[9px] text-[#0A0A0A]/60">{card.label}</span>
+                <span className={`text-lg font-bold font-mono ${card.accent ? 'text-[#1356E2]' : 'text-[#0A0A0A]'}`}>{card.value}</span>
               </motion.div>
             );
           })}

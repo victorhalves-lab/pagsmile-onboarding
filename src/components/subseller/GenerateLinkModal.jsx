@@ -8,8 +8,8 @@ import {
 import { base44 } from '@/api/base44Client';
 import FrameworkVersionPicker from './FrameworkVersionPicker';
 
-const PAGSMILE_GREEN = '#2bc196';
-const PAGSMILE_BLUE = '#002443';
+const PIN_BANK_GREEN = '#1356E2';
+const PIN_BANK_BLUE = '#0A0A0A';
 
 export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPending }) {
   // [V5.2 Fase 6.5.2] Framework version do link — default V4 (zero regressão).
@@ -19,8 +19,8 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
   // Pré-preenche com o nome do cliente (seller) — usuário pode editar se quiser.
   const [brandName, setBrandName] = useState(merchant?.fullName || merchant?.companyName || '');
   const [brandLogoUrl, setBrandLogoUrl] = useState('');
-  const [brandPrimaryColor, setBrandPrimaryColor] = useState(PAGSMILE_GREEN);
-  const [brandSecondaryColor, setBrandSecondaryColor] = useState(PAGSMILE_BLUE);
+  const [brandPrimaryColor, setBrandPrimaryColor] = useState(PIN_BANK_GREEN);
+  const [brandSecondaryColor, setBrandSecondaryColor] = useState(PIN_BANK_BLUE);
   const [customSlug, setCustomSlug] = useState('');
   const [uploading, setUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -54,8 +54,8 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
               <Plus className="w-4 h-4 text-emerald-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Gerar Link de Subseller</h2>
-              <p className="text-xs text-[#002443]/50">{merchant?.fullName || merchant?.companyName}</p>
+              <h2 className="text-base font-bold text-[#0A0A0A]">Gerar Link de Subseller</h2>
+              <p className="text-xs text-[#0A0A0A]/50">{merchant?.fullName || merchant?.companyName}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
@@ -73,21 +73,21 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
           {mode && (
             <div className={`p-2.5 rounded-lg border flex items-center gap-2 ${
               frameworkVersion === 'v5.2'
-                ? 'bg-[#2bc196]/5 border-[#2bc196]/30'
+                ? 'bg-[#1356E2]/5 border-[#1356E2]/30'
                 : 'bg-blue-50 border-blue-200'
             }`}>
               {frameworkVersion === 'v5.2' ? (
-                <Rocket className="w-3.5 h-3.5 text-[#2bc196]" />
+                <Rocket className="w-3.5 h-3.5 text-[#1356E2]" />
               ) : (
                 <Shield className="w-3.5 h-3.5 text-blue-600" />
               )}
-              <span className="text-[11px] font-semibold text-[#002443]">
+              <span className="text-[11px] font-semibold text-[#0A0A0A]">
                 Framework: {frameworkVersion === 'v5.2' ? 'V5.2 (Novo)' : 'V4 (Atual)'}
               </span>
               <button
                 type="button"
                 onClick={() => setMode(null)}
-                className="ml-auto text-[10px] text-[#002443]/60 hover:text-[#002443] underline"
+                className="ml-auto text-[10px] text-[#0A0A0A]/60 hover:text-[#0A0A0A] underline"
               >
                 trocar
               </button>
@@ -97,19 +97,19 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
           {/* Step 1: Choose mode */}
           {!mode && (
             <div className="space-y-3 pt-2 border-t border-slate-100">
-              <p className="text-sm font-semibold text-[#002443]">Escolha o estilo do link:</p>
+              <p className="text-sm font-semibold text-[#0A0A0A]">Escolha o estilo do link:</p>
               
               <button
                 onClick={() => setMode('pagsmile')}
                 className="w-full p-4 border-2 border-slate-200 rounded-xl hover:border-emerald-400 hover:bg-emerald-50/30 transition-all text-left group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center">
                     <Shield className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#002443]">Padrão PagSmile</p>
-                    <p className="text-xs text-[#002443]/50">Cores e logo PagSmile — sem personalização</p>
+                    <p className="text-sm font-bold text-[#0A0A0A]">Padrão Pin Bank</p>
+                    <p className="text-xs text-[#0A0A0A]/50">Cores e logo Pin Bank — sem personalização</p>
                   </div>
                 </div>
               </button>
@@ -123,36 +123,36 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
                     <Paintbrush className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#002443]">Personalizado (White-Label)</p>
-                    <p className="text-xs text-[#002443]/50">Logo, cores e nome do cliente no questionário</p>
+                    <p className="text-sm font-bold text-[#0A0A0A]">Personalizado (White-Label)</p>
+                    <p className="text-xs text-[#0A0A0A]/50">Logo, cores e nome do cliente no questionário</p>
                   </div>
                 </div>
               </button>
             </div>
           )}
 
-          {/* Step 2a: Pagsmile confirm */}
+          {/* Step 2a: Pin Bank confirm */}
           {mode === 'pagsmile' && (
             <div className="space-y-4">
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center">
                     <Shield className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#002443]">Estilo Padrão PagSmile</p>
-                    <p className="text-xs text-[#002443]/50">O questionário usará as cores e logo padrão da PagSmile.</p>
+                    <p className="text-sm font-bold text-[#0A0A0A]">Estilo Padrão Pin Bank</p>
+                    <p className="text-xs text-[#0A0A0A]/50">O questionário usará as cores e logo padrão da Pin Bank.</p>
                   </div>
                 </div>
               </div>
 
               {/* Slug personalizado */}
               <div>
-                <Label className="text-xs font-semibold text-[#002443]/70 flex items-center gap-1.5">
+                <Label className="text-xs font-semibold text-[#0A0A0A]/70 flex items-center gap-1.5">
                   <LinkIcon className="w-3 h-3" /> URL curta personalizada (opcional)
                 </Label>
                 <div className="flex items-center gap-0 mt-1">
-                  <span className="text-xs text-[#002443]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
+                  <span className="text-xs text-[#0A0A0A]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
                     {window.location.origin}/s/
                   </span>
                   <Input
@@ -171,7 +171,7 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
 
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setMode(null)} className="flex-1">Voltar</Button>
-                <Button onClick={handleGenerate} disabled={isPending} className="flex-1 bg-[#2bc196] text-white">
+                <Button onClick={handleGenerate} disabled={isPending} className="flex-1 bg-[#1356E2] text-white">
                   {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                   Gerar Link
                 </Button>
@@ -191,7 +191,7 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
 
               {/* Nome */}
               <div>
-                <Label className="text-xs font-semibold text-[#002443]/70">Nome de exibição</Label>
+                <Label className="text-xs font-semibold text-[#0A0A0A]/70">Nome de exibição</Label>
                 <Input
                   value={brandName}
                   onChange={e => setBrandName(e.target.value)}
@@ -202,7 +202,7 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
 
               {/* Logo */}
               <div>
-                <Label className="text-xs font-semibold text-[#002443]/70">Logo do cliente</Label>
+                <Label className="text-xs font-semibold text-[#0A0A0A]/70">Logo do cliente</Label>
                 <div className="mt-1 flex items-center gap-3">
                   {brandLogoUrl ? (
                     <div className="relative">
@@ -213,12 +213,12 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
                     </div>
                   ) : (
                     <>
-                      <label className="cursor-pointer flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-lg hover:border-purple-400 transition-all text-sm text-[#002443]/60">
+                      <label className="cursor-pointer flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-lg hover:border-purple-400 transition-all text-sm text-[#0A0A0A]/60">
                         {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                         {uploading ? 'Enviando...' : 'Upload do logo'}
                         <input type="file" accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp,.png,.jpg,.jpeg,.svg,.webp" className="hidden" onChange={handleLogoUpload} disabled={uploading} />
                       </label>
-                      <span className="text-[9px] text-[#002443]/30">PNG, SVG, JPG, WEBP</span>
+                      <span className="text-[9px] text-[#0A0A0A]/30">PNG, SVG, JPG, WEBP</span>
                     </>
                   )}
                 </div>
@@ -227,14 +227,14 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
               {/* Cores */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs font-semibold text-[#002443]/70">Cor primária</Label>
+                  <Label className="text-xs font-semibold text-[#0A0A0A]/70">Cor primária</Label>
                   <div className="flex items-center gap-2 mt-1">
                     <input type="color" value={brandPrimaryColor} onChange={e => setBrandPrimaryColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     <Input value={brandPrimaryColor} onChange={e => setBrandPrimaryColor(e.target.value)} className="font-mono text-xs" />
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs font-semibold text-[#002443]/70">Cor secundária</Label>
+                  <Label className="text-xs font-semibold text-[#0A0A0A]/70">Cor secundária</Label>
                   <div className="flex items-center gap-2 mt-1">
                     <input type="color" value={brandSecondaryColor} onChange={e => setBrandSecondaryColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     <Input value={brandSecondaryColor} onChange={e => setBrandSecondaryColor(e.target.value)} className="font-mono text-xs" />
@@ -244,11 +244,11 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
 
               {/* Slug personalizado */}
               <div>
-                <Label className="text-xs font-semibold text-[#002443]/70 flex items-center gap-1.5">
+                <Label className="text-xs font-semibold text-[#0A0A0A]/70 flex items-center gap-1.5">
                   <LinkIcon className="w-3 h-3" /> URL curta personalizada (opcional)
                 </Label>
                 <div className="flex items-center gap-0 mt-1">
-                  <span className="text-xs text-[#002443]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
+                  <span className="text-xs text-[#0A0A0A]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
                     {window.location.origin}/s/
                   </span>
                   <Input

@@ -123,11 +123,11 @@ export default function DashboardComercial() {
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <TrendingUp className="w-6 h-6 text-[#5cf7cf]" />
+              <TrendingUp className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Dashboard Comercial</h1>
@@ -139,7 +139,7 @@ export default function DashboardComercial() {
               <RefreshCw className="w-4 h-4 mr-2" /> Atualizar
             </Button>
             <Link to={createPageUrl('PipelineComercial')}>
-              <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl shadow-md">
+              <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl shadow-md">
                 <Users className="w-4 h-4 mr-2" /> Pipeline
               </Button>
             </Link>
@@ -191,7 +191,7 @@ export default function DashboardComercial() {
 
       {/* Recent Leads Table */}
       <div>
-        <h2 className="text-lg font-bold text-[#002443] mb-3">Leads Recentes</h2>
+        <h2 className="text-lg font-bold text-[#0A0A0A] mb-3">Leads Recentes</h2>
         <RecentLeadsTable leads={leads} isLoading={leadsLoading} />
       </div>
     </div>

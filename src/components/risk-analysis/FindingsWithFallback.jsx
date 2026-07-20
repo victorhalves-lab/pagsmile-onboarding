@@ -139,7 +139,7 @@ export default function FindingsWithFallback({ complianceScore }) {
   if (allKeys.length === 0) {
     return (
       <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-        <p className="text-[12px] text-[#002443]/60 italic">
+        <p className="text-[12px] text-[#0A0A0A]/60 italic">
           Nenhum finding registrado para este caso.
         </p>
       </div>
@@ -150,10 +150,10 @@ export default function FindingsWithFallback({ complianceScore }) {
     <div className="space-y-3">
       {/* Header explainer */}
       <div className="flex items-start gap-2 p-3 rounded-lg bg-slate-50/70 border border-slate-200">
-        <Search className="w-3.5 h-3.5 text-[#002443]/40 shrink-0 mt-0.5" />
+        <Search className="w-3.5 h-3.5 text-[#0A0A0A]/40 shrink-0 mt-0.5" />
         <div className="flex-1">
-          <p className="text-[11px] text-[#002443]/70 leading-relaxed">
-            <strong className="text-[#002443]">Findings por severidade.</strong>{' '}
+          <p className="text-[11px] text-[#0A0A0A]/70 leading-relaxed">
+            <strong className="text-[#0A0A0A]">Findings por severidade.</strong>{' '}
             Clique em qualquer card para ver os itens individuais com título, evidência, recomendação e fonte.
             Quanto mais grave a severidade, maior o impacto no score e mais urgente a investigação.
           </p>
@@ -300,10 +300,10 @@ function FindingItem({ finding, index, meta }) {
       {/* Description */}
       {finding.descricao && (
         <div className="pl-7">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mb-0.5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-0.5">
             Por que importa
           </p>
-          <p className="text-[12px] text-[#002443]/75 leading-relaxed">
+          <p className="text-[12px] text-[#0A0A0A]/75 leading-relaxed">
             {finding.descricao}
           </p>
         </div>
@@ -312,10 +312,10 @@ function FindingItem({ finding, index, meta }) {
       {/* Evidence */}
       {finding.evidencia && (
         <div className="pl-7 pt-1 border-t border-white/70">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mb-0.5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[#0A0A0A]/40 mb-0.5">
             Evidência
           </p>
-          <p className="text-[11px] text-[#002443]/70 leading-relaxed italic">
+          <p className="text-[11px] text-[#0A0A0A]/70 leading-relaxed italic">
             {finding.evidencia}
           </p>
         </div>
@@ -324,11 +324,11 @@ function FindingItem({ finding, index, meta }) {
       {/* Recommendation */}
       {finding.recomendacao && (
         <div className="pl-7 pt-1 border-t border-white/70">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#2bc196] mb-0.5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[#1356E2] mb-0.5">
             <Target className="w-2.5 h-2.5 inline mr-0.5" />
             Ação recomendada
           </p>
-          <p className="text-[12px] text-[#002443]/80 leading-relaxed font-medium">
+          <p className="text-[12px] text-[#0A0A0A]/80 leading-relaxed font-medium">
             {finding.recomendacao}
           </p>
         </div>
@@ -337,17 +337,17 @@ function FindingItem({ finding, index, meta }) {
       {/* Source footer */}
       {(finding.fonte_externa || finding.secao_questionario || finding.fonte_badge) && (
         <div className="pl-7 pt-2 border-t border-white/70 flex items-center gap-2 flex-wrap">
-          <Link2 className="w-2.5 h-2.5 text-[#002443]/30" />
+          <Link2 className="w-2.5 h-2.5 text-[#0A0A0A]/30" />
           {finding.fonte_badge && (
             <span className="text-[9px] font-bold px-1.5 py-0 rounded bg-slate-100 text-slate-700 border border-slate-200">
               {finding.fonte_badge}
             </span>
           )}
           {finding.fonte_externa && (
-            <span className="text-[10px] text-[#002443]/50">{finding.fonte_externa}</span>
+            <span className="text-[10px] text-[#0A0A0A]/50">{finding.fonte_externa}</span>
           )}
           {finding.secao_questionario && (
-            <span className="text-[10px] text-[#002443]/40 flex items-center gap-0.5">
+            <span className="text-[10px] text-[#0A0A0A]/40 flex items-center gap-0.5">
               <FileText className="w-2.5 h-2.5" />
               {finding.secao_questionario}
             </span>

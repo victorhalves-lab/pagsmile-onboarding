@@ -160,8 +160,8 @@ export default function LeadAddressField({
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-[#2bc196]" />
-          <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+          <MapPin className="w-4 h-4 text-[#1356E2]" />
+          <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
             Endereço da Empresa
           </Label>
           <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-1">
@@ -170,13 +170,13 @@ export default function LeadAddressField({
           </Badge>
         </div>
         <div className="p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl space-y-1">
-          <p className="text-sm font-medium text-[#002443]">
+          <p className="text-sm font-medium text-[#0A0A0A]">
             {addr.logradouro}{addr.numero ? `, ${addr.numero}` : ''}{addr.complemento ? ` - ${addr.complemento}` : ''}
           </p>
-          <p className="text-sm text-[#002443]/70">
+          <p className="text-sm text-[#0A0A0A]/70">
             {addr.bairro} — {addr.cidade}/{addr.uf}
           </p>
-          <p className="text-xs text-[#002443]/50">CEP: {formatCep(addr.cep)}</p>
+          <p className="text-xs text-[#0A0A0A]/50">CEP: {formatCep(addr.cep)}</p>
         </div>
         <Button
           type="button"
@@ -196,8 +196,8 @@ export default function LeadAddressField({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <MapPin className="w-4 h-4 text-[#002443]/50" />
-        <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+        <MapPin className="w-4 h-4 text-[#0A0A0A]/50" />
+        <Label className="text-sm font-semibold text-[var(--pinbank-blue)]">
           Endereço da Empresa <span className="text-red-500">*</span>
         </Label>
         {hasPrefill && !isEditing && (
@@ -224,14 +224,14 @@ export default function LeadAddressField({
       {(isEditing || !hasPrefill) && (
         <div className="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
           {isEditing && (
-            <p className="text-xs text-[#002443]/60 mb-2">
+            <p className="text-xs text-[#0A0A0A]/60 mb-2">
               Digite o novo CEP para preencher automaticamente, ou edite os campos manualmente.
             </p>
           )}
 
           {/* CEP */}
           <div className="space-y-1">
-            <Label className="text-xs font-medium text-[#002443]/70">CEP <span className="text-red-500">*</span></Label>
+            <Label className="text-xs font-medium text-[#0A0A0A]/70">CEP <span className="text-red-500">*</span></Label>
             <div className="relative w-48">
               <Input
                 value={cepDisplay}
@@ -241,7 +241,7 @@ export default function LeadAddressField({
                 maxLength={9}
               />
               {cepLoading && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />
               )}
             </div>
             {cepError && (
@@ -254,7 +254,7 @@ export default function LeadAddressField({
           {/* Logradouro + Número */}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2 space-y-1">
-              <Label className="text-xs font-medium text-[#002443]/70">Logradouro <span className="text-red-500">*</span></Label>
+              <Label className="text-xs font-medium text-[#0A0A0A]/70">Logradouro <span className="text-red-500">*</span></Label>
               <Input
                 value={addr.logradouro || ''}
                 onChange={(e) => updateAddr('logradouro', e.target.value)}
@@ -263,7 +263,7 @@ export default function LeadAddressField({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs font-medium text-[#002443]/70">Número <span className="text-red-500">*</span></Label>
+              <Label className="text-xs font-medium text-[#0A0A0A]/70">Número <span className="text-red-500">*</span></Label>
               <Input
                 value={addr.numero || ''}
                 onChange={(e) => updateAddr('numero', e.target.value)}
@@ -276,7 +276,7 @@ export default function LeadAddressField({
           {/* Complemento + Bairro */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className="text-xs font-medium text-[#002443]/70">Complemento</Label>
+              <Label className="text-xs font-medium text-[#0A0A0A]/70">Complemento</Label>
               <Input
                 value={addr.complemento || ''}
                 onChange={(e) => updateAddr('complemento', e.target.value)}
@@ -285,7 +285,7 @@ export default function LeadAddressField({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs font-medium text-[#002443]/70">Bairro <span className="text-red-500">*</span></Label>
+              <Label className="text-xs font-medium text-[#0A0A0A]/70">Bairro <span className="text-red-500">*</span></Label>
               <Input
                 value={addr.bairro || ''}
                 onChange={(e) => updateAddr('bairro', e.target.value)}
@@ -298,7 +298,7 @@ export default function LeadAddressField({
           {/* Cidade + UF */}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2 space-y-1">
-              <Label className="text-xs font-medium text-[#002443]/70">Cidade <span className="text-red-500">*</span></Label>
+              <Label className="text-xs font-medium text-[#0A0A0A]/70">Cidade <span className="text-red-500">*</span></Label>
               <Input
                 value={addr.cidade || ''}
                 onChange={(e) => updateAddr('cidade', e.target.value)}
@@ -307,7 +307,7 @@ export default function LeadAddressField({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs font-medium text-[#002443]/70">UF <span className="text-red-500">*</span></Label>
+              <Label className="text-xs font-medium text-[#0A0A0A]/70">UF <span className="text-red-500">*</span></Label>
               <Select value={addr.uf || ''} onValueChange={(v) => updateAddr('uf', v)}>
                 <SelectTrigger className="h-10 rounded-xl text-sm">
                   <SelectValue placeholder="UF" />
@@ -333,7 +333,7 @@ export default function LeadAddressField({
             <Button
               type="button"
               onClick={handleConfirm}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 h-11 rounded-xl px-6"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 h-11 rounded-xl px-6"
             >
               <ShieldCheck className="w-4 h-4" />
               Confirmar endereço
@@ -354,7 +354,7 @@ export default function LeadAddressField({
             type="button"
             onClick={handleConfirm}
             disabled={!addr.cep || !addr.logradouro || !addr.numero || !addr.bairro || !addr.cidade || !addr.uf}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 h-11 rounded-xl px-6"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2 h-11 rounded-xl px-6"
           >
             <ShieldCheck className="w-4 h-4" />
             Confirmar endereço

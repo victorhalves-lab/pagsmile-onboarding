@@ -38,7 +38,7 @@ export default function Step4dVolumetria({ formData, handleChange }) {
             onChange={(val) => handleChange('volumeMensalEstimado', val)}
             placeholder="Ex: 100000"
             icon={DollarSign}
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
           <FormField
             label="Ticket Médio (R$)"
@@ -48,7 +48,7 @@ export default function Step4dVolumetria({ formData, handleChange }) {
             onChange={(val) => handleChange('ticketMedio', val)}
             placeholder="Ex: 150"
             icon={DollarSign}
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
         
@@ -56,18 +56,18 @@ export default function Step4dVolumetria({ formData, handleChange }) {
           label="Volume de Transações/Mês"
           value={formData.qtdTransacoesMensalCalculado}
           readOnly
-          className="bg-slate-50 cursor-not-allowed text-[var(--pagsmile-blue)] font-semibold"
+          className="bg-slate-50 cursor-not-allowed text-[var(--pinbank-blue)] font-semibold"
           placeholder="Calculado automaticamente"
           helpText="Baseado em Volume / Ticket Médio"
         />
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Expectativa de Crescimento (12 meses)</Label>
+          <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Expectativa de Crescimento (12 meses)</Label>
           <Select 
             value={formData.expectativaCrescimento} 
             onValueChange={(val) => handleChange('expectativaCrescimento', val)}
           >
-            <SelectTrigger className="border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)] focus:ring-[var(--pagsmile-green)]">
+            <SelectTrigger className="border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)] focus:ring-[var(--pinbank-blue)]">
               <SelectValue placeholder="Selecione (opcional)" />
             </SelectTrigger>
             <SelectContent>

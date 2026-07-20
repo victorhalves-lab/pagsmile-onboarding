@@ -247,23 +247,23 @@ export default function CriarPropostaPadrao() {
   };
 
   return (
-    <div className="min-h-screen bg-[#002443] font-sans">
+    <div className="min-h-screen bg-[#0A0A0A] font-sans">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-20 bg-[#002443] border-b border-white/5">
+      <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-20 bg-[#0A0A0A] border-b border-white/5">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-white/50 hover:text-white hover:bg-white/5 rounded-xl">
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
             <h1 className="text-lg font-bold text-white">{editId ? t('cpp.edit_title') : t('cpp.new_title')}</h1>
-            <p className="text-xs text-[#2bc196]/60">{t('cpp.subtitle')}</p>
+            <p className="text-xs text-[#1356E2]/60">{t('cpp.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="ghost" onClick={handleSalvarRascunho} disabled={saving} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} {t('cpp.draft')}
           </Button>
-          <Button onClick={handleAtivar} disabled={saving} className="bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] font-bold rounded-xl shadow-lg shadow-[#2bc196]/20 px-6">
+          <Button onClick={handleAtivar} disabled={saving} className="bg-[#1356E2] hover:bg-[#E84B1C] text-[#0A0A0A] font-bold rounded-xl shadow-lg shadow-[#1356E2]/20 px-6">
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} {t('cpp.activate')}
           </Button>
         </div>
@@ -319,7 +319,7 @@ export default function CriarPropostaPadrao() {
              <div className="flex items-center gap-2 mb-3">
                <Label className="text-white/80 text-sm font-bold">{t('cpp.segment')}</Label>
                {!form.segment && (
-                 <span className="flex items-center gap-1.5 bg-[#2bc196]/15 text-[#5cf7cf] text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
+                 <span className="flex items-center gap-1.5 bg-[#1356E2]/15 text-[#E84B1C] text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
                    <Info className="w-3.5 h-3.5" />
                    {t('cpp.select_segment')}
                  </span>
@@ -333,8 +333,8 @@ export default function CriarPropostaPadrao() {
                    onClick={() => updateForm('segment', s)}
                    className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border-2 ${
                      form.segment === s
-                       ? 'bg-[#2bc196] border-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/25 scale-[1.02]'
-                       : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-[#2bc196]/40 hover:text-white cursor-pointer'
+                       ? 'bg-[#1356E2] border-[#1356E2] text-[#0A0A0A] shadow-lg shadow-[#1356E2]/25 scale-[1.02]'
+                       : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-[#1356E2]/40 hover:text-white cursor-pointer'
                    }`}
                  >
                    {s}
@@ -342,7 +342,7 @@ export default function CriarPropostaPadrao() {
                ))}
              </div>
              {form.segment && (
-               <p className="text-[10px] text-[#2bc196]/60 flex items-center gap-1.5 mt-3">
+               <p className="text-[10px] text-[#1356E2]/60 flex items-center gap-1.5 mt-3">
                  <Info className="w-3 h-3" />
                  {t('cpp.segment_filled', { segment: form.segment })}
                </p>

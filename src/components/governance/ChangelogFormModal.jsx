@@ -185,7 +185,7 @@ export default function ChangelogFormModal({ onClose, onSaved, initialData }) {
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={submit} disabled={saving} className="bg-[#2bc196] hover:bg-[#2bc196]/90">{saving ? 'Salvando...' : 'Registrar'}</Button>
+          <Button onClick={submit} disabled={saving} className="bg-[#1356E2] hover:bg-[#1356E2]/90">{saving ? 'Salvando...' : 'Registrar'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

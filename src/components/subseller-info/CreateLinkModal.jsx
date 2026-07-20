@@ -112,7 +112,7 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-[#002443]/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#0A0A0A]/60 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -120,19 +120,19 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
       {/* Modal */}
       <div className="relative w-full max-w-[640px] max-h-[calc(100vh-2rem)] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#002443]/8 flex items-center justify-between flex-shrink-0">
+        <div className="px-6 py-4 border-b border-[#0A0A0A]/8 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-[#2bc196]/10 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-4 h-4 text-[#2bc196]" />
+            <div className="w-9 h-9 rounded-xl bg-[#1356E2]/10 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-4 h-4 text-[#1356E2]" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base font-bold text-[#002443] truncate">Novo link de coleta</h2>
-              <p className="text-[11px] text-[#002443]/50 truncate">Cliente Gateway envia subsellers para sua inbox</p>
+              <h2 className="text-base font-bold text-[#0A0A0A] truncate">Novo link de coleta</h2>
+              <p className="text-[11px] text-[#0A0A0A]/50 truncate">Cliente Gateway envia subsellers para sua inbox</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#002443]/40 hover:bg-[#002443]/5 hover:text-[#002443] transition-colors flex-shrink-0"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0A0A0A]/40 hover:bg-[#0A0A0A]/5 hover:text-[#0A0A0A] transition-colors flex-shrink-0"
             aria-label="Fechar"
           >
             <X className="w-4 h-4" />
@@ -147,8 +147,8 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
               onClick={() => { setMode('existing'); setForm(emptyForm); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
                 mode === 'existing'
-                  ? 'bg-white text-[#002443] shadow-sm'
-                  : 'text-[#002443]/50 hover:text-[#002443]/80'
+                  ? 'bg-white text-[#0A0A0A] shadow-sm'
+                  : 'text-[#0A0A0A]/50 hover:text-[#0A0A0A]/80'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
@@ -159,8 +159,8 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
               onClick={() => { setMode('new'); setForm(emptyForm); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
                 mode === 'new'
-                  ? 'bg-white text-[#002443] shadow-sm'
-                  : 'text-[#002443]/50 hover:text-[#002443]/80'
+                  ? 'bg-white text-[#0A0A0A] shadow-sm'
+                  : 'text-[#0A0A0A]/50 hover:text-[#0A0A0A]/80'
               }`}
             >
               <UserPlus className="w-3.5 h-3.5" />
@@ -171,7 +171,7 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
 
         {/* Modo de coleta */}
         <div className="px-6 pt-3 flex-shrink-0">
-          <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-1.5 block">
+          <Label className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-1.5 block">
             Modo de coleta
           </Label>
           <div className="grid grid-cols-2 gap-2">
@@ -180,14 +180,14 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
               onClick={() => setForm(prev => ({ ...prev, collection_mode: 'full' }))}
               className={`flex items-start gap-2 p-2.5 rounded-xl border-2 text-left transition-all ${
                 form.collection_mode === 'full'
-                  ? 'border-[#2bc196] bg-[#2bc196]/5'
-                  : 'border-[#002443]/10 hover:border-[#002443]/20'
+                  ? 'border-[#1356E2] bg-[#1356E2]/5'
+                  : 'border-[#0A0A0A]/10 hover:border-[#0A0A0A]/20'
               }`}
             >
-              <Layers className={`w-4 h-4 mt-0.5 flex-shrink-0 ${form.collection_mode === 'full' ? 'text-[#2bc196]' : 'text-[#002443]/40'}`} />
+              <Layers className={`w-4 h-4 mt-0.5 flex-shrink-0 ${form.collection_mode === 'full' ? 'text-[#1356E2]' : 'text-[#0A0A0A]/40'}`} />
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#002443]">Completo</div>
-                <div className="text-[10px] text-[#002443]/50 leading-tight">CNPJ, modelo, volumetria, banco, documentos</div>
+                <div className="text-xs font-bold text-[#0A0A0A]">Completo</div>
+                <div className="text-[10px] text-[#0A0A0A]/50 leading-tight">CNPJ, modelo, volumetria, banco, documentos</div>
               </div>
             </button>
             <button
@@ -195,14 +195,14 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
               onClick={() => setForm(prev => ({ ...prev, collection_mode: 'simple' }))}
               className={`flex items-start gap-2 p-2.5 rounded-xl border-2 text-left transition-all ${
                 form.collection_mode === 'simple'
-                  ? 'border-[#2bc196] bg-[#2bc196]/5'
-                  : 'border-[#002443]/10 hover:border-[#002443]/20'
+                  ? 'border-[#1356E2] bg-[#1356E2]/5'
+                  : 'border-[#0A0A0A]/10 hover:border-[#0A0A0A]/20'
               }`}
             >
-              <Zap className={`w-4 h-4 mt-0.5 flex-shrink-0 ${form.collection_mode === 'simple' ? 'text-[#2bc196]' : 'text-[#002443]/40'}`} />
+              <Zap className={`w-4 h-4 mt-0.5 flex-shrink-0 ${form.collection_mode === 'simple' ? 'text-[#1356E2]' : 'text-[#0A0A0A]/40'}`} />
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#002443]">Simplificado</div>
-                <div className="text-[10px] text-[#002443]/50 leading-tight">Apenas Doc + Nome + URL da oferta</div>
+                <div className="text-xs font-bold text-[#0A0A0A]">Simplificado</div>
+                <div className="text-[10px] text-[#0A0A0A]/50 leading-tight">Apenas Doc + Nome + URL da oferta</div>
               </div>
             </button>
           </div>
@@ -226,7 +226,7 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#002443]/8 bg-[#f4f4f4]/40 flex items-center justify-between gap-3 flex-shrink-0">
+        <div className="px-6 py-4 border-t border-[#0A0A0A]/8 bg-[#f4f4f4]/40 flex items-center justify-between gap-3 flex-shrink-0">
           <Button variant="ghost" onClick={onClose} disabled={isSubmitting}>
             Cancelar
           </Button>
@@ -247,7 +247,7 @@ function ExistingClientPanel({ search, setSearch, merchants, loading, selectedId
   return (
     <div className="space-y-3">
       <div className="relative">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#002443]/40 pointer-events-none" />
+        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#0A0A0A]/40 pointer-events-none" />
         <Input
           autoFocus
           value={search}
@@ -257,22 +257,22 @@ function ExistingClientPanel({ search, setSearch, merchants, loading, selectedId
         />
       </div>
 
-      <div className="border border-[#002443]/10 rounded-xl overflow-hidden">
+      <div className="border border-[#0A0A0A]/10 rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
-            <Loader2 className="w-5 h-5 animate-spin text-[#2bc196] mx-auto" />
+            <Loader2 className="w-5 h-5 animate-spin text-[#1356E2] mx-auto" />
           </div>
         ) : merchants.length === 0 ? (
           <div className="p-8 text-center">
-            <Building2 className="w-8 h-8 text-[#002443]/15 mx-auto mb-2" />
-            <p className="text-xs text-[#002443]/50">
+            <Building2 className="w-8 h-8 text-[#0A0A0A]/15 mx-auto mb-2" />
+            <p className="text-xs text-[#0A0A0A]/50">
               {totalCount === 0
                 ? 'Nenhum cliente PJ aprovado na base ainda.'
                 : 'Nenhum resultado para a busca.'}
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-[#002443]/5 max-h-[320px] overflow-y-auto">
+          <div className="divide-y divide-[#0A0A0A]/5 max-h-[320px] overflow-y-auto">
             {merchants.slice(0, 100).map(m => {
               const selected = selectedId === m.id;
               return (
@@ -281,23 +281,23 @@ function ExistingClientPanel({ search, setSearch, merchants, loading, selectedId
                   type="button"
                   onClick={() => onSelect(m)}
                   className={`w-full text-left p-3 flex items-center gap-3 transition-colors ${
-                    selected ? 'bg-[#2bc196]/10' : 'hover:bg-[#002443]/3'
+                    selected ? 'bg-[#1356E2]/10' : 'hover:bg-[#0A0A0A]/3'
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    selected ? 'bg-[#2bc196] text-white' : 'bg-[#002443]/5 text-[#002443]/60'
+                    selected ? 'bg-[#1356E2] text-white' : 'bg-[#0A0A0A]/5 text-[#0A0A0A]/60'
                   }`}>
                     <Building2 className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-[#002443] truncate">
+                    <div className="text-sm font-semibold text-[#0A0A0A] truncate">
                       {m.companyName || m.fullName}
                     </div>
-                    <div className="text-[11px] text-[#002443]/50 truncate">
+                    <div className="text-[11px] text-[#0A0A0A]/50 truncate">
                       {m.cpfCnpj ? formatCnpj(m.cpfCnpj) : '—'}{m.email && ` · ${m.email}`}
                     </div>
                   </div>
-                  {selected && <CheckCircle2 className="w-5 h-5 text-[#2bc196] flex-shrink-0" />}
+                  {selected && <CheckCircle2 className="w-5 h-5 text-[#1356E2] flex-shrink-0" />}
                 </button>
               );
             })}
@@ -306,7 +306,7 @@ function ExistingClientPanel({ search, setSearch, merchants, loading, selectedId
       </div>
 
       {merchants.length > 100 && (
-        <p className="text-[10px] text-[#002443]/40 text-center">
+        <p className="text-[10px] text-[#0A0A0A]/40 text-center">
           Mostrando 100 resultados — refine a busca para ver outros.
         </p>
       )}
@@ -318,7 +318,7 @@ function NewClientPanel({ form, setForm }) {
   return (
     <div className="space-y-3">
       <div>
-        <Label className="text-xs font-semibold text-[#002443]">Nome do Gateway *</Label>
+        <Label className="text-xs font-semibold text-[#0A0A0A]">Nome do Gateway *</Label>
         <Input
           autoFocus
           value={form.gateway_name}
@@ -328,7 +328,7 @@ function NewClientPanel({ form, setForm }) {
         />
       </div>
       <div>
-        <Label className="text-xs font-semibold text-[#002443]">CNPJ *</Label>
+        <Label className="text-xs font-semibold text-[#0A0A0A]">CNPJ *</Label>
         <Input
           value={formatCnpj(form.gateway_cnpj)}
           onChange={(e) => setForm({ ...form, gateway_cnpj: e.target.value.replace(/\D/g, '').slice(0, 14) })}
@@ -339,7 +339,7 @@ function NewClientPanel({ form, setForm }) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <Label className="text-xs font-semibold text-[#002443]">Contato (nome)</Label>
+          <Label className="text-xs font-semibold text-[#0A0A0A]">Contato (nome)</Label>
           <Input
             value={form.gateway_contact_name}
             onChange={(e) => setForm({ ...form, gateway_contact_name: e.target.value })}
@@ -348,7 +348,7 @@ function NewClientPanel({ form, setForm }) {
           />
         </div>
         <div>
-          <Label className="text-xs font-semibold text-[#002443]">Contato (email)</Label>
+          <Label className="text-xs font-semibold text-[#0A0A0A]">Contato (email)</Label>
           <Input
             type="email"
             value={form.gateway_contact_email}
@@ -359,7 +359,7 @@ function NewClientPanel({ form, setForm }) {
         </div>
       </div>
       <div>
-        <Label className="text-xs font-semibold text-[#002443]">Notas internas</Label>
+        <Label className="text-xs font-semibold text-[#0A0A0A]">Notas internas</Label>
         <Textarea
           value={form.notes}
           onChange={(e) => setForm({ ...form, notes: e.target.value })}

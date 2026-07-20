@@ -134,7 +134,7 @@ export default function PartnerUserManageModal({ open, onClose, partner }) {
                 {links.map(l => (
                   <div key={l.id} className="flex items-center justify-between p-3">
                     <div>
-                      <div className="font-medium text-sm text-[#002443]">{l.userFullName || l.userEmail}</div>
+                      <div className="font-medium text-sm text-[#0A0A0A]">{l.userFullName || l.userEmail}</div>
                       <div className="text-xs text-slate-500">{l.userEmail}</div>
                     </div>
                     <div className="flex items-center gap-2">

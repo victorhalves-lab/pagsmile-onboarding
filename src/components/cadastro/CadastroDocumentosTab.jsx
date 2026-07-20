@@ -55,8 +55,8 @@ function DocRequestPanel({ latestCase, merchantEmail }) {
     setSending(true);
     await base44.integrations.Core.SendEmail({
       to: merchantEmail,
-      subject: 'Complemento de Documentos — Pagsmile',
-      body: `<p>Olá,</p><p>Para dar continuidade ao seu processo de onboarding, precisamos que envie os documentos solicitados.</p><p><a href="${docUrl}" style="display:inline-block;padding:12px 24px;background:#2bc196;color:white;text-decoration:none;border-radius:8px;font-weight:600;">Enviar Documentos</a></p><p>Se o botão não funcionar, copie e cole o link abaixo:</p><p>${docUrl}</p><p>Atenciosamente,<br/>Equipe Pagsmile</p>`,
+      subject: 'Complemento de Documentos — Pin Bank',
+      body: `<p>Olá,</p><p>Para dar continuidade ao seu processo de onboarding, precisamos que envie os documentos solicitados.</p><p><a href="${docUrl}" style="display:inline-block;padding:12px 24px;background:#1356E2;color:white;text-decoration:none;border-radius:8px;font-weight:600;">Enviar Documentos</a></p><p>Se o botão não funcionar, copie e cole o link abaixo:</p><p>${docUrl}</p><p>Atenciosamente,<br/>Equipe Pin Bank</p>`,
     });
     setSending(false);
     toast.success(`E-mail enviado para ${merchantEmail}`);
@@ -78,7 +78,7 @@ function DocRequestPanel({ latestCase, merchantEmail }) {
             <input
               readOnly
               value={docUrl}
-              className="flex-1 text-xs bg-white border border-amber-300 rounded-lg px-3 py-2 text-[var(--pagsmile-blue)]/80 font-mono truncate"
+              className="flex-1 text-xs bg-white border border-amber-300 rounded-lg px-3 py-2 text-[var(--pinbank-blue)]/80 font-mono truncate"
             />
             <Button onClick={handleCopy} variant="outline" size="sm" className="gap-1 border-amber-300">
               {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -104,9 +104,9 @@ export default function CadastroDocumentosTab({ documents, latestCase, merchantE
         {latestCase && (
           <DocRequestPanel latestCase={latestCase} merchantEmail={merchantEmail} />
         )}
-        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center">
-          <FileCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-          <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum documento enviado</p>
+        <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center">
+          <FileCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+          <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum documento enviado</p>
         </div>
       </div>
     );
@@ -118,25 +118,25 @@ export default function CadastroDocumentosTab({ documents, latestCase, merchantE
         <DocRequestPanel latestCase={latestCase} merchantEmail={merchantEmail} />
       )}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-[var(--pagsmile-blue)]/60">
+        <p className="text-sm text-[var(--pinbank-blue)]/60">
           {documents.length} documento(s) • {documents.filter(d => d.validationStatus === 'Validado').length} validado(s)
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {documents.map(doc => (
-          <div key={doc.id} className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-4 flex items-start gap-3">
+          <div key={doc.id} className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-4 flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
               <FileCheck className="w-5 h-5 text-blue-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-[var(--pagsmile-blue)] truncate">{doc.documentName || doc.fileName || 'Documento'}</p>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40 truncate">{doc.fileName}</p>
+              <p className="text-sm font-semibold text-[var(--pinbank-blue)] truncate">{doc.documentName || doc.fileName || 'Documento'}</p>
+              <p className="text-xs text-[var(--pinbank-blue)]/40 truncate">{doc.fileName}</p>
               <div className="flex items-center gap-2 mt-1">
                 <Badge className={`text-[10px] ${STATUS_COLORS[doc.validationStatus] || STATUS_COLORS['Pendente']}`}>
                   {doc.validationStatus}
                 </Badge>
                 {doc.uploadDate && (
-                  <span className="text-[10px] text-[var(--pagsmile-blue)]/40">
+                  <span className="text-[10px] text-[var(--pinbank-blue)]/40">
                     {new Date(doc.uploadDate).toLocaleDateString('pt-BR')}
                   </span>
                 )}

@@ -103,7 +103,7 @@ export default function LinkAnalyticsDashboard({ linkId, linkCode }) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -219,7 +219,7 @@ export default function LinkAnalyticsDashboard({ linkId, linkCode }) {
                   </div>
                   <div className="h-6 bg-slate-100 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-[var(--pagsmile-green)] to-emerald-400 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
+                      className="h-full bg-gradient-to-r from-[var(--pinbank-blue)] to-emerald-400 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
                       style={{ width: `${percentage}%` }}
                     >
                       {Number(percentage) > 15 && (

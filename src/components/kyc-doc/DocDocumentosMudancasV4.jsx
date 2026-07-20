@@ -123,7 +123,7 @@ function formatAllDocs(template) {
           <Bold>{d.label || d.documentTypeId}</Bold>
           {d.conditionalLogic && <span className="text-amber-700 text-[10px] ml-1">(condicional)</span>}
           {d.required === false && <span className="text-[#1a1a1a]/50 text-[10px] ml-1">(opcional)</span>}
-          {d.cafSdk && <span className="text-[#2bc196] text-[10px] ml-1">[CAF: {d.cafSdk}]</span>}
+          {d.cafSdk && <span className="text-[#1356E2] text-[10px] ml-1">[CAF: {d.cafSdk}]</span>}
         </li>
       ))}
     </ul>

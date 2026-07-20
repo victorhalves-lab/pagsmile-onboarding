@@ -13,9 +13,9 @@ import { S, H1, H2, H3, P, Li, Bold, Table, InfoBox } from './DocHelpers';
 export default function DocDocCompParceiros() {
   return (
     <S>
-      <H1>18. Doc Compliance Parceiros — Coleta Bancária + Export "Pré KYC Pagsmile"</H1>
+      <H1>18. Doc Compliance Parceiros — Coleta Bancária + Export "Pré KYC Pin Bank"</H1>
 
-      <P>Esta seção descreve o módulo administrativo que produz o artefato final do ciclo de onboarding: a planilha <Bold>Pré KYC Pagsmile</Bold>, enviada aos bancos parceiros (BaaS) para abertura da conta operacional do cliente. Cada campo citado, cada ordem de prioridade, cada validação e cada sanitização foi extraída diretamente do código fonte listado no cabeçalho deste arquivo.</P>
+      <P>Esta seção descreve o módulo administrativo que produz o artefato final do ciclo de onboarding: a planilha <Bold>Pré KYC Pin Bank</Bold>, enviada aos bancos parceiros (BaaS) para abertura da conta operacional do cliente. Cada campo citado, cada ordem de prioridade, cada validação e cada sanitização foi extraída diretamente do código fonte listado no cabeçalho deste arquivo.</P>
 
       <InfoBox title="O problema que o módulo resolve">
         <p>Antes: um operador abria cada dossiê no CRM, copiava 15 campos (razão social, CNPJ, endereço, dados bancários…) para uma planilha Excel manual, um cliente por linha. Processo lento, sujeito a erro de digitação e sem rastreabilidade. Agora: um clique na tela <code>/DocCompParceiros</code> gera o XLSX completo, com endereço enriquecido automaticamente via BigDataCorp quando os dados declarados estão incompletos, e com dados bancários coletados via link público enviado ao cliente.</p>
@@ -127,7 +127,7 @@ export default function DocDocCompParceiros() {
       </ol>
       <P>Retorno: <code>{'{ ok: true }'}</code>. UI mostra tela "Recebemos seus dados!" com recap read-only e disclaimer LGPD.</P>
 
-      <H2>18.4. Export "Pré KYC Pagsmile" — <code>exportPartnerComplianceDoc</code></H2>
+      <H2>18.4. Export "Pré KYC Pin Bank" — <code>exportPartnerComplianceDoc</code></H2>
       <P>Invocada pelo botão "Exportar XLSX". Processa um caso por vez em loop serial. Para cada caso:</P>
 
       <H3>18.4.1. Montagem da linha por caso</H3>
@@ -217,7 +217,7 @@ export default function DocDocCompParceiros() {
         ['Biblioteca', 'npm:xlsx@0.18.5 (SheetJS)'],
         ['Sheet name', 'Pré KYC (única)'],
         ['bookType', 'xlsx'],
-        ['Nome do arquivo', <code key="fn">PreKYC-Pagsmile-YYYY-MM-DD.xlsx</code>],
+        ['Nome do arquivo', <code key="fn">PreKYC-Pin Bank-YYYY-MM-DD.xlsx</code>],
         ['Encoding', 'ArrayBuffer → Uint8Array → base64 (fileBase64 na resposta)'],
         ['Download frontend', 'atob → Blob → URL.createObjectURL → anchor.click → revokeObjectURL'],
       ]} />
@@ -239,7 +239,7 @@ export default function DocDocCompParceiros() {
       <Table headers={['Aspecto', 'Seção 16 — Parceiros Compliance', 'Seção 18 — este módulo']} rows={[
         ['Propósito', 'Parceiro externo ANALISA o dossiê e recomenda decisão.', 'Equipe interna EXTRAI dados estruturados para enviar ao banco BaaS.'],
         ['Entidades centrais', 'CompliancePartner, CompliancePartnerUser, PartnerAssignment.', 'BankDataCollection + leitura de OnboardingCase/Merchant/QuestionnaireResponse/Lead.'],
-        ['Quem acessa', 'Usuário do parceiro em /ComplianceParceiro, visibilidade configurável.', 'Admin Pagsmile em /DocCompParceiros — user.role === "admin".'],
+        ['Quem acessa', 'Usuário do parceiro em /ComplianceParceiro, visibilidade configurável.', 'Admin Pin Bank em /DocCompParceiros — user.role === "admin".'],
         ['Saída', 'Recomendação persistida em PartnerAssignment.recommendation.', 'Arquivo XLSX base64 baixado localmente; nada persistido além dos BankDataCollection criados.'],
         ['BDC consumido', 'Indireto via dossiê (parceiro não dispara BDC).', 'Fire-on-demand — só PJ com CNPJ válido E campos faltando.'],
         ['Rastreamento', 'PartnerAssignmentActivity registra cada ação.', 'Array debug por caso no response; sem log persistente da exportação.'],

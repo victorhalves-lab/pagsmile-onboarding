@@ -38,15 +38,15 @@ export default function ExportReportModal({ open, onOpenChange }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md rounded-2xl">
         <DialogHeader>
-          <DialogTitle className="text-[var(--pagsmile-blue)] flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[var(--pagsmile-green)]" />
+          <DialogTitle className="text-[var(--pinbank-blue)] flex items-center gap-2">
+            <FileText className="w-5 h-5 text-[var(--pinbank-blue)]" />
             Exportar Relatório CSV
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs text-[var(--pagsmile-blue)]/50">Status</Label>
+              <Label className="text-xs text-[var(--pinbank-blue)]/50">Status</Label>
               <Select value={filters.status} onValueChange={v => setFilters(f => ({ ...f, status: v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -60,7 +60,7 @@ export default function ExportReportModal({ open, onOpenChange }) {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-[var(--pagsmile-blue)]/50">Tipo</Label>
+              <Label className="text-xs text-[var(--pinbank-blue)]/50">Tipo</Label>
               <Select value={filters.type} onValueChange={v => setFilters(f => ({ ...f, type: v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -73,18 +73,18 @@ export default function ExportReportModal({ open, onOpenChange }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs text-[var(--pagsmile-blue)]/50">Data de</Label>
+              <Label className="text-xs text-[var(--pinbank-blue)]/50">Data de</Label>
               <Input type="date" value={filters.dateFrom} onChange={e => setFilters(f => ({ ...f, dateFrom: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-[var(--pagsmile-blue)]/50">Data até</Label>
+              <Label className="text-xs text-[var(--pinbank-blue)]/50">Data até</Label>
               <Input type="date" value={filters.dateTo} onChange={e => setFilters(f => ({ ...f, dateTo: e.target.value }))} />
             </div>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleExport} disabled={loading} className="bg-[var(--pagsmile-green)] text-white gap-2">
+          <Button onClick={handleExport} disabled={loading} className="bg-[var(--pinbank-blue)] text-white gap-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             {loading ? 'Exportando...' : 'Exportar CSV'}
           </Button>

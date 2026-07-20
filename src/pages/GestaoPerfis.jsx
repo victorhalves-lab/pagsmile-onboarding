@@ -60,10 +60,10 @@ export default function GestaoPerfis() {
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443] flex items-center gap-2">
-            <Shield className="w-6 h-6 text-[#2bc196]" /> Gestão de Perfis de Acesso
+          <h1 className="text-2xl font-bold text-[#0A0A0A] flex items-center gap-2">
+            <Shield className="w-6 h-6 text-[#1356E2]" /> Gestão de Perfis de Acesso
           </h1>
-          <p className="text-sm text-[#002443]/60 mt-1">Crie, edite e gerencie perfis de acesso da plataforma.</p>
+          <p className="text-sm text-[#0A0A0A]/60 mt-1">Crie, edite e gerencie perfis de acesso da plataforma.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleSeed}>Executar Seed</Button>
@@ -88,7 +88,7 @@ export default function GestaoPerfis() {
                         <Icon className="w-5 h-5" style={{ color: p.color || '#64748b' }} />
                       </div>
                       <div>
-                        <h3 className="font-bold text-[#002443]">{p.name}</h3>
+                        <h3 className="font-bold text-[#0A0A0A]">{p.name}</h3>
                         <p className="text-[11px] text-slate-400 font-mono">{p.slug}</p>
                       </div>
                     </div>

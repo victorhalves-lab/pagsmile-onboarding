@@ -221,16 +221,16 @@ export default function AnaliseManual() {
       onClick={onClick}
       className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
         active
-          ? 'bg-white border-[#2bc196] shadow-md ring-2 ring-[#2bc196]/20'
-          : 'bg-white/80 border-[#002443]/10 hover:border-[#2bc196]/40'
+          ? 'bg-white border-[#1356E2] shadow-md ring-2 ring-[#1356E2]/20'
+          : 'bg-white/80 border-[#0A0A0A]/10 hover:border-[#1356E2]/40'
       }`}
     >
       <div className={`p-2 rounded-lg ${color}`}>
         <Icon className="w-4 h-4" />
       </div>
       <div className="text-left">
-        <p className="text-xs font-semibold text-[#002443]/60 uppercase tracking-wide">{label}</p>
-        <p className="text-2xl font-bold text-[#002443] leading-none mt-0.5">{value}</p>
+        <p className="text-xs font-semibold text-[#0A0A0A]/60 uppercase tracking-wide">{label}</p>
+        <p className="text-2xl font-bold text-[#0A0A0A] leading-none mt-0.5">{value}</p>
       </div>
     </button>
   );
@@ -238,7 +238,7 @@ export default function AnaliseManual() {
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-orange-500/20">
@@ -307,9 +307,9 @@ export default function AnaliseManual() {
       </div>
 
       {/* Busca + Filtro Framework */}
-      <div className="bg-white rounded-xl border border-[#002443]/10 p-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+      <div className="bg-white rounded-xl border border-[#0A0A0A]/10 p-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/50" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/50" />
           <Input
             placeholder="Buscar por cliente, CNPJ/CPF, e-mail ou ID..."
             value={searchTerm}
@@ -342,22 +342,22 @@ export default function AnaliseManual() {
 
       {/* Resultados */}
       {filteredCases.length === 0 && !casesLoading ? (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm text-center py-16">
+        <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm text-center py-16">
           <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
             <FileCheck className="w-8 h-8 text-green-600" />
           </div>
-          <p className="text-lg font-bold text-[#002443]">Nenhum caso aguardando análise manual</p>
-          <p className="text-sm text-[#002443]/60 mt-1">
+          <p className="text-lg font-bold text-[#0A0A0A]">Nenhum caso aguardando análise manual</p>
+          <p className="text-sm text-[#0A0A0A]/60 mt-1">
             O time está em dia! Novos casos aparecerão aqui assim que o SENTINEL escalar.
           </p>
         </div>
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-[#002443]/70 font-medium">
+            <p className="text-sm text-[#0A0A0A]/70 font-medium">
               <span className="font-bold">{filteredCases.length}</span> caso(s) na fila
               {selectedRows.length > 0 && (
-                <Badge className="ml-2 bg-[#2bc196]/15 text-[#002443] border-0">
+                <Badge className="ml-2 bg-[#1356E2]/15 text-[#0A0A0A] border-0">
                   {selectedRows.length} selecionado(s)
                 </Badge>
               )}

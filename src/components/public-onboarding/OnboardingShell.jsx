@@ -3,7 +3,7 @@ import { ShieldCheck, Loader2, ShieldAlert } from 'lucide-react';
 
 /**
  * Layout shell for the public onboarding.
- * - Centered card with Pagsmile header.
+ * - Centered card with Pin Bank header.
  * - Renders step indicator (pills) from a stable steps array (keys are safe).
  * - Self-contained error boundary that prevents React reconciliation issues from
  *   ever bubbling up and showing a white screen to the client.
@@ -104,13 +104,13 @@ class LocalErrorBoundary extends React.Component {
         <div className="min-h-screen flex items-center justify-center p-6">
           <div className="max-w-md text-center">
             <ShieldAlert className="w-12 h-12 mx-auto text-amber-500 mb-3" />
-            <h2 className="text-lg font-bold text-[#002443] mb-2">Ops, algo não carregou</h2>
-            <p className="text-sm text-[#002443]/60 mb-4">
+            <h2 className="text-lg font-bold text-[#0A0A0A] mb-2">Ops, algo não carregou</h2>
+            <p className="text-sm text-[#0A0A0A]/60 mb-4">
               Recarregue a página para tentar novamente. Se o problema continuar, nosso time já foi avisado.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-5 h-10 rounded-lg bg-[#2bc196] text-white text-sm font-semibold hover:opacity-90"
+              className="px-5 h-10 rounded-lg bg-[#1356E2] text-white text-sm font-semibold hover:opacity-90"
             >
               Recarregar
             </button>
@@ -131,13 +131,13 @@ class LocalErrorBoundary extends React.Component {
 export function StepPill({ label, active, done, number }) {
   const base = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors';
   const cls = active
-    ? 'bg-[#2bc196] text-white'
+    ? 'bg-[#1356E2] text-white'
     : done
-    ? 'bg-[#2bc196]/15 text-[#2bc196]'
+    ? 'bg-[#1356E2]/15 text-[#1356E2]'
     : 'bg-slate-100 text-slate-500';
   return (
     <span className={`${base} ${cls}`}>
-      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active ? 'bg-white/20' : done ? 'bg-white/60 text-[#2bc196]' : 'bg-white text-slate-500'}`}>
+      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active ? 'bg-white/20' : done ? 'bg-white/60 text-[#1356E2]' : 'bg-white text-slate-500'}`}>
         {number}
       </span>
       {label}
@@ -159,7 +159,7 @@ export default function OnboardingShell({
         <div className="text-center mb-6">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png"
-            alt="Pagsmile" className="h-7 mx-auto mb-4"
+            alt="Pin Bank" className="h-7 mx-auto mb-4"
           />
 
           {steps && steps.length > 0 && (
@@ -178,8 +178,8 @@ export default function OnboardingShell({
             </div>
           )}
 
-          <h1 className="text-2xl md:text-3xl font-bold text-[#002443] mb-1.5">{title}</h1>
-          {subtitle && <p className="text-[#002443]/60 max-w-lg mx-auto text-sm md:text-base">{subtitle}</p>}
+          <h1 className="text-2xl md:text-3xl font-bold text-[#0A0A0A] mb-1.5">{title}</h1>
+          {subtitle && <p className="text-[#0A0A0A]/60 max-w-lg mx-auto text-sm md:text-base">{subtitle}</p>}
 
           {(merchant || templateName) && (
             <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
@@ -203,7 +203,7 @@ export default function OnboardingShell({
         </div>
 
         {/* Footer */}
-        <p className="text-[11px] text-[#002443]/40 flex items-center justify-center gap-1 mt-6">
+        <p className="text-[11px] text-[#0A0A0A]/40 flex items-center justify-center gap-1 mt-6">
           <ShieldCheck className="w-3 h-3" />
           Seus dados são criptografados e tratados com confidencialidade.
         </p>
@@ -215,8 +215,8 @@ export default function OnboardingShell({
 export function FullPageLoader({ label = 'Carregando...' }) {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
-      <span className="ml-3 text-[#002443]/70">{label}</span>
+      <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
+      <span className="ml-3 text-[#0A0A0A]/70">{label}</span>
     </div>
   );
 }
@@ -235,18 +235,18 @@ export function InvalidLinkScreen({ reason }) {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="max-w-md text-center">
         <ShieldAlert className="w-14 h-14 mx-auto text-red-400 mb-4" />
-        <h2 className="text-xl font-bold text-[#002443] mb-2">Link inválido ou expirado</h2>
-        <p className="text-sm text-[#002443]/60 mb-4">
+        <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Link inválido ou expirado</h2>
+        <p className="text-sm text-[#0A0A0A]/60 mb-4">
           {messages[reason] || 'Não foi possível abrir este link. Entre em contato com seu consultor comercial para receber um novo.'}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-5 h-10 rounded-lg bg-[#2bc196] text-white text-sm font-semibold hover:opacity-90"
+          className="px-5 h-10 rounded-lg bg-[#1356E2] text-white text-sm font-semibold hover:opacity-90"
         >
           Recarregar
         </button>
         {reason && (
-          <p className="text-[10px] text-[#002443]/30 mt-4 font-mono">código: {reason}</p>
+          <p className="text-[10px] text-[#0A0A0A]/30 mt-4 font-mono">código: {reason}</p>
         )}
         {reason === 'network' && (() => {
           try {
@@ -255,8 +255,8 @@ export function InvalidLinkScreen({ reason }) {
             const info = JSON.parse(raw);
             return (
               <details className="mt-3 text-left">
-                <summary className="text-[10px] text-[#002443]/40 cursor-pointer">detalhes técnicos</summary>
-                <pre className="text-[9px] text-[#002443]/50 mt-2 whitespace-pre-wrap break-all bg-slate-100 p-2 rounded">
+                <summary className="text-[10px] text-[#0A0A0A]/40 cursor-pointer">detalhes técnicos</summary>
+                <pre className="text-[9px] text-[#0A0A0A]/50 mt-2 whitespace-pre-wrap break-all bg-slate-100 p-2 rounded">
 {info.message}
 {`\n`}URL: {typeof window !== 'undefined' ? window.location.href : ''}
               </pre>

@@ -187,7 +187,7 @@ export default function Ch12_PropostasContratos() {
       <H3 num="12.6.2">Slides Estruturados (componentes)</H3>
       <Table dense headers={['Slide', 'Componente']} rows={[
         ['SlideCover', 'Capa com logo cliente'],
-        ['SlideAbout', 'Sobre Pagsmile'],
+        ['SlideAbout', 'Sobre Pin Bank'],
         ['SlideServices', 'Serviços contratados'],
         ['SlideRatesCard / SlideRatesOther', 'Taxas dos módulos cartão e outros'],
         ['SlideSplitPayment', 'Split de pagamentos (se aplicável)'],

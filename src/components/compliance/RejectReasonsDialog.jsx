@@ -71,7 +71,7 @@ export default function RejectReasonsDialog({
 
         <div className="py-3 space-y-4">
           <div>
-            <Label className="text-xs text-[#282828]/50 font-semibold mb-2 block">Motivos Comuns</Label>
+            <Label className="text-xs text-[#0A0A0A]/50 font-semibold mb-2 block">Motivos Comuns</Label>
             <div className="grid grid-cols-1 gap-2">
               {COMMON_REASONS.map((reason, i) => (
                 <button
@@ -80,13 +80,13 @@ export default function RejectReasonsDialog({
                   className={`flex items-center gap-2.5 p-2.5 rounded-lg border text-left text-sm transition-all ${
                     selectedReasons.includes(reason) 
                       ? 'border-red-300 bg-red-50 text-red-700' 
-                      : 'border-[#002443]/10 hover:border-[#002443]/20 text-[#002443]'
+                      : 'border-[#0A0A0A]/10 hover:border-[#0A0A0A]/20 text-[#0A0A0A]'
                   }`}
                 >
                   <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
                     selectedReasons.includes(reason) 
                       ? 'border-red-500 bg-red-500' 
-                      : 'border-[#002443]/20'
+                      : 'border-[#0A0A0A]/20'
                   }`}>
                     {selectedReasons.includes(reason) && <Check className="w-3 h-3 text-white" />}
                   </div>
@@ -97,7 +97,7 @@ export default function RejectReasonsDialog({
           </div>
 
           <div>
-            <Label className="text-xs text-[#282828]/50 font-semibold mb-2 block">Detalhes Adicionais</Label>
+            <Label className="text-xs text-[#0A0A0A]/50 font-semibold mb-2 block">Detalhes Adicionais</Label>
             <Textarea 
               placeholder="Descreva detalhes adicionais (opcional)..."
               value={additionalNotes}

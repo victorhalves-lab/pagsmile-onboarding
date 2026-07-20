@@ -194,14 +194,14 @@ export default class ErrorBoundary extends React.Component {
             <h1 style={{
               fontSize: '20px',
               fontWeight: '700',
-              color: '#002443',
+              color: '#0A0A0A',
               marginBottom: '8px',
             }}>
               Algo deu errado ao carregar a página
             </h1>
             <p style={{
               fontSize: '14px',
-              color: '#002443',
+              color: '#0A0A0A',
               opacity: 0.7,
               marginBottom: '24px',
               lineHeight: '1.5',
@@ -214,7 +214,7 @@ export default class ErrorBoundary extends React.Component {
               style={{
                 width: '100%',
                 padding: '12px 24px',
-                backgroundColor: '#2bc196',
+                backgroundColor: '#1356E2',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '12px',
@@ -234,7 +234,7 @@ export default class ErrorBoundary extends React.Component {
                 width: '100%',
                 padding: '12px 24px',
                 backgroundColor: 'transparent',
-                color: '#002443',
+                color: '#0A0A0A',
                 border: '1px solid #e2e8f0',
                 borderRadius: '12px',
                 fontSize: '14px',
@@ -250,7 +250,7 @@ export default class ErrorBoundary extends React.Component {
               <details style={{
                 marginTop: '20px',
                 fontSize: '11px',
-                color: '#002443',
+                color: '#0A0A0A',
                 opacity: 0.5,
                 textAlign: 'left',
               }}>
@@ -272,7 +272,7 @@ export default class ErrorBoundary extends React.Component {
 
             <p style={{
               fontSize: '11px',
-              color: '#002443',
+              color: '#0A0A0A',
               opacity: 0.4,
               marginTop: '20px',
             }}>

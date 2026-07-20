@@ -34,8 +34,8 @@ export default function Step7cCanaisReputacao({ formData, handleChange, handleAr
         {/* 4. Canais de Atendimento */}
         <div className="space-y-4">
            <div className="flex justify-between items-center">
-              <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Canais de Atendimento</Label>
-              <Button type="button" variant="outline" size="sm" onClick={addCanal} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+              <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Canais de Atendimento</Label>
+              <Button type="button" variant="outline" size="sm" onClick={addCanal} className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/10">
                 <Plus className="w-4 h-4 mr-1" /> Adicionar
               </Button>
            </div>
@@ -43,7 +43,7 @@ export default function Step7cCanaisReputacao({ formData, handleChange, handleAr
            {canaisAtendimento.map((canal, idx) => (
               <div key={idx} className="flex gap-2 items-center">
                  <Select value={canal.tipo} onValueChange={(v) => updateCanal(idx, 'tipo', v)}>
-                    <SelectTrigger className="w-[150px] border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)]"><SelectValue placeholder="Tipo" /></SelectTrigger>
+                    <SelectTrigger className="w-[150px] border-[var(--pinbank-blue)]/20 text-[var(--pinbank-blue)]"><SelectValue placeholder="Tipo" /></SelectTrigger>
                     <SelectContent>
                        <SelectItem value="email">Email</SelectItem>
                        <SelectItem value="whatsapp">WhatsApp</SelectItem>
@@ -55,7 +55,7 @@ export default function Step7cCanaisReputacao({ formData, handleChange, handleAr
                     placeholder="Contato (email, número, link...)" 
                     value={canal.contato}
                     onChange={(e) => updateCanal(idx, 'contato', e.target.value)}
-                    className="flex-1 text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20"
+                    className="flex-1 text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]/20"
                  />
                  <Button type="button" variant="ghost" size="icon" onClick={() => removeCanal(idx)} className="text-red-500 hover:bg-red-50">
                     <Trash2 className="w-4 h-4" />
@@ -71,11 +71,11 @@ export default function Step7cCanaisReputacao({ formData, handleChange, handleAr
         <div className="space-y-4">
            <div className="flex items-center gap-2 mb-2">
               <Star className="w-5 h-5 text-yellow-500" />
-              <h3 className="font-bold text-[var(--pagsmile-blue)]">Reputação Online</h3>
+              <h3 className="font-bold text-[var(--pinbank-blue)]">Reputação Online</h3>
            </div>
            
            <div className="space-y-3">
-              <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">A empresa possui canal no Reclame Aqui? <span className="text-red-500">*</span></Label>
+              <Label className="text-sm font-medium text-[var(--pinbank-blue)]">A empresa possui canal no Reclame Aqui? <span className="text-red-500">*</span></Label>
               <SelectionButton
                  options={[{ value: true, label: 'Sim' }, { value: false, label: 'Não' }]}
                  value={formData.possuiReclameAqui}
@@ -92,7 +92,7 @@ export default function Step7cCanaisReputacao({ formData, handleChange, handleAr
                      value={formData.linkReclameAqui} 
                      onChange={(v) => handleChange('linkReclameAqui', v)} 
                      placeholder="https://www.reclameaqui.com.br/empresa/..." 
-                     className="text-[var(--pagsmile-blue)]"
+                     className="text-[var(--pinbank-blue)]"
                   />
               </div>
            )}

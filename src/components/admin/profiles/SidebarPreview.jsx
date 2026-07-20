@@ -15,10 +15,10 @@ export default function SidebarPreview({ pagePermissions }) {
     .filter(s => s.visiblePages.length > 0);
 
   return (
-    <div className="bg-[#002443] rounded-xl p-4 text-white min-h-[300px] sticky top-4">
+    <div className="bg-[#0A0A0A] rounded-xl p-4 text-white min-h-[300px] sticky top-4">
       <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/10">
-        <Eye className="w-4 h-4 text-[#2bc196]" />
-        <span className="text-xs font-semibold text-[#2bc196] uppercase tracking-wider">Preview do Sidebar</span>
+        <Eye className="w-4 h-4 text-[#1356E2]" />
+        <span className="text-xs font-semibold text-[#1356E2] uppercase tracking-wider">Preview do Sidebar</span>
       </div>
       {visibleSections.length === 0 ? (
         <p className="text-white/40 text-sm italic">Nenhuma página selecionada ainda.</p>

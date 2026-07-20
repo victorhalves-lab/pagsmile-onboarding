@@ -56,10 +56,10 @@ export default function CafServiceDetail({ record }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-semibold text-[var(--pagsmile-blue)]">{svcInfo.label}</span>
+            <span className="text-xs font-semibold text-[var(--pinbank-blue)]">{svcInfo.label}</span>
             <Badge className={`${statusCfg.bg} ${statusCfg.color} ${statusCfg.border} border text-[10px]`}>{statusCfg.label}</Badge>
           </div>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">
             {date.toLocaleDateString('pt-BR')} {date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             {record.duration_ms ? ` • ${record.duration_ms}ms` : ''}
             {record.responseTime ? ` • ${record.responseTime}ms` : ''}
@@ -112,10 +112,10 @@ export default function CafServiceDetail({ record }) {
           {/* Images */}
           {record.image_urls?.length > 0 && (
             <div>
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]/60 mb-2">Imagens Capturadas</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]/60 mb-2">Imagens Capturadas</p>
               <div className="flex gap-2 flex-wrap">
                 {record.image_urls.map((url, i) => (
-                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block w-24 h-24 rounded-lg overflow-hidden border border-slate-200 hover:border-[var(--pagsmile-green)] transition-colors">
+                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block w-24 h-24 rounded-lg overflow-hidden border border-slate-200 hover:border-[var(--pinbank-blue)] transition-colors">
                     <img src={url} alt={`Imagem ${i + 1}`} className="w-full h-full object-cover" />
                   </a>
                 ))}
@@ -142,13 +142,13 @@ export default function CafServiceDetail({ record }) {
           {/* Transaction details */}
           {record.transaction_id && (
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]/60 mb-2">Detalhes Técnicos</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]/60 mb-2">Detalhes Técnicos</p>
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div><span className="text-[var(--pagsmile-blue)]/40">Transaction ID: </span><span className="font-mono">{record.transaction_id}</span></div>
-                {record.onboarding_id && <div><span className="text-[var(--pagsmile-blue)]/40">Onboarding ID: </span><span className="font-mono">{record.onboarding_id}</span></div>}
-                {record.request_id && <div><span className="text-[var(--pagsmile-blue)]/40">Request ID: </span><span className="font-mono">{record.request_id}</span></div>}
-                {record.error_code && <div><span className="text-[var(--pagsmile-blue)]/40">Código Erro: </span><span className="font-mono text-red-600">{record.error_code}</span></div>}
-                {record.error_message && <div className="col-span-2"><span className="text-[var(--pagsmile-blue)]/40">Mensagem Erro: </span><span className="text-red-600">{record.error_message}</span></div>}
+                <div><span className="text-[var(--pinbank-blue)]/40">Transaction ID: </span><span className="font-mono">{record.transaction_id}</span></div>
+                {record.onboarding_id && <div><span className="text-[var(--pinbank-blue)]/40">Onboarding ID: </span><span className="font-mono">{record.onboarding_id}</span></div>}
+                {record.request_id && <div><span className="text-[var(--pinbank-blue)]/40">Request ID: </span><span className="font-mono">{record.request_id}</span></div>}
+                {record.error_code && <div><span className="text-[var(--pinbank-blue)]/40">Código Erro: </span><span className="font-mono text-red-600">{record.error_code}</span></div>}
+                {record.error_message && <div className="col-span-2"><span className="text-[var(--pinbank-blue)]/40">Mensagem Erro: </span><span className="text-red-600">{record.error_message}</span></div>}
               </div>
             </div>
           )}
@@ -156,7 +156,7 @@ export default function CafServiceDetail({ record }) {
           {/* Callback data */}
           {record.callback_payload && (
             <div>
-              <p className="text-xs font-bold text-[var(--pagsmile-blue)]/60 mb-2">Dados do Webhook/Callback</p>
+              <p className="text-xs font-bold text-[var(--pinbank-blue)]/60 mb-2">Dados do Webhook/Callback</p>
               <RawJson data={record.callback_payload} />
             </div>
           )}
@@ -189,7 +189,7 @@ function RawJson({ data, label = 'Dados Brutos' }) {
   if (!data || Object.keys(data).length === 0) return null;
   return (
     <div>
-      <button onClick={() => setOpen(!open)} className="text-[10px] text-[var(--pagsmile-blue)]/40 hover:text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
+      <button onClick={() => setOpen(!open)} className="text-[10px] text-[var(--pinbank-blue)]/40 hover:text-[var(--pinbank-blue)]/60 flex items-center gap-1">
         {open ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         {open ? 'Ocultar' : label}
       </button>

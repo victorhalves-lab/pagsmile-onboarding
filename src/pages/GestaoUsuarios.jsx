@@ -111,17 +111,17 @@ export default function GestaoUsuarios() {
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443] flex items-center gap-2">
-            <Users className="w-6 h-6 text-[#2bc196]" /> Gestão de Usuários
+          <h1 className="text-2xl font-bold text-[#0A0A0A] flex items-center gap-2">
+            <Users className="w-6 h-6 text-[#1356E2]" /> Gestão de Usuários
           </h1>
-          <p className="text-sm text-[#002443]/60 mt-1">Atribua perfis de acesso aos usuários da plataforma.</p>
+          <p className="text-sm text-[#0A0A0A]/60 mt-1">Atribua perfis de acesso aos usuários da plataforma.</p>
         </div>
         <div className="flex gap-2 items-center">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar usuário..." className="pl-9 w-72" />
           </div>
-          <Button onClick={() => setInviteOpen(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+          <Button onClick={() => setInviteOpen(true)} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
             <UserPlus className="w-4 h-4 mr-2" /> Convidar Usuário
           </Button>
         </div>
@@ -147,7 +147,7 @@ export default function GestaoUsuarios() {
               const Icon = p ? getIcon(p.icon) : Users;
               return (
                 <tr key={u.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 text-sm font-medium text-[#002443]">{u.full_name || '—'}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-[#0A0A0A]">{u.full_name || '—'}</td>
                   <td className="px-4 py-3 text-sm text-slate-600">{u.email}</td>
                   <td className="px-4 py-3">
                     {p ? (
@@ -155,7 +155,7 @@ export default function GestaoUsuarios() {
                         <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: (p.color || '#64748b') + '20' }}>
                           <Icon className="w-3.5 h-3.5" style={{ color: p.color }} />
                         </div>
-                        <span className="text-sm text-[#002443]">{p.name}</span>
+                        <span className="text-sm text-[#0A0A0A]">{p.name}</span>
                         {!p.isActive && <Badge variant="destructive" className="text-[10px]">Inativo</Badge>}
                       </div>
                     ) : (
@@ -209,7 +209,7 @@ export default function GestaoUsuarios() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelected(null)}>Cancelar</Button>
-            <Button onClick={handleAssign} disabled={saving} className="bg-[#2bc196]">
+            <Button onClick={handleAssign} disabled={saving} className="bg-[#1356E2]">
               {saving ? 'Salvando...' : 'Atribuir Perfil'}
             </Button>
           </DialogFooter>
@@ -221,7 +221,7 @@ export default function GestaoUsuarios() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-[#2bc196]" /> Convidar novo usuário
+              <UserPlus className="w-5 h-5 text-[#1356E2]" /> Convidar novo usuário
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -259,7 +259,7 @@ export default function GestaoUsuarios() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setInviteOpen(false)} disabled={inviting}>Cancelar</Button>
-            <Button onClick={handleInvite} disabled={inviting} className="bg-[#2bc196]">
+            <Button onClick={handleInvite} disabled={inviting} className="bg-[#1356E2]">
               {inviting ? 'Enviando...' : 'Enviar Convite'}
             </Button>
           </DialogFooter>

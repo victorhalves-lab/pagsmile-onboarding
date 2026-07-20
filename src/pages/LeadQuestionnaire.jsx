@@ -64,8 +64,8 @@ export default function LeadQuestionnaire() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-[var(--pagsmile-green)] mx-auto mb-4" />
-          <p className="text-[var(--pagsmile-blue)]/70">{t('lead_quest.loading')}</p>
+          <Loader2 className="w-10 h-10 animate-spin text-[var(--pinbank-blue)] mx-auto mb-4" />
+          <p className="text-[var(--pinbank-blue)]/70">{t('lead_quest.loading')}</p>
         </div>
       </div>
     );
@@ -75,8 +75,8 @@ export default function LeadQuestionnaire() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md">
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">{t('lead_quest.not_available')}</h2>
-          <p className="text-[var(--pagsmile-blue)]/70">{t('lead_quest.no_active')}</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)] mb-2">{t('lead_quest.not_available')}</h2>
+          <p className="text-[var(--pinbank-blue)]/70">{t('lead_quest.no_active')}</p>
         </div>
       </div>
     );
@@ -86,12 +86,12 @@ export default function LeadQuestionnaire() {
   // Se o usuário chegou aqui com um desses templates, redirecionar para a rota correta
   // preservando o ref. Isso evita leads-fantasma sem dados preenchidos.
   const tplModel = template.model || '';
-  if (tplModel === 'LEAD_PAGSMILE_V5') {
+  if (tplModel === 'LEAD_PIN_BANK_V5') {
     const qs = linkCode ? `?ref=${linkCode}` : '';
     window.location.replace(`/QuestionarioLeadsPagsmile${qs}`);
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-10 h-10 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function LeadQuestionnaire() {
     window.location.replace(`/LeadPixV4${qs}`);
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-10 h-10 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -111,8 +111,8 @@ export default function LeadQuestionnaire() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md px-6">
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">Questionário indisponível</h2>
-          <p className="text-[var(--pagsmile-blue)]/70 text-sm">
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)] mb-2">Questionário indisponível</h2>
+          <p className="text-[var(--pinbank-blue)]/70 text-sm">
             Este questionário não está configurado corretamente. Por favor, entre em contato com quem enviou o link para receber um link atualizado.
           </p>
         </div>

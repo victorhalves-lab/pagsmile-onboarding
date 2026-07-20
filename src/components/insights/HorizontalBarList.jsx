@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function HorizontalBarList({ title, data, maxItems = 10, color = '#2bc196' }) {
+export default function HorizontalBarList({ title, data, maxItems = 10, color = '#1356E2' }) {
   const [hoveredIdx, setHoveredIdx] = useState(-1);
   const items = data.slice(0, maxItems);
   const maxVal = items.length > 0 ? Math.max(...items.map(d => d.value)) : 1;
@@ -8,12 +8,12 @@ export default function HorizontalBarList({ title, data, maxItems = 10, color = 
 
   return (
     <div className="group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-white/60 p-5 transition-all duration-500 hover:shadow-[0_8px_40px_-12px_rgba(0,36,67,0.1)]">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#2bc196]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#1356E2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-[13px] font-bold text-[#002443] tracking-tight">{title}</h3>
-          <span className="text-[10px] font-bold text-[#002443]/20 bg-[#002443]/[0.03] px-2.5 py-1 rounded-lg tabular-nums">{total}</span>
+          <h3 className="text-[13px] font-bold text-[#0A0A0A] tracking-tight">{title}</h3>
+          <span className="text-[10px] font-bold text-[#0A0A0A]/20 bg-[#0A0A0A]/[0.03] px-2.5 py-1 rounded-lg tabular-nums">{total}</span>
         </div>
         <div className="space-y-3.5">
           {items.map((item, i) => {
@@ -32,14 +32,14 @@ export default function HorizontalBarList({ title, data, maxItems = 10, color = 
                     <span className="text-[10px] font-extrabold w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-all duration-300 tabular-nums" style={{ backgroundColor: isHovered ? color : 'rgba(0,36,67,0.04)', color: isHovered ? 'white' : 'rgba(0,36,67,0.3)' }}>
                       {i + 1}
                     </span>
-                    <span className="text-[11px] font-semibold text-[#002443]/80 truncate group-hover/item:text-[#002443] transition-colors">{item.name}</span>
+                    <span className="text-[11px] font-semibold text-[#0A0A0A]/80 truncate group-hover/item:text-[#0A0A0A] transition-colors">{item.name}</span>
                   </div>
                   <div className="flex items-center gap-2.5 flex-shrink-0 ml-3">
-                    <span className="text-[12px] font-extrabold text-[#002443] tabular-nums">{item.value}</span>
-                    <span className="text-[10px] text-[#002443]/20 font-semibold w-8 text-right tabular-nums">{pctTotal}%</span>
+                    <span className="text-[12px] font-extrabold text-[#0A0A0A] tabular-nums">{item.value}</span>
+                    <span className="text-[10px] text-[#0A0A0A]/20 font-semibold w-8 text-right tabular-nums">{pctTotal}%</span>
                   </div>
                 </div>
-                <div className="w-full h-[6px] bg-[#002443]/[0.03] rounded-full overflow-hidden">
+                <div className="w-full h-[6px] bg-[#0A0A0A]/[0.03] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{

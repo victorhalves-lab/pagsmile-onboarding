@@ -92,29 +92,29 @@ export default function GerarKickOff() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-[#002443] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center">
+            <h1 className="text-2xl font-bold text-[#0A0A0A] flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center">
                 <Presentation className="w-5 h-5 text-white" />
               </div>
               Apresentações de Kick-Off
             </h1>
-            <p className="text-sm text-[#002443]/50 mt-1">Gerencie e compartilhe apresentações com seus clientes</p>
+            <p className="text-sm text-[#0A0A0A]/50 mt-1">Gerencie e compartilhe apresentações com seus clientes</p>
           </div>
-          <Button onClick={() => setMode('select')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl px-6 font-bold">
+          <Button onClick={() => setMode('select')} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl px-6 font-bold">
             <Plus className="w-4 h-4 mr-2" /> Nova Apresentação
           </Button>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
           </div>
         ) : presentations.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-20 h-20 rounded-2xl bg-[#002443]/5 flex items-center justify-center mx-auto mb-4">
-              <Presentation className="w-10 h-10 text-[#002443]/20" />
+            <div className="w-20 h-20 rounded-2xl bg-[#0A0A0A]/5 flex items-center justify-center mx-auto mb-4">
+              <Presentation className="w-10 h-10 text-[#0A0A0A]/20" />
             </div>
-            <p className="text-[#002443]/40 mb-4">Nenhuma apresentação criada ainda</p>
+            <p className="text-[#0A0A0A]/40 mb-4">Nenhuma apresentação criada ainda</p>
             <Button onClick={() => setMode('select')} variant="outline" className="rounded-xl">
               <Plus className="w-4 h-4 mr-2" /> Criar primeira apresentação
             </Button>
@@ -122,18 +122,18 @@ export default function GerarKickOff() {
         ) : (
           <div className="grid gap-4">
             {presentations.map(pres => (
-              <div key={pres.id} className="bg-white rounded-2xl border border-[#002443]/5 p-5 hover:shadow-lg transition-all group">
+              <div key={pres.id} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-5 hover:shadow-lg transition-all group">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#002443] to-[#002443]/80 flex items-center justify-center">
-                      <Building2 className="w-6 h-6 text-[#2bc196]" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0A0A0A] to-[#0A0A0A]/80 flex items-center justify-center">
+                      <Building2 className="w-6 h-6 text-[#1356E2]" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-[#002443]">{pres.clientName}</h3>
-                      <p className="text-[10px] text-[#002443]/50">
+                      <h3 className="text-sm font-bold text-[#0A0A0A]">{pres.clientName}</h3>
+                      <p className="text-[10px] text-[#0A0A0A]/50">
                         {pres.clientCnpj || '—'} • {pres.proposalCodigo || '—'} • {pres.segment || '—'}
                       </p>
-                      <p className="text-[10px] text-[#002443]/30 mt-0.5">
+                      <p className="text-[10px] text-[#0A0A0A]/30 mt-0.5">
                         Criada em {new Date(pres.created_date).toLocaleDateString('pt-BR')} por {pres.responsavelNome || '—'}
                       </p>
                     </div>
@@ -142,21 +142,21 @@ export default function GerarKickOff() {
                     <Button
                       variant="outline" size="sm"
                       onClick={() => handleCopy(pres.publicToken)}
-                      className="rounded-lg text-xs border-[#002443]/10"
+                      className="rounded-lg text-xs border-[#0A0A0A]/10"
                     >
                       <Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar Link
                     </Button>
                     <Button
                       variant="outline" size="sm"
                       onClick={() => window.open(getPublicUrl(pres.publicToken), '_blank')}
-                      className="rounded-lg text-xs border-[#002443]/10"
+                      className="rounded-lg text-xs border-[#0A0A0A]/10"
                     >
                       <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Abrir
                     </Button>
                     <Button
                       variant="outline" size="sm"
                       onClick={() => handleOpenSaved(pres)}
-                      className="rounded-lg text-xs border-[#002443]/10"
+                      className="rounded-lg text-xs border-[#0A0A0A]/10"
                     >
                       <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
                     </Button>
@@ -206,11 +206,11 @@ export default function GerarKickOff() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-[#002443] flex items-center gap-2">
-              <Presentation className="w-5 h-5 text-[#2bc196]" />
+            <h1 className="text-lg font-bold text-[#0A0A0A] flex items-center gap-2">
+              <Presentation className="w-5 h-5 text-[#1356E2]" />
               Kick-Off — {proposal?.clienteNome || 'Cliente'}
             </h1>
-            <p className="text-xs text-[#002443]/50">
+            <p className="text-xs text-[#0A0A0A]/50">
               {proposal?.codigo || '—'} • {proposal?.businessSubCategory || '—'}
               {contract?.codigo ? ` • Contrato: ${contract.codigo}` : ''}
             </p>
@@ -218,23 +218,23 @@ export default function GerarKickOff() {
         </div>
         <div className="flex items-center gap-2">
           {currentToken && (
-            <Button variant="outline" onClick={() => handleCopy(currentToken)} className="rounded-xl text-sm border-[#002443]/10">
+            <Button variant="outline" onClick={() => handleCopy(currentToken)} className="rounded-xl text-sm border-[#0A0A0A]/10">
               {copied ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Copy className="w-4 h-4 mr-2" />}
               {copied ? 'Copiado!' : 'Copiar Link'}
             </Button>
           )}
           {currentToken && (
-            <Button variant="outline" onClick={() => window.open(getPublicUrl(currentToken), '_blank')} className="rounded-xl text-sm border-[#002443]/10">
+            <Button variant="outline" onClick={() => window.open(getPublicUrl(currentToken), '_blank')} className="rounded-xl text-sm border-[#0A0A0A]/10">
               <ExternalLink className="w-4 h-4 mr-2" /> Abrir Link Externo
             </Button>
           )}
           {!savedId && (
-            <Button onClick={handleSave} disabled={saving} className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-xl px-5 font-bold">
+            <Button onClick={handleSave} disabled={saving} className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white rounded-xl px-5 font-bold">
               {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <LinkIcon className="w-4 h-4 mr-2" />}
               Salvar & Gerar Link
             </Button>
           )}
-          <Button onClick={() => window.print()} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl px-5 font-bold">
+          <Button onClick={() => window.print()} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl px-5 font-bold">
             <Printer className="w-4 h-4 mr-2" /> Exportar PDF
           </Button>
         </div>

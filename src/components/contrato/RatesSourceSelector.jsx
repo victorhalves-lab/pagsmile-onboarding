@@ -102,18 +102,18 @@ export default function RatesSourceSelector({ contract, onChange }) {
     <div className="mb-6">
       {/* Current source badge */}
       {currentSource !== 'manual' && currentSourceName && (
-        <div className="flex items-center gap-2 mb-3 p-3 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl">
+        <div className="flex items-center gap-2 mb-3 p-3 bg-[#1356E2]/5 border border-[#1356E2]/20 rounded-xl">
           {currentSource === 'standard_proposal' ? (
-            <FileText className="w-4 h-4 text-[#2bc196]" />
+            <FileText className="w-4 h-4 text-[#1356E2]" />
           ) : currentSource === 'segment_default_rates' ? (
-            <Globe className="w-4 h-4 text-[#2bc196]" />
+            <Globe className="w-4 h-4 text-[#1356E2]" />
           ) : (
-            <Zap className="w-4 h-4 text-[#2bc196]" />
+            <Zap className="w-4 h-4 text-[#1356E2]" />
           )}
-          <span className="text-xs font-medium text-[#002443] flex-1">
+          <span className="text-xs font-medium text-[#0A0A0A] flex-1">
             Taxas importadas de: <strong>{currentSourceName}</strong>
           </span>
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px]">
+          <Badge className="bg-[#1356E2]/10 text-[#1356E2] text-[10px]">
             {currentSource === 'standard_proposal' ? 'Proposta Padrão' : 
              currentSource === 'segment_default_rates' ? 'Taxas Landing Page' : 
              currentSource === 'proposal' ? 'Proposta Aceita' : 'Manual'}
@@ -133,7 +133,7 @@ export default function RatesSourceSelector({ contract, onChange }) {
           variant="outline"
           size="sm"
           onClick={() => setExpanded(!expanded)}
-          className="w-full justify-between rounded-xl border-dashed border-[#002443]/15 text-xs font-medium text-[#002443]/60 hover:border-[#2bc196] hover:text-[#2bc196]"
+          className="w-full justify-between rounded-xl border-dashed border-[#0A0A0A]/15 text-xs font-medium text-[#0A0A0A]/60 hover:border-[#1356E2] hover:text-[#1356E2]"
         >
           <span className="flex items-center gap-2">
             <Zap className="w-3.5 h-3.5" />
@@ -145,19 +145,19 @@ export default function RatesSourceSelector({ contract, onChange }) {
 
       {/* Expanded panel */}
       {expanded && (
-        <div className="mt-3 border border-[#002443]/10 rounded-xl bg-white overflow-hidden">
+        <div className="mt-3 border border-[#0A0A0A]/10 rounded-xl bg-white overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-5 h-5 animate-spin text-[#2bc196]" />
+              <Loader2 className="w-5 h-5 animate-spin text-[#1356E2]" />
             </div>
           ) : (
-            <div className="divide-y divide-[#002443]/5">
+            <div className="divide-y divide-[#0A0A0A]/5">
               {/* Section: Propostas Padrão */}
               {standardProposals.length > 0 && (
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <FileText className="w-4 h-4 text-[#002443]/50" />
-                    <h4 className="text-xs font-bold text-[#002443] uppercase tracking-wide">Propostas Padrão</h4>
+                    <FileText className="w-4 h-4 text-[#0A0A0A]/50" />
+                    <h4 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wide">Propostas Padrão</h4>
                     <Badge className="bg-blue-50 text-blue-600 text-[10px]">{standardProposals.length}</Badge>
                   </div>
                   <div className="grid gap-2">
@@ -165,17 +165,17 @@ export default function RatesSourceSelector({ contract, onChange }) {
                       <button
                         key={sp.id}
                         onClick={() => handleSelectStandardProposal(sp)}
-                        className={`w-full text-left p-3 rounded-lg border transition-all hover:border-[#2bc196] hover:bg-[#2bc196]/5 ${
-                          contract.ratesSourceId === sp.id ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-[#002443]/8'
+                        className={`w-full text-left p-3 rounded-lg border transition-all hover:border-[#1356E2] hover:bg-[#1356E2]/5 ${
+                          contract.ratesSourceId === sp.id ? 'border-[#1356E2] bg-[#1356E2]/5' : 'border-[#0A0A0A]/8'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-semibold text-[#002443]">{sp.templateName}</p>
-                            <p className="text-[10px] text-[#002443]/50">{sp.segment} • {sp.codigo || 'Sem código'}</p>
+                            <p className="text-sm font-semibold text-[#0A0A0A]">{sp.templateName}</p>
+                            <p className="text-[10px] text-[#0A0A0A]/50">{sp.segment} • {sp.codigo || 'Sem código'}</p>
                           </div>
                           {contract.ratesSourceId === sp.id && (
-                            <Check className="w-4 h-4 text-[#2bc196]" />
+                            <Check className="w-4 h-4 text-[#1356E2]" />
                           )}
                         </div>
                       </button>
@@ -188,8 +188,8 @@ export default function RatesSourceSelector({ contract, onChange }) {
               {segmentRates.length > 0 && (
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <Globe className="w-4 h-4 text-[#002443]/50" />
-                    <h4 className="text-xs font-bold text-[#002443] uppercase tracking-wide">Taxas Padrão por Segmento (Landing Page)</h4>
+                    <Globe className="w-4 h-4 text-[#0A0A0A]/50" />
+                    <h4 className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wide">Taxas Padrão por Segmento (Landing Page)</h4>
                     <Badge className="bg-purple-50 text-purple-600 text-[10px]">{segmentRates.length}</Badge>
                   </div>
                   <div className="grid gap-2">
@@ -197,19 +197,19 @@ export default function RatesSourceSelector({ contract, onChange }) {
                       <button
                         key={sdr.id}
                         onClick={() => handleSelectSegmentRates(sdr)}
-                        className={`w-full text-left p-3 rounded-lg border transition-all hover:border-[#2bc196] hover:bg-[#2bc196]/5 ${
-                          contract.ratesSourceId === sdr.id ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-[#002443]/8'
+                        className={`w-full text-left p-3 rounded-lg border transition-all hover:border-[#1356E2] hover:bg-[#1356E2]/5 ${
+                          contract.ratesSourceId === sdr.id ? 'border-[#1356E2] bg-[#1356E2]/5' : 'border-[#0A0A0A]/8'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-semibold text-[#002443]">{sdr.segmentName}</p>
-                            <p className="text-[10px] text-[#002443]/50">
+                            <p className="text-sm font-semibold text-[#0A0A0A]">{sdr.segmentName}</p>
+                            <p className="text-[10px] text-[#0A0A0A]/50">
                               MDR 1x: {sdr.mdrAvista ?? '—'}% • PIX: {sdr.pixTaxaPercentual ?? '—'}% • Fee: R${sdr.feeTransacao ?? '—'}
                             </p>
                           </div>
                           {contract.ratesSourceId === sdr.id && (
-                            <Check className="w-4 h-4 text-[#2bc196]" />
+                            <Check className="w-4 h-4 text-[#1356E2]" />
                           )}
                         </div>
                       </button>
@@ -219,7 +219,7 @@ export default function RatesSourceSelector({ contract, onChange }) {
               )}
 
               {standardProposals.length === 0 && segmentRates.length === 0 && (
-                <div className="p-6 text-center text-xs text-[#002443]/40">
+                <div className="p-6 text-center text-xs text-[#0A0A0A]/40">
                   Nenhuma proposta padrão ativa ou taxas por segmento cadastradas.
                 </div>
               )}

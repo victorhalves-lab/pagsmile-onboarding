@@ -11,7 +11,7 @@ export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, 
   const canExtend = ['enviada', 'visualizada', 'expirada'].includes(proposta.status);
 
   return (
-    <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+    <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={onBack} className="text-white/70 hover:text-white hover:bg-white/10">
           <ArrowLeft className="w-5 h-5" />
@@ -21,7 +21,7 @@ export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, 
             <h1 className="text-xl font-bold text-white">{proposta.codigo || 'Proposta'}</h1>
             <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
             {(proposta.version || 1) > 1 && (
-              <span className="text-[10px] bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-bold">v{proposta.version}</span>
+              <span className="text-[10px] bg-[#1356E2]/20 text-[#E84B1C] px-2 py-0.5 rounded-md font-bold">v{proposta.version}</span>
             )}
           </div>
           <p className="text-white/50 text-sm mt-1">

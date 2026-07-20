@@ -20,25 +20,25 @@ import {
 function Section({ icon: Icon, title, count, color = 'green', children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
   const colorMap = {
-    green: 'text-[var(--pagsmile-green)]',
+    green: 'text-[var(--pinbank-blue)]',
     amber: 'text-amber-600',
     rose: 'text-rose-600',
     blue: 'text-blue-600',
   };
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between gap-2 px-5 py-3 hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center gap-2">
           <Icon className={`w-4 h-4 ${colorMap[color]}`} />
-          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)]">{title}</h3>
+          <h3 className="text-sm font-semibold text-[var(--pinbank-blue)]">{title}</h3>
           {count != null && (
-            <Badge className="bg-slate-100 text-[var(--pagsmile-blue)] text-[10px]">{count}</Badge>
+            <Badge className="bg-slate-100 text-[var(--pinbank-blue)] text-[10px]">{count}</Badge>
           )}
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-[var(--pagsmile-blue)]/40" /> : <ChevronDown className="w-4 h-4 text-[var(--pagsmile-blue)]/40" />}
+        {open ? <ChevronUp className="w-4 h-4 text-[var(--pinbank-blue)]/40" /> : <ChevronDown className="w-4 h-4 text-[var(--pinbank-blue)]/40" />}
       </button>
       {open && <div className="px-5 pb-5 pt-1">{children}</div>}
     </div>
@@ -122,7 +122,7 @@ export default function CadastroMonitoringExtendedBlock({ allCaseIds = [], merch
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-6">
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-6">
         <Skeleton className="h-6 w-48 mb-4" />
         <Skeleton className="h-24 w-full" />
       </div>
@@ -146,9 +146,9 @@ export default function CadastroMonitoringExtendedBlock({ allCaseIds = [], merch
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <Badge variant="outline" className="text-[10px]">{r.revalidationType || r.type || 'revalidação'}</Badge>
                     {r.status && <Badge className={`text-[10px] ${r.status === 'completed' ? 'bg-green-100 text-green-700' : r.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100'}`}>{r.status}</Badge>}
-                    {r.reason && <span className="text-[var(--pagsmile-blue)]/60 truncate">{r.reason}</span>}
+                    {r.reason && <span className="text-[var(--pinbank-blue)]/60 truncate">{r.reason}</span>}
                   </div>
-                  <span className={`text-[10px] flex-shrink-0 ${isPast ? 'text-red-600 font-semibold' : 'text-[var(--pagsmile-blue)]/50'}`}>
+                  <span className={`text-[10px] flex-shrink-0 ${isPast ? 'text-red-600 font-semibold' : 'text-[var(--pinbank-blue)]/50'}`}>
                     {due ? due.toLocaleDateString('pt-BR') : '—'}
                     {isPast && ' (vencida)'}
                   </span>
@@ -156,7 +156,7 @@ export default function CadastroMonitoringExtendedBlock({ allCaseIds = [], merch
               );
             })}
             {revalSchedules.length > 10 && (
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40 text-center pt-1">+ {revalSchedules.length - 10} agendamentos</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40 text-center pt-1">+ {revalSchedules.length - 10} agendamentos</p>
             )}
           </div>
         </Section>
@@ -170,11 +170,11 @@ export default function CadastroMonitoringExtendedBlock({ allCaseIds = [], merch
               <div key={r.id} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg text-xs">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <Badge className={`text-[10px] ${RETRY_STATUS_COLOR[r.status] || 'bg-slate-100'}`}>{r.status || 'pending'}</Badge>
-                  {r.dataset && <span className="font-mono text-[10px] text-[var(--pagsmile-blue)]/60">{r.dataset}</span>}
-                  {r.attemptCount != null && <span className="text-[var(--pagsmile-blue)]/50">tentativa #{r.attemptCount}</span>}
+                  {r.dataset && <span className="font-mono text-[10px] text-[var(--pinbank-blue)]/60">{r.dataset}</span>}
+                  {r.attemptCount != null && <span className="text-[var(--pinbank-blue)]/50">tentativa #{r.attemptCount}</span>}
                   {r.errorMessage && <span className="text-red-600 truncate">{r.errorMessage}</span>}
                 </div>
-                <span className="text-[10px] text-[var(--pagsmile-blue)]/40 flex-shrink-0">
+                <span className="text-[10px] text-[var(--pinbank-blue)]/40 flex-shrink-0">
                   {r.nextRetryAt ? `próxima: ${new Date(r.nextRetryAt).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}` : new Date(r.created_date).toLocaleDateString('pt-BR')}
                 </span>
               </div>
@@ -201,17 +201,17 @@ export default function CadastroMonitoringExtendedBlock({ allCaseIds = [], merch
                   <Badge className={`text-[10px] ${SEVERITY_COLOR[f.severity] || 'bg-slate-100'}`}>{f.severity || 'INFO'}</Badge>
                   {f.dimension && <Badge variant="outline" className="text-[10px]">{f.dimension}</Badge>}
                   {f.source && <Badge variant="outline" className="text-[10px] opacity-70">{f.source}</Badge>}
-                  {f.code && <span className="font-mono text-[10px] text-[var(--pagsmile-blue)]/50">{f.code}</span>}
+                  {f.code && <span className="font-mono text-[10px] text-[var(--pinbank-blue)]/50">{f.code}</span>}
                 </div>
-                <p className="text-sm text-[var(--pagsmile-blue)] font-semibold">{f.title || f.summary || '—'}</p>
-                {f.description && <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">{f.description}</p>}
+                <p className="text-sm text-[var(--pinbank-blue)] font-semibold">{f.title || f.summary || '—'}</p>
+                {f.description && <p className="text-xs text-[var(--pinbank-blue)]/70 mt-1">{f.description}</p>}
                 {f.suggestedAction && (
                   <p className="text-[11px] text-blue-700 mt-1 italic">↳ Ação sugerida: {f.suggestedAction}</p>
                 )}
               </div>
             ))}
             {findings.length > 30 && (
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/40 text-center pt-2">+ {findings.length - 30} findings adicionais</p>
+              <p className="text-[10px] text-[var(--pinbank-blue)]/40 text-center pt-2">+ {findings.length - 30} findings adicionais</p>
             )}
           </div>
         </Section>
@@ -232,12 +232,12 @@ export default function CadastroMonitoringExtendedBlock({ allCaseIds = [], merch
                     <Icon className={`w-4 h-4 flex-shrink-0 ${color}`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-[var(--pagsmile-blue)]">{fb.analystEmail || fb.created_by_id || 'Analista'}</span>
+                        <span className="font-semibold text-[var(--pinbank-blue)]">{fb.analystEmail || fb.created_by_id || 'Analista'}</span>
                         {fb.category && <Badge variant="outline" className="text-[10px]">{fb.category}</Badge>}
                         {fb.feedbackType && <Badge className={`text-[10px] ${isPositive ? 'bg-green-100 text-green-700' : isNegative ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>{fb.feedbackType}</Badge>}
                       </div>
-                      {fb.comment && <p className="text-xs text-[var(--pagsmile-blue)]/80 mt-1">{fb.comment}</p>}
-                      <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-1">
+                      {fb.comment && <p className="text-xs text-[var(--pinbank-blue)]/80 mt-1">{fb.comment}</p>}
+                      <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-1">
                         {new Date(fb.created_date).toLocaleString('pt-BR')}
                       </p>
                     </div>

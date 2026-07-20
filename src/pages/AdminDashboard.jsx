@@ -628,7 +628,7 @@ export default function AdminDashboard() {
             </div>
             
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pinbank-blue)]/50" />
               <Input
                 placeholder={t('admin_dash.search_placeholder')}
                 value={searchTerm}
@@ -644,13 +644,13 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {isLoadingAll ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
           </div>
         ) : filteredCases.length === 0 ? (
           <div className="text-center py-12">
-            <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-            <p className="text-[var(--pagsmile-blue)]/70 font-medium">{t('admin_dash.no_cases')}</p>
-            <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">{t('admin_dash.adjust_filters')}</p>
+            <FileCheck className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/40 mb-4" />
+            <p className="text-[var(--pinbank-blue)]/70 font-medium">{t('admin_dash.no_cases')}</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/50 mt-1">{t('admin_dash.adjust_filters')}</p>
           </div>
         ) : (
           <Table>
@@ -658,7 +658,7 @@ export default function AdminDashboard() {
               <TableRow>
                 <TableHead className="w-[300px]">
                   <button 
-                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
+                    className="flex items-center gap-1 hover:text-[var(--pinbank-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'merchant') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('merchant'); setSortOrder('asc'); }
@@ -671,7 +671,7 @@ export default function AdminDashboard() {
                 <TableHead>{t('common.status')}</TableHead>
                 <TableHead>
                   <button 
-                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
+                    className="flex items-center gap-1 hover:text-[var(--pinbank-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'riskScore') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('riskScore'); setSortOrder('desc'); }
@@ -683,7 +683,7 @@ export default function AdminDashboard() {
                 <TableHead>{t('admin_dash.ia_decision')}</TableHead>
                 <TableHead>
                   <button 
-                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
+                    className="flex items-center gap-1 hover:text-[var(--pinbank-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'created_date') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('created_date'); setSortOrder('desc'); }
@@ -710,8 +710,8 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         <div>
-                          <p className="font-semibold text-[var(--pagsmile-blue)]">{merchant?.fullName || 'N/A'}</p>
-                          <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">{merchant?.cpfCnpj || '-'}</p>
+                          <p className="font-semibold text-[var(--pinbank-blue)]">{merchant?.fullName || 'N/A'}</p>
+                          <p className="text-sm text-[var(--pinbank-blue)]/70 font-medium">{merchant?.cpfCnpj || '-'}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -727,7 +727,7 @@ export default function AdminDashboard() {
                         }`}>
                           {c.riskScore}
                         </span>
-                      ) : <span className="text-[var(--pagsmile-blue)]/50">-</span>}
+                      ) : <span className="text-[var(--pinbank-blue)]/50">-</span>}
                     </TableCell>
                     <TableCell>
                       {c.iaDecision ? (
@@ -738,9 +738,9 @@ export default function AdminDashboard() {
                         }`}>
                           {c.iaDecision}
                         </Badge>
-                      ) : <span className="text-[var(--pagsmile-blue)]/50">-</span>}
+                      ) : <span className="text-[var(--pinbank-blue)]/50">-</span>}
                     </TableCell>
-                    <TableCell className="text-[var(--pagsmile-blue)]/70 text-sm">
+                    <TableCell className="text-[var(--pinbank-blue)]/70 text-sm">
                       {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR', {
                         day: '2-digit', month: 'short'
                       }) : '-'}
@@ -784,7 +784,7 @@ export default function AdminDashboard() {
         
         {filteredCases.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
+            <p className="text-sm text-[var(--pinbank-blue)]/70 font-medium">
               {t('common.showing', { count: Math.min(filteredCases.length, 20), total: filteredCases.length })}
             </p>
           </div>

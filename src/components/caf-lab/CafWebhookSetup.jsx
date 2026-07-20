@@ -34,7 +34,7 @@ function CopyableField({ label, value, mono = true }) {
   };
   return (
     <div>
-      <Label className="text-xs text-[#002443]/70">{label}</Label>
+      <Label className="text-xs text-[#0A0A0A]/70">{label}</Label>
       <div className="flex gap-2 mt-1">
         <Input
           value={value}
@@ -122,27 +122,27 @@ export default function CafWebhookSetup() {
       </Card>
 
       {/* URL principal */}
-      <Card className="p-5 border-[#2bc196]/40 bg-gradient-to-br from-emerald-50/50 to-white">
+      <Card className="p-5 border-[#1356E2]/40 bg-gradient-to-br from-emerald-50/50 to-white">
         <div className="flex items-center gap-2 mb-4">
-          <Webhook className="w-5 h-5 text-[#2bc196]" />
-          <h3 className="text-base font-bold text-[#002443]">URL do Webhook (Payload URL)</h3>
-          <Badge className="bg-[#2bc196] text-white text-[9px]">CLOUD EVENTS</Badge>
+          <Webhook className="w-5 h-5 text-[#1356E2]" />
+          <h3 className="text-base font-bold text-[#0A0A0A]">URL do Webhook (Payload URL)</h3>
+          <Badge className="bg-[#1356E2] text-white text-[9px]">CLOUD EVENTS</Badge>
         </div>
 
         <CopyableField label="Cole esta URL no Trust Portal → API Configurations → Webhooks → + New webhook" value={webhookUrl} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 pt-4 border-t border-emerald-100">
           <div>
-            <Label className="text-[10px] text-[#002443]/60 uppercase tracking-wider">Method</Label>
-            <p className="text-sm font-mono text-[#002443] mt-0.5">POST</p>
+            <Label className="text-[10px] text-[#0A0A0A]/60 uppercase tracking-wider">Method</Label>
+            <p className="text-sm font-mono text-[#0A0A0A] mt-0.5">POST</p>
           </div>
           <div>
-            <Label className="text-[10px] text-[#002443]/60 uppercase tracking-wider">Content-Type</Label>
-            <p className="text-sm font-mono text-[#002443] mt-0.5">application/json</p>
+            <Label className="text-[10px] text-[#0A0A0A]/60 uppercase tracking-wider">Content-Type</Label>
+            <p className="text-sm font-mono text-[#0A0A0A] mt-0.5">application/json</p>
           </div>
           <div>
-            <Label className="text-[10px] text-[#002443]/60 uppercase tracking-wider">Auth</Label>
-            <p className="text-sm font-mono text-[#002443] mt-0.5">None (HMAC signed)</p>
+            <Label className="text-[10px] text-[#0A0A0A]/60 uppercase tracking-wider">Auth</Label>
+            <p className="text-sm font-mono text-[#0A0A0A] mt-0.5">None (HMAC signed)</p>
           </div>
         </div>
       </Card>
@@ -150,46 +150,46 @@ export default function CafWebhookSetup() {
       {/* Passo a passo */}
       <Card className="p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Zap className="w-4 h-4 text-[#2bc196]" />
-          <h3 className="text-sm font-bold text-[#002443]">Passo-a-passo de cadastro no Trust</h3>
+          <Zap className="w-4 h-4 text-[#1356E2]" />
+          <h3 className="text-sm font-bold text-[#0A0A0A]">Passo-a-passo de cadastro no Trust</h3>
         </div>
 
-        <ol className="space-y-3 text-sm text-[#002443]">
+        <ol className="space-y-3 text-sm text-[#0A0A0A]">
           <li className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2bc196] text-white text-xs font-bold flex items-center justify-center">1</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1356E2] text-white text-xs font-bold flex items-center justify-center">1</span>
             <div className="flex-1">
-              <p>Acesse <a href="https://trust.caf.io" target="_blank" rel="noreferrer" className="text-[#2bc196] underline inline-flex items-center gap-1">https://trust.caf.io <ExternalLink className="w-3 h-3" /></a></p>
-              <p className="text-xs text-[#002443]/60 mt-0.5">{instructions.step1}</p>
+              <p>Acesse <a href="https://trust.caf.io" target="_blank" rel="noreferrer" className="text-[#1356E2] underline inline-flex items-center gap-1">https://trust.caf.io <ExternalLink className="w-3 h-3" /></a></p>
+              <p className="text-xs text-[#0A0A0A]/60 mt-0.5">{instructions.step1}</p>
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2bc196] text-white text-xs font-bold flex items-center justify-center">2</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1356E2] text-white text-xs font-bold flex items-center justify-center">2</span>
             <div className="flex-1">
               <p>Clique em <strong>+ New webhook</strong></p>
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2bc196] text-white text-xs font-bold flex items-center justify-center">3</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1356E2] text-white text-xs font-bold flex items-center justify-center">3</span>
             <div className="flex-1">
               <p><strong>Payload URL:</strong> cole a URL acima</p>
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2bc196] text-white text-xs font-bold flex items-center justify-center">4</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1356E2] text-white text-xs font-bold flex items-center justify-center">4</span>
             <div className="flex-1">
               <p><strong>Secret:</strong> gere um secret forte (ex: abra um terminal e rode <code className="bg-slate-100 px-1 rounded text-xs">openssl rand -hex 32</code>)</p>
-              <p className="text-xs text-[#002443]/60 mt-0.5">Guarde esse valor — você vai precisar dele no passo 8.</p>
+              <p className="text-xs text-[#0A0A0A]/60 mt-0.5">Guarde esse valor — você vai precisar dele no passo 8.</p>
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2bc196] text-white text-xs font-bold flex items-center justify-center">5</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1356E2] text-white text-xs font-bold flex items-center justify-center">5</span>
             <div className="flex-1">
               <p><strong>Authentication:</strong> <Badge variant="outline" className="text-[10px]">None</Badge></p>
-              <p className="text-xs text-[#002443]/60 mt-0.5">Não precisa de Basic Auth ou API Key — a validação é via HMAC SHA-256 do body usando o secret do passo 4.</p>
+              <p className="text-xs text-[#0A0A0A]/60 mt-0.5">Não precisa de Basic Auth ou API Key — a validação é via HMAC SHA-256 do body usando o secret do passo 4.</p>
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2bc196] text-white text-xs font-bold flex items-center justify-center">6</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1356E2] text-white text-xs font-bold flex items-center justify-center">6</span>
             <div className="flex-1">
               <p className="mb-2"><strong>Eventos a selecionar</strong> (recomendamos "Send me everything", OU individualmente):</p>
               <div className="space-y-1.5">
@@ -200,8 +200,8 @@ export default function CafWebhookSetup() {
                       : <div className="w-4 h-4 shrink-0 mt-0.5 rounded border border-slate-300" />
                     }
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-mono text-[#002443]">{evt.id}</p>
-                      <p className="text-[10px] text-[#002443]/60">{evt.desc}</p>
+                      <p className="text-xs font-mono text-[#0A0A0A]">{evt.id}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/60">{evt.desc}</p>
                     </div>
                     {evt.critical && <Badge className="bg-emerald-100 text-emerald-700 text-[9px]">essencial</Badge>}
                   </div>
@@ -210,7 +210,7 @@ export default function CafWebhookSetup() {
             </div>
           </li>
           <li className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2bc196] text-white text-xs font-bold flex items-center justify-center">7</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1356E2] text-white text-xs font-bold flex items-center justify-center">7</span>
             <div className="flex-1">
               <p>Marque <strong>Active</strong> → clique em <strong>Create webhook</strong></p>
             </div>
@@ -221,8 +221,8 @@ export default function CafWebhookSetup() {
               <p className="font-semibold">Adicione o secret nos Secrets da Base44:</p>
               <div className="bg-slate-900 text-slate-100 rounded-lg p-3 mt-2 text-xs font-mono">
                 <p className="text-slate-400">// Dashboard → Settings → Environment Variables</p>
-                <p className="mt-1">Nome: <span className="text-[#5cf7cf]">CAF_WEBHOOK_SECRET</span></p>
-                <p>Valor: <span className="text-[#5cf7cf]">{'<'}o secret gerado no passo 4{'>'}</span></p>
+                <p className="mt-1">Nome: <span className="text-[#E84B1C]">CAF_WEBHOOK_SECRET</span></p>
+                <p>Valor: <span className="text-[#E84B1C]">{'<'}o secret gerado no passo 4{'>'}</span></p>
               </div>
               <p className="text-xs text-amber-700 mt-2">
                 <AlertTriangle className="w-3 h-3 inline mr-1" />
@@ -236,36 +236,36 @@ export default function CafWebhookSetup() {
       {/* Segurança */}
       <Card className="p-5 bg-slate-50">
         <div className="flex items-center gap-2 mb-3">
-          <Shield className="w-4 h-4 text-[#002443]" />
-          <h3 className="text-sm font-bold text-[#002443]">Segurança & especificações técnicas</h3>
+          <Shield className="w-4 h-4 text-[#0A0A0A]" />
+          <h3 className="text-sm font-bold text-[#0A0A0A]">Segurança & especificações técnicas</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
           <div className="flex items-start gap-2">
-            <Lock className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 shrink-0" />
+            <Lock className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 shrink-0" />
             <div>
-              <p className="font-semibold text-[#002443]">Assinatura</p>
-              <p className="text-[#002443]/70">Header <code className="bg-white px-1 rounded">{security.signatureHeader}</code> — {security.algorithm}</p>
+              <p className="font-semibold text-[#0A0A0A]">Assinatura</p>
+              <p className="text-[#0A0A0A]/70">Header <code className="bg-white px-1 rounded">{security.signatureHeader}</code> — {security.algorithm}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
-            <Zap className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 shrink-0" />
+            <Zap className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 shrink-0" />
             <div>
-              <p className="font-semibold text-[#002443]">Resposta esperada</p>
-              <p className="text-[#002443]/70">{security.expectedResponse}</p>
+              <p className="font-semibold text-[#0A0A0A]">Resposta esperada</p>
+              <p className="text-[#0A0A0A]/70">{security.expectedResponse}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
-            <Globe className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 shrink-0" />
+            <Globe className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 shrink-0" />
             <div>
-              <p className="font-semibold text-[#002443]">Retry policy</p>
-              <p className="text-[#002443]/70">{security.retryPolicy}</p>
+              <p className="font-semibold text-[#0A0A0A]">Retry policy</p>
+              <p className="text-[#0A0A0A]/70">{security.retryPolicy}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
-            <Key className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 shrink-0" />
+            <Key className="w-3.5 h-3.5 text-[#1356E2] mt-0.5 shrink-0" />
             <div>
-              <p className="font-semibold text-[#002443]">Formato do payload</p>
-              <p className="text-[#002443]/70">CloudEvents 1.0 — <a href={security.cloudEventsSpec} target="_blank" rel="noreferrer" className="text-[#2bc196] underline">spec</a></p>
+              <p className="font-semibold text-[#0A0A0A]">Formato do payload</p>
+              <p className="text-[#0A0A0A]/70">CloudEvents 1.0 — <a href={security.cloudEventsSpec} target="_blank" rel="noreferrer" className="text-[#1356E2] underline">spec</a></p>
             </div>
           </div>
         </div>
@@ -274,7 +274,7 @@ export default function CafWebhookSetup() {
             href={security.officialDocs}
             target="_blank"
             rel="noreferrer"
-            className="text-xs text-[#2bc196] hover:underline inline-flex items-center gap-1"
+            className="text-xs text-[#1356E2] hover:underline inline-flex items-center gap-1"
           >
             <ExternalLink className="w-3 h-3" /> Documentação oficial CAF Connect Webhooks
           </a>

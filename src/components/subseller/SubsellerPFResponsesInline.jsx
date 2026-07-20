@@ -111,7 +111,7 @@ export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--pinbank-blue)]" />
       </div>
     );
   }
@@ -119,8 +119,8 @@ export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
   if (responses.length === 0) {
     return (
       <div className="text-center py-12">
-        <FileCheck className="w-12 h-12 mx-auto text-[#002443]/15 mb-4" />
-        <p className="text-[#002443]/50 font-medium">Nenhuma resposta registrada</p>
+        <FileCheck className="w-12 h-12 mx-auto text-[#0A0A0A]/15 mb-4" />
+        <p className="text-[#0A0A0A]/50 font-medium">Nenhuma resposta registrada</p>
       </div>
     );
   }
@@ -128,16 +128,16 @@ export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
   return (
     <div>
       {/* PF Header badge */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--pagsmile-blue)]/5">
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--pinbank-blue)]/5">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-purple-100">
             <User className="w-5 h-5 text-purple-600" />
           </div>
           <div>
-            <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{merchantName || 'Subseller PF'}</p>
+            <p className="text-sm font-bold text-[var(--pinbank-blue)]">{merchantName || 'Subseller PF'}</p>
             <div className="flex items-center gap-2 mt-1">
               <Badge className="bg-purple-100 text-purple-700 border-0 text-xs">PESSOA FÍSICA</Badge>
-              <span className="text-xs text-[var(--pagsmile-blue)]/50">
+              <span className="text-xs text-[var(--pinbank-blue)]/50">
                 {totalAnswered} respostas
               </span>
             </div>
@@ -148,7 +148,7 @@ export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
           size="sm"
           onClick={handleExportPdf}
           disabled={downloadingPdf}
-          className="text-[#002443]/70 border-[#002443]/10 hover:bg-[#2bc196]/5 hover:border-[#2bc196]/30 hover:text-[#2bc196] text-xs rounded-lg"
+          className="text-[#0A0A0A]/70 border-[#0A0A0A]/10 hover:bg-[#1356E2]/5 hover:border-[#1356E2]/30 hover:text-[#1356E2] text-xs rounded-lg"
         >
           {downloadingPdf ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1.5" />}
           Exportar PDF
@@ -167,11 +167,11 @@ export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
                 key={s.key}
                 onClick={() => setActiveSection(s.key)}
                 className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-all
-                  ${isActive ? 'bg-[var(--pagsmile-blue)] text-white' : 'text-[var(--pagsmile-blue)]/70 hover:bg-[#f4f4f4]'}`}
+                  ${isActive ? 'bg-[var(--pinbank-blue)] text-white' : 'text-[var(--pinbank-blue)]/70 hover:bg-[#f4f4f4]'}`}
               >
-                <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-[var(--pagsmile-green)]' : ''}`} />
+                <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-[var(--pinbank-blue)]' : ''}`} />
                 <span className="flex-1 truncate">{s.label}</span>
-                <span className={`text-[10px] ${isActive ? 'text-white/60' : 'text-[var(--pagsmile-blue)]/30'}`}>{answered}</span>
+                <span className={`text-[10px] ${isActive ? 'text-white/60' : 'text-[var(--pinbank-blue)]/30'}`}>{answered}</span>
               </button>
             );
           })}
@@ -179,21 +179,21 @@ export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
 
         {/* Responses */}
         <div className="flex-1 space-y-3">
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[var(--pagsmile-blue)]/5">
-            {React.createElement(currentSection.icon, { className: 'w-4 h-4 text-[var(--pagsmile-green)]' })}
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">{currentSection.label}</h3>
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[var(--pinbank-blue)]/5">
+            {React.createElement(currentSection.icon, { className: 'w-4 h-4 text-[var(--pinbank-blue)]' })}
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">{currentSection.label}</h3>
           </div>
 
           {sectionResponses.length === 0 ? (
-            <p className="text-sm text-[var(--pagsmile-blue)]/40 text-center py-8">Nenhuma resposta nesta seção.</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/40 text-center py-8">Nenhuma resposta nesta seção.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {sectionResponses.map((r, idx) => (
                 <div key={r.id || idx} className="bg-[#f4f4f4] rounded-xl p-3.5">
-                  <p className="text-xs font-medium text-[var(--pagsmile-blue)]/60 mb-1">{r.questionText}</p>
+                  <p className="text-xs font-medium text-[var(--pinbank-blue)]/60 mb-1">{r.questionText}</p>
                   <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[var(--pagsmile-green)] mt-0.5 flex-shrink-0" />
-                    <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">{getDisplayValue(r)}</p>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[var(--pinbank-blue)] mt-0.5 flex-shrink-0" />
+                    <p className="text-sm font-semibold text-[var(--pinbank-blue)]">{getDisplayValue(r)}</p>
                   </div>
                 </div>
               ))}

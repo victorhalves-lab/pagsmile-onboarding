@@ -9,7 +9,7 @@ export default function ClienteForm({ contract, onChange, preFilledFields = [] }
   const Field = ({ label, field, placeholder, type = 'text' }) => (
     <div className="space-y-1.5">
       <div className="flex items-center gap-2">
-        <Label className="text-xs font-semibold text-[#002443]/70 uppercase tracking-wider">{label}</Label>
+        <Label className="text-xs font-semibold text-[#0A0A0A]/70 uppercase tracking-wider">{label}</Label>
         {isPreFilled(field) && (
           <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">Auto</span>
         )}
@@ -26,7 +26,7 @@ export default function ClienteForm({ contract, onChange, preFilledFields = [] }
 
   return (
     <div className="space-y-5">
-      <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2">Dados do Contratante</h3>
+      <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2">Dados do Contratante</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Field label="Razão Social" field="clientName" placeholder="Nome completo da empresa" />
@@ -46,7 +46,7 @@ export default function ClienteForm({ contract, onChange, preFilledFields = [] }
         <Field label="Telefone" field="clientPhone" placeholder="(11) 99999-9999" />
       </div>
 
-      <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mt-6">Representante Legal</h3>
+      <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mt-6">Representante Legal</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Field label="Nome" field="clientRepresentativeName" placeholder="Nome do representante" />

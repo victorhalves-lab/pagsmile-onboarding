@@ -38,22 +38,22 @@ export default function Step4cProdutosServicos({ formData, handleChange, handleA
     >
       <div className="space-y-6">
         <div className="space-y-3">
-           <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Top 3 produtos/serviços mais relevantes <span className="text-red-500">*</span></Label>
+           <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Top 3 produtos/serviços mais relevantes <span className="text-red-500">*</span></Label>
            {[0, 1, 2].map(i => (
              <Input
                key={i}
                placeholder={`${i+1}º produto/serviço mais vendido`}
                value={topProdutos[i]?.nome || ''}
                onChange={(e) => updateTopProduto(i, e.target.value)}
-               className="mb-2 text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20"
+               className="mb-2 text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]/20"
              />
            ))}
         </div>
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Divisão Percentual dos Volumes <span className="text-red-500">*</span></Label>
-            <Button type="button" variant="outline" size="sm" onClick={addDivisao} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+            <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Divisão Percentual dos Volumes <span className="text-red-500">*</span></Label>
+            <Button type="button" variant="outline" size="sm" onClick={addDivisao} className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/10">
               <Plus className="w-4 h-4 mr-1" /> Adicionar
             </Button>
           </div>
@@ -63,14 +63,14 @@ export default function Step4cProdutosServicos({ formData, handleChange, handleA
                 placeholder="Nome do produto/serviço" 
                 value={item.nome}
                 onChange={(e) => updateDivisao(idx, 'nome', e.target.value)}
-                className="flex-1 text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20"
+                className="flex-1 text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]/20"
               />
               <Input 
                 placeholder="%" 
                 type="number"
                 value={item.percentual}
                 onChange={(e) => updateDivisao(idx, 'percentual', e.target.value)}
-                className="w-24 text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20"
+                className="w-24 text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]/20"
               />
               <Button type="button" variant="ghost" size="icon" onClick={() => removeDivisao(idx)} className="text-red-500 hover:bg-red-50">
                 <Trash2 className="w-4 h-4" />
@@ -82,7 +82,7 @@ export default function Step4cProdutosServicos({ formData, handleChange, handleA
                 Adicione a divisão percentual dos volumes de venda.
             </div>
           )}
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">A soma deve ser 100%.</p>
+          <p className="text-xs text-[var(--pinbank-blue)]/70">A soma deve ser 100%.</p>
         </div>
       </div>
     </FormSection>

@@ -191,7 +191,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
                   checked={formData.isRequired}
                   onCheckedChange={(checked) => setFormData({ ...formData, isRequired: checked })}
                 />
-                <span className="text-sm text-[var(--pagsmile-blue)]/80">
+                <span className="text-sm text-[var(--pinbank-blue)]/80">
                   {formData.isRequired ? 'Sim, é obrigatória' : 'Não, é opcional'}
                 </span>
               </div>
@@ -209,7 +209,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
                 placeholder="Digite uma opção por linha..."
                 rows={4}
               />
-              <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium">
+              <p className="text-xs text-[var(--pinbank-blue)]/70 font-medium">
                 Digite uma opção por linha. Cada linha será uma opção de resposta.
               </p>
             </div>
@@ -258,7 +258,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
                   value={formData.riskWeight}
                   onChange={(e) => setFormData({ ...formData, riskWeight: parseInt(e.target.value) || 0 })}
                 />
-                <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium">
+                <p className="text-xs text-[var(--pinbank-blue)]/70 font-medium">
                   Define o impacto desta pergunta no score de risco geral.
                 </p>
               </div>
@@ -338,7 +338,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-4 pt-4">
-                <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
+                <p className="text-sm text-[var(--pinbank-blue)]/70 font-medium">
                   Exibir esta pergunta somente quando outra pergunta tiver uma resposta específica.
                 </p>
 
@@ -415,7 +415,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
           <Button 
             onClick={handleSave}
             disabled={saveMutation.isPending}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90"
           >
             {saveMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {isEditing ? 'Salvar Alterações' : 'Criar Pergunta'}

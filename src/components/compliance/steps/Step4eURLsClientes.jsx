@@ -34,14 +34,14 @@ export default function Step4eURLsClientes({ formData, handleChange, handleArray
             value={formData.siteCorporativo}
             onChange={(val) => handleChange('siteCorporativo', val)}
             placeholder="https://www.empresa.com.br"
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
           <FormField
             label="URL do Produto/App/Checkout"
             value={formData.urlProduto}
             onChange={(val) => handleChange('urlProduto', val)}
             placeholder="https://... (opcional)"
-            className="text-[var(--pagsmile-blue)]"
+            className="text-[var(--pinbank-blue)]"
           />
         </div>
 
@@ -54,10 +54,10 @@ export default function Step4eURLsClientes({ formData, handleChange, handleArray
         />
 
         {formData.operaMarketplace === true && (
-           <div className="space-y-3 p-4 bg-slate-50/50 rounded-xl border border-[var(--pagsmile-blue)]/10">
+           <div className="space-y-3 p-4 bg-slate-50/50 rounded-xl border border-[var(--pinbank-blue)]/10">
              <div className="flex justify-between items-center mb-2">
-               <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Top 5 Maiores Clientes/Sellers</Label>
-               <Button type="button" variant="outline" size="sm" onClick={addCliente} disabled={topClientes.length >= 5} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+               <Label className="text-sm font-medium text-[var(--pinbank-blue)]">Top 5 Maiores Clientes/Sellers</Label>
+               <Button type="button" variant="outline" size="sm" onClick={addCliente} disabled={topClientes.length >= 5} className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/10">
                  <Plus className="w-4 h-4 mr-1" /> Adicionar
                </Button>
              </div>
@@ -67,20 +67,20 @@ export default function Step4eURLsClientes({ formData, handleChange, handleArray
                    placeholder="Nome" 
                    value={cli.nome} 
                    onChange={(e) => updateCliente(idx, 'nome', e.target.value)}
-                   className="text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20"
+                   className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]/20"
                  />
                  <Input 
                    placeholder="CNPJ" 
                    value={cli.cnpj} 
                    onChange={(e) => updateCliente(idx, 'cnpj', e.target.value)}
-                   className="text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20"
+                   className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]/20"
                  />
                  <div className="flex gap-2">
                     <Input 
                       placeholder="Ramo de Atividade" 
                       value={cli.ramo} 
                       onChange={(e) => updateCliente(idx, 'ramo', e.target.value)}
-                      className="text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20"
+                      className="text-[var(--pinbank-blue)] border-[var(--pinbank-blue)]/20"
                     />
                     <Button type="button" variant="ghost" size="icon" onClick={() => removeCliente(idx)} className="text-red-500 hover:bg-red-50">
                       <Trash2 className="w-4 h-4" />

@@ -17,11 +17,11 @@ function TrilhaCard({ label, value, mono = false, icon: Icon }) {
   if (value == null || value === '') return null;
   return (
     <div className="flex items-start gap-2 text-xs">
-      {Icon && <Icon className="w-3.5 h-3.5 text-[#002443]/40 flex-shrink-0 mt-0.5" />}
+      {Icon && <Icon className="w-3.5 h-3.5 text-[#0A0A0A]/40 flex-shrink-0 mt-0.5" />}
       <div className="flex-1 min-w-0">
         {/* label pode ser string ou ReactNode (com <Term>) */}
-        <div className="text-[9px] uppercase font-bold text-[#002443]/40 tracking-wide">{label}</div>
-        <p className={`text-xs text-[#002443]/85 ${mono ? 'font-mono break-all' : ''}`}>{String(value)}</p>
+        <div className="text-[9px] uppercase font-bold text-[#0A0A0A]/40 tracking-wide">{label}</div>
+        <p className={`text-xs text-[#0A0A0A]/85 ${mono ? 'font-mono break-all' : ''}`}>{String(value)}</p>
       </div>
     </div>
   );
@@ -32,7 +32,7 @@ function SentinelParecerCompleto({ latestScore }) {
     return (
       <Card>
         <CardContent className="py-8 text-center">
-          <p className="text-xs text-[#002443]/50 italic">SENTINEL ainda não emitiu parecer.</p>
+          <p className="text-xs text-[#0A0A0A]/50 italic">SENTINEL ainda não emitiu parecer.</p>
         </CardContent>
       </Card>
     );
@@ -49,7 +49,7 @@ function SentinelParecerCompleto({ latestScore }) {
     return (
       <Card>
         <CardContent className="py-8 text-center">
-          <p className="text-xs text-[#002443]/50 italic">SENTINEL ainda não emitiu parecer textual.</p>
+          <p className="text-xs text-[#0A0A0A]/50 italic">SENTINEL ainda não emitiu parecer textual.</p>
         </CardContent>
       </Card>
     );
@@ -60,7 +60,7 @@ function SentinelParecerCompleto({ latestScore }) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
-            <Brain className="w-4 h-4 text-[#2bc196]" />
+            <Brain className="w-4 h-4 text-[#1356E2]" />
             Parecer <Term code="sentinel" inline>SENTINEL</Term> Completo
           </CardTitle>
           {latestScore.sentinel_recommendation && (
@@ -75,13 +75,13 @@ function SentinelParecerCompleto({ latestScore }) {
           const Icon = s.icon;
           return (
             <div key={idx}>
-              <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[#002443]/8">
-                <Icon className="w-3.5 h-3.5 text-[#002443]/50" />
-                <h4 className="text-xs font-bold uppercase tracking-wide text-[#002443]">
+              <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[#0A0A0A]/8">
+                <Icon className="w-3.5 h-3.5 text-[#0A0A0A]/50" />
+                <h4 className="text-xs font-bold uppercase tracking-wide text-[#0A0A0A]">
                   {s.title}
                 </h4>
               </div>
-              <p className="text-sm text-[#002443]/85 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-[#0A0A0A]/85 leading-relaxed whitespace-pre-wrap">
                 {s.text}
               </p>
             </div>
@@ -90,9 +90,9 @@ function SentinelParecerCompleto({ latestScore }) {
 
         {/* Confiança */}
         {latestScore.nivel_confianca_ia != null && (
-          <div className="pt-3 border-t border-[#002443]/8 flex items-center justify-between">
-            <span className="text-xs text-[#002443]/60">Nível de confiança da IA</span>
-            <Badge className="bg-[#2bc196]/15 text-[#2bc196] border border-[#2bc196]/30 text-xs font-mono">
+          <div className="pt-3 border-t border-[#0A0A0A]/8 flex items-center justify-between">
+            <span className="text-xs text-[#0A0A0A]/60">Nível de confiança da IA</span>
+            <Badge className="bg-[#1356E2]/15 text-[#1356E2] border border-[#1356E2]/30 text-xs font-mono">
               {(latestScore.nivel_confianca_ia * 100).toFixed(0)}%
             </Badge>
           </div>
@@ -107,7 +107,7 @@ function TrilhaAuditoriaSidebar({ latestCase, latestScore }) {
     <Card className="lg:sticky lg:top-4">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          <FileLock2 className="w-4 h-4 text-[#002443]" />
+          <FileLock2 className="w-4 h-4 text-[#0A0A0A]" />
           Trilha de Auditoria
         </CardTitle>
       </CardHeader>

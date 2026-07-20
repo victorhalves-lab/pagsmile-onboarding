@@ -32,15 +32,15 @@ export default function BDCScoreHeader({ analysis }) {
               <Shield className={`w-6 h-6 ${config.textColor}`} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#002443]">Enriquecimento BDC — Big Data Corp</h3>
-              <p className="text-xs text-[#002443]/50 mt-0.5">
+              <h3 className="text-base font-bold text-[#0A0A0A]">Enriquecimento BDC — Big Data Corp</h3>
+              <p className="text-xs text-[#0A0A0A]/50 mt-0.5">
                 {type === 'PF' ? 'Análise Pessoa Física' : 'Análise Pessoa Jurídica'} • 
                 Modelo: <span className="font-medium">{templateModel || 'N/D'}</span> • 
                 Grupo: <span className="font-medium">{datasetGroup}</span>
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-[10px] text-[#002443]/40">
+          <div className="flex items-center gap-2 text-[10px] text-[#0A0A0A]/40">
             <Database className="w-3 h-3" />
             <span>{datasetsQueried} datasets</span>
             <span>•</span>
@@ -54,10 +54,10 @@ export default function BDCScoreHeader({ analysis }) {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           {/* Final score — large */}
           <div className={`col-span-2 lg:col-span-1 p-4 rounded-xl ${config.bgLight} border ${config.border}`}>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">Score Final</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Score Final</p>
             <div className="flex items-baseline gap-1">
               <span className={`text-3xl font-black ${config.textColor}`}>{scoring.finalScore}</span>
-              <span className="text-sm text-[#002443]/30">/849</span>
+              <span className="text-sm text-[#0A0A0A]/30">/849</span>
             </div>
             <div className="w-full h-2 bg-white/60 rounded-full mt-2 overflow-hidden">
               <div className={`h-full rounded-full ${config.color} transition-all duration-1000`} style={{ width: `${pct}%` }} />
@@ -66,7 +66,7 @@ export default function BDCScoreHeader({ analysis }) {
 
           {/* Subfaixa */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">Subfaixa</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Subfaixa</p>
             <Badge className={`${config.bgLight} ${config.textColor} ${config.border} border text-sm font-bold px-3 py-1`}>
               {scoring.subfaixa} — {config.label}
             </Badge>
@@ -74,42 +74,42 @@ export default function BDCScoreHeader({ analysis }) {
 
           {/* Base score */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">Camada 1 — Base</p>
-            <span className="text-2xl font-bold text-[#002443]">{scoring.baseScore}</span>
-            <span className="text-xs text-[#002443]/40 ml-1">pts</span>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Camada 1 — Base</p>
+            <span className="text-2xl font-bold text-[#0A0A0A]">{scoring.baseScore}</span>
+            <span className="text-xs text-[#0A0A0A]/40 ml-1">pts</span>
           </div>
 
           {/* Variables score */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">Camada 2 — Variáveis</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Camada 2 — Variáveis</p>
             <span className={`text-2xl font-bold ${scoring.variablesScore > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
               {scoring.variablesScore > 0 ? '+' : ''}{scoring.variablesScore}
             </span>
-            <span className="text-xs text-[#002443]/40 ml-1">pts</span>
+            <span className="text-xs text-[#0A0A0A]/40 ml-1">pts</span>
           </div>
 
           {/* Enrichment score */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">Camada 3 — Enriquecimento</p>
-            <span className={`text-2xl font-bold ${scoring.enrichmentScore > 0 ? 'text-amber-600' : scoring.enrichmentScore < 0 ? 'text-emerald-600' : 'text-[#002443]'}`}>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Camada 3 — Enriquecimento</p>
+            <span className={`text-2xl font-bold ${scoring.enrichmentScore > 0 ? 'text-amber-600' : scoring.enrichmentScore < 0 ? 'text-emerald-600' : 'text-[#0A0A0A]'}`}>
               {scoring.enrichmentScore > 0 ? '+' : ''}{scoring.enrichmentScore}
             </span>
-            <span className="text-xs text-[#002443]/40 ml-1">pts</span>
+            <span className="text-xs text-[#0A0A0A]/40 ml-1">pts</span>
           </div>
         </div>
 
         {/* Weighted breakdown — Sprint 3 */}
         {scoring.weightBreakdown && (
           <div className="mb-6">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-2">Decomposição por Peso (%)</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-2">Decomposição por Peso (%)</p>
             <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
               {Object.entries(scoring.weightBreakdown).map(([key, wb]) => (
                 <div key={key} className="p-2 rounded-lg bg-slate-50 border border-slate-100 text-center">
-                  <p className="text-[9px] text-[#002443]/40 truncate capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                  <p className="text-[9px] text-[#0A0A0A]/40 truncate capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
                   <p className={`text-sm font-bold ${wb.rawScore > 30 ? 'text-red-600' : wb.rawScore > 10 ? 'text-amber-600' : wb.rawScore > 0 ? 'text-blue-600' : 'text-emerald-600'}`}>
                     {wb.weightedScore > 0 ? '+' : ''}{wb.weightedScore}
                   </p>
-                  <p className="text-[8px] text-[#002443]/30">{wb.weight} × {wb.rawScore}pts</p>
+                  <p className="text-[8px] text-[#0A0A0A]/30">{wb.weight} × {wb.rawScore}pts</p>
                 </div>
               ))}
             </div>
@@ -155,7 +155,7 @@ export default function BDCScoreHeader({ analysis }) {
                 <><AlertOctagon className="w-4 h-4 text-red-600" /><span className="text-xs font-bold text-red-700">Recomendação: RECUSA</span></>
               )}
             </div>
-            <p className="text-[11px] text-[#002443]/60 leading-relaxed">
+            <p className="text-[11px] text-[#0A0A0A]/60 leading-relaxed">
               {scoring.finalScore <= 200 
                 ? 'O score indica baixo risco. Os dados da Big Data Corp não identificaram bloqueios, sanções críticas ou inconsistências graves. Este caso pode ser aprovado automaticamente.'
                 : scoring.finalScore <= 500 
@@ -167,7 +167,7 @@ export default function BDCScoreHeader({ analysis }) {
             {/* Score legend */}
             <div className="mt-3 flex flex-wrap gap-1.5">
               {[{range:'0-100', label:'Verde Express', color:'bg-emerald-400'}, {range:'101-200', label:'Verde', color:'bg-emerald-300'}, {range:'201-300', label:'Azul', color:'bg-blue-400'}, {range:'301-500', label:'Amarelo', color:'bg-amber-400'}, {range:'501-700', label:'Laranja', color:'bg-orange-400'}, {range:'701-849', label:'Vermelho', color:'bg-red-500'}].map(s => (
-                <span key={s.range} className="flex items-center gap-1 text-[9px] text-[#002443]/50">
+                <span key={s.range} className="flex items-center gap-1 text-[9px] text-[#0A0A0A]/50">
                   <span className={`w-2 h-2 rounded-full ${s.color}`}/> {s.range}
                 </span>
               ))}

@@ -87,7 +87,7 @@ export default function Section8SegurancaCartao({ formData, handleChange }) {
           label="Qual PSP/provedor?"
           value={formData.pspProvedor}
           onChange={(value) => handleChange('pspProvedor', value)}
-          placeholder="Ex: Stripe, Adyen, Pagsmile..."
+          placeholder="Ex: Stripe, Adyen, Pin Bank..."
         />
       )}
 

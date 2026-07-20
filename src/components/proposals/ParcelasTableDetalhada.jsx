@@ -63,22 +63,22 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b-2 border-[#2bc196]/20">
-                    <th className="text-left py-2 px-3 font-semibold text-[#002443]/70">Parcelas</th>
+                  <tr className="border-b-2 border-[#1356E2]/20">
+                    <th className="text-left py-2 px-3 font-semibold text-[#0A0A0A]/70">Parcelas</th>
                     {!hideCols && (
-                      <th className="text-right py-2 px-3 font-semibold text-[#002443]/70">Base</th>
+                      <th className="text-right py-2 px-3 font-semibold text-[#0A0A0A]/70">Base</th>
                     )}
                     {!hideCols && taxaRAV > 0 && activePrazo !== 'FLUXO' && (
                       <th className="text-right py-2 px-3 font-semibold text-amber-600">
                         Antecipação{isSimulating ? ` (${simulatedPrazo})` : ''}
                       </th>
                     )}
-                    <th className="text-right py-2 px-3 font-semibold text-[#2bc196]">Taxa</th>
+                    <th className="text-right py-2 px-3 font-semibold text-[#1356E2]">Taxa</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map(r => (
-                    <tr key={r.parcela} className="border-b border-[#002443]/5 hover:bg-[#2bc196]/5">
+                    <tr key={r.parcela} className="border-b border-[#0A0A0A]/5 hover:bg-[#1356E2]/5">
                       <td className="py-2 px-3 font-medium">{r.parcela}x</td>
                       {!hideCols && (
                         <td className="py-2 px-3 text-right">{r.taxaBase.toFixed(2)}%</td>
@@ -92,7 +92,7 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                         const applyOverride = (b.id === 'mastercard' || b.id === 'visa') && prazoOverrides[String(r.parcela)] != null;
                         const val = applyOverride ? prazoOverrides[String(r.parcela)] : r.taxaFinal;
                         return (
-                          <td className={`py-2 px-3 text-right font-bold ${applyOverride ? 'text-amber-500' : 'text-[#2bc196]'}`}>
+                          <td className={`py-2 px-3 text-right font-bold ${applyOverride ? 'text-amber-500' : 'text-[#1356E2]'}`}>
                             {val.toFixed(2)}%
                           </td>
                         );

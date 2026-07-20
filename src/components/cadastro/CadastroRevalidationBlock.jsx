@@ -30,9 +30,9 @@ export default function CadastroRevalidationBlock({ merchantId }) {
   const sorted = [...schedules].sort((a, b) => new Date(b.scheduledDate || b.created_date) - new Date(a.scheduledDate || a.created_date));
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
-        <RefreshCw className="w-4 h-4 text-[var(--pagsmile-green)]" />
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-3 flex items-center gap-2">
+        <RefreshCw className="w-4 h-4 text-[var(--pinbank-blue)]" />
         Revalidações ({schedules.length})
       </h3>
       <div className="space-y-2">
@@ -46,25 +46,25 @@ export default function CadastroRevalidationBlock({ merchantId }) {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs mt-2">
               {s.scheduledDate && (
                 <div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50 flex items-center gap-1"><Calendar className="w-3 h-3" />Agendada</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50 flex items-center gap-1"><Calendar className="w-3 h-3" />Agendada</p>
                   <p className="font-semibold">{new Date(s.scheduledDate).toLocaleDateString('pt-BR')}</p>
                 </div>
               )}
               {s.nextRevalidationDate && (
                 <div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Próxima</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50">Próxima</p>
                   <p className="font-semibold">{new Date(s.nextRevalidationDate).toLocaleDateString('pt-BR')}</p>
                 </div>
               )}
               {s.lastRevalidationDate && (
                 <div>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Última</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50">Última</p>
                   <p className="font-semibold">{new Date(s.lastRevalidationDate).toLocaleDateString('pt-BR')}</p>
                 </div>
               )}
             </div>
-            {s.notes && <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-2 italic">{s.notes}</p>}
-            {s.triggeredBy && <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-1">Disparada por: {s.triggeredBy}</p>}
+            {s.notes && <p className="text-xs text-[var(--pinbank-blue)]/70 mt-2 italic">{s.notes}</p>}
+            {s.triggeredBy && <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-1">Disparada por: {s.triggeredBy}</p>}
           </div>
         ))}
       </div>

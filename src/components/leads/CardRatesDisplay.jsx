@@ -44,29 +44,29 @@ export default function CardRatesDisplay({ questions, questionnaireData }) {
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-3">
         <CreditCard className="w-4 h-4 text-rose-500" />
-        <span className="text-xs font-bold text-[#002443]/70 uppercase tracking-wider">Taxas de Cartão de Crédito por Bandeira</span>
+        <span className="text-xs font-bold text-[#0A0A0A]/70 uppercase tracking-wider">Taxas de Cartão de Crédito por Bandeira</span>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b-2 border-[#e2e8f0]">
-              <th className="text-left py-2.5 px-3 text-[#002443]/50 font-bold uppercase text-[10px]">Parcelamento</th>
+              <th className="text-left py-2.5 px-3 text-[#0A0A0A]/50 font-bold uppercase text-[10px]">Parcelamento</th>
               {BANDEIRAS.map(b => (
-                <th key={b} className="text-center py-2.5 px-3 text-[#002443]/50 font-bold uppercase text-[10px]">{b}</th>
+                <th key={b} className="text-center py-2.5 px-3 text-[#0A0A0A]/50 font-bold uppercase text-[10px]">{b}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {grid.map(cat => (
               <tr key={cat.prefix} className="border-b border-[#e2e8f0] hover:bg-[#f1f5f9] transition-colors">
-                <td className="py-3 px-3 text-[#002443]/70 font-semibold text-xs">{cat.label}</td>
+                <td className="py-3 px-3 text-[#0A0A0A]/70 font-semibold text-xs">{cat.label}</td>
                 {cat.rates.map((r, i) => (
                   <td key={i} className="text-center py-3 px-3">
                     {r.value !== null ? (
                       <span className="text-sm font-bold text-indigo-600">{r.value.toFixed(2).replace('.', ',')}%</span>
                     ) : (
-                      <span className="text-[#002443]/15 font-bold">—</span>
+                      <span className="text-[#0A0A0A]/15 font-bold">—</span>
                     )}
                   </td>
                 ))}

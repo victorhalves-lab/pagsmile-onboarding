@@ -42,7 +42,7 @@ export default function AuditLogTable({ logs }) {
     <Card className="p-4">
       <div className="flex flex-wrap gap-2 mb-4">
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#002443]/40" />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#0A0A0A]/40" />
           <Input placeholder="Buscar por usuário, entidade, ID..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
         <Select value={actionFilter} onValueChange={setActionFilter}>
@@ -69,7 +69,7 @@ export default function AuditLogTable({ logs }) {
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-xs uppercase text-[#002443]/60">
+          <thead className="bg-slate-50 text-xs uppercase text-[#0A0A0A]/60">
             <tr>
               <th className="text-left px-3 py-2">Data</th>
               <th className="text-left px-3 py-2">Usuário</th>
@@ -82,7 +82,7 @@ export default function AuditLogTable({ logs }) {
           </thead>
           <tbody>
             {filtered.length === 0 && (
-              <tr><td colSpan={7} className="text-center py-8 text-[#002443]/50">Nenhum registro encontrado</td></tr>
+              <tr><td colSpan={7} className="text-center py-8 text-[#0A0A0A]/50">Nenhum registro encontrado</td></tr>
             )}
             {filtered.slice(0, 200).map(l => (
               <tr key={l.id} className="border-t border-slate-100 hover:bg-slate-50/50">
@@ -91,16 +91,16 @@ export default function AuditLogTable({ logs }) {
                 <td className="px-3 py-2"><Badge className={actionColors[l.actionType] || 'bg-slate-100'}>{l.actionType}</Badge></td>
                 <td className="px-3 py-2 text-xs font-medium">{l.entityName}</td>
                 <td className="px-3 py-2 text-xs max-w-md truncate">{l.actionDescription || '—'}</td>
-                <td className="px-3 py-2 text-xs font-mono text-[#002443]/50">{l.ipAddress?.slice(0, 12) || '—'}</td>
+                <td className="px-3 py-2 text-xs font-mono text-[#0A0A0A]/50">{l.ipAddress?.slice(0, 12) || '—'}</td>
                 <td className="px-3 py-2 text-right">
-                  <button onClick={() => setSelected(l)} className="text-[#2bc196] hover:underline"><Eye className="w-4 h-4 inline" /></button>
+                  <button onClick={() => setSelected(l)} className="text-[#1356E2] hover:underline"><Eye className="w-4 h-4 inline" /></button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {filtered.length > 200 && <p className="text-xs text-[#002443]/50 mt-2">Exibindo 200 de {filtered.length} registros. Refine os filtros para ver mais.</p>}
+      {filtered.length > 200 && <p className="text-xs text-[#0A0A0A]/50 mt-2">Exibindo 200 de {filtered.length} registros. Refine os filtros para ver mais.</p>}
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <DialogContent className="max-w-2xl">
@@ -108,18 +108,18 @@ export default function AuditLogTable({ logs }) {
           {selected && (
             <div className="space-y-3 text-sm">
               <div className="grid grid-cols-2 gap-3">
-                <div><div className="text-xs text-[#002443]/50">Data</div><div>{selected.changeDate ? format(new Date(selected.changeDate), 'dd/MM/yyyy HH:mm:ss') : '—'}</div></div>
-                <div><div className="text-xs text-[#002443]/50">Usuário</div><div>{selected.changedBy}</div></div>
-                <div><div className="text-xs text-[#002443]/50">Ação</div><Badge className={actionColors[selected.actionType] || 'bg-slate-100'}>{selected.actionType}</Badge></div>
-                <div><div className="text-xs text-[#002443]/50">Entidade</div><div>{selected.entityName}</div></div>
-                <div className="col-span-2"><div className="text-xs text-[#002443]/50">ID do Registro</div><div className="font-mono text-xs">{selected.entityId}</div></div>
-                <div className="col-span-2"><div className="text-xs text-[#002443]/50">Descrição</div><div>{selected.actionDescription || '—'}</div></div>
-                <div><div className="text-xs text-[#002443]/50">IP</div><div className="font-mono text-xs">{selected.ipAddress || '—'}</div></div>
-                <div><div className="text-xs text-[#002443]/50">User Agent</div><div className="text-xs truncate">{selected.userAgent || '—'}</div></div>
+                <div><div className="text-xs text-[#0A0A0A]/50">Data</div><div>{selected.changeDate ? format(new Date(selected.changeDate), 'dd/MM/yyyy HH:mm:ss') : '—'}</div></div>
+                <div><div className="text-xs text-[#0A0A0A]/50">Usuário</div><div>{selected.changedBy}</div></div>
+                <div><div className="text-xs text-[#0A0A0A]/50">Ação</div><Badge className={actionColors[selected.actionType] || 'bg-slate-100'}>{selected.actionType}</Badge></div>
+                <div><div className="text-xs text-[#0A0A0A]/50">Entidade</div><div>{selected.entityName}</div></div>
+                <div className="col-span-2"><div className="text-xs text-[#0A0A0A]/50">ID do Registro</div><div className="font-mono text-xs">{selected.entityId}</div></div>
+                <div className="col-span-2"><div className="text-xs text-[#0A0A0A]/50">Descrição</div><div>{selected.actionDescription || '—'}</div></div>
+                <div><div className="text-xs text-[#0A0A0A]/50">IP</div><div className="font-mono text-xs">{selected.ipAddress || '—'}</div></div>
+                <div><div className="text-xs text-[#0A0A0A]/50">User Agent</div><div className="text-xs truncate">{selected.userAgent || '—'}</div></div>
               </div>
               {selected.details && (
                 <div>
-                  <div className="text-xs text-[#002443]/50 mb-1">Detalhes (antes/depois)</div>
+                  <div className="text-xs text-[#0A0A0A]/50 mb-1">Detalhes (antes/depois)</div>
                   <pre className="bg-slate-50 p-3 rounded text-xs overflow-auto max-h-64">{JSON.stringify(selected.details, null, 2)}</pre>
                 </div>
               )}

@@ -31,22 +31,22 @@ export default function CafFallbackLinkCard({
   };
 
   const Icon = variant === 'done' ? CheckCircle2 : Shield;
-  const iconBg = variant === 'done' ? 'bg-[#2bc196]' : 'bg-[#002443]';
+  const iconBg = variant === 'done' ? 'bg-[#1356E2]' : 'bg-[#0A0A0A]';
 
   return (
-    <div className="rounded-xl border-2 border-[#002443] bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/5 p-4 space-y-3">
+    <div className="rounded-xl border-2 border-[#0A0A0A] bg-gradient-to-br from-[#0A0A0A]/5 to-[#1356E2]/5 p-4 space-y-3">
       <div className="flex items-start gap-3">
         <div className={`flex-shrink-0 w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
           <Icon className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-[#002443]">{titles[variant]}</p>
-          <p className="text-xs text-[#002443]/70 mt-1 leading-relaxed">
+          <p className="text-sm font-bold text-[#0A0A0A]">{titles[variant]}</p>
+          <p className="text-xs text-[#0A0A0A]/70 mt-1 leading-relaxed">
             {subtitles[variant]}
             {variant === 'error' && (
               <>
                 {' '}
-                <strong className="text-[#002443]">Use o mesmo CPF e CNPJ do seu cadastro</strong> — o resultado volta automaticamente para nós.
+                <strong className="text-[#0A0A0A]">Use o mesmo CPF e CNPJ do seu cadastro</strong> — o resultado volta automaticamente para nós.
               </>
             )}
           </p>
@@ -83,7 +83,7 @@ export default function CafFallbackLinkCard({
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => { try { onCafFallbackClick?.(); } catch {} }}
-          className="inline-flex items-center justify-center w-full h-12 rounded-xl bg-[#002443] hover:bg-[#002443]/90 text-white font-semibold text-sm transition-all px-4 shadow-lg shadow-[#002443]/20"
+          className="inline-flex items-center justify-center w-full h-12 rounded-xl bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white font-semibold text-sm transition-all px-4 shadow-lg shadow-[#0A0A0A]/20"
         >
           <ExternalLink className="w-4 h-4 mr-2" />
           {variant === 'ready' ? 'Fazer pelo portal oficial da CAF' : 'Abrir onboarding oficial CAF'}

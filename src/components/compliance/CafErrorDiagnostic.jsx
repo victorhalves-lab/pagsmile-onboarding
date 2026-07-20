@@ -263,9 +263,9 @@ export default function CafErrorDiagnostic({
           <div className="flex items-center justify-between gap-3 bg-amber-50 rounded-lg p-3">
             <div className="min-w-0">
               {resolvedPerson.name && (
-                <p className="text-sm font-semibold text-[#002443] truncate">{resolvedPerson.name}</p>
+                <p className="text-sm font-semibold text-[#0A0A0A] truncate">{resolvedPerson.name}</p>
               )}
-              <p className="text-xs text-[#002443]/70 font-mono">
+              <p className="text-xs text-[#0A0A0A]/70 font-mono">
                 CPF: {String(resolvedPerson.cpf).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4')}
               </p>
             </div>
@@ -301,7 +301,7 @@ export default function CafErrorDiagnostic({
       {/* Contador de tentativas */}
       {attemptCount > 1 && (
         <div className="text-center">
-          <p className="text-xs text-[#002443]/50">
+          <p className="text-xs text-[#0A0A0A]/50">
             Tentativa {attemptCount} • {attemptCount >= 2 ? 'Recomendamos enviar selfie manualmente' : 'Siga as dicas acima'}
           </p>
         </div>
@@ -313,8 +313,8 @@ export default function CafErrorDiagnostic({
           <Button
             onClick={onRetry}
             className={info.primaryAction === 'retry' 
-              ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl'
-              : 'bg-white border-2 border-[#2bc196] text-[#2bc196] hover:bg-[#2bc196]/5 h-11 rounded-xl'
+              ? 'bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-11 rounded-xl'
+              : 'bg-white border-2 border-[#1356E2] text-[#1356E2] hover:bg-[#1356E2]/5 h-11 rounded-xl'
             }
             variant={info.primaryAction === 'retry' ? 'default' : 'outline'}
           >
@@ -329,18 +329,18 @@ export default function CafErrorDiagnostic({
              Vínculo ao cliente via externalId = onboardingCaseId (query param).
              ⚠️ Aviso destacado: compliance só é aprovado após conclusão completa. */}
         {cafFallbackUrl && (
-          <div className="rounded-xl border-2 border-[#002443] bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/5 p-4 space-y-3">
+          <div className="rounded-xl border-2 border-[#0A0A0A] bg-gradient-to-br from-[#0A0A0A]/5 to-[#1356E2]/5 p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#002443] flex items-center justify-center">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#0A0A0A] flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-[#002443]">
+                <p className="text-sm font-bold text-[#0A0A0A]">
                   Alternativa: concluir pelo onboarding oficial CAF
                 </p>
-                <p className="text-xs text-[#002443]/70 mt-1 leading-relaxed">
+                <p className="text-xs text-[#0A0A0A]/70 mt-1 leading-relaxed">
                   Você será direcionado ao portal seguro da CAF para completar a verificação.
-                  <strong className="text-[#002443]"> Use o mesmo CPF e CNPJ do seu cadastro</strong> — o resultado volta automaticamente para nós.
+                  <strong className="text-[#0A0A0A]"> Use o mesmo CPF e CNPJ do seu cadastro</strong> — o resultado volta automaticamente para nós.
                 </p>
               </div>
             </div>
@@ -360,7 +360,7 @@ export default function CafErrorDiagnostic({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => { try { onCafFallbackClick?.(); } catch {} }}
-              className="inline-flex items-center justify-center w-full h-12 rounded-xl bg-[#002443] hover:bg-[#002443]/90 text-white font-semibold text-sm transition-all px-4 shadow-lg shadow-[#002443]/20"
+              className="inline-flex items-center justify-center w-full h-12 rounded-xl bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white font-semibold text-sm transition-all px-4 shadow-lg shadow-[#0A0A0A]/20"
             >
               <ExternalLink className="w-4 h-4 mr-2" />
               Abrir onboarding oficial CAF
@@ -373,7 +373,7 @@ export default function CafErrorDiagnostic({
             onClick={onManualFallback}
             variant={info.primaryAction === 'manual' ? 'default' : 'outline'}
             className={info.primaryAction === 'manual'
-              ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl'
+              ? 'bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-11 rounded-xl'
               : 'border-purple-300 text-purple-700 hover:bg-purple-50 h-11 rounded-xl'
             }
           >
@@ -385,7 +385,7 @@ export default function CafErrorDiagnostic({
           <Button
             onClick={onBdcFallback}
             variant="ghost"
-            className="text-[#002443]/60 hover:text-[#002443] h-10 text-xs"
+            className="text-[#0A0A0A]/60 hover:text-[#0A0A0A] h-10 text-xs"
           >
             Verificação Alternativa (BigDataCorp)
           </Button>
@@ -394,8 +394,8 @@ export default function CafErrorDiagnostic({
 
       {/* Detalhe técnico (colapsável via details nativo) */}
       {(errorName || errorMessage) && (
-        <details className="text-[10px] text-[#002443]/40">
-          <summary className="cursor-pointer hover:text-[#002443]/60">Detalhes técnicos (para suporte)</summary>
+        <details className="text-[10px] text-[#0A0A0A]/40">
+          <summary className="cursor-pointer hover:text-[#0A0A0A]/60">Detalhes técnicos (para suporte)</summary>
           <div className="mt-1 p-2 bg-slate-50 rounded font-mono">
             {errorName && <div>name: {errorName}</div>}
             {errorMessage && <div>msg: {errorMessage}</div>}

@@ -19,10 +19,10 @@ function RateCompareRow({ label, current, requested }) {
 
   return (
     <div className="flex items-center justify-between text-xs py-1.5 border-b border-slate-100 last:border-b-0">
-      <span className="text-[#002443]/60 font-medium">{label}</span>
+      <span className="text-[#0A0A0A]/60 font-medium">{label}</span>
       <div className="flex items-center gap-2">
         {!isNaN(cur) && <span className="text-slate-400 line-through">{cur.toFixed(2)}%</span>}
-        <span className={`font-bold ${isDown ? 'text-red-600' : isUp ? 'text-green-600' : 'text-[#002443]'}`}>
+        <span className={`font-bold ${isDown ? 'text-red-600' : isUp ? 'text-green-600' : 'text-[#0A0A0A]'}`}>
           {req.toFixed(2)}%
         </span>
         {diff !== null && diff !== 0 && (
@@ -62,13 +62,13 @@ function ContrapropostaCard({ proposta }) {
       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-5 py-3 border-b border-blue-100 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Building2 className="w-4 h-4 text-blue-600" />
-          <span className="font-bold text-[#002443]">{proposta.clienteNome || '—'}</span>
+          <span className="font-bold text-[#0A0A0A]">{proposta.clienteNome || '—'}</span>
           <Badge className="text-[10px] bg-white/80 text-blue-700 border-0">{proposta.codigo}</Badge>
           {proposta.version > 1 && (
-            <Badge className="text-[9px] bg-[#2bc196]/10 text-[#2bc196] border-0">v{proposta.version}</Badge>
+            <Badge className="text-[9px] bg-[#1356E2]/10 text-[#1356E2] border-0">v{proposta.version}</Badge>
           )}
         </div>
-        <div className={`flex items-center gap-1 text-xs ${isUrgent ? 'text-red-600 font-semibold' : 'text-[#002443]/60'}`}>
+        <div className={`flex items-center gap-1 text-xs ${isUrgent ? 'text-red-600 font-semibold' : 'text-[#0A0A0A]/60'}`}>
           <Clock className="w-3 h-3" />
           {diasDesde === 0 ? 'hoje' : `há ${diasDesde}d`}
         </div>
@@ -78,7 +78,7 @@ function ContrapropostaCard({ proposta }) {
       <div className="p-5 grid md:grid-cols-2 gap-5">
         {/* Taxas solicitadas */}
         <div>
-          <h4 className="text-xs font-bold text-[#002443]/60 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+          <h4 className="text-xs font-bold text-[#0A0A0A]/60 uppercase tracking-wide mb-2 flex items-center gap-1.5">
             <TrendingDown className="w-3.5 h-3.5 text-red-500" />
             Taxas Solicitadas pelo Cliente
           </h4>
@@ -92,11 +92,11 @@ function ContrapropostaCard({ proposta }) {
 
         {/* Justificativa */}
         <div>
-          <h4 className="text-xs font-bold text-[#002443]/60 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+          <h4 className="text-xs font-bold text-[#0A0A0A]/60 uppercase tracking-wide mb-2 flex items-center gap-1.5">
             <MessageSquareWarning className="w-3.5 h-3.5 text-amber-500" />
             Justificativa
           </h4>
-          <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-3 text-xs text-[#002443]/80 whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto">
+          <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-3 text-xs text-[#0A0A0A]/80 whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto">
             {justificativa || <span className="italic text-slate-400">Sem justificativa informada</span>}
           </div>
         </div>
@@ -104,19 +104,19 @@ function ContrapropostaCard({ proposta }) {
 
       {/* Footer — quem é responsável + ação */}
       <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-        <div className="flex items-center gap-3 text-xs text-[#002443]/60">
+        <div className="flex items-center gap-3 text-xs text-[#0A0A0A]/60">
           <span>CNPJ: <span className="font-mono">{proposta.clienteCnpj || '—'}</span></span>
           {proposta.responsavelNome && proposta.responsavelNome !== 'sistema' && (
             <>
               <span>•</span>
-              <span>Responsável: <span className="font-medium text-[#002443]">{proposta.responsavelNome}</span></span>
+              <span>Responsável: <span className="font-medium text-[#0A0A0A]">{proposta.responsavelNome}</span></span>
             </>
           )}
         </div>
         <Button
           size="sm"
           onClick={() => navigate(createPageUrl('PropostaDetalhes') + `?id=${proposta.id}`)}
-          className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2"
+          className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white gap-2"
         >
           <Eye className="w-4 h-4" /> Analisar e Responder
         </Button>
@@ -135,10 +135,10 @@ export default function ContrapropostasPendentesTab({ propostas }) {
 
   if (contrapropostas.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
-        <MessageSquareWarning className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-[#002443]/60 font-medium">Nenhuma contraproposta pendente</p>
-        <p className="text-xs text-[#002443]/40 mt-1">Quando um cliente solicitar revisão de taxas, aparece aqui.</p>
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-12 text-center">
+        <MessageSquareWarning className="w-12 h-12 mx-auto text-[#0A0A0A]/20 mb-3" />
+        <p className="text-[#0A0A0A]/60 font-medium">Nenhuma contraproposta pendente</p>
+        <p className="text-xs text-[#0A0A0A]/40 mt-1">Quando um cliente solicitar revisão de taxas, aparece aqui.</p>
       </div>
     );
   }
@@ -148,10 +148,10 @@ export default function ContrapropostasPendentesTab({ propostas }) {
       <div className="bg-blue-50/50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-3">
         <MessageSquareWarning className="w-5 h-5 text-blue-600" />
         <div className="flex-1">
-          <p className="text-sm font-semibold text-[#002443]">
+          <p className="text-sm font-semibold text-[#0A0A0A]">
             {contrapropostas.length} contraproposta{contrapropostas.length > 1 ? 's' : ''} aguardando resposta
           </p>
-          <p className="text-xs text-[#002443]/60">
+          <p className="text-xs text-[#0A0A0A]/60">
             Analise as taxas solicitadas e crie uma nova versão com ajustes ou entre em contato com o cliente.
           </p>
         </div>

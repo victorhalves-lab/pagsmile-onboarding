@@ -52,14 +52,14 @@ const STEPS = [
   {
     id: '6', title: 'Etapa 6 — Serviços PIX Desejados', objective: 'Seleção de serviços PIX que o lead precisa. Define funcionalidades requeridas e alimenta a proposta.',
     questions: [
-      { order: 22, text: 'Serviços PIX desejados', type: 'MULTI_SELECT', required: true, note: '9 opções: PIX Recebimentos, PIX Pagamentos (cash-out), QR Code estático, QR Code dinâmico, PIX Cobrança (com vencimento), PIX Garantido (parcelado), Split PIX, Conta Digital PagSmile, Outro. Flag INTERMEDIARY_WANTS_SPLIT se intermediário selecionar Split PIX.' },
+      { order: 22, text: 'Serviços PIX desejados', type: 'MULTI_SELECT', required: true, note: '9 opções: PIX Recebimentos, PIX Pagamentos (cash-out), QR Code estático, QR Code dinâmico, PIX Cobrança (com vencimento), PIX Garantido (parcelado), Split PIX, Conta Digital Pin Bank, Outro. Flag INTERMEDIARY_WANTS_SPLIT se intermediário selecionar Split PIX.' },
     ]
   },
   {
-    id: '7', title: 'Etapa 7 — Contato & Fechamento', objective: 'Urgência, como conheceu a Pagsmile e upload opcional de proposta concorrente. Score finalizado e label atribuído (Muito Quente/Quente/Morno/Frio).',
+    id: '7', title: 'Etapa 7 — Contato & Fechamento', objective: 'Urgência, como conheceu a Pin Bank e upload opcional de proposta concorrente. Score finalizado e label atribuído (Muito Quente/Quente/Morno/Frio).',
     questions: [
       { order: 23, text: 'Urgência para integração', type: 'SELECT', required: true, note: '4 opções: Imediato, Até 30 dias, 1-3 meses, Pesquisando.' },
-      { order: 24, text: 'Como conheceu a PagSmile?', type: 'SELECT', required: false, note: '6 opções: Google, Indicação, LinkedIn, Evento, Parceiro, Outro.' },
+      { order: 24, text: 'Como conheceu a Pin Bank?', type: 'SELECT', required: false, note: '6 opções: Google, Indicação, LinkedIn, Evento, Parceiro, Outro.' },
       { order: 25, text: 'Upload de proposta concorrente', type: 'FILE_UPLOAD', required: false, note: 'PDF, JPG, PNG. Upload via base44.integrations.Core.UploadFile.' },
     ]
   },
@@ -85,7 +85,7 @@ function StepBlock({ step, isOpen, onToggle }) {
       <button onClick={onToggle} className="w-full flex items-center justify-between p-3 hover:bg-slate-50/50 transition-colors text-left">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <Badge className="bg-emerald-500 text-white border-0 text-[10px] shrink-0">{step.id}</Badge>
-          <span className="text-xs font-bold text-[#002443] truncate">{step.title}</span>
+          <span className="text-xs font-bold text-[#0A0A0A] truncate">{step.title}</span>
           <Badge variant="outline" className="text-[10px] shrink-0">{step.questions.length} campos</Badge>
           {step.questions.some(q => q.note?.includes('CONDICIONAL')) && <Badge className="bg-purple-50 text-purple-600 border-0 text-[10px] shrink-0">Condicional</Badge>}
         </div>
@@ -95,14 +95,14 @@ function StepBlock({ step, isOpen, onToggle }) {
         <div className="px-3 pb-3 border-t border-slate-100">
           <div className="bg-emerald-50 rounded-lg p-2.5 my-2 border border-emerald-100">
             <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-0.5">Objetivo</p>
-            <p className="text-xs text-[#002443]/70 leading-relaxed">{step.objective}</p>
+            <p className="text-xs text-[#0A0A0A]/70 leading-relaxed">{step.objective}</p>
           </div>
           <div className="space-y-1">
             {step.questions.map((q, i) => (
               <div key={i} className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 text-xs">
                 <Badge variant="outline" className="text-[9px] shrink-0 mt-0.5 font-mono w-7 justify-center">{q.order}</Badge>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[#002443]/80">{q.text}</span>
+                  <span className="text-[#0A0A0A]/80">{q.text}</span>
                   <div className="flex gap-1 mt-0.5 flex-wrap">
                     <Badge className="text-[8px] bg-slate-100 text-slate-600 border-0">{q.type}</Badge>
                     {q.required && <Badge className="text-[8px] bg-green-50 text-green-700 border-0">Obrigatório</Badge>}
@@ -151,11 +151,11 @@ export default function LeadPixV4Section() {
 
       {/* Bifurcação */}
       <div className="bg-white rounded-xl p-4 border border-slate-200">
-        <h4 className="text-sm font-bold text-[#002443] mb-3">Bifurcação: Merchant Direto vs Intermediário</h4>
+        <h4 className="text-sm font-bold text-[#0A0A0A] mb-3">Bifurcação: Merchant Direto vs Intermediário</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-sm font-bold text-[#002443]">🏪 Merchant Direto</p>
-            <p className="text-[10px] text-[#002443]/60 mt-1">Recebe PIX para a própria empresa. Não faz split/repasse. Segmentos: E-commerce, Dropshipping, Infoprodutos, SaaS, Educação, Foodtech, Link Pagamento, MPE.</p>
+            <p className="text-sm font-bold text-[#0A0A0A]">🏪 Merchant Direto</p>
+            <p className="text-[10px] text-[#0A0A0A]/60 mt-1">Recebe PIX para a própria empresa. Não faz split/repasse. Segmentos: E-commerce, Dropshipping, Infoprodutos, SaaS, Educação, Foodtech, Link Pagamento, MPE.</p>
             <div className="mt-2 space-y-0.5">
               {['Modelo de cobrança PIX', 'Presença digital', 'Finalidade da conta', 'Conta encerrada', 'Volume PIX'].map((f, i) => (
                 <p key={i} className="text-[9px] text-blue-600 flex items-start gap-1"><span className="text-blue-400">→</span>{f}</p>
@@ -163,8 +163,8 @@ export default function LeadPixV4Section() {
             </div>
           </div>
           <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-            <p className="text-sm font-bold text-[#002443]">🔗 Intermediário</p>
-            <p className="text-[10px] text-[#002443]/60 mt-1">Recebe PIX em nome de merchants/sellers e faz split/repasse. Segmentos: Gateway/PSP, Marketplace, Plataforma Vertical.</p>
+            <p className="text-sm font-bold text-[#0A0A0A]">🔗 Intermediário</p>
+            <p className="text-[10px] text-[#0A0A0A]/60 mt-1">Recebe PIX em nome de merchants/sellers e faz split/repasse. Segmentos: Gateway/PSP, Marketplace, Plataforma Vertical.</p>
             <div className="mt-2 space-y-0.5">
               {['Quantidade de merchants ativos', 'Modelo de cobrança PIX', 'Presença digital', 'Finalidade (split/repasse)', 'Volume PIX agregado', 'Flag MEI_AS_INTERMEDIARY'].map((f, i) => (
                 <p key={i} className="text-[9px] text-purple-600 flex items-start gap-1"><span className="text-purple-400">→</span>{f}</p>
@@ -177,8 +177,8 @@ export default function LeadPixV4Section() {
       {/* Etapas */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-bold text-[#002443]">Todas as 7 Etapas — Campo por Campo</h4>
-          <button onClick={() => { const all = {}; STEPS.forEach(s => all[s.id] = true); setOpenSteps(all); }} className="text-[10px] text-[#2bc196] font-bold hover:underline">Expandir todas</button>
+          <h4 className="text-sm font-bold text-[#0A0A0A]">Todas as 7 Etapas — Campo por Campo</h4>
+          <button onClick={() => { const all = {}; STEPS.forEach(s => all[s.id] = true); setOpenSteps(all); }} className="text-[10px] text-[#1356E2] font-bold hover:underline">Expandir todas</button>
         </div>
         {STEPS.map(step => (
           <StepBlock key={step.id} step={step} isOpen={openSteps[step.id]} onToggle={() => toggle(step.id)} />
@@ -195,8 +195,8 @@ export default function LeadPixV4Section() {
             <div key={i} className="flex items-start gap-2 text-[10px]">
               <Badge className="bg-red-200 text-red-800 border-0 text-[8px] shrink-0 mt-0.5 font-mono">{f.key}</Badge>
               <div className="flex-1">
-                <span className="text-[#002443]/80 font-medium">{f.desc}</span>
-                <span className="text-[#002443]/40 ml-1">— {f.trigger}</span>
+                <span className="text-[#0A0A0A]/80 font-medium">{f.desc}</span>
+                <span className="text-[#0A0A0A]/40 ml-1">— {f.trigger}</span>
                 <Badge className="bg-red-100 text-red-600 border-0 text-[7px] ml-1">{f.penalty}</Badge>
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function LeadPixV4Section() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[10px]">
           <div>
             <p className="font-bold text-amber-700 mb-1">Bônus</p>
-            <ul className="space-y-0.5 text-[#002443]/70">
+            <ul className="space-y-0.5 text-[#0A0A0A]/70">
               <li>• Base: 40 pontos</li>
               <li>• TPV ≥ R$1M: +15 | ≥R$500k: +10 | ≥R$100k: +5</li>
               <li>• Capital Social ≥R$1M: +10 | ≥R$100k: +5</li>
@@ -227,12 +227,12 @@ export default function LeadPixV4Section() {
           </div>
           <div>
             <p className="font-bold text-red-700 mb-1">Penalidades</p>
-            <ul className="space-y-0.5 text-[#002443]/70">
+            <ul className="space-y-0.5 text-[#0A0A0A]/70">
               <li>• Conta encerrada (ACCOUNT_TERMINATED): -15</li>
               <li>• Volume PIX MEI (HIGH_PIX_VOLUME_MEI): -10</li>
             </ul>
-            <p className="font-bold text-[#002443]/50 mt-2 mb-1">Labels</p>
-            <ul className="space-y-0.5 text-[#002443]/70">
+            <p className="font-bold text-[#0A0A0A]/50 mt-2 mb-1">Labels</p>
+            <ul className="space-y-0.5 text-[#0A0A0A]/70">
               <li>• ≥80: 🔥 Muito Quente</li>
               <li>• ≥60: 🟠 Quente</li>
               <li>• ≥40: 🟡 Morno</li>
@@ -245,7 +245,7 @@ export default function LeadPixV4Section() {
       {/* Features */}
       <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
         <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <Zap className="w-3.5 h-3.5" />Features & Diferenças vs Pagsmile v5
+          <Zap className="w-3.5 h-3.5" />Features & Diferenças vs Pin Bank v5
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
           {[
@@ -262,7 +262,7 @@ export default function LeadPixV4Section() {
             'Vinculação automática com Introducer via URL params',
             'Dados fluem para Risk Scoring v4.0 (segmento pix_merchant ou pix_intermediario)',
           ].map((f, i) => (
-            <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#002443]/70">
+            <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#0A0A0A]/70">
               <span className="text-emerald-500 shrink-0 mt-0.5">✓</span>
               <span>{f}</span>
             </div>
@@ -272,8 +272,8 @@ export default function LeadPixV4Section() {
 
       {/* Componentes técnicos */}
       <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-        <h4 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Componentes Técnicos (7 steps)</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[9px] text-[#002443]/60">
+        <h4 className="text-xs font-bold text-[#0A0A0A]/50 uppercase tracking-wider mb-2">Componentes Técnicos (7 steps)</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[9px] text-[#0A0A0A]/60">
           {[
             { name: 'StepTipoNegocio', desc: 'Seleção Merchant/Intermediário com cards' },
             { name: 'StepDadosEmpresa', desc: 'CNPJ autocomplete + contato' },
@@ -285,8 +285,8 @@ export default function LeadPixV4Section() {
             { name: 'pixQuestionnaireData', desc: 'Lógica de flags + score centralizada' },
           ].map((c, i) => (
             <div key={i} className="p-2 bg-white rounded-lg border border-slate-100">
-              <Badge className="bg-[#002443] text-white font-mono text-[7px] border-0 mb-1">{c.name}</Badge>
-              <p className="text-[8px] text-[#002443]/50">{c.desc}</p>
+              <Badge className="bg-[#0A0A0A] text-white font-mono text-[7px] border-0 mb-1">{c.name}</Badge>
+              <p className="text-[8px] text-[#0A0A0A]/50">{c.desc}</p>
             </div>
           ))}
         </div>

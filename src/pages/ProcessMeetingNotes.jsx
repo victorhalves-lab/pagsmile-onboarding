@@ -47,13 +47,13 @@ export default function ProcessMeetingNotes() {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('QuestionariosLeads'))} className="text-white/70 hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
           </Button>
           <div className="p-3 rounded-xl bg-white/10">
-            <Bot className="w-6 h-6 text-[#5cf7cf]" />
+            <Bot className="w-6 h-6 text-[#E84B1C]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Questionário com Robô</h1>
@@ -66,7 +66,7 @@ export default function ProcessMeetingNotes() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <FileText className="w-5 h-5 text-[#2bc196]" />
+            <FileText className="w-5 h-5 text-[#1356E2]" />
             Anotações / Transcrição da Reunião
           </CardTitle>
         </CardHeader>
@@ -88,14 +88,14 @@ Reunião com João da empresa TechPay Ltda (CNPJ 12.345.678/0001-90). Eles proce
                   <span><Upload className="w-4 h-4 mr-1" /> Upload arquivo .txt</span>
                 </Button>
               </label>
-              <span className="text-xs text-[var(--pagsmile-blue)]/40">
+              <span className="text-xs text-[var(--pinbank-blue)]/40">
                 {text.length > 0 ? `${text.length} caracteres` : ''}
               </span>
             </div>
             <Button
               onClick={handleProcess}
               disabled={processing || text.trim().length < 20}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+              className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
             >
               {processing ? (
                 <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Analisando com IA...</>
@@ -109,21 +109,21 @@ Reunião com João da empresa TechPay Ltda (CNPJ 12.345.678/0001-90). Eles proce
 
       {/* Result */}
       {result && (
-        <Card className="border-[#2bc196]/30 bg-[#2bc196]/5">
+        <Card className="border-[#1356E2]/30 bg-[#1356E2]/5">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-4">
-              <CheckCircle2 className="w-6 h-6 text-[#2bc196]" />
+              <CheckCircle2 className="w-6 h-6 text-[#1356E2]" />
               <div>
                 <p className="font-semibold">Questionário criado com sucesso!</p>
-                <p className="text-sm text-[var(--pagsmile-blue)]/60">
-                  Protocolo: <span className="font-mono text-[#2bc196]">{result.protocolo}</span> · {result.extractedFields} campos preenchidos pela IA
+                <p className="text-sm text-[var(--pinbank-blue)]/60">
+                  Protocolo: <span className="font-mono text-[#1356E2]">{result.protocolo}</span> · {result.extractedFields} campos preenchidos pela IA
                 </p>
               </div>
             </div>
             <div className="flex gap-3">
               <Button
                 onClick={() => navigate(createPageUrl('QuestionarioReuniao') + `?id=${result.questionnaireId}`)}
-                className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+                className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
               >
                 <FileText className="w-4 h-4 mr-1" /> Revisar e Completar
               </Button>

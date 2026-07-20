@@ -96,12 +96,12 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-[#002443]">Dados da Empresa</h2>
+        <h2 className="text-lg font-bold text-[#0A0A0A]">Dados da Empresa</h2>
       </div>
 
       {/* CNPJ */}
       <div className="space-y-1" data-field="cnpj">
-        <label className="text-sm font-semibold text-[#002443]">CNPJ *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">CNPJ *</label>
         <div className="relative">
           <Input
             value={form.cnpj || ''}
@@ -110,7 +110,7 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
             className={`h-12 rounded-xl font-mono ${errors?.cnpj ? 'border-red-400' : ''}`}
             maxLength={18}
           />
-          {isLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
+          {isLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#1356E2]" />}
           {cnpjData && !isLoading && <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
         </div>
         {errors?.cnpj && <p className="text-xs text-red-500">CNPJ inválido — confira os dígitos</p>}
@@ -118,7 +118,7 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
 
       {/* Razão Social — sempre editável pelo cliente, mesmo após enriquecimento */}
       <div className="space-y-1" data-field="razaoSocial">
-        <label className="text-sm font-semibold text-[#002443]">Razão Social *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Razão Social *</label>
         <Input
           value={form.razaoSocial || ''}
           onChange={(e) => updateField('razaoSocial', e.target.value)}
@@ -130,14 +130,14 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
 
       {/* Nome Fantasia */}
       <div className="space-y-1" data-field="nomeFantasia">
-        <label className="text-sm font-semibold text-[#002443]">Nome Fantasia *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Nome Fantasia *</label>
         <Input value={form.nomeFantasia || ''} onChange={(e) => updateField('nomeFantasia', e.target.value)} placeholder="Nome Fantasia (editável)" className={`h-12 rounded-xl ${errors?.nomeFantasia ? 'border-red-400' : ''}`} />
         {errors?.nomeFantasia && <p className="text-xs text-red-500">Campo obrigatório</p>}
       </div>
 
       {/* Presença Digital */}
       <div className="space-y-1" data-field="presencaDigital">
-        <label className="text-sm font-semibold text-[#002443]">Presença digital principal *</label>
+        <label className="text-sm font-semibold text-[#0A0A0A]">Presença digital principal *</label>
         <Input value={form.presencaDigital || ''} onChange={(e) => updateField('presencaDigital', e.target.value)} placeholder="URL do site, @instagram, ou 'Não possuo'" className={`h-12 rounded-xl ${errors?.presencaDigital ? 'border-red-400' : ''}`} />
         {errors?.presencaDigital && <p className="text-xs text-red-500">Informe site, @rede social ou "Não possuo"</p>}
         {form.presencaDigital && form.presencaDigital !== 'Não possuo' && (

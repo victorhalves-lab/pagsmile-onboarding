@@ -21,23 +21,23 @@ export default function IntroducerKPIs({ introducers, leads, proposals }) {
     : '-';
 
   const kpis = [
-    { label: 'Introducers Ativos', value: activeIntroducers, icon: Users, color: '#002443' },
-    { label: 'Leads Gerados', value: totalLeads, icon: UserCheck, color: '#2bc196' },
-    { label: 'Propostas Aceitas', value: acceptedProposals.length, icon: FileText, color: '#36706c' },
-    { label: 'Volume Fechado', value: `R$ ${totalVolume.toLocaleString('pt-BR')}`, icon: DollarSign, color: '#2bc196' },
-    { label: 'Taxa de Conversão', value: `${conversionRate}%`, icon: TrendingUp, color: '#36706c' },
-    { label: 'Score Médio PRISCILA', value: avgScore, icon: Star, color: '#002443' },
+    { label: 'Introducers Ativos', value: activeIntroducers, icon: Users, color: '#0A0A0A' },
+    { label: 'Leads Gerados', value: totalLeads, icon: UserCheck, color: '#1356E2' },
+    { label: 'Propostas Aceitas', value: acceptedProposals.length, icon: FileText, color: '#E84B1C' },
+    { label: 'Volume Fechado', value: `R$ ${totalVolume.toLocaleString('pt-BR')}`, icon: DollarSign, color: '#1356E2' },
+    { label: 'Taxa de Conversão', value: `${conversionRate}%`, icon: TrendingUp, color: '#E84B1C' },
+    { label: 'Score Médio PRISCILA', value: avgScore, icon: Star, color: '#0A0A0A' },
   ];
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       {kpis.map((kpi, i) => (
-        <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+        <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
           <div className="flex items-center gap-2 mb-1">
             <kpi.icon className="w-4 h-4" style={{ color: kpi.color }} />
             <p className="text-xl font-bold" style={{ color: kpi.color }}>{kpi.value}</p>
           </div>
-          <p className="text-[10px] text-[#002443]/40">{kpi.label}</p>
+          <p className="text-[10px] text-[#0A0A0A]/40">{kpi.label}</p>
         </div>
       ))}
     </div>

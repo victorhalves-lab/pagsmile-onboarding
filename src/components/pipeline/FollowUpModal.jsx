@@ -55,12 +55,12 @@ export default function FollowUpModal({ open, onClose, lead }) {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CalendarClock className="w-5 h-5 text-[var(--pagsmile-green)]" />
+            <CalendarClock className="w-5 h-5 text-[var(--pinbank-blue)]" />
             Agendar Follow-up
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-2">
-          <p className="text-sm text-[var(--pagsmile-blue)]/70">
+          <p className="text-sm text-[var(--pinbank-blue)]/70">
             Lead: <strong>{lead.companyName || lead.fullName}</strong>
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -88,7 +88,7 @@ export default function FollowUpModal({ open, onClose, lead }) {
           <Button
             onClick={() => mutation.mutate()}
             disabled={!date || mutation.isPending}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            className="bg-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/90"
           >
             {mutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Agendar

@@ -29,10 +29,10 @@ export default function CafTestLab() {
             <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-purple-100">
               <FlaskConical className="w-5 h-5 text-purple-600" />
             </div>
-            <h1 className="text-2xl font-bold text-[#002443]">CAF Test Lab</h1>
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">CAF Test Lab</h1>
             <Badge className="bg-amber-100 text-amber-700 border-amber-200">Admin</Badge>
           </div>
-          <p className="text-sm text-[#002443]/60 max-w-2xl">
+          <p className="text-sm text-[#0A0A0A]/60 max-w-2xl">
             Teste cada camada da integração CAF individualmente. Útil para diagnosticar problemas
             sem precisar rodar o fluxo completo de onboarding.
           </p>
@@ -58,19 +58,19 @@ export default function CafTestLab() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="bg-slate-100">
-          <TabsTrigger value="connect" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
-            <Plug className="w-4 h-4 mr-2" /> Connect API <Badge className="ml-2 bg-[#2bc196] text-white text-[9px] h-4">principal</Badge>
+          <TabsTrigger value="connect" className="data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A]">
+            <Plug className="w-4 h-4 mr-2" /> Connect API <Badge className="ml-2 bg-[#1356E2] text-white text-[9px] h-4">principal</Badge>
           </TabsTrigger>
-          <TabsTrigger value="submit" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
+          <TabsTrigger value="submit" className="data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A]">
             <Send className="w-4 h-4 mr-2" /> Submit Compliance <Badge className="ml-2 bg-emerald-100 text-emerald-700 text-[9px] h-4">PF/PJ</Badge>
           </TabsTrigger>
-          <TabsTrigger value="sdk" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
+          <TabsTrigger value="sdk" className="data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A]">
             <Camera className="w-4 h-4 mr-2" /> Frontend SDK (câmera)
           </TabsTrigger>
-          <TabsTrigger value="webhook" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
+          <TabsTrigger value="webhook" className="data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A]">
             <Webhook className="w-4 h-4 mr-2" /> Webhook Setup
           </TabsTrigger>
-          <TabsTrigger value="backend" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
+          <TabsTrigger value="backend" className="data-[state=active]:bg-white data-[state=active]:text-[#0A0A0A]">
             <Server className="w-4 h-4 mr-2" /> Backend Helpers
           </TabsTrigger>
         </TabsList>

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, CreditCard, TrendingUp } from 'lucide-react';
 
-const PAGSMILE_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
+const PIN_BANK_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
 
 const features = [
   { icon: Shield, label: 'Antifraude Integrado' },
@@ -14,12 +14,12 @@ const features = [
 export default function LandingHeader({ companyName, companyLogoUrl }) {
   return (
     <div className="relative overflow-hidden rounded-3xl">
-      <div className="bg-[#002443] py-14 md:py-20 px-8 md:px-16 relative">
+      <div className="bg-[#0A0A0A] py-14 md:py-20 px-8 md:px-16 relative">
         {/* Accent stripe */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2bc196] via-[#5cf7cf] to-[#2bc196]" />
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#1356E2] via-[#E84B1C] to-[#1356E2]" />
         
         {/* Glow */}
-        <div className="absolute top-[-100px] right-[-50px] w-[350px] h-[350px] bg-[#2bc196]/10 rounded-full blur-[100px]" />
+        <div className="absolute top-[-100px] right-[-50px] w-[350px] h-[350px] bg-[#1356E2]/10 rounded-full blur-[100px]" />
 
         <div className="relative z-10">
           {/* Logos */}
@@ -29,7 +29,7 @@ export default function LandingHeader({ companyName, companyLogoUrl }) {
             transition={{ duration: 0.5 }}
             className="flex items-center justify-center gap-6 mb-10"
           >
-            <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-6 sm:h-8 md:h-10 w-auto max-w-[40%] object-contain shrink-0" />
+            <img src={PIN_BANK_LOGO} alt="Pin Bank" className="h-6 sm:h-8 md:h-10 w-auto max-w-[40%] object-contain shrink-0" />
             {companyLogoUrl && (
               <>
                 <div className="w-px h-8 sm:h-10 bg-white/20 shrink-0" />
@@ -47,9 +47,9 @@ export default function LandingHeader({ companyName, companyLogoUrl }) {
           >
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4" style={{ color: '#ffffff' }}>
               {companyName ? (
-                <>Soluções de Pagamento<br /><span style={{ color: '#2bc196' }}>{companyName}</span></>
+                <>Soluções de Pagamento<br /><span style={{ color: '#1356E2' }}>{companyName}</span></>
               ) : (
-                <>Soluções de Pagamento <span style={{ color: '#2bc196' }}>Pagsmile</span></>
+                <>Soluções de Pagamento <span style={{ color: '#1356E2' }}>Pin Bank</span></>
               )}
             </h1>
             <p className="text-base md:text-lg max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
@@ -69,7 +69,7 @@ export default function LandingHeader({ companyName, companyLogoUrl }) {
                 key={feat.label}
                 className="flex items-center gap-2 bg-white/[0.07] border border-white/[0.08] rounded-full px-4 py-2"
               >
-                <feat.icon className="w-4 h-4" style={{ color: '#2bc196' }} />
+                <feat.icon className="w-4 h-4" style={{ color: '#1356E2' }} />
                 <span className="text-sm font-medium" style={{ color: '#ffffff' }}>{feat.label}</span>
               </div>
             ))}

@@ -73,7 +73,7 @@ export default function AISuggestionsModal({ open, onClose, templateId, template
         {suggestions.length === 0 && !loading && (
           <div className="text-center py-8">
             <Sparkles className="w-12 h-12 mx-auto text-purple-300 mb-3" />
-            <p className="text-sm text-[var(--pagsmile-blue)]/60 mb-4">
+            <p className="text-sm text-[var(--pinbank-blue)]/60 mb-4">
               A IA vai sugerir perguntas com base no contexto do seu questionário.
             </p>
             <Button onClick={fetchSuggestions} className="bg-purple-600 hover:bg-purple-700">
@@ -86,7 +86,7 @@ export default function AISuggestionsModal({ open, onClose, templateId, template
         {loading && (
           <div className="flex flex-col items-center py-8 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-            <p className="text-sm text-[var(--pagsmile-blue)]/60">Analisando e gerando sugestões...</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/60">Analisando e gerando sugestões...</p>
           </div>
         )}
 
@@ -103,13 +103,13 @@ export default function AISuggestionsModal({ open, onClose, templateId, template
                   <div className="flex items-start gap-3">
                     <Checkbox checked={isSelected} className="mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-[var(--pagsmile-blue)]">{q.text}</p>
+                      <p className="text-sm font-medium text-[var(--pinbank-blue)]">{q.text}</p>
                       <div className="flex gap-1 mt-1 flex-wrap">
                         <Badge variant="outline" className="text-[10px]">{q.type}</Badge>
                         {q.isRequired && <Badge className="bg-red-100 text-red-700 text-[10px]">Obrigatória</Badge>}
                         {q.riskWeight > 0 && <Badge className="bg-amber-100 text-amber-700 text-[10px]">Peso: {q.riskWeight}</Badge>}
                       </div>
-                      {q.helpText && <p className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-1">{q.helpText}</p>}
+                      {q.helpText && <p className="text-[10px] text-[var(--pinbank-blue)]/50 mt-1">{q.helpText}</p>}
                     </div>
                   </div>
                 </div>

@@ -80,8 +80,8 @@ export default function RiskDecisionCharts({ scores }) {
         ].map((m, i) => (
           <div key={i} className="bg-white rounded-xl p-4 border border-slate-100 text-center">
             <p className="text-2xl font-extrabold" style={{ color: m.color }}>{m.value}</p>
-            <p className="text-[10px] font-bold text-[#002443]/50 mt-1">{m.label}</p>
-            <p className="text-[9px] text-[#002443]/30">{m.sub}</p>
+            <p className="text-[10px] font-bold text-[#0A0A0A]/50 mt-1">{m.label}</p>
+            <p className="text-[9px] text-[#0A0A0A]/30">{m.sub}</p>
           </div>
         ))}
       </div>

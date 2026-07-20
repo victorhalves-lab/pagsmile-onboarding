@@ -184,11 +184,11 @@ export default function BDCSmartAlerts({ analysis, merchant, existingRedFlags = 
               return (
                 <div
                   key={`sa-dup-${i}`}
-                  className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50/60 border border-dashed border-slate-200 text-[11px] text-[#002443]/60"
+                  className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50/60 border border-dashed border-slate-200 text-[11px] text-[#0A0A0A]/60"
                 >
-                  <ExternalLink className="w-3 h-3 text-[#002443]/30" />
+                  <ExternalLink className="w-3 h-3 text-[#0A0A0A]/30" />
                   <span className="flex-1">
-                    <strong className="text-[#002443]/80">Já visto no bloco "Alertas Identificados":</strong>{' '}
+                    <strong className="text-[#0A0A0A]/80">Já visto no bloco "Alertas Identificados":</strong>{' '}
                     {flag.title}
                   </span>
                   <a
@@ -198,7 +198,7 @@ export default function BDCSmartAlerts({ analysis, merchant, existingRedFlags = 
                       const el = document.querySelector('[data-red-flags-panel]');
                       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="text-[10px] font-semibold text-[#2bc196] hover:underline"
+                    className="text-[10px] font-semibold text-[#1356E2] hover:underline"
                   >
                     ↑ ver lá
                   </a>

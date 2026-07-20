@@ -68,7 +68,7 @@ export default function StepDocumentsV2({
         <Button
           onClick={handleNext}
           disabled={isSubmitting}
-          className="h-10 px-6 rounded-lg bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+          className="h-10 px-6 rounded-lg bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
         >
           {isSubmitting ? (
             <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Aguarde</>

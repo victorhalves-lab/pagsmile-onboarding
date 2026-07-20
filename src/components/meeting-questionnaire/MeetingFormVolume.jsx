@@ -18,10 +18,10 @@ export default function MeetingFormVolume({ form, updateField }) {
   };
 
   return (
-    <Card className="border-[#002443]/5">
+    <Card className="border-[#0A0A0A]/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <DollarSign className="w-5 h-5 text-[#2bc196]" />
+          <DollarSign className="w-5 h-5 text-[#1356E2]" />
           Volume e Transações
         </CardTitle>
       </CardHeader>

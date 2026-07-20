@@ -62,13 +62,13 @@ export default function GlobalComplianceReceived() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4 flex flex-wrap items-center gap-3">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4 flex flex-wrap items-center gap-3">
         <div className="flex-1 min-w-[200px] relative">
-          <Search className="w-4 h-4 text-[#002443]/40 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#0A0A0A]/40 absolute left-3 top-1/2 -translate-y-1/2" />
           <Input placeholder="Buscar por empresa, país, email..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10" />
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-[#002443]/40" />
+          <Filter className="w-4 h-4 text-[#0A0A0A]/40" />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-44 h-10"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -84,9 +84,9 @@ export default function GlobalComplianceReceived() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-[#f4f4f4] text-[#002443]/70 text-xs uppercase">
+          <thead className="bg-[#f4f4f4] text-[#0A0A0A]/70 text-xs uppercase">
             <tr>
               <th className="text-left px-4 py-3">Empresa</th>
               <th className="text-left px-4 py-3">País</th>
@@ -97,18 +97,18 @@ export default function GlobalComplianceReceived() {
               <th className="text-right px-4 py-3">Ações</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#002443]/5">
+          <tbody className="divide-y divide-[#0A0A0A]/5">
             {filtered.map(c => (
               <tr key={c.id} className="hover:bg-[#f4f4f4]/40">
                 <td className="px-4 py-3">
-                  <div className="font-medium text-[#002443]">{c.legal_business_name}</div>
-                  {c.trade_name_dba && <div className="text-xs text-[#002443]/50">{c.trade_name_dba}</div>}
+                  <div className="font-medium text-[#0A0A0A]">{c.legal_business_name}</div>
+                  {c.trade_name_dba && <div className="text-xs text-[#0A0A0A]/50">{c.trade_name_dba}</div>}
                 </td>
-                <td className="px-4 py-3 text-[#002443]/70">{c.registered_country || '—'}</td>
-                <td className="px-4 py-3 text-xs text-[#002443]/70">{c.applying_for || '—'}</td>
-                <td className="px-4 py-3 text-xs uppercase font-mono text-[#002443]/60">{c.language || 'en'}</td>
+                <td className="px-4 py-3 text-[#0A0A0A]/70">{c.registered_country || '—'}</td>
+                <td className="px-4 py-3 text-xs text-[#0A0A0A]/70">{c.applying_for || '—'}</td>
+                <td className="px-4 py-3 text-xs uppercase font-mono text-[#0A0A0A]/60">{c.language || 'en'}</td>
                 <td className="px-4 py-3 text-center"><StatusBadge status={c.status} /></td>
-                <td className="px-4 py-3 text-right text-xs text-[#002443]/60">
+                <td className="px-4 py-3 text-right text-xs text-[#0A0A0A]/60">
                   {c.created_date ? format(new Date(c.created_date), 'dd/MM/yy') : '—'}
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -133,13 +133,13 @@ export default function GlobalComplianceReceived() {
               </tr>
             ))}
             {!isLoading && filtered.length === 0 && (
-              <tr><td colSpan={7} className="px-4 py-10 text-center text-[#002443]/50">
-                <ShieldCheck className="w-8 h-8 mx-auto mb-2 text-[#002443]/30" />
+              <tr><td colSpan={7} className="px-4 py-10 text-center text-[#0A0A0A]/50">
+                <ShieldCheck className="w-8 h-8 mx-auto mb-2 text-[#0A0A0A]/30" />
                 Nenhum KYC recebido ainda.
               </td></tr>
             )}
             {isLoading && (
-              <tr><td colSpan={7} className="px-4 py-10 text-center text-[#002443]/50">Carregando...</td></tr>
+              <tr><td colSpan={7} className="px-4 py-10 text-center text-[#0A0A0A]/50">Carregando...</td></tr>
             )}
           </tbody>
         </table>
@@ -169,12 +169,12 @@ function StatusBadge({ status }) {
 
 function KPI({ label, value, icon: Icon, accent }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-4">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">{label}</span>
         <div className={`p-1.5 rounded-lg ${accent}`}><Icon className="w-3.5 h-3.5" /></div>
       </div>
-      <div className="text-xl font-bold text-[#002443]">{value}</div>
+      <div className="text-xl font-bold text-[#0A0A0A]">{value}</div>
     </div>
   );
 }

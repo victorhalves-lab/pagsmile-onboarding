@@ -29,20 +29,20 @@ export default function ComparatorHeader({ merchant, v4Case, v5_2Case }) {
       <div className="flex items-center justify-between mb-4">
         <Link
           to={merchant?.id ? `/CadastroDetalhe?id=${merchant.id}` : '/Cadastro'}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#002443]/70 hover:text-[#002443]"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#0A0A0A]/70 hover:text-[#0A0A0A]"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Voltar ao cadastro
         </Link>
-        <Badge className="bg-[#2bc196]/15 text-[#2bc196] border border-[#2bc196]/30 text-[10px] gap-1">
+        <Badge className="bg-[#1356E2]/15 text-[#1356E2] border border-[#1356E2]/30 text-[10px] gap-1">
           <Rocket className="w-2.5 h-2.5" /> Comparator V4 ↔ V5.2
         </Badge>
       </div>
 
       {/* Merchant identification */}
       <div className="mb-4">
-        <h1 className="text-xl font-bold text-[#002443]">{merchantName}</h1>
-        <p className="text-xs text-[#002443]/60 mt-0.5">
+        <h1 className="text-xl font-bold text-[#0A0A0A]">{merchantName}</h1>
+        <p className="text-xs text-[#0A0A0A]/60 mt-0.5">
           {merchant?.type === 'PF' ? 'CPF' : 'CNPJ'}: <span className="font-mono">{merchantDoc}</span>
         </p>
       </div>
@@ -58,7 +58,7 @@ export default function ComparatorHeader({ merchant, v4Case, v5_2Case }) {
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Trilho V4 (Legado)</p>
-                <p className="text-xs font-semibold text-[#002443]">Análise oficial</p>
+                <p className="text-xs font-semibold text-[#0A0A0A]">Análise oficial</p>
               </div>
             </div>
             {v4Case?.id && (
@@ -70,39 +70,39 @@ export default function ComparatorHeader({ merchant, v4Case, v5_2Case }) {
               </Link>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-[#002443]/60">
+          <div className="flex items-center gap-1.5 text-[10px] text-[#0A0A0A]/60">
             <Calendar className="w-3 h-3" />
             <span>Submetido em {fmt(v4Case?.submissionDate || v4Case?.created_date)}</span>
           </div>
-          <p className="text-[10px] text-[#002443]/50 mt-1 font-mono truncate">id: {v4Case?.id || '—'}</p>
+          <p className="text-[10px] text-[#0A0A0A]/50 mt-1 font-mono truncate">id: {v4Case?.id || '—'}</p>
         </div>
 
         {/* V5.2 column */}
-        <div className="border-2 border-[#2bc196]/40 bg-[#2bc196]/5 rounded-xl p-3">
+        <div className="border-2 border-[#1356E2]/40 bg-[#1356E2]/5 rounded-xl p-3">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#2bc196] flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-[#1356E2] flex items-center justify-center">
                 <Rocket className="w-3.5 h-3.5 text-white" />
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#2bc196]">Trilho V5.2 (Novo)</p>
-                <p className="text-xs font-semibold text-[#002443]">Sandbox / reprocesso</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#1356E2]">Trilho V5.2 (Novo)</p>
+                <p className="text-xs font-semibold text-[#0A0A0A]">Sandbox / reprocesso</p>
               </div>
             </div>
             {v5_2Case?.id && (
               <Link
                 to={`/AnaliseCompleta?id=${v5_2Case.id}`}
-                className="inline-flex items-center gap-1 text-[10px] text-[#2bc196] hover:underline"
+                className="inline-flex items-center gap-1 text-[10px] text-[#1356E2] hover:underline"
               >
                 Análise <ExternalLink className="w-2.5 h-2.5" />
               </Link>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-[#002443]/60">
+          <div className="flex items-center gap-1.5 text-[10px] text-[#0A0A0A]/60">
             <Calendar className="w-3 h-3" />
             <span>Reprocessado em {fmt(v5_2Case?.submissionDate || v5_2Case?.created_date)}</span>
           </div>
-          <p className="text-[10px] text-[#002443]/50 mt-1 font-mono truncate">id: {v5_2Case?.id || '—'}</p>
+          <p className="text-[10px] text-[#0A0A0A]/50 mt-1 font-mono truncate">id: {v5_2Case?.id || '—'}</p>
         </div>
       </div>
     </div>

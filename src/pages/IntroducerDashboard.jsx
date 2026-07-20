@@ -47,7 +47,7 @@ export default function IntroducerDashboard() {
   if (loadingUser) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -55,13 +55,13 @@ export default function IntroducerDashboard() {
   if (!isIntroducer) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]">
-        <div className="bg-white rounded-2xl p-8 text-center max-w-md shadow-lg border border-[#002443]/5">
+        <div className="bg-white rounded-2xl p-8 text-center max-w-md shadow-lg border border-[#0A0A0A]/5">
           <ShieldAlert className="w-16 h-16 mx-auto text-red-400 mb-4" />
-          <h1 className="text-xl font-bold text-[#002443] mb-2">{t('idash.restricted_title')}</h1>
-          <p className="text-sm text-[#002443]/60 mb-6">
+          <h1 className="text-xl font-bold text-[#0A0A0A] mb-2">{t('idash.restricted_title')}</h1>
+          <p className="text-sm text-[#0A0A0A]/60 mb-6">
             {t('idash.restricted_desc')}
           </p>
-          <Button onClick={() => base44.auth.logout()} className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-xl">
+          <Button onClick={() => base44.auth.logout()} className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white rounded-xl">
             {t('idash.back_login')}
           </Button>
         </div>
@@ -75,8 +75,8 @@ export default function IntroducerDashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#2bc196] mx-auto mb-3" />
-          <p className="text-sm text-[#002443]/50">{t('idash.loading')}</p>
+          <Loader2 className="w-8 h-8 animate-spin text-[#1356E2] mx-auto mb-3" />
+          <p className="text-sm text-[#0A0A0A]/50">{t('idash.loading')}</p>
         </div>
       </div>
     );
@@ -90,7 +90,7 @@ export default function IntroducerDashboard() {
         <IntroducerShareLink introducer={introducer} />
         <IntroducerPortalCharts leads={leads} />
         <div>
-          <h2 className="text-lg font-bold text-[#002443] mb-3">{t('idash.my_leads')}</h2>
+          <h2 className="text-lg font-bold text-[#0A0A0A] mb-3">{t('idash.my_leads')}</h2>
           <IntroducerPortalLeadsTable leads={leads} />
         </div>
       </div>

@@ -49,8 +49,8 @@ export default function V5_2ShortcutsProvider({
     jkIndexRef.current = idx;
     const el = nodes[idx];
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    el.classList.add('ring-2', 'ring-[#2bc196]', 'ring-offset-2');
-    setTimeout(() => el.classList.remove('ring-2', 'ring-[#2bc196]', 'ring-offset-2'), 900);
+    el.classList.add('ring-2', 'ring-[#1356E2]', 'ring-offset-2');
+    setTimeout(() => el.classList.remove('ring-2', 'ring-[#1356E2]', 'ring-offset-2'), 900);
   }, []);
 
   // ── Resetar índice quando troca de aba ──

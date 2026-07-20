@@ -107,10 +107,10 @@ function EnrichmentCard({ record, type }) {
         <StatusIcon className={`w-4 h-4 ${sv.color} flex-shrink-0`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-bold text-[var(--pagsmile-blue)]">{meta.label}</span>
+            <span className="text-xs font-bold text-[var(--pinbank-blue)]">{meta.label}</span>
             <Badge className={`${sv.bg} ${sv.color} text-[9px] border-0`}>{sv.label}</Badge>
           </div>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">
+          <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">
             {date.toLocaleDateString('pt-BR')} {date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             {record.duration_ms ? ` · ${record.duration_ms}ms` : ''}
             {record.score != null ? ` · Score: ${record.score}` : ''}
@@ -126,7 +126,7 @@ function EnrichmentCard({ record, type }) {
         <div className="border-t border-slate-100 p-4 space-y-3">
           {/* Description */}
           {meta.desc && (
-            <p className="text-xs text-[var(--pagsmile-blue)]/60 p-2.5 bg-slate-50 rounded-lg leading-relaxed">{meta.desc}</p>
+            <p className="text-xs text-[var(--pinbank-blue)]/60 p-2.5 bg-slate-50 rounded-lg leading-relaxed">{meta.desc}</p>
           )}
 
           {/* Key metrics for CAF */}
@@ -168,12 +168,12 @@ function EnrichmentCard({ record, type }) {
           {/* Key fields in business-friendly format */}
           {keyFields.length > 0 && (
             <div>
-              <p className="text-[10px] font-bold text-[var(--pagsmile-blue)]/50 mb-2">Dados Retornados</p>
+              <p className="text-[10px] font-bold text-[var(--pinbank-blue)]/50 mb-2">Dados Retornados</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                 {keyFields.filter(f => !f.isComplex).map((f, i) => (
                   <div key={i} className="text-xs p-2 rounded bg-white border border-slate-100">
-                    <span className="text-[var(--pagsmile-blue)]/40 text-[10px]">{humanizeKey(f.key)}: </span>
-                    <span className="font-medium text-[var(--pagsmile-blue)]">{f.value}</span>
+                    <span className="text-[var(--pinbank-blue)]/40 text-[10px]">{humanizeKey(f.key)}: </span>
+                    <span className="font-medium text-[var(--pinbank-blue)]">{f.value}</span>
                   </div>
                 ))}
               </div>
@@ -184,7 +184,7 @@ function EnrichmentCard({ record, type }) {
           {record.image_urls?.length > 0 && (
             <div className="flex gap-2 flex-wrap">
               {record.image_urls.map((url, i) => (
-                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="w-20 h-20 rounded-lg overflow-hidden border hover:border-[var(--pagsmile-green)]">
+                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="w-20 h-20 rounded-lg overflow-hidden border hover:border-[var(--pinbank-blue)]">
                   <img src={url} alt="" className="w-full h-full object-cover" />
                 </a>
               ))}
@@ -194,7 +194,7 @@ function EnrichmentCard({ record, type }) {
           {/* Raw JSON toggle */}
           {hasData && (
             <div>
-              <button onClick={() => setShowRaw(!showRaw)} className="text-[10px] text-[var(--pagsmile-blue)]/30 hover:text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
+              <button onClick={() => setShowRaw(!showRaw)} className="text-[10px] text-[var(--pinbank-blue)]/30 hover:text-[var(--pinbank-blue)]/60 flex items-center gap-1">
                 <Eye className="w-3 h-3" />
                 {showRaw ? 'Ocultar JSON bruto' : 'Ver JSON bruto completo'}
               </button>
@@ -207,7 +207,7 @@ function EnrichmentCard({ record, type }) {
           )}
 
           {!hasData && (
-            <p className="text-xs text-[var(--pagsmile-blue)]/30 italic">Nenhum dado retornado nesta consulta.</p>
+            <p className="text-xs text-[var(--pinbank-blue)]/30 italic">Nenhum dado retornado nesta consulta.</p>
           )}
         </div>
       )}
@@ -232,9 +232,9 @@ export default function CadastroEnrichmentTab({ validations = [], integrationLog
 
   if (!uniqueBdc.length && !uniqueCaf.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <Database className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum resultado de enriquecimento externo encontrado</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <Database className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhum resultado de enriquecimento externo encontrado</p>
       </div>
     );
   }
@@ -258,10 +258,10 @@ export default function CadastroEnrichmentTab({ validations = [], integrationLog
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Database className="w-4 h-4 text-blue-600" />
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">Big Data Corp — Enriquecimento de Dados</h3>
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">Big Data Corp — Enriquecimento de Dados</h3>
             <Badge className="bg-blue-100 text-blue-700 text-[10px]">{uniqueBdc.length}</Badge>
           </div>
-          <p className="text-xs text-[var(--pagsmile-blue)]/40 mb-3">
+          <p className="text-xs text-[var(--pinbank-blue)]/40 mb-3">
             Bureau de dados que agrega informações da Receita Federal, Juntas Comerciais, Tribunais, Serasa, CEIS/CNEP e bases proprietárias.
           </p>
           <div className="space-y-2">
@@ -275,10 +275,10 @@ export default function CadastroEnrichmentTab({ validations = [], integrationLog
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Fingerprint className="w-4 h-4 text-purple-600" />
-            <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">CAF — Combate à Fraude</h3>
+            <h3 className="text-sm font-bold text-[var(--pinbank-blue)]">CAF — Combate à Fraude</h3>
             <Badge className="bg-purple-100 text-purple-700 text-[10px]">{uniqueCaf.length}</Badge>
           </div>
-          <p className="text-xs text-[var(--pagsmile-blue)]/40 mb-3">
+          <p className="text-xs text-[var(--pinbank-blue)]/40 mb-3">
             Plataforma de verificação de identidade: prova de vida, correspondência facial, análise documental, screening PEP/Sanções.
           </p>
           <div className="space-y-2">
@@ -295,10 +295,10 @@ function SummaryCard({ icon: Icon, label, value, sub, color }) {
     <div className="p-4 rounded-xl bg-white border border-slate-200">
       <div className="flex items-center gap-2 mb-2">
         <div className={`p-1.5 rounded-lg bg-${color}-50`}><Icon className={`w-4 h-4 text-${color}-600`} /></div>
-        <span className="text-[10px] font-semibold text-[var(--pagsmile-blue)]/50 uppercase tracking-wide">{label}</span>
+        <span className="text-[10px] font-semibold text-[var(--pinbank-blue)]/50 uppercase tracking-wide">{label}</span>
       </div>
-      <p className="text-2xl font-black text-[var(--pagsmile-blue)]">{value}</p>
-      <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">{sub}</p>
+      <p className="text-2xl font-black text-[var(--pinbank-blue)]">{value}</p>
+      <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">{sub}</p>
     </div>
   );
 }

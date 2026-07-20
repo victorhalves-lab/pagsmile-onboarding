@@ -121,12 +121,12 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
       <div className="flex items-start gap-3 mb-3">
         <span className="text-2xl leading-none">🗺️</span>
         <div className="flex-1">
-          <h4 className="text-sm font-bold text-[#002443]">Mapa de Calor de Risco por Dimensão</h4>
-          <p className="text-[11px] text-[#002443]/50 mt-0.5 leading-relaxed">
+          <h4 className="text-sm font-bold text-[#0A0A0A]">Mapa de Calor de Risco por Dimensão</h4>
+          <p className="text-[11px] text-[#0A0A0A]/50 mt-0.5 leading-relaxed">
             Cada eixo do radar é uma dimensão de análise (Identidade, Sócios, Financeiro, etc.).
-            <strong className="text-[#002443]/70"> Quanto mais afastado do centro, maior o risco.</strong>
+            <strong className="text-[#0A0A0A]/70"> Quanto mais afastado do centro, maior o risco.</strong>
           </p>
-          <p className="text-[11px] text-[#2bc196] mt-1 flex items-center gap-1 font-semibold">
+          <p className="text-[11px] text-[#1356E2] mt-1 flex items-center gap-1 font-semibold">
             <MousePointerClick className="w-3 h-3" />
             Clique em qualquer dimensão da legenda para ver o detalhamento completo.
           </p>
@@ -141,11 +141,11 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
               <PolarGrid stroke="#e2e8f0" />
               <PolarAngleAxis
                 dataKey="subject"
-                tick={{ fill: '#002443', fontSize: 11, fontWeight: 600 }}
+                tick={{ fill: '#0A0A0A', fontSize: 11, fontWeight: 600 }}
               />
               <PolarRadiusAxis
                 domain={[0, 100]}
-                tick={{ fill: '#002443', fontSize: 9 }}
+                tick={{ fill: '#0A0A0A', fontSize: 9 }}
                 tickCount={5}
               />
               <Radar
@@ -162,7 +162,7 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
 
         {/* Clickable legend */}
         <div className="lg:w-[280px] space-y-1.5">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-1 flex items-center gap-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 mb-1 flex items-center gap-1">
             <Info className="w-3 h-3" /> Dimensões — clique para abrir
           </p>
           {dimensions.map(d => {
@@ -174,8 +174,8 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
                 onClick={() => setSelectedDim(isSelected ? null : d.key)}
                 className={`w-full flex items-center gap-3 p-2.5 rounded-lg text-left transition-all ${
                   isSelected
-                    ? 'bg-[#002443] text-white ring-2 ring-[#2bc196] shadow-md'
-                    : 'bg-slate-50 hover:bg-slate-100 border border-transparent hover:border-[#002443]/10'
+                    ? 'bg-[#0A0A0A] text-white ring-2 ring-[#1356E2] shadow-md'
+                    : 'bg-slate-50 hover:bg-slate-100 border border-transparent hover:border-[#0A0A0A]/10'
                 }`}
               >
                 <div
@@ -183,21 +183,21 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
                   style={{ backgroundColor: d.color }}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-[11px] font-semibold truncate ${isSelected ? 'text-white' : 'text-[#002443]'}`}>
+                  <p className={`text-[11px] font-semibold truncate ${isSelected ? 'text-white' : 'text-[#0A0A0A]'}`}>
                     {d.dimension}
                   </p>
-                  <p className={`text-[10px] ${isSelected ? 'text-white/70' : 'text-[#002443]/40'}`}>
+                  <p className={`text-[10px] ${isSelected ? 'text-white/70' : 'text-[#0A0A0A]/40'}`}>
                     Risco: <span className="font-bold" style={{ color: isSelected ? d.color : d.color }}>{d.risk}/100</span> — {d.label}
                   </p>
                 </div>
-                <MousePointerClick className={`w-3 h-3 shrink-0 ${isSelected ? 'text-[#2bc196]' : 'text-[#002443]/30'}`} />
+                <MousePointerClick className={`w-3 h-3 shrink-0 ${isSelected ? 'text-[#1356E2]' : 'text-[#0A0A0A]/30'}`} />
               </button>
             );
           })}
 
           {/* Color legend */}
           <div className="pt-2 mt-2 border-t border-slate-200">
-            <div className="flex items-center gap-3 text-[10px] text-[#002443]/50 flex-wrap">
+            <div className="flex items-center gap-3 text-[10px] text-[#0A0A0A]/50 flex-wrap">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /> 0-39 Baixo</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> 40-69 Moderado</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> 70+ Alto</span>

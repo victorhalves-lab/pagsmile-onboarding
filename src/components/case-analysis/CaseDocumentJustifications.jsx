@@ -90,8 +90,8 @@ export default function CaseDocumentJustifications({ caseId }) {
           <MessageSquareWarning className="w-5 h-5 text-amber-600" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[#002443]">Documentos não enviados — Justificativas do cliente</h3>
-          <p className="text-xs text-[#002443]/60">{docs.length} documento(s) declarados como "não tenho"</p>
+          <h3 className="text-sm font-bold text-[#0A0A0A]">Documentos não enviados — Justificativas do cliente</h3>
+          <p className="text-xs text-[#0A0A0A]/60">{docs.length} documento(s) declarados como "não tenho"</p>
         </div>
       </div>
 
@@ -100,28 +100,28 @@ export default function CaseDocumentJustifications({ caseId }) {
           <div key={doc.id} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
             <div className="flex items-start justify-between gap-3 mb-2">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[#002443]">{doc.documentName}</p>
-                <p className="text-[10px] text-[#002443]/50 font-mono">{doc.documentTypeId}</p>
+                <p className="text-sm font-semibold text-[#0A0A0A]">{doc.documentName}</p>
+                <p className="text-[10px] text-[#0A0A0A]/50 font-mono">{doc.documentTypeId}</p>
               </div>
               {getStatusBadge(doc.notAvailableReviewStatus || 'Pendente')}
             </div>
 
             <div className="bg-white border border-amber-200 rounded p-3 mb-3">
               <p className="text-[10px] font-bold text-amber-800 mb-1 uppercase tracking-wide">Justificativa:</p>
-              <p className="text-xs text-[#002443]/80 leading-relaxed italic">"{doc.notAvailableReason}"</p>
+              <p className="text-xs text-[#0A0A0A]/80 leading-relaxed italic">"{doc.notAvailableReason}"</p>
             </div>
 
             {doc.notAvailableReviewStatus && doc.notAvailableReviewStatus !== 'Pendente' ? (
               <div className="bg-slate-100 border border-slate-200 rounded p-2.5">
                 <div className="flex items-center gap-2 mb-1">
                   <User className="w-3 h-3 text-slate-600" />
-                  <p className="text-[10px] font-semibold text-[#002443]">Revisado por {doc.notAvailableReviewedBy}</p>
-                  <p className="text-[10px] text-[#002443]/50">
+                  <p className="text-[10px] font-semibold text-[#0A0A0A]">Revisado por {doc.notAvailableReviewedBy}</p>
+                  <p className="text-[10px] text-[#0A0A0A]/50">
                     · {doc.notAvailableReviewedAt ? new Date(doc.notAvailableReviewedAt).toLocaleString('pt-BR') : ''}
                   </p>
                 </div>
                 {doc.notAvailableReviewNotes && (
-                  <p className="text-xs text-[#002443]/80">{doc.notAvailableReviewNotes}</p>
+                  <p className="text-xs text-[#0A0A0A]/80">{doc.notAvailableReviewNotes}</p>
                 )}
               </div>
             ) : (
@@ -142,12 +142,12 @@ export default function CaseDocumentJustifications({ caseId }) {
       <Dialog open={reviewModal.open} onOpenChange={(o) => !o && setReviewModal({ open: false, doc: null, action: null })}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#002443]">
+            <DialogTitle className="text-[#0A0A0A]">
               {reviewModal.action === 'accept' ? '✅ Aceitar Justificativa' : '❌ Rejeitar Justificativa'}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <p className="text-sm text-[#002443]/70">
+            <p className="text-sm text-[#0A0A0A]/70">
               Documento: <strong>{reviewModal.doc?.documentName}</strong>
             </p>
             {reviewModal.action === 'reject' && (
@@ -156,7 +156,7 @@ export default function CaseDocumentJustifications({ caseId }) {
               </div>
             )}
             <div>
-              <label className="text-xs font-semibold text-[#002443] mb-1.5 block">
+              <label className="text-xs font-semibold text-[#0A0A0A] mb-1.5 block">
                 Observação (opcional):
               </label>
               <Textarea

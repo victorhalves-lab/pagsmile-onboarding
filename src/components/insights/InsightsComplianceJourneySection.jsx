@@ -45,9 +45,9 @@ export default function InsightsComplianceJourneySection({ sessions, templates =
   if (!sessions || sessions.length === 0) {
     return (
       <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center mt-2">
-        <Route className="w-10 h-10 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-sm text-[#002443]/50">Nenhuma sessão de compliance registrada ainda.</p>
-        <p className="text-xs text-[#002443]/30 mt-1">As sessões aparecem quando clientes iniciam o questionário de compliance.</p>
+        <Route className="w-10 h-10 mx-auto text-[#0A0A0A]/20 mb-3" />
+        <p className="text-sm text-[#0A0A0A]/50">Nenhuma sessão de compliance registrada ainda.</p>
+        <p className="text-xs text-[#0A0A0A]/30 mt-1">As sessões aparecem quando clientes iniciam o questionário de compliance.</p>
       </div>
     );
   }
@@ -56,7 +56,7 @@ export default function InsightsComplianceJourneySection({ sessions, templates =
   const statusMap = {};
   sessions.forEach(s => { statusMap[s.status || 'active'] = (statusMap[s.status || 'active'] || 0) + 1; });
   const statusData = Object.entries(statusMap).map(([name, value]) => ({ name, value }));
-  const statusColors = { active: '#f59e0b', completed: '#2bc196', expired: '#ef4444' };
+  const statusColors = { active: '#f59e0b', completed: '#1356E2', expired: '#ef4444' };
 
   // Phase distribution
   const phaseMap = {};
@@ -65,7 +65,7 @@ export default function InsightsComplianceJourneySection({ sessions, templates =
     name: name === 'questionnaire' ? 'Questionário' : name === 'documents' ? 'Documentos' : name === 'completed' ? 'Concluído' : name,
     value
   }));
-  const phaseColors = { 'Questionário': '#002443', 'Documentos': '#f59e0b', 'Concluído': '#2bc196' };
+  const phaseColors = { 'Questionário': '#0A0A0A', 'Documentos': '#f59e0b', 'Concluído': '#1356E2' };
 
   // Model distribution
   const modelMap = {};
@@ -145,7 +145,7 @@ export default function InsightsComplianceJourneySection({ sessions, templates =
     <div className="space-y-6 mt-2">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard label="Total Sessões" value={totalSessions} subtitle={`${Object.keys(modelMap).length} modelos`} icon={Layers} />
-        <StatCard label="Taxa Conclusão" value={`${completionRate}%`} subtitle={`${completed} concluídos`} icon={CheckCircle2} accentColor="#2bc196" />
+        <StatCard label="Taxa Conclusão" value={`${completionRate}%`} subtitle={`${completed} concluídos`} icon={CheckCircle2} accentColor="#1356E2" />
         <StatCard label="Abandonados" value={abandoned} subtitle={`${totalSessions > 0 ? ((abandoned / totalSessions) * 100).toFixed(0) : 0}% do total`} icon={XCircle} accentColor="#ef4444" />
         <StatCard label="Tempo Mediano" value={avgTimeFormatted} subtitle={`${timeStats.count} sessões medidas`} icon={Clock} />
       </div>
@@ -169,9 +169,9 @@ export default function InsightsComplianceJourneySection({ sessions, templates =
             <BarChart data={completionData} layout="vertical" barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#002443' }} width={130} axisLine={false} tickLine={false} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#0A0A0A' }} width={130} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} />
-              <Bar dataKey="Concluídos" stackId="a" fill="#2bc196" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="Concluídos" stackId="a" fill="#1356E2" radius={[0, 0, 0, 0]} />
               <Bar dataKey="Abandonados" stackId="a" fill="#ef4444" opacity={0.3} radius={[0, 8, 8, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -184,7 +184,7 @@ export default function InsightsComplianceJourneySection({ sessions, templates =
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={stepDropoutData} barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} />
               <Bar dataKey="value" fill="#f59e0b" radius={[8, 8, 0, 0]} name="Sessões paradas" />

@@ -26,16 +26,16 @@ function MiniProposalCard({ p, type, viewPath }) {
              : type === 'standard' ? <Layers className="w-4 h-4 text-indigo-600" />
              : <CreditCard className="w-4 h-4 text-blue-600" />;
   return (
-    <div className="p-3 bg-white rounded-lg border border-[var(--pagsmile-blue)]/8 flex items-center gap-3">
+    <div className="p-3 bg-white rounded-lg border border-[var(--pinbank-blue)]/8 flex items-center gap-3">
       <div className="w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center flex-shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{p.codigo || p.templateName || 'Proposta'}</span>
+          <span className="text-sm font-bold text-[var(--pinbank-blue)]">{p.codigo || p.templateName || 'Proposta'}</span>
           <Badge className={`text-[10px] ${sc}`}>{p.status}</Badge>
           {p.version > 1 && <Badge variant="outline" className="text-[10px]">v{p.version}</Badge>}
           {p.isDefaultForSegment && <Badge className="bg-amber-100 text-amber-700 text-[10px]">Padrão Segmento</Badge>}
         </div>
-        <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">
+        <p className="text-[10px] text-[var(--pinbank-blue)]/40 mt-0.5">
           {p.clienteNome || '—'}
           {p.created_date && ` • ${new Date(p.created_date).toLocaleDateString('pt-BR')}`}
           {p.segment && ` • ${p.segment}`}
@@ -96,9 +96,9 @@ export default function CadastroAllProposalsTab({ proposals: cartaoProposals = [
 
   if (totalCount === 0) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <FileText className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhuma proposta encontrada para este cliente</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-10 text-center mt-4">
+        <FileText className="w-10 h-10 mx-auto mb-3 text-[var(--pinbank-blue)]/20" />
+        <p className="text-sm text-[var(--pinbank-blue)]/50">Nenhuma proposta encontrada para este cliente</p>
       </div>
     );
   }
@@ -110,24 +110,24 @@ export default function CadastroAllProposalsTab({ proposals: cartaoProposals = [
         <div className="p-3 bg-blue-50 rounded-lg text-center">
           <CreditCard className="w-4 h-4 text-blue-600 mx-auto mb-1" />
           <p className="text-xl font-bold text-blue-700">{cartaoProposals.length}</p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Propostas Cartão</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/50">Propostas Cartão</p>
         </div>
         <div className="p-3 bg-emerald-50 rounded-lg text-center">
           <Zap className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
           <p className="text-xl font-bold text-emerald-700">{pixProposals.length}</p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Propostas PIX</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/50">Propostas PIX</p>
         </div>
         <div className="p-3 bg-indigo-50 rounded-lg text-center">
           <Layers className="w-4 h-4 text-indigo-600 mx-auto mb-1" />
           <p className="text-xl font-bold text-indigo-700">{stdProposals.length}</p>
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Propostas Padrão</p>
+          <p className="text-[10px] text-[var(--pinbank-blue)]/50">Propostas Padrão</p>
         </div>
       </div>
 
       {/* Propostas de Cartão (com taxas detalhadas) */}
       {cartaoProposals.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-2 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-blue-600" /> Propostas de Cartão ({cartaoProposals.length})
           </h3>
           <CadastroPropostaTab proposals={cartaoProposals} lead={lead} />
@@ -137,7 +137,7 @@ export default function CadastroAllProposalsTab({ proposals: cartaoProposals = [
       {/* PIX */}
       {pixProposals.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-2 flex items-center gap-2">
             <Zap className="w-4 h-4 text-emerald-600" /> Propostas PIX ({pixProposals.length})
           </h3>
           <div className="space-y-2">
@@ -149,7 +149,7 @@ export default function CadastroAllProposalsTab({ proposals: cartaoProposals = [
       {/* Standard */}
       {stdProposals.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-2 flex items-center gap-2">
             <Layers className="w-4 h-4 text-indigo-600" /> Propostas Padrão ({stdProposals.length})
           </h3>
           <div className="space-y-2">

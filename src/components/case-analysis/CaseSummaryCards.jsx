@@ -14,24 +14,24 @@ export default function CaseSummaryCards({ complianceScore, onboardingCase, vali
   const scoreV4 = onboardingCase?.riskScoreV4;
   const subfaixa = onboardingCase?.subfaixa;
   const subfaixaNome = onboardingCase?.subfaixaNome || subfaixa;
-  const scoreColor = SUBFAIXA_COLORS[subfaixa] || 'text-[#002443]';
+  const scoreColor = SUBFAIXA_COLORS[subfaixa] || 'text-[#0A0A0A]';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Score V4</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/70 font-semibold">Score V4</p>
             <div className="flex items-baseline gap-1">
               <p className={`text-3xl font-bold ${scoreColor}`}>{scoreV4 ?? '-'}</p>
-              <span className="text-xs text-[#002443]/30">/849</span>
+              <span className="text-xs text-[#0A0A0A]/30">/849</span>
             </div>
             {subfaixa && (
               <p className={`text-xs font-semibold mt-0.5 ${scoreColor}`}>{subfaixa} — {subfaixaNome}</p>
             )}
           </div>
           <div className="p-3 rounded-xl bg-slate-100">
-            <Scale className="w-6 h-6 text-[#002443]/60" />
+            <Scale className="w-6 h-6 text-[#0A0A0A]/60" />
           </div>
         </div>
       </div>
@@ -39,8 +39,8 @@ export default function CaseSummaryCards({ complianceScore, onboardingCase, vali
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Validações</p>
-            <p className="text-3xl font-bold text-[var(--pagsmile-blue)]">
+            <p className="text-sm text-[var(--pinbank-blue)]/70 font-semibold">Validações</p>
+            <p className="text-3xl font-bold text-[var(--pinbank-blue)]">
               {validations.filter(v => v.status === 'Sucesso').length}/{validations.length}
             </p>
           </div>
@@ -51,8 +51,8 @@ export default function CaseSummaryCards({ complianceScore, onboardingCase, vali
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Documentos</p>
-            <p className="text-3xl font-bold text-[var(--pagsmile-blue)]">
+            <p className="text-sm text-[var(--pinbank-blue)]/70 font-semibold">Documentos</p>
+            <p className="text-3xl font-bold text-[var(--pinbank-blue)]">
               {documents.filter(d => d.validationStatus === 'Validado').length}/{documents.length}
             </p>
           </div>
@@ -63,8 +63,8 @@ export default function CaseSummaryCards({ complianceScore, onboardingCase, vali
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Respostas</p>
-            <p className="text-3xl font-bold text-[var(--pagsmile-blue)]">{responses.length}</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/70 font-semibold">Respostas</p>
+            <p className="text-3xl font-bold text-[var(--pinbank-blue)]">{responses.length}</p>
           </div>
           <div className="p-3 rounded-xl bg-teal-100"><FileCheck className="w-6 h-6 text-teal-600" /></div>
         </div>

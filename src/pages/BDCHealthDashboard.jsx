@@ -91,7 +91,7 @@ export default function BDCHealthDashboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw className="w-6 h-6 animate-spin text-[#002443]/30" />
+        <RefreshCw className="w-6 h-6 animate-spin text-[#0A0A0A]/30" />
       </div>
     );
   }
@@ -99,8 +99,8 @@ export default function BDCHealthDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold text-[#002443]">Saúde dos Dados BDC</h1>
-        <p className="text-sm text-[#002443]/50">Visão geral de completude e qualidade dos enriquecimentos Big Data Corp</p>
+        <h1 className="text-xl font-bold text-[#0A0A0A]">Saúde dos Dados BDC</h1>
+        <p className="text-sm text-[#0A0A0A]/50">Visão geral de completude e qualidade dos enriquecimentos Big Data Corp</p>
       </div>
 
       {/* KPI Cards */}
@@ -116,7 +116,7 @@ export default function BDCHealthDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Health Pie */}
         <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <h3 className="text-sm font-bold text-[#002443] mb-4">Qualidade dos Dados</h3>
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">Qualidade dos Dados</h3>
           <div className="flex items-center gap-6">
             <ResponsiveContainer width={160} height={160}>
               <PieChart>
@@ -129,7 +129,7 @@ export default function BDCHealthDashboard() {
               {healthPie.map((d, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                  <span className="text-xs text-[#002443]">{d.name}: <strong>{d.value}</strong></span>
+                  <span className="text-xs text-[#0A0A0A]">{d.name}: <strong>{d.value}</strong></span>
                 </div>
               ))}
             </div>
@@ -138,14 +138,14 @@ export default function BDCHealthDashboard() {
 
         {/* Score Distribution */}
         <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <h3 className="text-sm font-bold text-[#002443] mb-4">Distribuição de Scores</h3>
+          <h3 className="text-sm font-bold text-[#0A0A0A] mb-4">Distribuição de Scores</h3>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={scoreDistribution}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="range" tick={{ fill: '#002443', fontSize: 10 }} />
-              <YAxis tick={{ fill: '#002443', fontSize: 10 }} />
+              <XAxis dataKey="range" tick={{ fill: '#0A0A0A', fontSize: 10 }} />
+              <YAxis tick={{ fill: '#0A0A0A', fontSize: 10 }} />
               <Tooltip />
-              <Bar dataKey="count" fill="#2bc196" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#1356E2" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -176,7 +176,7 @@ export default function BDCHealthDashboard() {
                   }`}>
                     {a.response_payload?.oldSubfaixa} → {a.response_payload?.newSubfaixa}
                   </Badge>
-                  <p className="text-[10px] text-[#002443]/40 mt-1">
+                  <p className="text-[10px] text-[#0A0A0A]/40 mt-1">
                     {new Date(a.created_date).toLocaleDateString('pt-BR')}
                   </p>
                 </div>
@@ -188,7 +188,7 @@ export default function BDCHealthDashboard() {
 
       {/* Subfaixa Distribution */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 className="text-sm font-bold text-[#002443] mb-3">Distribuição por Subfaixa</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] mb-3">Distribuição por Subfaixa</h3>
         <div className="flex flex-wrap gap-3">
           {Object.entries(stats.subfaixaCounts).sort().map(([sf, count]) => {
             const colors = {
@@ -215,7 +215,7 @@ function KPICard({ icon: Icon, label, value, color }) {
     <div className={`bg-white rounded-xl border border-slate-200 p-4`}>
       <div className="flex items-center gap-2 mb-2">
         <Icon className={`w-4 h-4 text-${color}-500`} />
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/40">{label}</span>
       </div>
       <p className={`text-2xl font-black text-${color}-600`}>{value}</p>
     </div>

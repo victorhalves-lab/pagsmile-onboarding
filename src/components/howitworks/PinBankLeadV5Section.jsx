@@ -84,11 +84,11 @@ const STEPS = [
     ]
   },
   {
-    id: '9', title: 'Etapa 9 — Porte & Marketing', objective: 'Faturamento anual, funcionários, como conheceu a Pagsmile.',
+    id: '9', title: 'Etapa 9 — Porte & Marketing', objective: 'Faturamento anual, funcionários, como conheceu a Pin Bank.',
     questions: [
       { order: 41, text: 'Faturamento anual', type: 'SELECT', required: true, note: '6 faixas: Até R$81k (MEI), Até R$360k (ME), Até R$4,8M (EPP), R$4,8M-R$20M, R$20M-R$100M, Acima R$100M. Cruza com TPV → flag TPV_EXCEEDS_REVENUE' },
       { order: 42, text: 'Funcionários', type: 'SELECT', required: true, note: '6 opções: Só eu, 2-5, 6-20, 21-100, 101-500, >500' },
-      { order: 43, text: 'Como conheceu a Pagsmile?', type: 'SELECT', required: false, note: '5 opções: Google, Indicação, LinkedIn, Evento, Parceiro' },
+      { order: 43, text: 'Como conheceu a Pin Bank?', type: 'SELECT', required: false, note: '5 opções: Google, Indicação, LinkedIn, Evento, Parceiro' },
     ]
   },
   {
@@ -125,8 +125,8 @@ function StepBlock({ step, isOpen, onToggle }) {
     <div className="border border-slate-200 rounded-xl overflow-hidden mb-2">
       <button onClick={onToggle} className="w-full flex items-center justify-between p-3 hover:bg-slate-50/50 transition-colors text-left">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Badge className="bg-[#2bc196] text-white border-0 text-[10px] shrink-0">{step.id}</Badge>
-          <span className="text-xs font-bold text-[#002443] truncate">{step.title}</span>
+          <Badge className="bg-[#1356E2] text-white border-0 text-[10px] shrink-0">{step.id}</Badge>
+          <span className="text-xs font-bold text-[#0A0A0A] truncate">{step.title}</span>
           <Badge variant="outline" className="text-[10px] shrink-0">{step.questions.length} campos</Badge>
           {step.questions.some(q => q.note?.includes('CONDICIONAL')) && <Badge className="bg-purple-50 text-purple-600 border-0 text-[10px] shrink-0">Condicional</Badge>}
         </div>
@@ -134,22 +134,22 @@ function StepBlock({ step, isOpen, onToggle }) {
       </button>
       {isOpen && (
         <div className="px-3 pb-3 border-t border-slate-100">
-          <div className="bg-[#2bc196]/5 rounded-lg p-2.5 my-2 border border-[#2bc196]/20">
-            <p className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider mb-0.5">Objetivo</p>
-            <p className="text-xs text-[#002443]/70 leading-relaxed">{step.objective}</p>
+          <div className="bg-[#1356E2]/5 rounded-lg p-2.5 my-2 border border-[#1356E2]/20">
+            <p className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider mb-0.5">Objetivo</p>
+            <p className="text-xs text-[#0A0A0A]/70 leading-relaxed">{step.objective}</p>
           </div>
           <div className="space-y-1">
             {step.questions.map((q, i) => (
               <div key={i} className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 text-xs">
                 <Badge variant="outline" className="text-[9px] shrink-0 mt-0.5 font-mono w-7 justify-center">{q.order}</Badge>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[#002443]/80">{q.text}</span>
+                  <span className="text-[#0A0A0A]/80">{q.text}</span>
                   <div className="flex gap-1 mt-0.5 flex-wrap">
                     <Badge className="text-[8px] bg-slate-100 text-slate-600 border-0">{q.type}</Badge>
                     {q.required && <Badge className="text-[8px] bg-green-50 text-green-700 border-0">Obrigatório</Badge>}
                     {!q.required && <Badge className="text-[8px] bg-slate-50 text-slate-400 border-0">Opcional</Badge>}
                   </div>
-                  {q.note && <p className="text-[9px] text-[#2bc196] mt-0.5 leading-tight italic">⚡ {q.note}</p>}
+                  {q.note && <p className="text-[9px] text-[#1356E2] mt-0.5 leading-tight italic">⚡ {q.note}</p>}
                 </div>
               </div>
             ))}
@@ -160,15 +160,15 @@ function StepBlock({ step, isOpen, onToggle }) {
   );
 }
 
-export default function PagsmileLeadV5Section() {
+export default function PinBankLeadV5Section() {
   const [openSteps, setOpenSteps] = useState({});
   const toggle = (id) => setOpenSteps(prev => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#2bc196] to-[#36706c] rounded-2xl p-5 text-white">
-        <h3 className="text-lg font-bold mb-2">Questionário Pagsmile v5.0 — Questionário de Leads com Segmentação</h3>
+      <div className="bg-gradient-to-r from-[#1356E2] to-[#E84B1C] rounded-2xl p-5 text-white">
+        <h3 className="text-lg font-bold mb-2">Questionário Pin Bank v5.0 — Questionário de Leads com Segmentação</h3>
         <p className="text-white/90 text-sm leading-relaxed mb-3">
           Questionário avançado com 10 segmentos granulares, perguntas condicionais por vertical, 
           scoring automático 0-100, 16 flags silenciosas invisíveis ao lead, autocomplete CNPJ/CEP 
@@ -200,7 +200,7 @@ export default function PagsmileLeadV5Section() {
 
       {/* Segmentos */}
       <div className="bg-white rounded-xl p-4 border border-slate-200">
-        <h4 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2"><Store className="w-4 h-4 text-[#2bc196]" />10 Segmentos Disponíveis</h4>
+        <h4 className="text-sm font-bold text-[#0A0A0A] mb-3 flex items-center gap-2"><Store className="w-4 h-4 text-[#1356E2]" />10 Segmentos Disponíveis</h4>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
           {[
             { icon: '🔗', name: 'Gateway/PSP', group: 'Intermediário' },
@@ -216,7 +216,7 @@ export default function PagsmileLeadV5Section() {
           ].map((s, i) => (
             <div key={i} className="p-2 bg-slate-50 rounded-lg text-center border border-slate-100">
               <p className="text-lg">{s.icon}</p>
-              <p className="text-[10px] font-bold text-[#002443]">{s.name}</p>
+              <p className="text-[10px] font-bold text-[#0A0A0A]">{s.name}</p>
               <Badge className={`text-[8px] border-0 ${s.group === 'Intermediário' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>{s.group}</Badge>
             </div>
           ))}
@@ -226,8 +226,8 @@ export default function PagsmileLeadV5Section() {
       {/* Etapas */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-bold text-[#002443]">Todas as 10 Etapas — Campo por Campo</h4>
-          <button onClick={() => { const all = {}; STEPS.forEach(s => all[s.id] = true); setOpenSteps(all); }} className="text-[10px] text-[#2bc196] font-bold hover:underline">Expandir todas</button>
+          <h4 className="text-sm font-bold text-[#0A0A0A]">Todas as 10 Etapas — Campo por Campo</h4>
+          <button onClick={() => { const all = {}; STEPS.forEach(s => all[s.id] = true); setOpenSteps(all); }} className="text-[10px] text-[#1356E2] font-bold hover:underline">Expandir todas</button>
         </div>
         {STEPS.map(step => (
           <StepBlock key={step.id} step={step} isOpen={openSteps[step.id]} onToggle={() => toggle(step.id)} />
@@ -244,8 +244,8 @@ export default function PagsmileLeadV5Section() {
             <div key={i} className="flex items-start gap-2 text-[10px]">
               <Badge className="bg-red-200 text-red-800 border-0 text-[8px] shrink-0 mt-0.5 font-mono">{f.key}</Badge>
               <div className="flex-1">
-                <span className="text-[#002443]/80 font-medium">{f.desc}</span>
-                <span className="text-[#002443]/40 ml-1">— {f.trigger}</span>
+                <span className="text-[#0A0A0A]/80 font-medium">{f.desc}</span>
+                <span className="text-[#0A0A0A]/40 ml-1">— {f.trigger}</span>
               </div>
             </div>
           ))}
@@ -260,7 +260,7 @@ export default function PagsmileLeadV5Section() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[10px]">
           <div>
             <p className="font-bold text-amber-700 mb-1">Bônus</p>
-            <ul className="space-y-0.5 text-[#002443]/70">
+            <ul className="space-y-0.5 text-[#0A0A0A]/70">
               <li>• Base: 40 pontos</li>
               <li>• E-mail corporativo: +10</li>
               <li>• Cargo decisor (Sócio/CEO): +10</li>
@@ -273,15 +273,15 @@ export default function PagsmileLeadV5Section() {
           </div>
           <div>
             <p className="font-bold text-red-700 mb-1">Penalidades</p>
-            <ul className="space-y-0.5 text-[#002443]/70">
+            <ul className="space-y-0.5 text-[#0A0A0A]/70">
               <li>• Conta encerrada antes: -15</li>
               <li>• Chargeback crítico: -10</li>
               <li>• MED PIX alto: -10</li>
               <li>• Garantia 30d+: -5</li>
               <li>• Apenas cotando: -5</li>
             </ul>
-            <p className="font-bold text-[#002443]/50 mt-2 mb-1">Labels</p>
-            <ul className="space-y-0.5 text-[#002443]/70">
+            <p className="font-bold text-[#0A0A0A]/50 mt-2 mb-1">Labels</p>
+            <ul className="space-y-0.5 text-[#0A0A0A]/70">
               <li>• ≥80: 🔥 Muito Quente</li>
               <li>• ≥60: 🟠 Quente</li>
               <li>• ≥40: 🟡 Morno</li>
@@ -311,8 +311,8 @@ export default function PagsmileLeadV5Section() {
             'Mapeamento segmento → template de compliance correto',
             'Protocolo PAG-QL-YYYY-NNNNN ao submeter',
           ].map((f, i) => (
-            <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#002443]/70">
-              <span className="text-[#2bc196] shrink-0 mt-0.5">✓</span>
+            <div key={i} className="flex items-start gap-1.5 text-[10px] text-[#0A0A0A]/70">
+              <span className="text-[#1356E2] shrink-0 mt-0.5">✓</span>
               <span>{f}</span>
             </div>
           ))}

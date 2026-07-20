@@ -103,8 +103,8 @@ export default function CadastroGatewaySubsellersComplianceBlock({ parentMerchan
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-6 text-center">
-        <p className="text-xs text-[var(--pagsmile-blue)]/50">Carregando subsellers compliance...</p>
+      <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-6 text-center">
+        <p className="text-xs text-[var(--pinbank-blue)]/50">Carregando subsellers compliance...</p>
       </div>
     );
   }
@@ -112,12 +112,12 @@ export default function CadastroGatewaySubsellersComplianceBlock({ parentMerchan
   if (!enriched.length) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
       <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-        <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] flex items-center gap-2">
-          <ClipboardList className="w-4 h-4 text-[var(--pagsmile-green)]" />
+        <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] flex items-center gap-2">
+          <ClipboardList className="w-4 h-4 text-[var(--pinbank-blue)]" />
           Subsellers via Compliance Individual
-          <Badge className="bg-[var(--pagsmile-green)]/10 text-[var(--pagsmile-green-dark)] text-[10px] ml-1">
+          <Badge className="bg-[var(--pinbank-blue)]/10 text-[var(--pinbank-blue-dark)] text-[10px] ml-1">
             {enriched.length}
           </Badge>
         </h3>
@@ -133,7 +133,7 @@ export default function CadastroGatewaySubsellersComplianceBlock({ parentMerchan
         </div>
       </div>
 
-      <p className="text-[11px] text-[var(--pagsmile-blue)]/60 mb-3">
+      <p className="text-[11px] text-[var(--pinbank-blue)]/60 mb-3">
         Subsellers cadastrados via o link individual de compliance (não pelo formulário batch do Gateway).
         Para cada um indicamos o que já temos e o que ainda falta — assim o cliente só precisa completar as lacunas.
       </p>
@@ -145,7 +145,7 @@ export default function CadastroGatewaySubsellersComplianceBlock({ parentMerchan
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <Badge variant="outline" className="text-[10px]">{merchant.type || 'PJ'}</Badge>
-                  <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+                  <p className="text-sm font-semibold text-[var(--pinbank-blue)]">
                     {merchant.companyName || merchant.fullName || '—'}
                   </p>
                   {c?.subfaixa && (
@@ -157,7 +157,7 @@ export default function CadastroGatewaySubsellersComplianceBlock({ parentMerchan
                     {c?.status || 'Sem caso'}
                   </Badge>
                 </div>
-                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[var(--pagsmile-blue)]/60">
+                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[var(--pinbank-blue)]/60">
                   {merchant.cpfCnpj && <span>Doc: {merchant.cpfCnpj}</span>}
                   {merchant.email && <span>{merchant.email}</span>}
                   {merchant.phone && <span>{merchant.phone}</span>}
@@ -179,7 +179,7 @@ export default function CadastroGatewaySubsellersComplianceBlock({ parentMerchan
                       />
                     </div>
                   </div>
-                  <span className="text-[10px] text-[var(--pagsmile-blue)]/60">
+                  <span className="text-[10px] text-[var(--pinbank-blue)]/60">
                     {completeness.filled}/{completeness.total} ({completeness.pct}%)
                   </span>
                   {completeness.missing.length > 0 && (

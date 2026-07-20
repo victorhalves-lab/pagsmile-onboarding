@@ -47,14 +47,14 @@ export default function HeatmapDrillDown({ dimKey, score, onClose, analysis, ana
   const action = getDimensionAction(dimKey, score);
 
   return (
-    <div className="mt-4 rounded-xl border-2 border-[#002443]/10 bg-white overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="mt-4 rounded-xl border-2 border-[#0A0A0A]/10 bg-white overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
       {/* Header */}
-      <div className="flex items-start justify-between p-4 border-b border-[#002443]/8">
+      <div className="flex items-start justify-between p-4 border-b border-[#0A0A0A]/8">
         <div className="flex items-center gap-3">
           <span className="text-3xl leading-none">{dim.icon}</span>
           <div>
-            <h4 className="text-base font-bold text-[#002443]">{dim.label}</h4>
-            <p className="text-[11px] text-[#002443]/50">
+            <h4 className="text-base font-bold text-[#0A0A0A]">{dim.label}</h4>
+            <p className="text-[11px] text-[#0A0A0A]/50">
               Score de risco: <span className={`font-bold ${riskColor}`}>{score}/100</span>
               {' · '}
               {riskLevel === 'high' ? 'Risco Alto' : riskLevel === 'medium' ? 'Risco Moderado' : 'Risco Baixo'}
@@ -64,7 +64,7 @@ export default function HeatmapDrillDown({ dimKey, score, onClose, analysis, ana
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 rounded-lg hover:bg-slate-100 text-[#002443]/40 hover:text-[#002443]"
+          className="p-1.5 rounded-lg hover:bg-slate-100 text-[#0A0A0A]/40 hover:text-[#0A0A0A]"
           title="Fechar"
         >
           <X className="w-4 h-4" />
@@ -74,7 +74,7 @@ export default function HeatmapDrillDown({ dimKey, score, onClose, analysis, ana
       <div className="p-4 space-y-4">
         {/* What it analyses */}
         <DrillSection icon={BookOpen} title="O que esta dimensão avalia" tone="slate">
-          <p className="text-[12px] text-[#002443]/80 leading-relaxed">{dim.whatItAnalyses}</p>
+          <p className="text-[12px] text-[#0A0A0A]/80 leading-relaxed">{dim.whatItAnalyses}</p>
           <div className="mt-2 flex flex-wrap gap-1">
             {dim.sources.map((s, i) => (
               <span key={i} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
@@ -97,7 +97,7 @@ export default function HeatmapDrillDown({ dimKey, score, onClose, analysis, ana
                     <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded min-w-[52px] text-center ${isNeg ? 'bg-red-100 text-red-700' : points < 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
                       {points > 0 ? `+${points}` : points || '—'} pts
                     </span>
-                    <span className="text-[#002443]/80 flex-1">{it.label}</span>
+                    <span className="text-[#0A0A0A]/80 flex-1">{it.label}</span>
                     {it.risk && (
                       <span className="text-[9px] uppercase font-bold opacity-60">{it.risk}</span>
                     )}
@@ -105,37 +105,37 @@ export default function HeatmapDrillDown({ dimKey, score, onClose, analysis, ana
                 );
               })}
               {items.length > 8 && (
-                <p className="text-[10px] text-[#002443]/40 italic">+ {items.length - 8} itens adicionais visíveis no bloco de Análise Dimensional abaixo</p>
+                <p className="text-[10px] text-[#0A0A0A]/40 italic">+ {items.length - 8} itens adicionais visíveis no bloco de Análise Dimensional abaixo</p>
               )}
             </div>
           ) : (
-            <p className="text-[12px] text-[#002443]/60 italic">
+            <p className="text-[12px] text-[#0A0A0A]/60 italic">
               {source === 'sentinel' && justificativa
                 ? justificativa
                 : 'Dados detalhados desta dimensão não estão disponíveis neste caso. Consulte a Análise Dimensional (bloco 9) ou execute um enriquecimento BDC para obter mais dados.'}
             </p>
           )}
           {source === 'sentinel' && veredicto && (
-            <p className="mt-2 text-[10px] text-[#002443]/50">
-              Veredito SENTINEL: <strong className="text-[#002443]/70">{veredicto}</strong>
+            <p className="mt-2 text-[10px] text-[#0A0A0A]/50">
+              Veredito SENTINEL: <strong className="text-[#0A0A0A]/70">{veredicto}</strong>
             </p>
           )}
         </DrillSection>
 
         {/* What high score means */}
         <DrillSection icon={AlertTriangle} title="O que um score alto significa aqui" tone="amber">
-          <p className="text-[12px] text-[#002443]/80 leading-relaxed">{dim.highScoreMeaning}</p>
+          <p className="text-[12px] text-[#0A0A0A]/80 leading-relaxed">{dim.highScoreMeaning}</p>
         </DrillSection>
 
         {/* Action by range */}
         {action && (
           <DrillSection icon={Target} title="Ação recomendada para o analista" tone="green" highlight>
-            <p className="text-[12px] text-[#002443] font-medium leading-relaxed">{action}</p>
+            <p className="text-[12px] text-[#0A0A0A] font-medium leading-relaxed">{action}</p>
           </DrillSection>
         )}
 
         {/* Link to dimensional block */}
-        <div className="pt-2 border-t border-[#002443]/8">
+        <div className="pt-2 border-t border-[#0A0A0A]/8">
           <a
             href="#risk-dimensional"
             onClick={(e) => {
@@ -143,7 +143,7 @@ export default function HeatmapDrillDown({ dimKey, score, onClose, analysis, ana
               const el = document.querySelector(`[data-dimension-anchor="${dimKey}"]`);
               if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }}
-            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#2bc196] hover:underline"
+            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#1356E2] hover:underline"
           >
             <ExternalLink className="w-3 h-3" />
             Ver todos os itens BDC desta dimensão (bloco 9)

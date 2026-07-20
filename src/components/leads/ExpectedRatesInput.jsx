@@ -31,9 +31,9 @@ export default function ExpectedRatesInput({ formData, updateField, error }) {
   return (
     <div className="space-y-5">
       {/* Disclaimer */}
-      <div className="flex gap-3 p-4 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl">
-        <Info className="w-5 h-5 text-[#2bc196] shrink-0 mt-0.5" />
-        <p className="text-sm text-[#002443]/80 leading-relaxed">
+      <div className="flex gap-3 p-4 bg-[#1356E2]/5 border border-[#1356E2]/20 rounded-xl">
+        <Info className="w-5 h-5 text-[#1356E2] shrink-0 mt-0.5" />
+        <p className="text-sm text-[#0A0A0A]/80 leading-relaxed">
           Conte para a gente a sua <strong>expectativa de taxas</strong>, baseadas em propostas que 
           você já recebeu ou em momentos que você já operou cartão, para a gente ter uma visão de 
           como buscar ao máximo as suas expectativas dentro das nossas possibilidades.
@@ -41,8 +41,8 @@ export default function ExpectedRatesInput({ formData, updateField, error }) {
       </div>
 
       {/* Título */}
-      <Label className="text-sm font-bold text-[var(--pagsmile-blue)] flex items-center gap-2">
-        <CreditCard className="w-4 h-4 text-[#2bc196]" />
+      <Label className="text-sm font-bold text-[var(--pinbank-blue)] flex items-center gap-2">
+        <CreditCard className="w-4 h-4 text-[#1356E2]" />
         Expectativa de Taxas
         <span className="text-red-500 ml-1">*</span>
       </Label>
@@ -64,13 +64,13 @@ export default function ExpectedRatesInput({ formData, updateField, error }) {
 
           return (
             <div key={field.key} className="space-y-1.5">
-              <Label className="text-xs font-semibold text-[var(--pagsmile-blue)]/70 flex items-center gap-1.5">
-                <Icon className="w-3.5 h-3.5 text-[#2bc196]/60" />
+              <Label className="text-xs font-semibold text-[var(--pinbank-blue)]/70 flex items-center gap-1.5">
+                <Icon className="w-3.5 h-3.5 text-[#1356E2]/60" />
                 {field.label}
               </Label>
               <div className="relative">
                 {isCurrency && (
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[var(--pagsmile-blue)]/50 font-semibold">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[var(--pinbank-blue)]/50 font-semibold">
                     R$
                   </span>
                 )}
@@ -85,7 +85,7 @@ export default function ExpectedRatesInput({ formData, updateField, error }) {
                   className={`h-10 rounded-lg text-sm ${isCurrency ? 'pl-10' : ''} ${isPercent ? 'pr-8' : ''}`}
                 />
                 {isPercent && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--pagsmile-blue)]/40 font-medium">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--pinbank-blue)]/40 font-medium">
                     %
                   </span>
                 )}

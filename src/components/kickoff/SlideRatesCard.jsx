@@ -19,7 +19,7 @@ export default function SlideRatesCard({ rates = {}, slideNumber, totalSlides })
 
       {/* Credit */}
       <div className="mb-3">
-        <h3 className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider mb-2">Crédito</h3>
+        <h3 className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider mb-2">Crédito</h3>
         <div className="rounded-2xl border border-white/[0.08] overflow-hidden">
           <table className="w-full text-[10px]">
             <thead>
@@ -35,7 +35,7 @@ export default function SlideRatesCard({ rates = {}, slideNumber, totalSlides })
                 <tr key={b} className={i % 2 === 0 ? 'bg-white/[0.02]' : 'bg-transparent'}>
                   <td className="py-2 px-3 font-semibold text-white/80">{BANDEIRA_LABELS[b]}</td>
                   {FAIXAS.map(f => (
-                    <td key={f} className="text-center py-2 px-2 font-mono text-[#2bc196] font-semibold">
+                    <td key={f} className="text-center py-2 px-2 font-mono text-[#1356E2] font-semibold">
                       {fmt(cartao[b]?.[f])}
                     </td>
                   ))}
@@ -48,12 +48,12 @@ export default function SlideRatesCard({ rates = {}, slideNumber, totalSlides })
 
       {/* Debit */}
       <div className="mb-2">
-        <h3 className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider mb-2">Débito</h3>
+        <h3 className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider mb-2">Débito</h3>
         <div className="grid grid-cols-4 gap-2">
           {['visa', 'mastercard', 'elo', 'outras'].map(b => (
             <div key={b} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-2.5 text-center">
               <span className="text-[9px] text-white/40 block">{BANDEIRA_LABELS[b]}</span>
-              <span className="text-xs font-bold font-mono text-[#2bc196]">{fmt(debito[b])}</span>
+              <span className="text-xs font-bold font-mono text-[#1356E2]">{fmt(debito[b])}</span>
             </div>
           ))}
         </div>
@@ -62,9 +62,9 @@ export default function SlideRatesCard({ rates = {}, slideNumber, totalSlides })
       {/* Antecipação */}
       {rates.percentualAntecipacao && (
         <div className="flex items-center gap-2 mt-auto">
-          <div className="px-4 py-2 bg-[#2bc196]/10 border border-[#2bc196]/20 rounded-xl">
+          <div className="px-4 py-2 bg-[#1356E2]/10 border border-[#1356E2]/20 rounded-xl">
             <span className="text-[9px] text-white/50">Taxa de Antecipação</span>
-            <span className="text-sm font-bold text-[#2bc196] ml-2">{fmt(rates.percentualAntecipacao)} a.m.</span>
+            <span className="text-sm font-bold text-[#1356E2] ml-2">{fmt(rates.percentualAntecipacao)} a.m.</span>
           </div>
         </div>
       )}

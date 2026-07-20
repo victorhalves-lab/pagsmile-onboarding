@@ -72,14 +72,14 @@ Responda em português do Brasil.`;
     setAiLoading(false);
   };
 
-  const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-            <Handshake className="w-3.5 h-3.5 text-[#2bc196]" />
+          <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+            <Handshake className="w-3.5 h-3.5 text-[#1356E2]" />
           </div>
           <h2 className="text-sm font-bold text-white">Parceiro / Adquirente</h2>
         </div>
@@ -87,7 +87,7 @@ Responda em português do Brasil.`;
           variant="ghost" size="sm"
           onClick={handleAISuggest}
           disabled={aiLoading || (!leadMcc && !leadBusinessType)}
-          className="text-[10px] text-[#5cf7cf] hover:text-[#2bc196] hover:bg-[#2bc196]/5 h-7 rounded-lg gap-1"
+          className="text-[10px] text-[#E84B1C] hover:text-[#1356E2] hover:bg-[#1356E2]/5 h-7 rounded-lg gap-1"
         >
           {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Brain className="w-3 h-3" />}
           Sugestão IA
@@ -96,23 +96,23 @@ Responda em português do Brasil.`;
 
       {/* AI Suggestion */}
       {aiSuggestion && (
-        <div className="rounded-xl bg-[#2bc196]/5 border border-[#2bc196]/20 p-3 space-y-2">
+        <div className="rounded-xl bg-[#1356E2]/5 border border-[#1356E2]/20 p-3 space-y-2">
           <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#2bc196]" />
-            <span className="text-[10px] font-bold text-[#2bc196] uppercase tracking-wider">Recomendação da IA</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#1356E2]" />
+            <span className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider">Recomendação da IA</span>
           </div>
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
             <span className="text-sm font-bold text-white">{aiSuggestion.recommendedPartnerName}</span>
             <Button variant="ghost" size="sm"
               onClick={() => onSelectPartner(aiSuggestion.recommendedPartnerId)}
-              className="ml-auto text-[10px] h-6 bg-[#2bc196]/10 text-[#2bc196] hover:bg-[#2bc196]/20 rounded-lg px-2">
+              className="ml-auto text-[10px] h-6 bg-[#1356E2]/10 text-[#1356E2] hover:bg-[#1356E2]/20 rounded-lg px-2">
               Usar este
             </Button>
           </div>
           <p className="text-[11px] text-white/60 leading-relaxed">{aiSuggestion.reasoning}</p>
           {aiSuggestion.alternatives?.length > 0 && (
-            <div className="pt-2 border-t border-[#2bc196]/10 space-y-1">
+            <div className="pt-2 border-t border-[#1356E2]/10 space-y-1">
               <p className="text-[9px] text-white/30 font-bold uppercase tracking-wider">Alternativas</p>
               {aiSuggestion.alternatives.map((alt, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -120,7 +120,7 @@ Responda em português do Brasil.`;
                   <span className="text-[9px] text-white/30">— {alt.note}</span>
                   <Button variant="ghost" size="sm"
                     onClick={() => onSelectPartner(alt.partnerId)}
-                    className="ml-auto text-[9px] h-5 text-white/40 hover:text-[#2bc196] rounded px-1.5">
+                    className="ml-auto text-[9px] h-5 text-white/40 hover:text-[#1356E2] rounded px-1.5">
                     Selecionar
                   </Button>
                 </div>
@@ -138,13 +138,13 @@ Responda em português do Brasil.`;
             <button key={p.id} onClick={() => onSelectPartner(p.id)}
               className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border-2 text-left ${
                 selectedPartnerId === p.id
-                  ? 'bg-[#2bc196] border-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
-                  : 'bg-white/5 border-white/5 text-white/50 hover:text-white hover:border-[#2bc196]/30'
+                  ? 'bg-[#1356E2] border-[#1356E2] text-[#0A0A0A] shadow-lg shadow-[#1356E2]/20'
+                  : 'bg-white/5 border-white/5 text-white/50 hover:text-white hover:border-[#1356E2]/30'
               }`}>
               {selectedPartnerId === p.id && <Check className="w-3.5 h-3.5 flex-shrink-0" />}
               {p.isPrincipal && selectedPartnerId !== p.id && <Star className="w-3 h-3 text-amber-500 fill-amber-500 flex-shrink-0" />}
               <span className="truncate">{p.name}</span>
-              {p.modelo && <span className={`text-[9px] ml-auto flex-shrink-0 ${selectedPartnerId === p.id ? 'text-[#002443]/60' : 'text-white/25'}`}>({p.modelo})</span>}
+              {p.modelo && <span className={`text-[9px] ml-auto flex-shrink-0 ${selectedPartnerId === p.id ? 'text-[#0A0A0A]/60' : 'text-white/25'}`}>({p.modelo})</span>}
             </button>
           ))}
         </div>
@@ -182,8 +182,8 @@ Responda em português do Brasil.`;
                   <button key={m.mccCode} onClick={() => onSelectMcc && onSelectMcc(m.mccCode)}
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${
                       selectedMccCode === m.mccCode
-                        ? 'bg-[#2bc196] border-[#2bc196] text-[#002443] shadow-md shadow-[#2bc196]/20'
-                        : 'bg-white/5 border-white/5 text-white/40 hover:text-white hover:border-[#2bc196]/30'
+                        ? 'bg-[#1356E2] border-[#1356E2] text-[#0A0A0A] shadow-md shadow-[#1356E2]/20'
+                        : 'bg-white/5 border-white/5 text-white/40 hover:text-white hover:border-[#1356E2]/30'
                     }`}>
                     {selectedMccCode === m.mccCode && <Check className="w-2.5 h-2.5 inline mr-1" />}
                     {m.mccCode} {m.mccDescription ? `— ${m.mccDescription}` : ''}

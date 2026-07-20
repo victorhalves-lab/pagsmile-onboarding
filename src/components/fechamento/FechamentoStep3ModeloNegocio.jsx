@@ -16,17 +16,17 @@ export default function FechamentoStep3ModeloNegocio({ formData, setFormData, se
     <div className="space-y-8">
        <div>
         <div className="flex items-center gap-3 mb-2">
-          <Briefcase className="w-5 h-5 text-[#002443]/50" />
-          <h3 className="text-lg font-semibold text-[#002443]">Seu Modelo de Negócio</h3>
+          <Briefcase className="w-5 h-5 text-[#0A0A0A]/50" />
+          <h3 className="text-lg font-semibold text-[#0A0A0A]">Seu Modelo de Negócio</h3>
         </div>
-        <p className="text-sm text-[#002443]/70">Esta é a parte mais importante. Descreva com clareza para uma análise precisa.</p>
+        <p className="text-sm text-[#0A0A0A]/70">Esta é a parte mais importante. Descreva com clareza para uma análise precisa.</p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="modeloNegocio" className="text-sm font-semibold text-[#002443]">
+        <Label htmlFor="modeloNegocio" className="text-sm font-semibold text-[#0A0A0A]">
           Como funciona seu modelo de negócio? <span className="text-red-500">*</span>
         </Label>
-        <p className="text-xs text-[#002443]/60 mb-2">
+        <p className="text-xs text-[#0A0A0A]/60 mb-2">
           Detalhe o que é vendido/comercializado para seus clientes através da sua plataforma ou solução (produtos e/ou serviços).
         </p>
         <Textarea
@@ -40,10 +40,10 @@ export default function FechamentoStep3ModeloNegocio({ formData, setFormData, se
 
       {isGatewayOrPlatform && (
         <div className="space-y-2">
-          <Label htmlFor="sellersDescription" className="text-sm font-semibold text-[#002443]">
+          <Label htmlFor="sellersDescription" className="text-sm font-semibold text-[#0A0A0A]">
             O que seus sellers/clientes vendem?
           </Label>
-           <p className="text-xs text-[#002443]/60 mb-2">
+           <p className="text-xs text-[#0A0A0A]/60 mb-2">
             Descreva os produtos ou serviços que os usuários da sua plataforma comercializam.
           </p>
           <Textarea
@@ -58,10 +58,10 @@ export default function FechamentoStep3ModeloNegocio({ formData, setFormData, se
 
       {isDropshipping && (
         <div className="space-y-2">
-          <Label htmlFor="fornecedores" className="text-sm font-semibold text-[#002443]">
+          <Label htmlFor="fornecedores" className="text-sm font-semibold text-[#0A0A0A]">
             Quais são seus principais fornecedores?
           </Label>
-           <p className="text-xs text-[#002443]/60 mb-2">
+           <p className="text-xs text-[#0A0A0A]/60 mb-2">
             Informe os nomes dos fornecedores.
           </p>
           <Textarea
@@ -79,14 +79,14 @@ export default function FechamentoStep3ModeloNegocio({ formData, setFormData, se
         <Button
           onClick={onSubmit}
           disabled={!canSubmit || isSubmitting}
-          className="w-auto h-12 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base font-bold shadow-lg shadow-[#2bc196]/20 hover:scale-[1.01] transition-all gap-2 px-6"
+          className="w-auto h-12 bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl text-base font-bold shadow-lg shadow-[#1356E2]/20 hover:scale-[1.01] transition-all gap-2 px-6"
         >
           {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShieldCheck className="w-5 h-5" />}
           {isSubmitting ? 'Processando...' : 'Avançar para Compliance'}
         </Button>
       </div>
        {!canSubmit && !isSubmitting && (
-        <p className="text-xs text-center text-[#002443]/40">Descreva seu modelo de negócio para continuar.</p>
+        <p className="text-xs text-center text-[#0A0A0A]/40">Descreva seu modelo de negócio para continuar.</p>
       )}
     </div>
   );

@@ -15,9 +15,9 @@ const PIE_COLORS = ['#22c55e', '#f59e0b', '#94a3b8', '#3b82f6', '#ef4444'];
 
 function ChartCard({ title, icon: Icon, children }) {
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-4 flex items-center gap-2">
-        <Icon className="w-4 h-4 text-[var(--pagsmile-green)]" />
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+      <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-4 flex items-center gap-2">
+        <Icon className="w-4 h-4 text-[var(--pinbank-blue)]" />
         {title}
       </h3>
       {children}
@@ -123,7 +123,7 @@ export default function CadastroDashboard({ merchants, cases, leads }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KPICard icon={CheckCircle2} label="Taxa de Aprovação" value={`${approvalRate}%`} color="text-green-600" bg="bg-green-50" />
         <KPICard icon={Clock} label="Tempo Médio (dias)" value={avgProcessingDays} color="text-blue-600" bg="bg-blue-50" />
-        <KPICard icon={Building2} label="Total Sellers" value={sellers.length} color="text-[var(--pagsmile-blue)]" bg="bg-blue-50" />
+        <KPICard icon={Building2} label="Total Sellers" value={sellers.length} color="text-[var(--pinbank-blue)]" bg="bg-blue-50" />
         <KPICard icon={Users} label="Total Subsellers" value={subsellers.length} color="text-purple-600" bg="bg-purple-50" />
       </div>
 
@@ -162,7 +162,7 @@ export default function CadastroDashboard({ merchants, cases, leads }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ChartCard title="Segmentos de Negócio" icon={Building2}>
           {segmentData.length === 0 ? (
-            <p className="text-sm text-[var(--pagsmile-blue)]/40 text-center py-8">Sem dados de segmento</p>
+            <p className="text-sm text-[var(--pinbank-blue)]/40 text-center py-8">Sem dados de segmento</p>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={segmentData} layout="vertical" margin={{ left: 10 }}>
@@ -170,7 +170,7 @@ export default function CadastroDashboard({ merchants, cases, leads }) {
                 <XAxis type="number" tick={{ fontSize: 11 }} />
                 <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 10 }} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#2bc196" radius={[0, 4, 4, 0]} name="Leads" />
+                <Bar dataKey="value" fill="#1356E2" radius={[0, 4, 4, 0]} name="Leads" />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -209,9 +209,9 @@ export default function CadastroDashboard({ merchants, cases, leads }) {
         </ChartCard>
 
         {/* Top stats */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-4 flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-[var(--pagsmile-green)]" />
+        <div className="lg:col-span-2 bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-5">
+          <h3 className="text-sm font-semibold text-[var(--pinbank-blue)] mb-4 flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-[var(--pinbank-blue)]" />
             Resumo Rápido
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -220,7 +220,7 @@ export default function CadastroDashboard({ merchants, cases, leads }) {
               return (
                 <div key={status} className="text-center p-3 rounded-lg" style={{ backgroundColor: `${color}10` }}>
                   <p className="text-2xl font-bold" style={{ color }}>{count}</p>
-                  <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{status}</p>
+                  <p className="text-[10px] text-[var(--pinbank-blue)]/50">{status}</p>
                 </div>
               );
             })}
@@ -233,13 +233,13 @@ export default function CadastroDashboard({ merchants, cases, leads }) {
 
 function KPICard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-4 flex items-center gap-3">
+    <div className="bg-white rounded-xl border border-[var(--pinbank-blue)]/8 p-4 flex items-center gap-3">
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${bg}`}>
         <Icon className={`w-5 h-5 ${color}`} />
       </div>
       <div>
-        <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{value}</p>
-        <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{label}</p>
+        <p className="text-xl font-bold text-[var(--pinbank-blue)]">{value}</p>
+        <p className="text-[10px] text-[var(--pinbank-blue)]/50">{label}</p>
       </div>
     </div>
   );

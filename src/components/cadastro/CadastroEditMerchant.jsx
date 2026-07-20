@@ -85,9 +85,9 @@ export default function CadastroEditMerchant({ merchant, onSaved }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border-2 border-[var(--pagsmile-green)]/30 p-5 space-y-4">
+    <div className="bg-white rounded-xl border-2 border-[var(--pinbank-blue)]/30 p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)]">Editando Dados Cadastrais</h3>
+        <h3 className="text-sm font-semibold text-[var(--pinbank-blue)]">Editando Dados Cadastrais</h3>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={() => setEditing(false)} disabled={saving}>
             <X className="w-4 h-4" />
@@ -97,7 +97,7 @@ export default function CadastroEditMerchant({ merchant, onSaved }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {fields.map(f => (
           <div key={f.key}>
-            <Label className="text-xs text-[var(--pagsmile-blue)]/60">{f.label}</Label>
+            <Label className="text-xs text-[var(--pinbank-blue)]/60">{f.label}</Label>
             <Input
               type={f.type}
               value={form[f.key] || ''}

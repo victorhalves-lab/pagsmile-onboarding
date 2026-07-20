@@ -39,13 +39,13 @@ function HeroVerdict({ score, subfaixa, categoria }) {
       <CardContent className="py-4 px-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <p className="text-[10px] uppercase tracking-widest font-bold text-[#002443]/50 mb-1">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-[#0A0A0A]/50 mb-1">
               Veredicto V5.2
             </p>
             <div className="flex items-baseline gap-3">
-              <p className="text-4xl font-bold font-mono text-[#002443]">{score != null ? score : '—'}</p>
+              <p className="text-4xl font-bold font-mono text-[#0A0A0A]">{score != null ? score : '—'}</p>
               {subfaixa && (
-                <p className="text-xs font-semibold text-[#002443]/60">{subfaixa}</p>
+                <p className="text-xs font-semibold text-[#0A0A0A]/60">{subfaixa}</p>
               )}
             </div>
           </div>
@@ -69,13 +69,13 @@ function TopAlertsCard({ alerts }) {
   return (
     <Card className="border border-red-100">
       <CardContent className="py-4 px-4">
-        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#002443]/5">
+        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#0A0A0A]/5">
           <ShieldAlert className="w-4 h-4 text-red-500" />
-          <h3 className="text-xs font-bold uppercase tracking-wide text-[#002443]">Top Alertas</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wide text-[#0A0A0A]">Top Alertas</h3>
           <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px] ml-auto">{alerts.length}</Badge>
         </div>
         {alerts.length === 0 ? (
-          <p className="text-[11px] text-[#002443]/50 italic py-3 text-center">Sem alertas priorizados.</p>
+          <p className="text-[11px] text-[#0A0A0A]/50 italic py-3 text-center">Sem alertas priorizados.</p>
         ) : (
           <ul className="space-y-2.5">
             {alerts.slice(0, 3).map((a, idx) => {
@@ -85,11 +85,11 @@ function TopAlertsCard({ alerts }) {
                   <div className="flex items-start gap-2">
                     <span className={`w-1.5 h-1.5 rounded-full ${s.dot} mt-1.5 flex-shrink-0`} />
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-[#002443] truncate">
+                      <p className="font-semibold text-[#0A0A0A] truncate">
                         {a.title || a.red_flag_id || `Alerta #${idx + 1}`}
                       </p>
                       {a.why_it_matters && (
-                        <p className="text-[10px] text-[#002443]/60 line-clamp-2 mt-0.5">{a.why_it_matters}</p>
+                        <p className="text-[10px] text-[#0A0A0A]/60 line-clamp-2 mt-0.5">{a.why_it_matters}</p>
                       )}
                       <div className="flex items-center gap-2 mt-1">
                         {a.severity && (
@@ -98,7 +98,7 @@ function TopAlertsCard({ alerts }) {
                           </span>
                         )}
                         {a.impact_score != null && (
-                          <span className="text-[9px] text-[#002443]/40 font-mono">impact: {a.impact_score}</span>
+                          <span className="text-[9px] text-[#0A0A0A]/40 font-mono">impact: {a.impact_score}</span>
                         )}
                       </div>
                     </div>
@@ -117,15 +117,15 @@ function TopPositivesCard({ positives }) {
   return (
     <Card className="border border-emerald-100">
       <CardContent className="py-4 px-4">
-        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#002443]/5">
+        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#0A0A0A]/5">
           <ShieldCheck className="w-4 h-4 text-emerald-500" />
-          <h3 className="text-xs font-bold uppercase tracking-wide text-[#002443]">Top Positivos</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wide text-[#0A0A0A]">Top Positivos</h3>
           <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] ml-auto">
             {positives.length}
           </Badge>
         </div>
         {positives.length === 0 ? (
-          <p className="text-[11px] text-[#002443]/50 italic py-3 text-center">Sem pontos positivos destacados.</p>
+          <p className="text-[11px] text-[#0A0A0A]/50 italic py-3 text-center">Sem pontos positivos destacados.</p>
         ) : (
           <ul className="space-y-2.5">
             {positives.slice(0, 3).map((p, idx) => (
@@ -133,14 +133,14 @@ function TopPositivesCard({ positives }) {
                 <div className="flex items-start gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-[#002443] truncate">
+                    <p className="font-semibold text-[#0A0A0A] truncate">
                       {p.title || p.description || `Positivo #${idx + 1}`}
                     </p>
                     {p.description && p.title && (
-                      <p className="text-[10px] text-[#002443]/60 line-clamp-2 mt-0.5">{p.description}</p>
+                      <p className="text-[10px] text-[#0A0A0A]/60 line-clamp-2 mt-0.5">{p.description}</p>
                     )}
                     {p.source && (
-                      <span className="text-[9px] text-[#002443]/40 font-mono mt-1 inline-block">
+                      <span className="text-[9px] text-[#0A0A0A]/40 font-mono mt-1 inline-block">
                         fonte: {p.source}
                       </span>
                     )}
@@ -170,9 +170,9 @@ function CrossValSummaryCard({ summary, divergencias, mismatches }) {
   return (
     <Card className="border border-blue-100">
       <CardContent className="py-4 px-4">
-        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#002443]/5">
+        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#0A0A0A]/5">
           <GitCompare className="w-4 h-4 text-blue-500" />
-          <h3 className="text-xs font-bold uppercase tracking-wide text-[#002443]">
+          <h3 className="text-xs font-bold uppercase tracking-wide text-[#0A0A0A]">
             <Term code="cross_validation_16" inline>Cross-Val 16</Term>
           </h3>
           {total > 0 && (
@@ -183,7 +183,7 @@ function CrossValSummaryCard({ summary, divergencias, mismatches }) {
         </div>
 
         {total === 0 ? (
-          <p className="text-[11px] text-[#002443]/50 italic py-3 text-center">Cross-validation ainda não calculada.</p>
+          <p className="text-[11px] text-[#0A0A0A]/50 italic py-3 text-center">Cross-validation ainda não calculada.</p>
         ) : (
           <>
             {/* Bar */}
@@ -196,23 +196,23 @@ function CrossValSummaryCard({ summary, divergencias, mismatches }) {
 
             {/* Counts */}
             <div className="grid grid-cols-4 gap-1 text-center mb-2">
-              <div><p className="text-sm font-bold text-emerald-600 font-mono">{m}</p><p className="text-[9px] text-[#002443]/50 uppercase">match</p></div>
-              <div><p className="text-sm font-bold text-amber-600 font-mono">{d}</p><p className="text-[9px] text-[#002443]/50 uppercase">diverg.</p></div>
-              <div><p className="text-sm font-bold text-red-600 font-mono">{mm}</p><p className="text-[9px] text-[#002443]/50 uppercase">mismatch</p></div>
-              <div><p className="text-sm font-bold text-slate-500 font-mono">{u}</p><p className="text-[9px] text-[#002443]/50 uppercase">s/ dado</p></div>
+              <div><p className="text-sm font-bold text-emerald-600 font-mono">{m}</p><p className="text-[9px] text-[#0A0A0A]/50 uppercase">match</p></div>
+              <div><p className="text-sm font-bold text-amber-600 font-mono">{d}</p><p className="text-[9px] text-[#0A0A0A]/50 uppercase">diverg.</p></div>
+              <div><p className="text-sm font-bold text-red-600 font-mono">{mm}</p><p className="text-[9px] text-[#0A0A0A]/50 uppercase">mismatch</p></div>
+              <div><p className="text-sm font-bold text-slate-500 font-mono">{u}</p><p className="text-[9px] text-[#0A0A0A]/50 uppercase">s/ dado</p></div>
             </div>
 
             {/* Top issues */}
             {issues > 0 && issuesList.length > 0 && (
-              <div className="mt-2 pt-2 border-t border-[#002443]/5">
-                <p className="text-[9px] uppercase font-semibold text-[#002443]/40 mb-1">Issues a verificar</p>
+              <div className="mt-2 pt-2 border-t border-[#0A0A0A]/5">
+                <p className="text-[9px] uppercase font-semibold text-[#0A0A0A]/40 mb-1">Issues a verificar</p>
                 <ul className="space-y-0.5">
                   {issuesList.map((f, idx) => (
                     <li key={idx} className="text-[10px] flex items-center gap-1.5">
                       {f.status === 'mismatch'
                         ? <TrendingDown className="w-2.5 h-2.5 text-red-500 flex-shrink-0" />
                         : <TrendingUp className="w-2.5 h-2.5 text-amber-500 flex-shrink-0" />}
-                      <span className="truncate text-[#002443]/75">{f.label || f.field_id}</span>
+                      <span className="truncate text-[#0A0A0A]/75">{f.label || f.field_id}</span>
                     </li>
                   ))}
                 </ul>

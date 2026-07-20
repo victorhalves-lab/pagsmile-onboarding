@@ -42,7 +42,7 @@ export default function CaseScoreHeader({ onboardingCase, complianceScore, valid
   if (currentScore == null) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/8 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/8 overflow-hidden">
       <div className={`h-1.5 ${config.color}`} />
       <div className="p-5">
         <div className="flex items-start justify-between mb-4">
@@ -51,8 +51,8 @@ export default function CaseScoreHeader({ onboardingCase, complianceScore, valid
               <Shield className={`w-5 h-5 ${config.textColor}`} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#002443]">Score de Risco Unificado</h3>
-              <p className="text-[10px] text-[#002443]/40 mt-0.5">
+              <h3 className="text-sm font-bold text-[#0A0A0A]">Score de Risco Unificado</h3>
+              <p className="text-[10px] text-[#0A0A0A]/40 mt-0.5">
                 Framework v4 • 3 Camadas
                 {lastRevalDate && (
                   <> • Revalidado em {new Date(lastRevalDate).toLocaleDateString('pt-BR')}</>
@@ -81,10 +81,10 @@ export default function CaseScoreHeader({ onboardingCase, complianceScore, valid
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Final score */}
           <div className={`col-span-2 lg:col-span-1 p-4 rounded-xl ${config.bgLight} border ${config.border}`}>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">Score Atual</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Score Atual</p>
             <div className="flex items-baseline gap-1">
               <span className={`text-3xl font-black ${config.textColor}`}>{currentScore}</span>
-              <span className="text-sm text-[#002443]/30">/849</span>
+              <span className="text-sm text-[#0A0A0A]/30">/849</span>
             </div>
             <div className="w-full h-2 bg-white/60 rounded-full mt-2 overflow-hidden">
               <div className={`h-full rounded-full ${config.color} transition-all duration-1000`} style={{ width: `${pct}%` }} />
@@ -94,7 +94,7 @@ export default function CaseScoreHeader({ onboardingCase, complianceScore, valid
               <div className="flex items-center gap-1.5 mt-2">
                 {lastDelta > 0 ? <TrendingUp className="w-3 h-3 text-red-500" /> :
                  <TrendingDown className="w-3 h-3 text-green-500" />}
-                <span className="text-[10px] text-[#002443]/50">Era {originalScore}</span>
+                <span className="text-[10px] text-[#0A0A0A]/50">Era {originalScore}</span>
                 <span className={`text-[10px] font-mono font-bold ${lastDelta > 0 ? 'text-red-600' : 'text-green-600'}`}>
                   {lastDelta >= 0 ? '+' : ''}{lastDelta}
                 </span>
@@ -103,41 +103,41 @@ export default function CaseScoreHeader({ onboardingCase, complianceScore, valid
           </div>
 
           {/* Subfaixa */}
-          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">Subfaixa</p>
+          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">Subfaixa</p>
             <Badge className={`${config.bgLight} ${config.textColor} ${config.border} border text-sm font-bold px-3 py-1`}>
               {currentSubfaixa} — {config.label}
             </Badge>
             {onboardingCase?.monitoramentoNivel && (
-              <p className="text-[10px] text-[#002443]/40 mt-1.5">
+              <p className="text-[10px] text-[#0A0A0A]/40 mt-1.5">
                 Monitoramento: {onboardingCase.monitoramentoNivel}
               </p>
             )}
           </div>
 
           {/* Camada 1 */}
-          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">C1 — Base Segmento</p>
-            <span className="text-2xl font-bold text-[#002443]">{c1 ?? '—'}</span>
-            <span className="text-xs text-[#002443]/40 ml-1">pts</span>
+          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">C1 — Base Segmento</p>
+            <span className="text-2xl font-bold text-[#0A0A0A]">{c1 ?? '—'}</span>
+            <span className="text-xs text-[#0A0A0A]/40 ml-1">pts</span>
           </div>
 
           {/* Camada 2 */}
-          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">C2 — Variáveis</p>
-            <span className={`text-2xl font-bold ${c2 > 0 ? 'text-amber-600' : c2 < 0 ? 'text-emerald-600' : 'text-[#002443]'}`}>
+          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">C2 — Variáveis</p>
+            <span className={`text-2xl font-bold ${c2 > 0 ? 'text-amber-600' : c2 < 0 ? 'text-emerald-600' : 'text-[#0A0A0A]'}`}>
               {c2 != null ? (c2 > 0 ? '+' : '') + c2 : '—'}
             </span>
-            <span className="text-xs text-[#002443]/40 ml-1">pts</span>
+            <span className="text-xs text-[#0A0A0A]/40 ml-1">pts</span>
           </div>
 
           {/* Camada 3 */}
-          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-1">C3 — Enriquecimento</p>
-            <span className={`text-2xl font-bold ${c3 > 0 ? 'text-amber-600' : c3 < 0 ? 'text-emerald-600' : 'text-[#002443]'}`}>
+          <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#0A0A0A]/5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0A0A0A]/50 mb-1">C3 — Enriquecimento</p>
+            <span className={`text-2xl font-bold ${c3 > 0 ? 'text-amber-600' : c3 < 0 ? 'text-emerald-600' : 'text-[#0A0A0A]'}`}>
               {c3 != null ? (c3 > 0 ? '+' : '') + c3 : '—'}
             </span>
-            <span className="text-xs text-[#002443]/40 ml-1">pts</span>
+            <span className="text-xs text-[#0A0A0A]/40 ml-1">pts</span>
           </div>
         </div>
 

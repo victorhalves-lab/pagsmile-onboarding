@@ -12,7 +12,7 @@ const DICT = {
     language: 'Language',
 
     // Lead questionnaire
-    lead_title: 'Pagsmile Global — Lead Questionnaire',
+    lead_title: 'Pin Bank Global — Lead Questionnaire',
     lead_subtitle: 'Help us tailor the best USD proposal for your business.',
     lead_s1: 'Contact', lead_s2: 'Company', lead_s3: 'Volume', lead_s4: 'Card Mix', lead_s5: 'Current Partner', lead_s6: 'Markets',
     contact_name: 'Your full name', contact_email: 'Work email', contact_phone: 'Phone',
@@ -33,7 +33,7 @@ const DICT = {
     target_markets: 'Target markets',
 
     // Public proposal
-    prop_title: 'Your Pagsmile Global Proposal',
+    prop_title: 'Your Pin Bank Global Proposal',
     prop_intro: 'Hi {name}, here is your tailored proposal.',
     prop_final_rate: 'Final Rate', prop_fixed_fee: 'Fixed Fee per Transaction',
     prop_settlement: 'Settlement', prop_rolling_reserve: 'Rolling Reserve',
@@ -59,7 +59,7 @@ const DICT = {
     prop_not_found: 'Proposal not found or link expired.',
 
     // KYC
-    kyc_title: 'Pagsmile Global — KYC Form',
+    kyc_title: 'Pin Bank Global — KYC Form',
     kyc_subtitle: 'Please provide your business and ownership details to complete onboarding.',
     kyc_s1: 'Business', kyc_s2: 'Operations', kyc_s3: 'UBOs & Directors', kyc_s4: 'Compliance', kyc_s5: 'Documents', kyc_s6: 'Certification',
     legal_business_name: 'Legal business name', trade_name_dba: 'Trade name / DBA',
@@ -86,7 +86,7 @@ const DICT = {
     q_pep: 'Any Politically Exposed Person (PEP)?',
     q_sanctioned_country: 'Operates in a sanctioned country?',
     q_sanctioned_ownership: 'Sanctioned ownership?',
-    q_pagsmile_dealings: 'Previous dealings with Pagsmile?',
+    q_pagsmile_dealings: 'Previous dealings with Pin Bank?',
     q_value_exchange: 'Provides value exchange services?',
     detail_if_yes: 'If yes, please explain',
     doc_corp_documents: 'Corporate documents',
@@ -105,7 +105,7 @@ const DICT = {
     error_title: 'Algo deu errado', error_desc: 'Tente novamente ou fale com nossa equipe.',
     language: 'Idioma',
 
-    lead_title: 'Pagsmile Global — Questionário',
+    lead_title: 'Pin Bank Global — Questionário',
     lead_subtitle: 'Ajude-nos a montar a melhor proposta em USD para o seu negócio.',
     lead_s1: 'Contato', lead_s2: 'Empresa', lead_s3: 'Volume', lead_s4: 'Mix de Cartões', lead_s5: 'Parceiro Atual', lead_s6: 'Mercados',
     contact_name: 'Seu nome completo', contact_email: 'E-mail corporativo', contact_phone: 'Telefone',
@@ -125,7 +125,7 @@ const DICT = {
     expected_settlement: 'Settlement desejado',
     target_markets: 'Mercados-alvo',
 
-    prop_title: 'Sua Proposta Pagsmile Global',
+    prop_title: 'Sua Proposta Pin Bank Global',
     prop_intro: 'Olá {name}, aqui está sua proposta personalizada.',
     prop_final_rate: 'Taxa Final', prop_fixed_fee: 'Fixo por Transação',
     prop_settlement: 'Settlement', prop_rolling_reserve: 'Reserva',
@@ -150,7 +150,7 @@ const DICT = {
     prop_counter_sent_desc: 'Nossa equipe vai analisar e retornar.',
     prop_not_found: 'Proposta não encontrada ou link expirado.',
 
-    kyc_title: 'Pagsmile Global — Formulário KYC',
+    kyc_title: 'Pin Bank Global — Formulário KYC',
     kyc_subtitle: 'Informe os dados da empresa e dos beneficiários para concluir o onboarding.',
     kyc_s1: 'Empresa', kyc_s2: 'Operação', kyc_s3: 'UBOs & Diretores', kyc_s4: 'Compliance', kyc_s5: 'Documentos', kyc_s6: 'Certificação',
     legal_business_name: 'Razão social', trade_name_dba: 'Nome fantasia / DBA',
@@ -177,7 +177,7 @@ const DICT = {
     q_pep: 'Alguma Pessoa Politicamente Exposta (PEP)?',
     q_sanctioned_country: 'Opera em país sancionado?',
     q_sanctioned_ownership: 'Propriedade sancionada?',
-    q_pagsmile_dealings: 'Já teve negociação com a Pagsmile?',
+    q_pagsmile_dealings: 'Já teve negociação com a Pin Bank?',
     q_value_exchange: 'Fornece serviços de value exchange?',
     detail_if_yes: 'Se sim, detalhe',
     doc_corp_documents: 'Documentos corporativos',
@@ -196,7 +196,7 @@ const DICT = {
     error_title: '出现错误', error_desc: '请重试或联系我们的团队。',
     language: '语言',
 
-    lead_title: 'Pagsmile Global — 问卷',
+    lead_title: 'Pin Bank Global — 问卷',
     lead_subtitle: '帮助我们为您的业务定制最佳美元提案。',
     lead_s1: '联系方式', lead_s2: '公司', lead_s3: '交易量', lead_s4: '卡片组合', lead_s5: '当前合作伙伴', lead_s6: '市场',
     contact_name: '您的全名', contact_email: '工作邮箱', contact_phone: '电话',
@@ -216,7 +216,7 @@ const DICT = {
     expected_settlement: '期望结算',
     target_markets: '目标市场',
 
-    prop_title: '您的 Pagsmile Global 提案',
+    prop_title: '您的 Pin Bank Global 提案',
     prop_intro: '您好 {name},这是为您定制的提案。',
     prop_final_rate: '最终费率', prop_fixed_fee: '每笔固定费',
     prop_settlement: '结算', prop_rolling_reserve: '滚动准备金',
@@ -241,7 +241,7 @@ const DICT = {
     prop_counter_sent_desc: '我们的团队将审查并回复您。',
     prop_not_found: '未找到提案或链接已过期。',
 
-    kyc_title: 'Pagsmile Global — KYC 表单',
+    kyc_title: 'Pin Bank Global — KYC 表单',
     kyc_subtitle: '请提供您的业务和所有权详细信息以完成入驻。',
     kyc_s1: '业务', kyc_s2: '运营', kyc_s3: 'UBO 和董事', kyc_s4: '合规', kyc_s5: '文件', kyc_s6: '认证',
     legal_business_name: '公司法定名称', trade_name_dba: '商号 / DBA',
@@ -268,7 +268,7 @@ const DICT = {
     q_pep: '有政治公众人物 (PEP) 吗?',
     q_sanctioned_country: '在受制裁国家运营?',
     q_sanctioned_ownership: '受制裁所有权?',
-    q_pagsmile_dealings: '之前与 Pagsmile 有过往来?',
+    q_pagsmile_dealings: '之前与 Pin Bank 有过往来?',
     q_value_exchange: '提供价值交换服务?',
     detail_if_yes: '如果是,请说明',
     doc_corp_documents: '公司文件',

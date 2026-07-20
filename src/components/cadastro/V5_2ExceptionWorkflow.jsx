@@ -186,14 +186,14 @@ export default function V5_2ExceptionWorkflow({ caseId, bloqueiosAtivos = [], on
                 <Label className="text-xs font-semibold mb-1.5 block">
                   Bloqueios a mitigar ({bloqueiosSelecionados.length} de {bloqueiosAtivos.length})
                 </Label>
-                <div className="border border-[#002443]/8 rounded-md p-2 max-h-48 overflow-y-auto space-y-1.5">
+                <div className="border border-[#0A0A0A]/8 rounded-md p-2 max-h-48 overflow-y-auto space-y-1.5">
                   {bloqueiosAtivos.map((b) => (
                     <label key={b} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-slate-50 p-1 rounded">
                       <Checkbox
                         checked={bloqueiosSelecionados.includes(b)}
                         onCheckedChange={() => toggleBloqueio(b)}
                       />
-                      <span className="font-mono text-[#002443]/80">{b}</span>
+                      <span className="font-mono text-[#0A0A0A]/80">{b}</span>
                     </label>
                   ))}
                 </div>

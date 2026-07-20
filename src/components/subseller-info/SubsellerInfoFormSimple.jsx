@@ -102,13 +102,13 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
   if (done) {
     return (
       <div className="max-w-2xl mx-auto mt-16">
-        <Card className="border-[#2bc196]/30">
+        <Card className="border-[#1356E2]/30">
           <CardContent className="p-10 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#2bc196]/10 flex items-center justify-center mx-auto mb-5">
-              <CheckCircle2 className="w-8 h-8 text-[#2bc196]" />
+            <div className="w-16 h-16 rounded-2xl bg-[#1356E2]/10 flex items-center justify-center mx-auto mb-5">
+              <CheckCircle2 className="w-8 h-8 text-[#1356E2]" />
             </div>
-            <h1 className="text-2xl font-bold text-[#002443] mb-2">Envio recebido! 🎉</h1>
-            <p className="text-sm text-[#002443]/60 mb-6">
+            <h1 className="text-2xl font-bold text-[#0A0A0A] mb-2">Envio recebido! 🎉</h1>
+            <p className="text-sm text-[#0A0A0A]/60 mb-6">
               Recebemos sua lista de subsellers. Nosso time analisará e entrará em contato em breve.
             </p>
             <Button
@@ -126,10 +126,10 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
   return (
     <div className="max-w-5xl mx-auto pb-32">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002443] via-[#003366] to-[#002443] p-8 md:p-10 mb-6 shadow-2xl">
-        <div className="absolute top-0 right-0 w-72 h-72 bg-[#2bc196]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0A0A0A] via-[#003366] to-[#0A0A0A] p-8 md:p-10 mb-6 shadow-2xl">
+        <div className="absolute top-0 right-0 w-72 h-72 bg-[#1356E2]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2bc196]/20 text-[#5cf7cf] text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1356E2]/20 text-[#E84B1C] text-xs font-bold mb-3">
             <Zap className="w-3.5 h-3.5" /> Cadastro rápido
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
@@ -146,9 +146,9 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
       <Card className="mb-5">
         <CardContent className="p-5">
           <div className="flex items-center gap-2 mb-3">
-            <Users className="w-4 h-4 text-[#2bc196]" />
-            <h2 className="text-sm font-bold text-[#002443]">Quem está preenchendo?</h2>
-            <span className="text-[10px] text-[#002443]/40">(opcional)</span>
+            <Users className="w-4 h-4 text-[#1356E2]" />
+            <h2 className="text-sm font-bold text-[#0A0A0A]">Quem está preenchendo?</h2>
+            <span className="text-[10px] text-[#0A0A0A]/40">(opcional)</span>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             <div>
@@ -164,14 +164,14 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
       </Card>
 
       {/* Stats bar */}
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-[#002443]/5 shadow-sm p-3 mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-3 mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm">
-          <div className="w-8 h-8 rounded-lg bg-[#2bc196]/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-[#2bc196]" />
+          <div className="w-8 h-8 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-[#1356E2]" />
           </div>
           <div>
-            <div className="text-xs text-[#002443]/50">Subsellers válidos</div>
-            <div className="text-base font-bold text-[#002443]">{validRowsCount} <span className="text-xs font-normal text-[#002443]/40">/ {rows.length}</span></div>
+            <div className="text-xs text-[#0A0A0A]/50">Subsellers válidos</div>
+            <div className="text-base font-bold text-[#0A0A0A]">{validRowsCount} <span className="text-xs font-normal text-[#0A0A0A]/40">/ {rows.length}</span></div>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -189,26 +189,26 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
           const isPJ = (row.person_type || 'PJ') === 'PJ';
           const urlOk = !row.offer_url || URL_REGEX.test(row.offer_url.trim());
           return (
-            <Card key={idx} className="border border-[#002443]/8">
+            <Card key={idx} className="border border-[#0A0A0A]/8">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="text-xl font-black text-[#002443]/15 tabular-nums">#{String(idx + 1).padStart(2, '0')}</div>
+                  <div className="text-xl font-black text-[#0A0A0A]/15 tabular-nums">#{String(idx + 1).padStart(2, '0')}</div>
                   <div className="flex bg-[#f4f4f4] rounded-lg p-0.5 ml-auto">
                     <button
                       type="button"
                       onClick={() => update(idx, 'person_type', 'PJ')}
-                      className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all ${isPJ ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50'}`}
+                      className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all ${isPJ ? 'bg-white text-[#0A0A0A] shadow-sm' : 'text-[#0A0A0A]/50'}`}
                     >PJ</button>
                     <button
                       type="button"
                       onClick={() => update(idx, 'person_type', 'PF')}
-                      className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all ${!isPJ ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50'}`}
+                      className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all ${!isPJ ? 'bg-white text-[#0A0A0A] shadow-sm' : 'text-[#0A0A0A]/50'}`}
                     >PF</button>
                   </div>
                   <button
                     type="button"
                     onClick={() => removeRow(idx)}
-                    className="text-[#002443]/30 hover:text-red-500 p-1"
+                    className="text-[#0A0A0A]/30 hover:text-red-500 p-1"
                     title="Remover"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -217,7 +217,7 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
 
                 <div className="grid md:grid-cols-3 gap-3">
                   <div>
-                    <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">
+                    <Label className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">
                       {isPJ ? 'CNPJ *' : 'CPF *'}
                     </Label>
                     <Input
@@ -229,7 +229,7 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
                     />
                   </div>
                   <div>
-                    <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">
+                    <Label className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">
                       {isPJ ? 'Razão Social *' : 'Nome Completo *'}
                     </Label>
                     <Input
@@ -240,7 +240,7 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
                     />
                   </div>
                   <div>
-                    <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 flex items-center gap-1">
+                    <Label className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50 flex items-center gap-1">
                       <LinkIcon className="w-3 h-3" /> Link da oferta / site de venda / e-commerce *
                     </Label>
                     <Input
@@ -250,7 +250,7 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
                       type="url"
                       className={`mt-0.5 ${!urlOk ? 'border-red-300' : ''}`}
                     />
-                    <p className="text-[10px] text-[#002443]/50 mt-0.5 leading-tight">
+                    <p className="text-[10px] text-[#0A0A0A]/50 mt-0.5 leading-tight">
                       É o site ou link online por onde o subseller faz a venda (e-commerce, marketplace, link de pagamento, perfil de loja etc).
                     </p>
                     {!urlOk && (
@@ -271,7 +271,7 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
       </div>
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
-        <Button size="lg" onClick={handleSubmit} disabled={submitting || validRowsCount === 0} className="shadow-2xl shadow-[#2bc196]/30">
+        <Button size="lg" onClick={handleSubmit} disabled={submitting || validRowsCount === 0} className="shadow-2xl shadow-[#1356E2]/30">
           {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Send className="w-5 h-5 mr-2" />}
           Enviar {validRowsCount > 0 ? `${validRowsCount} subseller${validRowsCount > 1 ? 's' : ''}` : ''}
         </Button>

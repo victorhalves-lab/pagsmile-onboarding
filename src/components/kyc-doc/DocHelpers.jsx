@@ -11,17 +11,17 @@ export const S = ({ children }) => (
 
 export const H1 = ({ children, id }) => (
   <div id={id} className="mt-12 mb-5">
-    <h1 className="text-xl font-extrabold text-[#002443]">{children}</h1>
-    <div className="w-16 h-[2px] bg-[#2bc196] mt-2" />
+    <h1 className="text-xl font-extrabold text-[#0A0A0A]">{children}</h1>
+    <div className="w-16 h-[2px] bg-[#1356E2] mt-2" />
   </div>
 );
 
 export const H2 = ({ children }) => (
-  <h2 className="text-base font-bold text-[#002443] mt-8 mb-3">{children}</h2>
+  <h2 className="text-base font-bold text-[#0A0A0A] mt-8 mb-3">{children}</h2>
 );
 
 export const H3 = ({ children }) => (
-  <h3 className="text-sm font-semibold text-[#2bc196] mt-6 mb-2">{children}</h3>
+  <h3 className="text-sm font-semibold text-[#1356E2] mt-6 mb-2">{children}</h3>
 );
 
 export const P = ({ children }) => (
@@ -29,20 +29,20 @@ export const P = ({ children }) => (
 );
 
 export const Li = ({ children, className = '' }) => (
-  <li className={`text-[13px] text-[#1a1a1a]/80 leading-[1.75] marker:text-[#2bc196] ${className}`}>{children}</li>
+  <li className={`text-[13px] text-[#1a1a1a]/80 leading-[1.75] marker:text-[#1356E2] ${className}`}>{children}</li>
 );
 
 export const Bold = ({ children }) => (
-  <strong className="text-[#002443] font-semibold">{children}</strong>
+  <strong className="text-[#0A0A0A] font-semibold">{children}</strong>
 );
 
 export const Table = ({ headers, rows }) => (
   <div className="my-5 overflow-x-auto">
     <table className="w-full text-xs border-collapse">
       <thead>
-        <tr className="border-b-2 border-[#2bc196]">
+        <tr className="border-b-2 border-[#1356E2]">
           {headers.map((h, i) => (
-            <th key={i} className="px-3 py-2.5 text-left text-[#002443] font-bold bg-white border-b-2 border-[#2bc196]">
+            <th key={i} className="px-3 py-2.5 text-left text-[#0A0A0A] font-bold bg-white border-b-2 border-[#1356E2]">
               {h}
             </th>
           ))}
@@ -64,8 +64,8 @@ export const Table = ({ headers, rows }) => (
 );
 
 export const InfoBox = ({ title, children }) => (
-  <div className="border border-[#e8e8e8] border-l-[3px] border-l-[#2bc196] bg-white pl-4 pr-4 py-3 my-5">
-    <p className="text-xs font-bold text-[#002443] mb-1">{title}</p>
+  <div className="border border-[#e8e8e8] border-l-[3px] border-l-[#1356E2] bg-white pl-4 pr-4 py-3 my-5">
+    <p className="text-xs font-bold text-[#0A0A0A] mb-1">{title}</p>
     <div className="text-xs text-[#1a1a1a]/70 leading-relaxed space-y-1">{children}</div>
   </div>
 );

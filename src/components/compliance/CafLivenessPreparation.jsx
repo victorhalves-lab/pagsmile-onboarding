@@ -16,8 +16,8 @@ export default function CafLivenessPreparation({ onReady, loading }) {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-purple-50 mb-3">
           <ScanFace className="w-8 h-8 text-purple-600" />
         </div>
-        <h3 className="text-lg font-bold text-[#002443] mb-1">Prova de Vida — Preparação</h3>
-        <p className="text-sm text-[#002443]/60 max-w-md mx-auto">
+        <h3 className="text-lg font-bold text-[#0A0A0A] mb-1">Prova de Vida — Preparação</h3>
+        <p className="text-sm text-[#0A0A0A]/60 max-w-md mx-auto">
           ✅ Seus documentos foram capturados com sucesso! Agora vamos verificar sua identidade facial.
         </p>
       </div>
@@ -112,7 +112,7 @@ export default function CafLivenessPreparation({ onReady, loading }) {
       <Button
         onClick={onReady}
         disabled={loading}
-        className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-12 rounded-xl shadow-lg text-sm font-semibold"
+        className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-12 rounded-xl shadow-lg text-sm font-semibold"
       >
         <ScanFace className="w-4 h-4 mr-2" />
         Estou Pronto — Iniciar Verificação Facial

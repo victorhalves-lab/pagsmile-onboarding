@@ -64,17 +64,17 @@ function DimensionRow({ name, data }) {
   };
 
   return (
-    <div className="p-4 rounded-xl border border-[#002443]/5 bg-[#f4f4f4]/50">
+    <div className="p-4 rounded-xl border border-[#0A0A0A]/5 bg-[#f4f4f4]/50">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-[#002443]/50" />
+          <Icon className="w-4 h-4 text-[#0A0A0A]/50" />
           <span className="text-sm font-medium">{label}</span>
         </div>
         <span className={`text-lg font-bold ${getColor(score)}`}>{score}/100</span>
       </div>
       <Progress value={score} className={`h-2 ${getBarColor(score)}`} />
       {data?.detalhes && (
-        <p className="text-xs text-[#002443]/60 mt-2 leading-relaxed">{data.detalhes}</p>
+        <p className="text-xs text-[#0A0A0A]/60 mt-2 leading-relaxed">{data.detalhes}</p>
       )}
       {data?.flags?.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
@@ -112,11 +112,11 @@ function SuggestedRatesSection({ taxas, leadId }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2">
-          <CreditCard className="w-4 h-4 text-[#2bc196]" />
+          <CreditCard className="w-4 h-4 text-[#1356E2]" />
           <h4 className="text-sm font-semibold">Taxas Sugeridas</h4>
-          {expanded ? <ChevronDown className="w-3 h-3 text-[#002443]/40" /> : <ChevronRight className="w-3 h-3 text-[#002443]/40" />}
+          {expanded ? <ChevronDown className="w-3 h-3 text-[#0A0A0A]/40" /> : <ChevronRight className="w-3 h-3 text-[#0A0A0A]/40" />}
         </button>
-        <Button size="sm" onClick={handleApplyRates} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-7 text-xs gap-1">
+        <Button size="sm" onClick={handleApplyRates} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white h-7 text-xs gap-1">
           <Zap className="w-3 h-3" /> Aplicar na Proposta
         </Button>
       </div>
@@ -125,30 +125,30 @@ function SuggestedRatesSection({ taxas, leadId }) {
         <div className="space-y-4">
           {/* Justificativa */}
           {taxas.justificativa && (
-            <p className="text-xs text-[#002443]/60 bg-purple-50 border border-purple-200 rounded-lg p-3 leading-relaxed">
+            <p className="text-xs text-[#0A0A0A]/60 bg-purple-50 border border-purple-200 rounded-lg p-3 leading-relaxed">
               {taxas.justificativa}
             </p>
           )}
 
           {/* Cartão Crédito */}
           {taxas.cartao && (
-            <div className="rounded-xl border border-[#002443]/5 overflow-hidden">
+            <div className="rounded-xl border border-[#0A0A0A]/5 overflow-hidden">
               <div className="bg-[#f4f4f4] px-3 py-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">Crédito (MDR %)</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">Crédito (MDR %)</p>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="border-b border-[#002443]/5">
-                      <th className="text-left px-3 py-2 font-medium text-[#002443]/50">Bandeira</th>
+                    <tr className="border-b border-[#0A0A0A]/5">
+                      <th className="text-left px-3 py-2 font-medium text-[#0A0A0A]/50">Bandeira</th>
                       {Object.entries(FAIXA_LABELS).map(([k, v]) => (
-                        <th key={k} className="text-center px-3 py-2 font-medium text-[#002443]/50">{v}</th>
+                        <th key={k} className="text-center px-3 py-2 font-medium text-[#0A0A0A]/50">{v}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {Object.entries(taxas.cartao).map(([band, vals]) => (
-                      <tr key={band} className="border-b border-[#002443]/5 last:border-0">
+                      <tr key={band} className="border-b border-[#0A0A0A]/5 last:border-0">
                         <td className="px-3 py-2 font-semibold">{BANDEIRA_LABELS[band] || band}</td>
                         {Object.keys(FAIXA_LABELS).map(faixa => (
                           <td key={faixa} className="text-center px-3 py-2 font-mono">
@@ -165,14 +165,14 @@ function SuggestedRatesSection({ taxas, leadId }) {
 
           {/* Débito */}
           {taxas.debito && (
-            <div className="rounded-xl border border-[#002443]/5 overflow-hidden">
+            <div className="rounded-xl border border-[#0A0A0A]/5 overflow-hidden">
               <div className="bg-[#f4f4f4] px-3 py-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">Débito (%)</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#0A0A0A]/50">Débito (%)</p>
               </div>
               <div className="grid grid-cols-4 gap-2 p-3">
                 {Object.entries(taxas.debito).map(([band, val]) => (
                   <div key={band} className="text-center">
-                    <p className="text-[10px] text-[#002443]/40">{BANDEIRA_LABELS[band] || band}</p>
+                    <p className="text-[10px] text-[#0A0A0A]/40">{BANDEIRA_LABELS[band] || band}</p>
                     <p className="text-sm font-mono font-bold">{val != null ? `${val}%` : '-'}</p>
                   </div>
                 ))}
@@ -183,50 +183,50 @@ function SuggestedRatesSection({ taxas, leadId }) {
           {/* Outras taxas */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {taxas.pix && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">Pix</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Pix</p>
                 <p className="text-sm font-mono font-bold">{taxas.pix.tipo === 'fixo' ? `R$ ${taxas.pix.valor}` : `${taxas.pix.valor}%`}</p>
               </div>
             )}
             {taxas.boleto != null && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">Boleto</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Boleto</p>
                 <p className="text-sm font-mono font-bold">R$ {taxas.boleto}</p>
               </div>
             )}
             {taxas.antifraude != null && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">Antifraude</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Antifraude</p>
                 <p className="text-sm font-mono font-bold">R$ {taxas.antifraude}</p>
               </div>
             )}
             {taxas.feeTransacao != null && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">Fee Transação</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Fee Transação</p>
                 <p className="text-sm font-mono font-bold">R$ {taxas.feeTransacao}</p>
               </div>
             )}
             {taxas.alertaPreChargeback != null && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">Alerta Pré-CB</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Alerta Pré-CB</p>
                 <p className="text-sm font-mono font-bold">R$ {taxas.alertaPreChargeback}</p>
               </div>
             )}
             {taxas.percentualAntecipacao != null && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">Antecipação</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Antecipação</p>
                 <p className="text-sm font-mono font-bold">{taxas.percentualAntecipacao}% a.m.</p>
               </div>
             )}
             {taxas.rav && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">RAV / Prazo</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">RAV / Prazo</p>
                 <p className="text-sm font-mono font-bold">{taxas.rav.prazo}{taxas.rav.taxa ? ` (${taxas.rav.taxa}%)` : ''}</p>
               </div>
             )}
             {taxas.minimoGarantido && (
-              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
-                <p className="text-[10px] text-[#002443]/40 font-medium">Mín. Garantido</p>
+              <div className="rounded-xl border border-[#0A0A0A]/5 p-3 text-center">
+                <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Mín. Garantido</p>
                 <p className="text-xs font-mono font-bold">
                   R$ {taxas.minimoGarantido.mes1 || 0} / {taxas.minimoGarantido.mes2 || 0} / {taxas.minimoGarantido.mes3 || 0}
                 </p>
@@ -266,8 +266,8 @@ export default function PriscilaPanel({ lead, leadId }) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <ShieldCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/20 mb-3" />
-            <p className="text-[var(--pagsmile-blue)]/60 mb-4">Análise PRISCILA ainda não disponível</p>
+            <ShieldCheck className="w-12 h-12 mx-auto text-[var(--pinbank-blue)]/20 mb-3" />
+            <p className="text-[var(--pinbank-blue)]/60 mb-4">Análise PRISCILA ainda não disponível</p>
             <Button
               onClick={() => analyzeMutation.mutate()}
               disabled={analyzeMutation.isPending}
@@ -401,10 +401,10 @@ export default function PriscilaPanel({ lead, leadId }) {
         {/* Recomendação */}
         {report.recomendacao && (
           <div className="p-4 rounded-xl bg-purple-50 border border-purple-200">
-            <h4 className="text-sm font-semibold text-[#002443] mb-2 flex items-center gap-1">
+            <h4 className="text-sm font-semibold text-[#0A0A0A] mb-2 flex items-center gap-1">
               <ShieldCheck className="w-4 h-4 text-purple-600" /> Recomendação PRISCILA
             </h4>
-            <p className="text-sm text-[#002443]/80 leading-relaxed">{report.recomendacao}</p>
+            <p className="text-sm text-[#0A0A0A]/80 leading-relaxed">{report.recomendacao}</p>
           </div>
         )}
       </CardContent>

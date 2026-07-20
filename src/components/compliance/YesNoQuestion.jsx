@@ -19,12 +19,12 @@ export default function YesNoQuestion({
 }) {
   return (
     <div className={cn(
-      "p-6 rounded-2xl bg-white border border-[var(--pagsmile-blue)]/10 shadow-sm transition-all duration-300 hover:shadow-md", 
+      "p-6 rounded-2xl bg-white border border-[var(--pinbank-blue)]/10 shadow-sm transition-all duration-300 hover:shadow-md", 
       className
     )}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex-1">
-          <p className="text-[var(--pagsmile-blue)] font-semibold text-lg leading-snug">
+          <p className="text-[var(--pinbank-blue)] font-semibold text-lg leading-snug">
             {question}
             {required && <span className="text-red-500 ml-1">*</span>}
           </p>
@@ -32,7 +32,7 @@ export default function YesNoQuestion({
         
         <div className="flex flex-col items-end gap-1 flex-shrink-0 w-full md:w-auto">
           {helperText && (
-            <span className="text-[10px] font-medium text-[var(--pagsmile-blue)]/60 uppercase tracking-wider mr-1">
+            <span className="text-[10px] font-medium text-[var(--pinbank-blue)]/60 uppercase tracking-wider mr-1">
               {helperText}
             </span>
           )}
@@ -43,8 +43,8 @@ export default function YesNoQuestion({
               className={cn(
                 "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
                 value === true 
-                  ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] text-white shadow-md transform -translate-y-0.5" 
-                  : "border-[var(--pagsmile-blue)]/20 bg-white text-[var(--pagsmile-blue)]/80 hover:border-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
+                  ? "border-[var(--pinbank-blue)] bg-[var(--pinbank-blue)] text-white shadow-md transform -translate-y-0.5" 
+                  : "border-[var(--pinbank-blue)]/20 bg-white text-[var(--pinbank-blue)]/80 hover:border-[var(--pinbank-blue)] hover:text-[var(--pinbank-blue)] hover:bg-[var(--pinbank-blue)]/5"
               )}
             >
               <Check className="w-4 h-4" />
@@ -58,7 +58,7 @@ export default function YesNoQuestion({
                 "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
                 value === false 
                   ? "border-red-500 bg-red-500 text-white shadow-md transform -translate-y-0.5" 
-                  : "border-[var(--pagsmile-blue)]/20 bg-white text-[var(--pagsmile-blue)]/80 hover:border-red-300 hover:text-red-600 hover:bg-red-50"
+                  : "border-[var(--pinbank-blue)]/20 bg-white text-[var(--pinbank-blue)]/80 hover:border-red-300 hover:text-red-600 hover:bg-red-50"
               )}
             >
               <X className="w-4 h-4" />
@@ -72,8 +72,8 @@ export default function YesNoQuestion({
         "overflow-hidden transition-all duration-500 ease-in-out",
         value === showDetailOn ? "max-h-[500px] opacity-100 mt-6" : "max-h-0 opacity-0"
       )}>
-        <div className="bg-[var(--pagsmile-blue)]/5 p-4 rounded-xl border border-[var(--pagsmile-blue)]/10">
-          <Label className="text-sm font-medium text-[var(--pagsmile-blue)] mb-2 block pl-1">
+        <div className="bg-[var(--pinbank-blue)]/5 p-4 rounded-xl border border-[var(--pinbank-blue)]/10">
+          <Label className="text-sm font-medium text-[var(--pinbank-blue)] mb-2 block pl-1">
             {detailLabel}
           </Label>
           <Textarea
@@ -81,7 +81,7 @@ export default function YesNoQuestion({
             onChange={(e) => onDetailChange(e.target.value)}
             placeholder={detailPlaceholder}
             rows={3}
-            className="bg-white resize-none border-[var(--pagsmile-blue)]/20 focus:border-[var(--pagsmile-green)] focus:ring-[var(--pagsmile-green)] text-[var(--pagsmile-blue)]"
+            className="bg-white resize-none border-[var(--pinbank-blue)]/20 focus:border-[var(--pinbank-blue)] focus:ring-[var(--pinbank-blue)] text-[var(--pinbank-blue)]"
           />
         </div>
       </div>

@@ -13,10 +13,10 @@ export default function AnticipationSimulator({ originalPrazo, activePrazo, onPr
   const isSimulating = activePrazo !== originalPrazo;
 
   return (
-    <div className="bg-[#002443]/5 rounded-xl p-4 border border-[#002443]/10">
+    <div className="bg-[#0A0A0A]/5 rounded-xl p-4 border border-[#0A0A0A]/10">
       <div className="flex items-center gap-2 mb-3">
-        <Clock className="w-4 h-4 text-[#2bc196]" />
-        <span className="text-xs font-bold text-[#002443] uppercase tracking-wide">
+        <Clock className="w-4 h-4 text-[#1356E2]" />
+        <span className="text-xs font-bold text-[#0A0A0A] uppercase tracking-wide">
           Simular Prazo de Antecipação
         </span>
       </div>
@@ -33,8 +33,8 @@ export default function AnticipationSimulator({ originalPrazo, activePrazo, onPr
               className={`
                 relative px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200
                 ${isActive
-                  ? 'bg-[#2bc196] text-white shadow-md shadow-[#2bc196]/20'
-                  : 'bg-white text-[#002443]/60 hover:text-[#002443] hover:bg-white/80 border border-[#002443]/10'
+                  ? 'bg-[#1356E2] text-white shadow-md shadow-[#1356E2]/20'
+                  : 'bg-white text-[#0A0A0A]/60 hover:text-[#0A0A0A] hover:bg-white/80 border border-[#0A0A0A]/10'
                 }
               `}
             >
@@ -48,13 +48,13 @@ export default function AnticipationSimulator({ originalPrazo, activePrazo, onPr
       </div>
 
       {isSimulating && (
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#002443]/10">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#0A0A0A]/10">
           <p className="text-[10px] text-amber-600 font-semibold flex items-center gap-1">
             ⚠️ Simulação: exibindo taxas com prazo {activePrazo}
           </p>
           <button
             onClick={() => onPrazoChange(originalPrazo)}
-            className="flex items-center gap-1 text-[10px] font-bold text-[#2bc196] hover:underline"
+            className="flex items-center gap-1 text-[10px] font-bold text-[#1356E2] hover:underline"
           >
             <RotateCcw className="w-3 h-3" />
             Voltar ao original ({originalPrazo})

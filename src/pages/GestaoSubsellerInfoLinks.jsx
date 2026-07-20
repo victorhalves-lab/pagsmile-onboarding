@@ -61,7 +61,7 @@ export default function GestaoSubsellerInfoLinks() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['subsellerInfoCollections'] }),
   });
 
-  // Link Direto Pagsmile — cria collection sob "Pagsmile Direto" e fecha modal
+  // Link Direto Pin Bank — cria collection sob "Pin Bank Direto" e fecha modal
   const createDirectMut = useMutation({
     mutationFn: (data) => base44.entities.SubsellerInfoCollection.create({
       ...data,
@@ -107,12 +107,12 @@ export default function GestaoSubsellerInfoLinks() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
-            <LinkIcon className="w-5 h-5 text-[#002443]" />
+          <div className="w-10 h-10 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center">
+            <LinkIcon className="w-5 h-5 text-[#0A0A0A]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Links de Coleta — Subsellers</h1>
-            <p className="text-sm text-[#002443]/60">
+            <h1 className="text-2xl font-bold text-[#0A0A0A]">Links de Coleta — Subsellers</h1>
+            <p className="text-sm text-[#0A0A0A]/60">
               Gere 1 link por cliente Gateway. Eles preenchem a lista de subsellers e você recebe na inbox.
             </p>
           </div>
@@ -121,11 +121,11 @@ export default function GestaoSubsellerInfoLinks() {
           <Link to={createPageUrl('SubsellerInfoRecebidos')}>
             <Button variant="outline"><Inbox className="w-4 h-4 mr-2" /> Inbox</Button>
           </Link>
-          <Button variant="outline" onClick={() => setManualModalOpen(true)} className="border-[#2bc196]/40 text-[#36706c] hover:bg-[#2bc196]/5">
+          <Button variant="outline" onClick={() => setManualModalOpen(true)} className="border-[#1356E2]/40 text-[#E84B1C] hover:bg-[#1356E2]/5">
             <Edit3 className="w-4 h-4 mr-2" /> Cadastrar manualmente
           </Button>
-          <Button variant="outline" onClick={() => setDirectModalOpen(true)} className="border-[#2bc196]/40 text-[#36706c] hover:bg-[#2bc196]/5">
-            <Star className="w-4 h-4 mr-2" /> Link Direto Pagsmile
+          <Button variant="outline" onClick={() => setDirectModalOpen(true)} className="border-[#1356E2]/40 text-[#E84B1C] hover:bg-[#1356E2]/5">
+            <Star className="w-4 h-4 mr-2" /> Link Direto Pin Bank
           </Button>
           <Button onClick={() => setModalOpen(true)}><Plus className="w-4 h-4 mr-2" /> Novo link Gateway</Button>
         </div>
@@ -134,28 +134,28 @@ export default function GestaoSubsellerInfoLinks() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Links totais', value: links.length, icon: LinkIcon, color: '#002443' },
-          { label: 'Ativos', value: links.filter(l => l.is_active !== false).length, icon: Power, color: '#2bc196' },
-          { label: 'Submissões', value: links.reduce((s, l) => s + (l.submissions_count || 0), 0), icon: FileText, color: '#36706c' },
-          { label: 'Subsellers', value: links.reduce((s, l) => s + (l.total_subsellers_count || 0), 0), icon: Building2, color: '#2bc196' },
+          { label: 'Links totais', value: links.length, icon: LinkIcon, color: '#0A0A0A' },
+          { label: 'Ativos', value: links.filter(l => l.is_active !== false).length, icon: Power, color: '#1356E2' },
+          { label: 'Submissões', value: links.reduce((s, l) => s + (l.submissions_count || 0), 0), icon: FileText, color: '#E84B1C' },
+          { label: 'Subsellers', value: links.reduce((s, l) => s + (l.total_subsellers_count || 0), 0), icon: Building2, color: '#1356E2' },
         ].map((k, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+          <div key={i} className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-4">
             <div className="flex items-center gap-2 mb-1">
               <k.icon className="w-4 h-4" style={{ color: k.color }} />
               <p className="text-xl font-bold" style={{ color: k.color }}>{k.value}</p>
             </div>
-            <p className="text-[10px] text-[#002443]/40">{k.label}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40">{k.label}</p>
           </div>
         ))}
       </div>
 
       {/* Lista */}
       {isLoading ? (
-        <Card><CardContent className="p-8 text-center text-sm text-[#002443]/40">Carregando...</CardContent></Card>
+        <Card><CardContent className="p-8 text-center text-sm text-[#0A0A0A]/40">Carregando...</CardContent></Card>
       ) : links.length === 0 ? (
         <Card><CardContent className="p-12 text-center">
-          <LinkIcon className="w-10 h-10 text-[#002443]/20 mx-auto mb-3" />
-          <p className="text-sm text-[#002443]/60 mb-4">Nenhum link gerado ainda.</p>
+          <LinkIcon className="w-10 h-10 text-[#0A0A0A]/20 mx-auto mb-3" />
+          <p className="text-sm text-[#0A0A0A]/60 mb-4">Nenhum link gerado ainda.</p>
           <Button onClick={() => setModalOpen(true)}><Plus className="w-4 h-4 mr-2" /> Criar primeiro link</Button>
         </CardContent></Card>
       ) : (
@@ -169,40 +169,40 @@ export default function GestaoSubsellerInfoLinks() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="text-sm font-bold text-[#002443] truncate">{link.gateway_name}</h3>
+                        <h3 className="text-sm font-bold text-[#0A0A0A] truncate">{link.gateway_name}</h3>
                         {link.collection_mode === 'simple' && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#2bc196]/10 text-[#36706c] font-bold uppercase tracking-wider">⚡ Simplificado</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#1356E2]/10 text-[#E84B1C] font-bold uppercase tracking-wider">⚡ Simplificado</span>
                         )}
                         {inactive && <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-50 text-red-600 font-bold">OFF</span>}
                       </div>
                       {link.gateway_cnpj && (
-                        <p className="text-[11px] text-[#002443]/60 font-mono">{formatCnpj(link.gateway_cnpj)}</p>
+                        <p className="text-[11px] text-[#0A0A0A]/60 font-mono">{formatCnpj(link.gateway_cnpj)}</p>
                       )}
                       {link.gateway_contact_name && (
-                        <p className="text-xs text-[#002443]/50 truncate">{link.gateway_contact_name} {link.gateway_contact_email && `· ${link.gateway_contact_email}`}</p>
+                        <p className="text-xs text-[#0A0A0A]/50 truncate">{link.gateway_contact_name} {link.gateway_contact_email && `· ${link.gateway_contact_email}`}</p>
                       )}
                     </div>
                     <button
                       onClick={() => toggleMut.mutate({ id: link.id, is_active: inactive })}
-                      className="text-[#002443]/30 hover:text-[#002443]/70 p-1 flex-shrink-0"
+                      className="text-[#0A0A0A]/30 hover:text-[#0A0A0A]/70 p-1 flex-shrink-0"
                       title={inactive ? 'Ativar' : 'Desativar'}
                     >
-                      {inactive ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4 text-[#2bc196]" />}
+                      {inactive ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4 text-[#1356E2]" />}
                     </button>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mb-3">
                     <div className="bg-[#f4f4f4] rounded-lg p-2">
-                      <div className="text-[9px] text-[#002443]/40 uppercase font-bold">Submissões</div>
-                      <div className="text-base font-bold text-[#002443]">{link.submissions_count || 0}</div>
+                      <div className="text-[9px] text-[#0A0A0A]/40 uppercase font-bold">Submissões</div>
+                      <div className="text-base font-bold text-[#0A0A0A]">{link.submissions_count || 0}</div>
                     </div>
                     <div className="bg-[#f4f4f4] rounded-lg p-2">
-                      <div className="text-[9px] text-[#002443]/40 uppercase font-bold">Subsellers</div>
-                      <div className="text-base font-bold text-[#2bc196]">{link.total_subsellers_count || 0}</div>
+                      <div className="text-[9px] text-[#0A0A0A]/40 uppercase font-bold">Subsellers</div>
+                      <div className="text-base font-bold text-[#1356E2]">{link.total_subsellers_count || 0}</div>
                     </div>
                   </div>
 
-                  <div className="bg-[#002443]/3 rounded-lg p-2 mb-3 truncate text-[11px] font-mono text-[#002443]/60" title={url}>
+                  <div className="bg-[#0A0A0A]/3 rounded-lg p-2 mb-3 truncate text-[11px] font-mono text-[#0A0A0A]/60" title={url}>
                     {url}
                   </div>
 

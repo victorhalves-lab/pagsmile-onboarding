@@ -91,8 +91,8 @@ export default function InsightsProposalRatesSection({ proposals }) {
   return (
     <div className="space-y-6 mt-2">
       <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-1.5 border border-slate-100">
-        <div className="w-2 h-2 rounded-full bg-[#2bc196]" />
-        <span className="text-[11px] font-bold text-[#002443]/50">{current.length} propostas (versão atual) analisadas</span>
+        <div className="w-2 h-2 rounded-full bg-[#1356E2]" />
+        <span className="text-[11px] font-bold text-[#0A0A0A]/50">{current.length} propostas (versão atual) analisadas</span>
       </div>
 
       {visaRows.length > 0 && (
@@ -113,7 +113,7 @@ export default function InsightsProposalRatesSection({ proposals }) {
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={compData} barCategoryGap="25%">
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} unit="%" axisLine={false} tickLine={false} />
               <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${v}%`} />
               <Legend wrapperStyle={{ fontSize: 11 }} />

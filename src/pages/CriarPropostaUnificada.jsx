@@ -113,14 +113,14 @@ export default function CriarPropostaUnificada() {
   if (createdSlug) {
     return (
       <div className="max-w-3xl mx-auto">
-        <Card className="border-[#2bc196]/30 bg-gradient-to-br from-white to-[#2bc196]/5">
+        <Card className="border-[#1356E2]/30 bg-gradient-to-br from-white to-[#1356E2]/5">
           <CardContent className="pt-6 text-center">
-            <CheckCircle2 className="w-14 h-14 text-[#2bc196] mx-auto mb-3" />
-            <h2 className="text-xl font-bold text-[#002443] mb-1">Pacote criado!</h2>
-            <p className="text-sm text-[#002443]/70 mb-5">Envie o link abaixo para o cliente. Ele verá Brasil e Global em abas no mesmo lugar.</p>
-            <div className="bg-white border-2 border-[#2bc196]/40 rounded-xl p-3 flex items-center gap-2 mb-4">
-              <Link2 className="w-4 h-4 text-[#2bc196] flex-shrink-0" />
-              <code className="flex-1 text-sm text-[#002443] truncate text-left">{publicUrl}</code>
+            <CheckCircle2 className="w-14 h-14 text-[#1356E2] mx-auto mb-3" />
+            <h2 className="text-xl font-bold text-[#0A0A0A] mb-1">Pacote criado!</h2>
+            <p className="text-sm text-[#0A0A0A]/70 mb-5">Envie o link abaixo para o cliente. Ele verá Brasil e Global em abas no mesmo lugar.</p>
+            <div className="bg-white border-2 border-[#1356E2]/40 rounded-xl p-3 flex items-center gap-2 mb-4">
+              <Link2 className="w-4 h-4 text-[#1356E2] flex-shrink-0" />
+              <code className="flex-1 text-sm text-[#0A0A0A] truncate text-left">{publicUrl}</code>
               <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(publicUrl); toast.success('Link copiado!'); }}>
                 <Copy className="w-3.5 h-3.5" />
               </Button>
@@ -162,16 +162,16 @@ export default function CriarPropostaUnificada() {
   return (
     <div className="max-w-4xl mx-auto space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-[#002443]">Criar Proposta Unificada</h1>
-        <p className="text-sm text-[#002443]/60 mt-1">Combine propostas Brasil + Global em um único link público com abas.</p>
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Criar Proposta Unificada</h1>
+        <p className="text-sm text-[#0A0A0A]/60 mt-1">Combine propostas Brasil + Global em um único link público com abas.</p>
       </div>
 
       {/* Switch de modo */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-1.5 inline-flex gap-1">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 shadow-sm p-1.5 inline-flex gap-1">
         <button
           onClick={() => setMode('link')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-            mode === 'link' ? 'bg-[#002443] text-white' : 'text-[#002443]/60 hover:bg-[#f4f4f4]'
+            mode === 'link' ? 'bg-[#0A0A0A] text-white' : 'text-[#0A0A0A]/60 hover:bg-[#f4f4f4]'
           }`}
         >
           <ListChecks className="w-4 h-4" /> Linkar existentes
@@ -179,7 +179,7 @@ export default function CriarPropostaUnificada() {
         <button
           onClick={() => setMode('wizard')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-            mode === 'wizard' ? 'bg-[#002443] text-white' : 'text-[#002443]/60 hover:bg-[#f4f4f4]'
+            mode === 'wizard' ? 'bg-[#0A0A0A] text-white' : 'text-[#0A0A0A]/60 hover:bg-[#f4f4f4]'
           }`}
         >
           <Sparkles className="w-4 h-4" /> Criar do zero
@@ -212,7 +212,7 @@ export default function CriarPropostaUnificada() {
       {mode === 'link' && (
         <>
           <Card className="border-green-200">
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Flag className="w-4 h-4 text-green-600" /> Brasil <span className="text-xs font-normal text-[#002443]/50">(opcional)</span></CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Flag className="w-4 h-4 text-green-600" /> Brasil <span className="text-xs font-normal text-[#0A0A0A]/50">(opcional)</span></CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <div><Label className="text-xs">Proposta Customizada</Label>
                 <ProposalDropdown label="customizada" value={form.br_proposal_id} onChange={v => setF('br_proposal_id', v)} items={brCustom} />
@@ -227,7 +227,7 @@ export default function CriarPropostaUnificada() {
           </Card>
 
           <Card className="border-blue-200">
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Globe2 className="w-4 h-4 text-blue-600" /> Global <span className="text-xs font-normal text-[#002443]/50">(opcional)</span></CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Globe2 className="w-4 h-4 text-blue-600" /> Global <span className="text-xs font-normal text-[#0A0A0A]/50">(opcional)</span></CardTitle></CardHeader>
             <CardContent>
               <Label className="text-xs">Proposta Global</Label>
               <ProposalDropdown label="global" value={form.global_proposal_id} onChange={v => setF('global_proposal_id', v)} items={globalProps} />
@@ -241,7 +241,7 @@ export default function CriarPropostaUnificada() {
         <Card className="border-amber-200 bg-gradient-to-br from-amber-50/30 to-white">
           <CardHeader>
             <CardTitle className="text-base">Escolha os módulos e crie cada proposta</CardTitle>
-            <p className="text-xs text-[#002443]/60 mt-1">
+            <p className="text-xs text-[#0A0A0A]/60 mt-1">
               Marque os módulos desejados, clique em "Criar" para cada um (abre a tela específica em nova aba),
               volte aqui e selecione as propostas recém-criadas no dropdown abaixo de cada módulo.
             </p>
@@ -322,17 +322,17 @@ export default function CriarPropostaUnificada() {
 function WizardModuleBlock({ checked, onCheck, title, icon, createUrl, accent, children }) {
   const accentBorder = accent === 'green' ? 'border-green-200' : 'border-blue-200';
   return (
-    <div className={`rounded-xl border-2 ${checked ? accentBorder : 'border-[#002443]/10'} bg-white p-4 transition-all`}>
+    <div className={`rounded-xl border-2 ${checked ? accentBorder : 'border-[#0A0A0A]/10'} bg-white p-4 transition-all`}>
       <div className="flex items-center gap-3 mb-3">
         <input
           type="checkbox"
           checked={checked}
           onChange={(e) => onCheck(e.target.checked)}
-          className="w-4 h-4 accent-[#2bc196]"
+          className="w-4 h-4 accent-[#1356E2]"
         />
         <div className="flex items-center gap-2 flex-1">
           {icon}
-          <span className="text-sm font-semibold text-[#002443]">{title}</span>
+          <span className="text-sm font-semibold text-[#0A0A0A]">{title}</span>
         </div>
         {checked && (
           <a href={createUrl} target="_blank" rel="noopener noreferrer">

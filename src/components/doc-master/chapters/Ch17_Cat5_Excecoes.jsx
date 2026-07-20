@@ -253,7 +253,7 @@ Deno.serve(async (req) => {
   // 5. Envia e-mail com link do termo
   await sendEmail({
     to: caseRec.representanteLegalEmail,
-    subject: 'Pagsmile — Termo Adicional Necessário',
+    subject: 'Pin Bank — Termo Adicional Necessário',
     template: 'termo_adicional_v5_2',
     variables: { url: \`\${origin}/TermoAdicional?token=\${termo.publicToken}\` },
   });

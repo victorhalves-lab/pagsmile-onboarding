@@ -49,8 +49,8 @@ export default function BdcLookupSearchBar({ onSearch, loading }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
       <div className="flex items-center gap-3 mb-4">
-        <Search className="w-5 h-5 text-[#2bc196]" />
-        <h2 className="text-lg font-semibold text-[#002443]">Pesquisa Rápida BDC</h2>
+        <Search className="w-5 h-5 text-[#1356E2]" />
+        <h2 className="text-lg font-semibold text-[#0A0A0A]">Pesquisa Rápida BDC</h2>
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 mb-5">
@@ -65,7 +65,7 @@ export default function BdcLookupSearchBar({ onSearch, loading }) {
         <Button
           onClick={handleSubmit}
           disabled={loading || (doc.replace(/\D/g, '').length !== 11 && doc.replace(/\D/g, '').length !== 14)}
-          className="bg-[#2bc196] hover:bg-[#36706c] text-white min-w-[140px]"
+          className="bg-[#1356E2] hover:bg-[#E84B1C] text-white min-w-[140px]"
         >
           {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Consultando...</> : <><Search className="w-4 h-4 mr-2" /> Buscar</>}
         </Button>
@@ -78,13 +78,13 @@ export default function BdcLookupSearchBar({ onSearch, loading }) {
             <label
               key={m.id}
               htmlFor={`mode-${m.id}`}
-              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${mode === m.id ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-slate-200 hover:border-slate-300'}`}
+              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${mode === m.id ? 'border-[#1356E2] bg-[#1356E2]/5' : 'border-slate-200 hover:border-slate-300'}`}
             >
               <RadioGroupItem value={m.id} id={`mode-${m.id}`} className="mt-1" />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm text-[#002443]">{m.label}</span>
-                  {m.recommended && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#2bc196] text-white">RECOMENDADO</span>}
+                  <span className="font-semibold text-sm text-[#0A0A0A]">{m.label}</span>
+                  {m.recommended && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#1356E2] text-white">RECOMENDADO</span>}
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">{m.desc}</p>
               </div>

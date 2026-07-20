@@ -243,10 +243,10 @@ export default function QuestionariosRecebidos() {
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-white/10"><Shield className="w-6 h-6 text-[#5cf7cf]" /></div>
+            <div className="p-3 rounded-xl bg-white/10"><Shield className="w-6 h-6 text-[#E84B1C]" /></div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('qr.title')}</h1>
               <p className="text-white/60 text-sm mt-1">{t('qr.subtitle')}</p>
@@ -268,15 +268,15 @@ export default function QuestionariosRecebidos() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-white border border-[#002443]/10 p-1 rounded-xl">
-          <TabsTrigger value="received" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+        <TabsList className="bg-white border border-[#0A0A0A]/10 p-1 rounded-xl">
+          <TabsTrigger value="received" className="rounded-lg data-[state=active]:bg-[#0A0A0A] data-[state=active]:text-white gap-2 px-4">
             <FileCheck className="w-4 h-4" /> {t('qr.received')}
-            <Badge className="bg-[#2bc196]/20 text-[#002443] text-xs ml-1 border-0">{stats.total}</Badge>
+            <Badge className="bg-[#1356E2]/20 text-[#0A0A0A] text-xs ml-1 border-0">{stats.total}</Badge>
           </TabsTrigger>
-          <TabsTrigger value="drafts" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+          <TabsTrigger value="drafts" className="rounded-lg data-[state=active]:bg-[#0A0A0A] data-[state=active]:text-white gap-2 px-4">
             <FileEdit className="w-4 h-4" /> {t('qr.drafts')}
           </TabsTrigger>
-          <TabsTrigger value="subsellers" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+          <TabsTrigger value="subsellers" className="rounded-lg data-[state=active]:bg-[#0A0A0A] data-[state=active]:text-white gap-2 px-4">
             <Users className="w-4 h-4" /> Subsellers
           </TabsTrigger>
         </TabsList>

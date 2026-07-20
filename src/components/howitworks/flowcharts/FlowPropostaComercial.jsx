@@ -6,17 +6,17 @@ export default function FlowPropostaComercial() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h4 className="font-bold text-[#002443] text-sm">Fluxo 2: Criação e Gestão de Propostas Comerciais</h4>
-          <p className="text-[10px] text-[#002443]/50">Da seleção do lead até o aceite/recusa pelo cliente</p>
+          <h4 className="font-bold text-[#0A0A0A] text-sm">Fluxo 2: Criação e Gestão de Propostas Comerciais</h4>
+          <p className="text-[10px] text-[#0A0A0A]/50">Da seleção do lead até o aceite/recusa pelo cliente</p>
         </div>
         <div className="flex gap-1.5">
           <ResponsibleBadge label="Time Comercial" color="bg-blue-600" />
-          <ResponsibleBadge label="Cliente" color="bg-[#2bc196]" />
+          <ResponsibleBadge label="Cliente" color="bg-[#1356E2]" />
           <ResponsibleBadge label="Sistema" color="bg-slate-600" />
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 overflow-x-auto">
+      <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-6 overflow-x-auto">
         <div className="flex flex-col items-center min-w-[400px]">
           <StartEndNode label="INÍCIO — Lead Qualificado" />
           <Arrow />
@@ -62,7 +62,7 @@ export default function FlowPropostaComercial() {
                   <Arrow />
                   <ProcessNode label="Selecionar Segmento" sublabel="6 segmentos disponíveis" borderColor="border-blue-200" />
                   <Arrow />
-                  <ProcessNode label="Taxas Auto-preenchidas" sublabel="Valores padrão Pagsmile (readOnly)" borderColor="border-blue-200" />
+                  <ProcessNode label="Taxas Auto-preenchidas" sublabel="Valores padrão Pin Bank (readOnly)" borderColor="border-blue-200" />
                 </div>
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function FlowPropostaComercial() {
               <DataNode label="Status: rascunho" sublabel="Pode editar depois" />
             </div>
             <div className="flex flex-col items-center">
-              <BranchLabel label="Gerar" color="text-[#2bc196]" />
+              <BranchLabel label="Gerar" color="text-[#1356E2]" />
               <Arrow />
               <DataNode label="Status: enviada" sublabel="Gera código + token público" />
             </div>
@@ -101,12 +101,12 @@ export default function FlowPropostaComercial() {
           <Arrow />
 
           <div className="flex items-center gap-2 mb-1">
-            <div className="h-px bg-[#2bc196] w-16" />
-            <span className="text-[9px] text-[#2bc196] font-bold">AÇÃO DO CLIENTE</span>
-            <div className="h-px bg-[#2bc196] w-16" />
+            <div className="h-px bg-[#1356E2] w-16" />
+            <span className="text-[9px] text-[#1356E2] font-bold">AÇÃO DO CLIENTE</span>
+            <div className="h-px bg-[#1356E2] w-16" />
           </div>
 
-          <ProcessNode label="Cliente Abre Link" sublabel="Status → visualizada (notifyProposalViewed)" borderColor="border-[#2bc196]" color="bg-emerald-50" />
+          <ProcessNode label="Cliente Abre Link" sublabel="Status → visualizada (notifyProposalViewed)" borderColor="border-[#1356E2]" color="bg-emerald-50" />
           <Arrow />
           <DecisionNode label="Decisão do Cliente?" />
           <div className="flex items-start gap-8 mt-1">
@@ -135,7 +135,7 @@ export default function FlowPropostaComercial() {
           </div>
 
           <Arrow />
-          <StartEndNode label="FIM — Pipeline Atualizado" color="bg-[#002443]" />
+          <StartEndNode label="FIM — Pipeline Atualizado" color="bg-[#0A0A0A]" />
         </div>
       </div>
     </div>

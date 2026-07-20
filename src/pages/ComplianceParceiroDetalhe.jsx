@@ -43,7 +43,7 @@ export default function ComplianceParceiroDetalhe() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -76,7 +76,7 @@ export default function ComplianceParceiroDetalhe() {
 
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold text-[#002443]">
+              <h1 className="text-2xl font-bold text-[#0A0A0A]">
                 <MaskedField value={assignment.merchantName} level="full" fallback="Cliente sem nome" />
               </h1>
               <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
@@ -101,7 +101,7 @@ export default function ComplianceParceiroDetalhe() {
             </div>
 
             {canRecommend ? (
-              <Button onClick={() => setRecommendationOpen(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+              <Button onClick={() => setRecommendationOpen(true)} className="bg-[#1356E2] hover:bg-[#1356E2]/90">
                 <Send className="w-4 h-4 mr-2" />
                 Enviar Parecer
               </Button>
@@ -165,7 +165,7 @@ export default function ComplianceParceiroDetalhe() {
                 <InfoRow label="Red Flags" value={
                   caseData?.redFlags?.length ? caseData.redFlags.join(', ') : 'Nenhuma'
                 } />
-                <InfoRow label="Status Pagsmile" value={caseData?.status} />
+                <InfoRow label="Status Pin Bank" value={caseData?.status} />
                 <InfoRow label="Submetido em" value={
                   caseData?.submissionDate ? format(new Date(caseData.submissionDate), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '—'
                 } />
@@ -184,7 +184,7 @@ export default function ComplianceParceiroDetalhe() {
                       <div className="space-y-3">
                         {responses.map(r => (
                           <div key={r.id} className="border-b border-slate-100 pb-3 last:border-b-0">
-                            <div className="text-sm font-medium text-[#002443]">{r.questionText}</div>
+                            <div className="text-sm font-medium text-[#0A0A0A]">{r.questionText}</div>
                             <div className="text-sm text-slate-600 mt-1">
                               {r.valueText || (r.valueNumber != null ? r.valueNumber : '') ||
                                 (r.valueBoolean != null ? (r.valueBoolean ? 'Sim' : 'Não') : '') ||
@@ -212,7 +212,7 @@ export default function ComplianceParceiroDetalhe() {
                         {integrationLogs.slice(0, 30).map(l => (
                           <div key={l.id} className="flex items-center justify-between text-sm border-b border-slate-100 pb-2">
                             <div>
-                              <div className="font-medium text-[#002443]">{l.provider} · {l.service_type}</div>
+                              <div className="font-medium text-[#0A0A0A]">{l.provider} · {l.service_type}</div>
                               <div className="text-xs text-slate-500">{l.status} · {l.created_date ? format(new Date(l.created_date), "dd/MM HH:mm", { locale: ptBR }) : ''}</div>
                             </div>
                             {l.score != null && <Badge className="bg-slate-100 text-slate-700">Score: {l.score}</Badge>}
@@ -235,16 +235,16 @@ export default function ComplianceParceiroDetalhe() {
                     <InfoRow label="Subfaixa" value={`${complianceScore.subfaixa} - ${complianceScore.subfaixa_nome || ''}`} />
                     <InfoRow label="Rolling Reserve" value={complianceScore.rolling_reserve_percent ? `${complianceScore.rolling_reserve_percent}%` : '0%'} />
                     <InfoRow label="Monitoramento" value={complianceScore.monitoramento_nivel} />
-                    <InfoRow label="Recomendação Pagsmile" value={complianceScore.recomendacao_final} />
+                    <InfoRow label="Recomendação Pin Bank" value={complianceScore.recomendacao_final} />
                     {complianceScore.sumario_executivo && (
                       <div className="pt-3 border-t border-slate-100">
-                        <div className="font-medium text-[#002443] mb-1">Sumário Executivo</div>
+                        <div className="font-medium text-[#0A0A0A] mb-1">Sumário Executivo</div>
                         <p className="text-slate-600 whitespace-pre-wrap">{complianceScore.sumario_executivo}</p>
                       </div>
                     )}
                     {complianceScore.red_flags?.length > 0 && (
                       <div>
-                        <div className="font-medium text-[#002443] mb-1">Red Flags</div>
+                        <div className="font-medium text-[#0A0A0A] mb-1">Red Flags</div>
                         <ul className="list-disc pl-5 text-slate-600 space-y-0.5">
                           {complianceScore.red_flags.map((f, i) => <li key={i}>{f}</li>)}
                         </ul>
@@ -274,7 +274,7 @@ function InfoRow({ label, value }) {
   return (
     <div className="flex items-start gap-2">
       <span className="w-40 flex-shrink-0 text-slate-500">{label}:</span>
-      <span className="flex-1 font-medium text-[#002443]">{value || '—'}</span>
+      <span className="flex-1 font-medium text-[#0A0A0A]">{value || '—'}</span>
     </div>
   );
 }
@@ -307,9 +307,9 @@ function PartnerDocumentsList({ documents, assignmentId }) {
             {documents.map(d => (
               <div key={d.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
                 <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-[#2bc196]" />
+                  <FileText className="w-5 h-5 text-[#1356E2]" />
                   <div>
-                    <div className="font-medium text-sm text-[#002443]">{d.label || d.fileName || 'Documento'}</div>
+                    <div className="font-medium text-sm text-[#0A0A0A]">{d.label || d.fileName || 'Documento'}</div>
                     <div className="text-xs text-slate-500">{d.documentTypeId}</div>
                   </div>
                 </div>

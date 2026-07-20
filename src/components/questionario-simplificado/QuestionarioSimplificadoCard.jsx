@@ -25,25 +25,25 @@ export default function QuestionarioSimplificadoCard({ questionario, onVerDetalh
         <div className="flex-1 space-y-3">
           {/* Header */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono text-xs text-[#2bc196] font-semibold">{questionario.protocolo || '-'}</span>
+            <span className="font-mono text-xs text-[#1356E2] font-semibold">{questionario.protocolo || '-'}</span>
             <Badge className="bg-orange-100 text-orange-700 text-xs border-0">Simplificado</Badge>
             <Badge className={`${st.color} text-xs border-0`}>{st.label}</Badge>
           </div>
 
           {/* Company Info */}
           <div>
-            <p className="font-semibold text-[#002443]">{questionario.nome_empresa}</p>
-            <p className="text-xs text-[#002443]/60">{formatCnpj(questionario.cnpj)}</p>
+            <p className="font-semibold text-[#0A0A0A]">{questionario.nome_empresa}</p>
+            <p className="text-xs text-[#0A0A0A]/60">{formatCnpj(questionario.cnpj)}</p>
           </div>
 
           {/* Contact */}
-          <div className="text-xs text-[#002443]/70 flex gap-4 flex-wrap">
+          <div className="text-xs text-[#0A0A0A]/70 flex gap-4 flex-wrap">
             <span>{questionario.contato_nome}</span>
             <span>{questionario.contato_email}</span>
           </div>
 
           {/* Quick Rates Summary */}
-          <div className="flex gap-4 text-xs text-[#002443]/60 flex-wrap">
+          <div className="flex gap-4 text-xs text-[#0A0A0A]/60 flex-wrap">
             <span>Visa 1x: {questionario.taxas_credito_1x?.visa != null ? `${questionario.taxas_credito_1x.visa}%` : '-'}</span>
             <span>2-6x: {questionario.taxas_credito_2_6x?.visa != null ? `${questionario.taxas_credito_2_6x.visa}%` : '-'}</span>
             <span>7-12x: {questionario.taxas_credito_7_12x?.visa != null ? `${questionario.taxas_credito_7_12x.visa}%` : '-'}</span>
@@ -51,7 +51,7 @@ export default function QuestionarioSimplificadoCard({ questionario, onVerDetalh
           </div>
 
           {/* Date */}
-          <p className="text-[10px] text-[#002443]/40">
+          <p className="text-[10px] text-[#0A0A0A]/40">
             {questionario.created_date ? new Date(questionario.created_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function QuestionarioSimplificadoCard({ questionario, onVerDetalh
             <Eye className="w-4 h-4 mr-1" /> Detalhes
           </Button>
           {questionario.status === 'novo' && (
-            <Button variant="ghost" size="sm" onClick={() => onVincularLead?.(questionario)} className="text-[#2bc196]">
+            <Button variant="ghost" size="sm" onClick={() => onVincularLead?.(questionario)} className="text-[#1356E2]">
               <Link2 className="w-4 h-4 mr-1" /> Criar Lead
             </Button>
           )}

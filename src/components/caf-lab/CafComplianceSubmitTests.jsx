@@ -89,7 +89,7 @@ function FilesUploader({ files, onChange }) {
         <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-md">
           <Paperclip className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-[#002443] truncate font-medium">{f.filename}</p>
+            <p className="text-xs text-[#0A0A0A] truncate font-medium">{f.filename}</p>
             <p className="text-[10px] text-slate-500">{Math.round(f.size / 1024)}KB</p>
           </div>
           <select
@@ -189,11 +189,11 @@ export default function CafComplianceSubmitTests() {
       </Card>
 
       {/* ───── PJ ───── */}
-      <Card className="p-4 border-[#002443]/30">
+      <Card className="p-4 border-[#0A0A0A]/30">
         <div className="flex items-center gap-2 mb-3">
-          <Building2 className="w-4 h-4 text-[#002443]" />
-          <h4 className="text-sm font-bold text-[#002443]">Compliance PJ (templateId_PJ)</h4>
-          <Badge className="bg-[#002443] text-white text-[9px]">COMPLIANCE PJ</Badge>
+          <Building2 className="w-4 h-4 text-[#0A0A0A]" />
+          <h4 className="text-sm font-bold text-[#0A0A0A]">Compliance PJ (templateId_PJ)</h4>
+          <Badge className="bg-[#0A0A0A] text-white text-[9px]">COMPLIANCE PJ</Badge>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -235,7 +235,7 @@ export default function CafComplianceSubmitTests() {
             )}
             disabled={loadingId === 'pj' || !pj.onboardingCaseId || !pj.cnpj}
             size="sm"
-            className="bg-[#002443] hover:bg-[#002443]/90 text-white"
+            className="bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white"
           >
             {loadingId === 'pj' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Enviando PJ...</>
@@ -251,7 +251,7 @@ export default function CafComplianceSubmitTests() {
 
         {results.pj?.data?.transactionId && (
           <div className="mt-3 pt-3 border-t border-slate-200">
-            <p className="text-xs font-semibold text-[#002443]">
+            <p className="text-xs font-semibold text-[#0A0A0A]">
               ✅ TX PJ: <code className="font-mono bg-slate-100 px-1">{results.pj.data.transactionId}</code>
             </p>
             <Button
@@ -269,11 +269,11 @@ export default function CafComplianceSubmitTests() {
       </Card>
 
       {/* ───── PF ───── */}
-      <Card className="p-4 border-[#2bc196]/30">
+      <Card className="p-4 border-[#1356E2]/30">
         <div className="flex items-center gap-2 mb-3">
-          <User className="w-4 h-4 text-[#2bc196]" />
-          <h4 className="text-sm font-bold text-[#002443]">Compliance PF — Subseller (templateId_PF)</h4>
-          <Badge className="bg-[#2bc196] text-white text-[9px]">SUBSELLER PF</Badge>
+          <User className="w-4 h-4 text-[#1356E2]" />
+          <h4 className="text-sm font-bold text-[#0A0A0A]">Compliance PF — Subseller (templateId_PF)</h4>
+          <Badge className="bg-[#1356E2] text-white text-[9px]">SUBSELLER PF</Badge>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -347,7 +347,7 @@ export default function CafComplianceSubmitTests() {
             )}
             disabled={loadingId === 'pf' || !pf.onboardingCaseId || !pf.cpf}
             size="sm"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {loadingId === 'pf' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Enviando PF...</>
@@ -363,7 +363,7 @@ export default function CafComplianceSubmitTests() {
 
         {results.pf?.data?.transactionId && (
           <div className="mt-3 pt-3 border-t border-slate-200">
-            <p className="text-xs font-semibold text-[#002443]">
+            <p className="text-xs font-semibold text-[#0A0A0A]">
               ✅ TX PF: <code className="font-mono bg-slate-100 px-1">{results.pf.data.transactionId}</code>
             </p>
             <Button

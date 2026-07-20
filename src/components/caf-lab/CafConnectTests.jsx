@@ -117,7 +117,7 @@ export default function CafConnectTests() {
 
       {/* Context inputs */}
       <Card className="p-4 bg-slate-50 border-slate-200">
-        <h3 className="text-sm font-bold text-[#002443] mb-3">Contexto (para o teste 3)</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] mb-3">Contexto (para o teste 3)</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
             <Label className="text-xs">CNPJ (KYB PJ) ou deixe vazio</Label>
@@ -158,7 +158,7 @@ export default function CafConnectTests() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-purple-600" />
-              <h4 className="text-sm font-bold text-[#002443]">
+              <h4 className="text-sm font-bold text-[#0A0A0A]">
                 1. Permissions Probe (diagnóstico)
               </h4>
             </div>
@@ -175,7 +175,7 @@ export default function CafConnectTests() {
             )}
             disabled={loadingId === 'probe'}
             size="sm"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {loadingId === 'probe' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Sondando...</>
@@ -232,7 +232,7 @@ export default function CafConnectTests() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-purple-600" />
-              <h4 className="text-sm font-bold text-[#002443]">
+              <h4 className="text-sm font-bold text-[#0A0A0A]">
                 2. OAuth2 + Read Endpoints (suite completa)
               </h4>
             </div>
@@ -249,7 +249,7 @@ export default function CafConnectTests() {
             )}
             disabled={loadingId === 'suite'}
             size="sm"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {loadingId === 'suite' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Rodando...</>
@@ -262,20 +262,20 @@ export default function CafConnectTests() {
       </Card>
 
       {/* TEST 4: Create Transaction with documents (main flow) */}
-      <Card className="p-4 border-[#2bc196] bg-[#2bc196]/5">
+      <Card className="p-4 border-[#1356E2] bg-[#1356E2]/5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <Upload className="w-4 h-4 text-[#2bc196]" />
-              <h4 className="text-sm font-bold text-[#002443]">
+              <Upload className="w-4 h-4 text-[#1356E2]" />
+              <h4 className="text-sm font-bold text-[#0A0A0A]">
                 4. Create Transaction COM documentos (fluxo principal) ⚠️
               </h4>
-              <Badge className="bg-[#2bc196] text-white text-[9px]">MAIN</Badge>
+              <Badge className="bg-[#1356E2] text-white text-[9px]">MAIN</Badge>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               Upload multipart de cada imagem em <code className="bg-white/60 px-1">/v1/transactions/files</code> +
               criação da transação em <code className="bg-white/60 px-1">/v1/transactions?origin=TRUST</code>.
-              <strong className="text-[#002443]"> Este é o endpoint que será usado em produção.</strong>
+              <strong className="text-[#0A0A0A]"> Este é o endpoint que será usado em produção.</strong>
             </p>
             <p className="text-[10px] text-slate-400 mt-1 font-mono">→ cafConnectCreateTransaction</p>
           </div>
@@ -335,7 +335,7 @@ export default function CafConnectTests() {
               (!selfieB64 && !docFrontB64 && !docBackB64)
             }
             size="sm"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white"
           >
             {loadingId === 'createTx' ? (
               <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Enviando...</>
@@ -351,8 +351,8 @@ export default function CafConnectTests() {
 
         {/* Se sucesso, mostra campo pra buscar resultado */}
         {results.createTx?.data?.transactionId && (
-          <div className="mt-3 pt-3 border-t border-[#2bc196]/20">
-            <p className="text-xs text-[#002443] font-semibold mb-1">
+          <div className="mt-3 pt-3 border-t border-[#1356E2]/20">
+            <p className="text-xs text-[#0A0A0A] font-semibold mb-1">
               ✅ Transaction criada: <code className="font-mono bg-white/60 px-1">{results.createTx.data.transactionId}</code>
             </p>
             <Button
@@ -388,7 +388,7 @@ export default function CafConnectTests() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-amber-600" />
-              <h4 className="text-sm font-bold text-[#002443]">
+              <h4 className="text-sm font-bold text-[#0A0A0A]">
                 3. KYB Search via Connect ⚠️ (consome créditos)
               </h4>
             </div>
@@ -436,9 +436,9 @@ export default function CafConnectTests() {
         <div className="flex items-start gap-3">
           <ShieldAlert className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
           <div className="text-xs text-slate-600">
-            <p className="font-semibold text-[#002443]">Como liberar mais permissões</p>
+            <p className="font-semibold text-[#0A0A0A]">Como liberar mais permissões</p>
             <p className="mt-1 opacity-80">
-              1. Acesse <a href="https://trust.caf.io/" target="_blank" rel="noreferrer" className="text-[#2bc196] underline">trust.caf.io</a> → <strong>Developers</strong> → <strong>Applications</strong>
+              1. Acesse <a href="https://trust.caf.io/" target="_blank" rel="noreferrer" className="text-[#1356E2] underline">trust.caf.io</a> → <strong>Developers</strong> → <strong>Applications</strong>
               <br />
               2. Selecione a Application usada (mesma que gerou <code>CAF_CONNECT_CLIENT_ID</code>)
               <br />

@@ -39,7 +39,7 @@ export default function Ch01_Stack() {
         ['react-quill + react-day-picker + react-leaflet + react-resizable-panels + @hello-pangea/dnd + embla-carousel-react + cmdk + vaul + input-otp + next-themes', '—', 'Conjunto de UIs especializadas — editores rich-text, calendar, mapas, drag&drop kanban, carrossel, command palette, drawer mobile, OTP input. Cada uma usada em UMA tela específica.'],
         ['html2canvas + jspdf + jszip + xlsx + xlsx-js-style + docx + file-saver', '—', 'Pipeline de exports (PDF de propostas/contratos, XLSX de cadastros, DOCX de contratos editáveis). PDF: html2canvas + jspdf com smart paging via [data-pdf-block]. DOCX: lib docx em modo paragraph/table.'],
         ['three', '^0.171.0', 'Disponível mas atualmente não usado em produção (legado de protótipo).'],
-        ['@stripe/react-stripe-js + @stripe/stripe-js', '^3 + ^5', 'Stripe disponível mas não ativo no fluxo principal (pagamentos PagSmile usam outra rail).'],
+        ['@stripe/react-stripe-js + @stripe/stripe-js', '^3 + ^5', 'Stripe disponível mas não ativo no fluxo principal (pagamentos Pin Bank usam outra rail).'],
         ['canvas-confetti', '^1.9.4', 'Confetti em momentos de sucesso (KickOff, OnboardingCompletion).'],
       ]} />
 

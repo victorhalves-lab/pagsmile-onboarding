@@ -35,7 +35,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
     return (
       <div className="space-y-1">
-        {label && <Label className="text-[10px] text-[#002443]/50 uppercase">{label}</Label>}
+        {label && <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">{label}</Label>}
         <div className="relative">
           <Input
             type="number"
@@ -46,8 +46,8 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
             disabled={locked}
             className={`text-right pr-8 text-sm h-9 ${locked ? 'bg-gray-50 cursor-not-allowed' : ''}`}
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#002443]/30">{suffix}</span>
-          {locked && <Lock className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-[#002443]/20" />}
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#0A0A0A]/30">{suffix}</span>
+          {locked && <Lock className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-[#0A0A0A]/20" />}
         </div>
       </div>
     );
@@ -71,19 +71,19 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* Taxas de Cartão Crédito */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">MDR Cartão de Crédito</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">MDR Cartão de Crédito</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[10px] text-[#002443]/50 uppercase">
+              <tr className="text-[10px] text-[#0A0A0A]/50 uppercase">
                 <th className="text-left py-1 pr-2">Bandeira</th>
                 {FAIXAS.map(f => <th key={f} className="text-right px-1">{FAIXAS_LABELS[f]}</th>)}
               </tr>
             </thead>
             <tbody>
               {BANDEIRAS.map(b => (
-                <tr key={b} className="border-t border-[#002443]/5">
-                  <td className="py-2 pr-2 text-xs font-medium text-[#002443]/70">{BANDEIRA_LABELS[b]}</td>
+                <tr key={b} className="border-t border-[#0A0A0A]/5">
+                  <td className="py-2 pr-2 text-xs font-medium text-[#0A0A0A]/70">{BANDEIRA_LABELS[b]}</td>
                   {FAIXAS.map(f => (
                     <td key={f} className="px-1 py-1">
                       <RateInput path={`cartao.${b}.${f}`} suffix="%" />
@@ -98,7 +98,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* Débito */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">MDR Débito</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">MDR Débito</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {['visa', 'mastercard', 'elo', 'outras'].map(b => (
             <RateInput key={b} path={`debito.${b}`} label={BANDEIRA_LABELS[b]} suffix="%" />
@@ -108,11 +108,11 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* Pix */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">Pix</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">Pix</h3>
         <div className="grid grid-cols-2 gap-3">
           <RateInput path="pix.valor" label={`Taxa Pix (${rates?.pix?.tipo === 'fixo' ? 'R$' : '%'})`} suffix={rates?.pix?.tipo === 'fixo' ? 'R$' : '%'} />
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Tipo</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Tipo</Label>
             <select 
               value={rates?.pix?.tipo || 'percentual'} 
               onChange={e => updateRate('pix.tipo', e.target.value)}
@@ -128,7 +128,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* Outras taxas */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">Outras Taxas</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">Outras Taxas</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <RateInput path="boleto" label="Boleto" suffix="R$" />
           <RateInput path="antifraude" label="Antifraude" suffix="R$" />
@@ -141,10 +141,10 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* TPV Projetado */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">TPV Projetado (Substitui Mínimo Garantido)</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">TPV Projetado (Substitui Mínimo Garantido)</h3>
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Mês 1 (R$)</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Mês 1 (R$)</Label>
             <Input
               type="number"
               value={contract.projectedTpvMonth1 ?? ''}
@@ -155,7 +155,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Mês 2 (R$)</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Mês 2 (R$)</Label>
             <Input
               type="number"
               value={contract.projectedTpvMonth2 ?? ''}
@@ -166,7 +166,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Mês 3 (R$)</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Mês 3 (R$)</Label>
             <Input
               type="number"
               value={contract.projectedTpvMonth3 ?? ''}
@@ -181,10 +181,10 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* Setup e Prazo */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">Setup e Liquidação</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">Setup e Liquidação</h3>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Taxa de Setup (R$)</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Taxa de Setup (R$)</Label>
             <Input
               type="number"
               value={contract.setupFee ?? ''}
@@ -194,7 +194,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Prazo de Liquidação</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Prazo de Liquidação</Label>
             <Input
               value={contract.paymentTerm || ''}
               onChange={e => onChange('paymentTerm', e.target.value)}
@@ -206,10 +206,10 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* Dados bancários */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">Dados Bancários para Liquidação</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">Dados Bancários para Liquidação</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Instituição Bancária</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Instituição Bancária</Label>
             <Input
               value={contract.bankInstitution || ''}
               onChange={e => onChange('bankInstitution', e.target.value)}
@@ -217,7 +217,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Agência</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Agência</Label>
             <Input
               value={contract.bankAgency || ''}
               onChange={e => onChange('bankAgency', e.target.value)}
@@ -225,7 +225,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-[#002443]/50 uppercase">Conta</Label>
+            <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">Conta</Label>
             <Input
               value={contract.bankAccountNumber || ''}
               onChange={e => onChange('bankAccountNumber', e.target.value)}
@@ -237,7 +237,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
       {/* Tarifas conta */}
       <div>
-        <h3 className="text-sm font-bold text-[#002443] border-b border-[#002443]/10 pb-2 mb-3">Tarifas da Conta</h3>
+        <h3 className="text-sm font-bold text-[#0A0A0A] border-b border-[#0A0A0A]/10 pb-2 mb-3">Tarifas da Conta</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {[
             { field: 'accountMaintenanceFee', label: 'Manutenção Conta' },
@@ -247,7 +247,7 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
             { field: 'physicalCard2ndCopyFee', label: '2ª Via Cartão' },
           ].map(t => (
             <div key={t.field} className="space-y-1">
-              <Label className="text-[10px] text-[#002443]/50 uppercase">{t.label}</Label>
+              <Label className="text-[10px] text-[#0A0A0A]/50 uppercase">{t.label}</Label>
               <Input
                 type="number"
                 step="0.01"

@@ -34,17 +34,17 @@ export default function DocBdcCafMicroscopico() {
       {/* Header com ação de impressão */}
       <div className="no-print sticky top-[68px] z-[5] bg-white border-b border-[#e8e8e8] px-6 py-3 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#2bc196]">Documento Técnico</p>
-          <p className="text-sm font-bold text-[#002443]">BDC + CAF — Análise Microscópica</p>
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#1356E2]">Documento Técnico</p>
+          <p className="text-sm font-bold text-[#0A0A0A]">BDC + CAF — Análise Microscópica</p>
         </div>
-        <Button onClick={() => window.print()} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+        <Button onClick={() => window.print()} className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white">
           <Download className="w-4 h-4 mr-1.5" /> Baixar PDF
         </Button>
       </div>
 
       {/* Intro */}
       <div className="px-8 py-8 border-b border-[#e8e8e8]">
-        <h1 className="text-3xl font-bold text-[#002443] mb-3">BDC + CAF Microscópico</h1>
+        <h1 className="text-3xl font-bold text-[#0A0A0A] mb-3">BDC + CAF Microscópico</h1>
         <p className="text-[#1a1a1a]/70 text-[14px] leading-relaxed max-w-3xl">
           Detalhamento técnico de cada dataset consultado na <strong>BigDataCorp (BDC)</strong> e cada serviço
           executado pelo <strong>CAF (Combate à Fraude)</strong> — incluindo campos retornados, regras de
@@ -52,16 +52,16 @@ export default function DocBdcCafMicroscopico() {
         </p>
         <div className="mt-6 grid grid-cols-2 gap-4">
           <div className="flex items-start gap-3 p-4 rounded-lg bg-[#f0fdf4] border border-[#86efac]/40">
-            <Database className="w-5 h-5 text-[#2bc196] flex-shrink-0 mt-0.5" />
+            <Database className="w-5 h-5 text-[#1356E2] flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] font-bold text-[#002443]">BigDataCorp (BDC)</p>
+              <p className="text-[11px] font-bold text-[#0A0A0A]">BigDataCorp (BDC)</p>
               <p className="text-[11px] text-[#1a1a1a]/60 mt-1">Enriquecimento de dados PF/PJ — KYC, KYB, processos, sócios, contatos, sanções.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 p-4 rounded-lg bg-[#eff6ff] border border-[#93c5fd]/40">
             <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] font-bold text-[#002443]">CAF (Combate à Fraude)</p>
+              <p className="text-[11px] font-bold text-[#0A0A0A]">CAF (Combate à Fraude)</p>
               <p className="text-[11px] text-[#1a1a1a]/60 mt-1">Liveness, FaceMatch, OCR, documentscopy, PEP/sanções internacionais.</p>
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function DocBdcCafMicroscopico() {
       {/* Footer */}
       <div className="mt-10 mx-8 border-t border-[#e0e0e0] pt-4 pb-6 text-center">
         <p className="text-[11px] text-[#1a1a1a]/30">
-          PagSmile — BDC + CAF Microscópico — Compliance V4.0
+          Pin Bank — BDC + CAF Microscópico — Compliance V4.0
         </p>
         <p className="text-[10px] text-[#1a1a1a]/20 mt-1">
           Documento Confidencial — {new Date().toLocaleDateString('pt-BR')}

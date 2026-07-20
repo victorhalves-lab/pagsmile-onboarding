@@ -56,7 +56,7 @@ export default function RuleSimulatorModal({ open, onClose, rule }) {
               className="font-mono text-xs"
               placeholder='{"riskScore": 75, "status": "Pendente"}'
             />
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">
+            <p className="text-[10px] text-[var(--pinbank-blue)]/50">
               Insira os dados simulados como JSON. Os campos devem corresponder aos campos usados nas condições da regra.
             </p>
           </div>
@@ -77,13 +77,13 @@ export default function RuleSimulatorModal({ open, onClose, rule }) {
               </div>
 
               <div>
-                <p className="text-xs font-medium text-[var(--pagsmile-blue)]/70 mb-1">
+                <p className="text-xs font-medium text-[var(--pinbank-blue)]/70 mb-1">
                   Operador: <Badge variant="outline">{result.logicOperator}</Badge>
                 </p>
               </div>
 
               <div className="space-y-1">
-                <p className="text-xs font-medium text-[var(--pagsmile-blue)]/70">Condições:</p>
+                <p className="text-xs font-medium text-[var(--pinbank-blue)]/70">Condições:</p>
                 {result.conditionResults?.map((c, i) => (
                   <div key={i} className={`text-xs p-2 rounded ${c.result ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                     {c.result ? '✅' : '❌'} {c.condition} (valor atual: {String(c.actualValue)})
@@ -93,7 +93,7 @@ export default function RuleSimulatorModal({ open, onClose, rule }) {
 
               {result.actionsToExecute?.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-[var(--pagsmile-blue)]/70">Ações que seriam executadas:</p>
+                  <p className="text-xs font-medium text-[var(--pinbank-blue)]/70">Ações que seriam executadas:</p>
                   {result.actionsToExecute.map((a, i) => (
                     <div key={i} className="text-xs p-2 rounded bg-blue-50 text-blue-700">
                       ⚡ {a}

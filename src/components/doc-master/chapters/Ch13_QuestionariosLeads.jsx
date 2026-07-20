@@ -4,7 +4,7 @@ import { Sec, H1, H2, H3, H4, P, B, C, Table, Note, Source } from '@/components/
 /**
  * Capítulo 13 — Questionários de Leads (Microscópico)
  * Documenta cada pergunta dos dois questionários ativos:
- *   A) Pagsmile Lead V5 — 12 etapas, 10 segmentos, 45 perguntas + condicionais
+ *   A) Pin Bank Lead V5 — 12 etapas, 10 segmentos, 45 perguntas + condicionais
  *   B) Lead PIX V4 — 7 etapas, 28 perguntas + condicionais (merchant/intermediário)
  *
  * Para cada pergunta: campo, label, tipo, obrigatoriedade (e gatilho), regra de validação, opções e flags.
@@ -29,10 +29,10 @@ export default function Ch13_QuestionariosLeads() {
       </Note>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* PARTE A — LEAD V5 PAGSMILE */}
+      {/* PARTE A — LEAD V5 PIN BANK */}
       {/* ═══════════════════════════════════════════════════════════════ */}
 
-      <H2 num="13.A">Pagsmile Lead V5 — Questionário Comercial Completo</H2>
+      <H2 num="13.A">Pin Bank Lead V5 — Questionário Comercial Completo</H2>
       <P>
         <B>Página:</B> <C>QuestionarioLeadsPagsmile</C> · <B>URL pública:</B>{' '}
         <C>/QuestionarioLeadsPagsmile?slug=…</C> · <B>Total de etapas:</B> 12 (índices 0–11) ·{' '}
@@ -615,7 +615,7 @@ export default function Ch13_QuestionariosLeads() {
       {/* ═══════════════════════════════════════════════════════════════ */}
       <H2 num="13.C">Comparativo Lead V5 × PIX V4</H2>
       <Table
-        headers={['Aspecto', 'Lead V5 Pagsmile', 'Lead PIX V4']}
+        headers={['Aspecto', 'Lead V5 Pin Bank', 'Lead PIX V4']}
         rows={[
           ['Página', '/QuestionarioLeadsPagsmile', '/LeadPixV4'],
           ['Etapas', '12 (índices 0–11)', '7'],

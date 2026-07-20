@@ -1,37 +1,37 @@
 import React from 'react';
 
 /**
- * Header de zona da proposta pública (paleta Pagsmile oficial).
+ * Header de zona da proposta pública (paleta Pin Bank oficial).
  *
  * variant:
- *  - 'online'     → fundo gradiente azul→verde escuro Pagsmile (autoridade, canal principal)
- *  - 'presencial' → fundo verde Pagsmile principal (tátil, físico)
- *  - 'outros'     → fundo cinza Pagsmile com borda verde (neutro, condições gerais)
+ *  - 'online'     → fundo gradiente azul→verde escuro Pin Bank (autoridade, canal principal)
+ *  - 'presencial' → fundo verde Pin Bank principal (tátil, físico)
+ *  - 'outros'     → fundo cinza Pin Bank com borda verde (neutro, condições gerais)
  *
  * Uso: bloco visual que separa as 3 zonas da proposta pública.
  */
 export default function SectionHeader({ icon: Icon, title, subtitle, variant = 'online' }) {
   const variants = {
     online: {
-      wrapper: 'bg-gradient-to-r from-[#002443] to-[#36706c]',
-      iconBox: 'bg-[#5cf7cf]/20',
-      iconColor: 'text-[#5cf7cf]',
+      wrapper: 'bg-gradient-to-r from-[#0A0A0A] to-[#E84B1C]',
+      iconBox: 'bg-[#E84B1C]/20',
+      iconColor: 'text-[#E84B1C]',
       titleColor: 'text-white',
       subtitleColor: 'text-white/70',
     },
     presencial: {
-      wrapper: 'bg-[#2bc196]',
+      wrapper: 'bg-[#1356E2]',
       iconBox: 'bg-white/25',
       iconColor: 'text-white',
       titleColor: 'text-white',
       subtitleColor: 'text-white/85',
     },
     outros: {
-      wrapper: 'bg-[#f4f4f4] border border-[#2bc196]/20',
-      iconBox: 'bg-[#2bc196]/15',
-      iconColor: 'text-[#36706c]',
-      titleColor: 'text-[#002443]',
-      subtitleColor: 'text-[#002443]/70',
+      wrapper: 'bg-[#f4f4f4] border border-[#1356E2]/20',
+      iconBox: 'bg-[#1356E2]/15',
+      iconColor: 'text-[#E84B1C]',
+      titleColor: 'text-[#0A0A0A]',
+      subtitleColor: 'text-[#0A0A0A]/70',
     },
   };
   const v = variants[variant] || variants.online;

@@ -7,7 +7,7 @@ import { Loader2, ArrowRight, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import LandingHeader from '@/components/landing/LandingHeader';
-import PagsmileHeader from '@/components/landing/PagsmileHeader';
+import PinBankHeader from '@/components/landing/PinBankHeader';
 import ComplianceDisclaimer from '@/components/landing/ComplianceDisclaimer';
 import SegmentRatesTable from '@/components/landing/SegmentRatesTable';
 import ReservaFinanceiraPublic from '@/components/proposals/ReservaFinanceiraPublic';
@@ -15,7 +15,7 @@ import SegmentSelector from '@/components/landing/SegmentSelector';
 import RateCalculator from '@/components/landing/RateCalculator';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 
-const PAGSMILE_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
+const PIN_BANK_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
 
 // ── Inline analytics (avoids external hook that may break rules-of-hooks) ──
 function getSessionId() {
@@ -120,7 +120,7 @@ export default function IntroducerLandingPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
       </div>
     );
   }
@@ -130,9 +130,9 @@ export default function IntroducerLandingPage() {
     return (
       <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
         <div className="text-center max-w-md px-6">
-          <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-8 mx-auto mb-6 invert" />
-          <h2 className="text-xl font-bold text-[#002443] mb-2">Página não encontrada</h2>
-          <p className="text-sm text-[#002443]/60">Esta página de parceiro não está disponível.</p>
+          <img src={PIN_BANK_LOGO} alt="Pin Bank" className="h-8 mx-auto mb-6 invert" />
+          <h2 className="text-xl font-bold text-[#0A0A0A] mb-2">Página não encontrada</h2>
+          <p className="text-sm text-[#0A0A0A]/60">Esta página de parceiro não está disponível.</p>
         </div>
       </div>
     );
@@ -141,12 +141,12 @@ export default function IntroducerLandingPage() {
   // ── Main render ──
   return (
     <div className="min-h-screen bg-[#f4f4f4]">
-      <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-[#002443] via-[#2bc196] to-[#5cf7cf] z-50" />
+      <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0A0A0A] via-[#1356E2] to-[#E84B1C] z-50" />
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12 space-y-8">
         {/* Header */}
         {isPagsmileOwn ? (
-          <PagsmileHeader />
+          <PinBankHeader />
         ) : (
           <LandingHeader companyName={introducer.companyName} companyLogoUrl={introducer.companyLogoUrl} />
         )}
@@ -161,7 +161,7 @@ export default function IntroducerLandingPage() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="space-y-6"
           >
-            <div className="bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] rounded-xl p-4 md:p-5 shadow-lg shadow-black/5">
+            <div className="bg-white/95 backdrop-blur-md border border-[#0A0A0A]/[0.06] rounded-xl p-4 md:p-5 shadow-lg shadow-black/5">
               <SegmentSelector
                 segments={segments}
                 activeSegment={activeSegment}
@@ -196,13 +196,13 @@ export default function IntroducerLandingPage() {
                   >
                     <Button
                       size="lg"
-                      className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.01] transition-all gap-2 font-bold"
+                      className="w-full bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl text-base py-6 shadow-lg shadow-[#1356E2]/20 hover:scale-[1.01] transition-all gap-2 font-bold"
                     >
                       <Rocket className="w-5 h-5" />
                       Quero essas taxas — Contratar agora
                     </Button>
                   </Link>
-                  <p className="text-center text-xs text-[#002443]/40 mt-2">Processo rápido e 100% digital</p>
+                  <p className="text-center text-xs text-[#0A0A0A]/40 mt-2">Processo rápido e 100% digital</p>
                 </motion.div>
               </motion.div>
             )}
@@ -224,12 +224,12 @@ export default function IntroducerLandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-[#002443] rounded-2xl p-10 md:p-14 text-center relative overflow-hidden"
+          className="bg-[#0A0A0A] rounded-2xl p-10 md:p-14 text-center relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-72 h-72 bg-[#2bc196]/10 rounded-full blur-[80px]" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-[#1356E2]/10 rounded-full blur-[80px]" />
           <div className="relative z-10">
             <h3 className="text-2xl md:text-3xl font-extrabold mb-3" style={{ color: '#ffffff' }}>
-              Quer uma proposta <span style={{ color: '#2bc196' }}>customizada</span>?
+              Quer uma proposta <span style={{ color: '#1356E2' }}>customizada</span>?
             </h3>
             <p className="text-base max-w-md mx-auto mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Preencha nosso questionário rápido e receba taxas personalizadas para o seu negócio.
@@ -237,7 +237,7 @@ export default function IntroducerLandingPage() {
             <a href={`${window.location.origin}/QuestionarioLeadsPagsmile?ref=${introducer.referralCode}`} onClick={handleCtaProposta}>
               <Button
                 size="lg"
-                className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base px-10 py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all"
+                className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl text-base px-10 py-6 shadow-lg shadow-[#1356E2]/20 hover:scale-[1.02] transition-all"
               >
                 Solicitar Proposta
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -248,8 +248,8 @@ export default function IntroducerLandingPage() {
 
         {/* Footer */}
         <footer className="text-center py-6">
-          <img src="https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/85ecf04f8_Logo-modo-claro.png" alt="Pagsmile" className="h-6 mx-auto mb-3 opacity-30" />
-          <p className="text-xs text-[#002443]/30">© {new Date().getFullYear()} Pagsmile. Taxas sujeitas à aprovação de Compliance.</p>
+          <img src="https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/85ecf04f8_Logo-modo-claro.png" alt="Pin Bank" className="h-6 mx-auto mb-3 opacity-30" />
+          <p className="text-xs text-[#0A0A0A]/30">© {new Date().getFullYear()} Pin Bank. Taxas sujeitas à aprovação de Compliance.</p>
         </footer>
       </div>
     </div>

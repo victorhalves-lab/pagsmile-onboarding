@@ -7,10 +7,10 @@ import { DollarSign } from 'lucide-react';
 
 export default function PixFormBusiness({ form, updateField }) {
   return (
-    <Card className="border-[#002443]/5">
+    <Card className="border-[#0A0A0A]/5">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <DollarSign className="w-5 h-5 text-[#2bc196]" />
+          <DollarSign className="w-5 h-5 text-[#1356E2]" />
           Volume e Modelo de Negócio PIX
         </CardTitle>
       </CardHeader>
@@ -33,7 +33,7 @@ export default function PixFormBusiness({ form, updateField }) {
               className="bg-[#f4f4f4] font-semibold" 
               placeholder="Calculado automaticamente" 
             />
-            <p className="text-[10px] text-[#002443]/50 mt-1">Calculado: TPV ÷ Ticket Médio</p>
+            <p className="text-[10px] text-[#0A0A0A]/50 mt-1">Calculado: TPV ÷ Ticket Médio</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

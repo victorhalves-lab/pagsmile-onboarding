@@ -85,8 +85,8 @@ export default function InsightsRatesSection({ leads }) {
     <div className="space-y-6 mt-2">
       {!hasData ? (
         <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center">
-          <p className="text-sm text-[#002443]/50">Nenhum lead possui dados de taxas esperadas preenchidos ainda.</p>
-          <p className="text-xs text-[#002443]/30 mt-1">Os dados aparecerão conforme os questionários forem respondidos.</p>
+          <p className="text-sm text-[#0A0A0A]/50">Nenhum lead possui dados de taxas esperadas preenchidos ainda.</p>
+          <p className="text-xs text-[#0A0A0A]/30 mt-1">Os dados aparecerão conforme os questionários forem respondidos.</p>
         </div>
       ) : (
         <>
@@ -107,13 +107,13 @@ export default function InsightsRatesSection({ leads }) {
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={comparisonData} barCategoryGap="25%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} unit="%" axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${v}%`} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   <Bar dataKey="min" fill="#94a3b8" name="Mínimo" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="mediana" fill="#2bc196" name="Mediana" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="max" fill="#002443" name="Máximo" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="mediana" fill="#1356E2" name="Mediana" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="max" fill="#0A0A0A" name="Máximo" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>

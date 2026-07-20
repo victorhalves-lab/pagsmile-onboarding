@@ -33,7 +33,7 @@ const MERCHANT_SECTIONS = [
     { order: 22, text: 'Algum sócio ou UBO possui histórico de processo judicial, falência, ou sanção?', type: 'BOOLEAN', required: true, risk: 40 },
     { order: 23, text: 'Se sim, informe detalhes', type: 'TEXT', required: false, risk: 0 },
   ]},
-  { id: 'D', title: 'Seção D – Representante Legal', objective: 'Coletar dados do responsável legal que assina contratos e responde pela empresa perante a PagSmile.', questions: [
+  { id: 'D', title: 'Seção D – Representante Legal', objective: 'Coletar dados do responsável legal que assina contratos e responde pela empresa perante a Pin Bank.', questions: [
     { order: 24, text: 'Nome completo do Representante Legal', type: 'TEXT', required: true, risk: 0 },
     { order: 25, text: 'CPF do Representante Legal', type: 'CPF_CNPJ', required: true, risk: 0 },
     { order: 26, text: 'Cargo do Representante Legal', type: 'TEXT', required: true, risk: 0 },
@@ -106,7 +106,7 @@ const MERCHANT_SECTIONS = [
   { id: 'DECL', title: 'PARTE IV – Declarações e Assinatura', objective: 'Colher declarações formais do responsável, consentimento para verificações e dados de quem preencheu o questionário.', questions: [
     { order: 78, text: 'Declaro informações verdadeiras e completas', type: 'BOOLEAN', required: true, risk: 0 },
     { order: 79, text: 'Declaro que a empresa não atua em atividades proibidas', type: 'BOOLEAN', required: true, risk: 0 },
-    { order: 80, text: 'Autorizo a PagSmile a verificar dados junto a bureaus', type: 'BOOLEAN', required: true, risk: 0 },
+    { order: 80, text: 'Autorizo a Pin Bank a verificar dados junto a bureaus', type: 'BOOLEAN', required: true, risk: 0 },
     { order: 81, text: 'Nome do Responsável pelo preenchimento', type: 'TEXT', required: true, risk: 0 },
     { order: 82, text: 'Cargo', type: 'TEXT', required: true, risk: 0 },
     { order: 83, text: 'E-mail do responsável', type: 'EMAIL', required: true, risk: 0 },
@@ -235,8 +235,8 @@ function SectionBlock({ section, isOpen, onToggle }) {
     <div className="border border-slate-200 rounded-xl overflow-hidden mb-2">
       <button onClick={onToggle} className="w-full flex items-center justify-between p-3 hover:bg-slate-50/50 transition-colors text-left">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Badge className="bg-[#002443] text-white border-0 text-[10px] shrink-0">{section.id}</Badge>
-          <span className="text-xs font-bold text-[#002443] truncate">{section.title}</span>
+          <Badge className="bg-[#0A0A0A] text-white border-0 text-[10px] shrink-0">{section.id}</Badge>
+          <span className="text-xs font-bold text-[#0A0A0A] truncate">{section.title}</span>
           <Badge variant="outline" className="text-[10px] shrink-0">{section.questions.length} perguntas</Badge>
           {totalRisk > 0 && <Badge className="bg-red-50 text-red-600 border-0 text-[10px] shrink-0">Risco: {totalRisk}pts</Badge>}
         </div>
@@ -253,7 +253,7 @@ function SectionBlock({ section, isOpen, onToggle }) {
               <div key={i} className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-50 text-xs">
                 <Badge variant="outline" className="text-[9px] shrink-0 mt-0.5 font-mono w-7 justify-center">{q.order}</Badge>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[#002443]/80">{q.text}</span>
+                  <span className="text-[#0A0A0A]/80">{q.text}</span>
                   <div className="flex gap-1 mt-0.5 flex-wrap">
                     <Badge className="text-[8px] bg-slate-100 text-slate-600 border-0">{q.type}</Badge>
                     {q.required && <Badge className="text-[8px] bg-green-50 text-green-700 border-0">Obrigatório</Badge>}
@@ -283,7 +283,7 @@ function DocumentsList({ docs, title }) {
             <Badge className={`text-[8px] shrink-0 mt-0.5 border-0 ${d.required ? 'bg-orange-200 text-orange-800' : 'bg-slate-100 text-slate-500'}`}>
               {d.required ? 'OBRIG.' : 'OPC.'}
             </Badge>
-            <span className="text-[#002443]/70">{d.label}</span>
+            <span className="text-[#0A0A0A]/70">{d.label}</span>
           </div>
         ))}
       </div>
@@ -313,13 +313,13 @@ export default function QuestionnaireSection() {
           <button
             key={tab.id}
             onClick={() => { setActiveTab(tab.id); setOpenSections({}); }}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${activeTab === tab.id ? 'bg-[#002443] text-white border-[#002443]' : 'bg-white text-[#002443] border-slate-200 hover:border-[#2bc196]'}`}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${activeTab === tab.id ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'bg-white text-[#0A0A0A] border-slate-200 hover:border-[#1356E2]'}`}
           >
             <div className="flex items-center gap-2">
               <span>{tab.label}</span>
               <Badge className={`${tab.badgeColor} border-0 text-[10px]`}>{tab.badge}</Badge>
             </div>
-            <p className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-white/60' : 'text-[#002443]/40'}`}>{tab.desc}</p>
+            <p className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-white/60' : 'text-[#0A0A0A]/40'}`}>{tab.desc}</p>
           </button>
         ))}
       </div>
@@ -331,7 +331,7 @@ export default function QuestionnaireSection() {
           <h4 className="font-bold text-sm">Compliance - {active.label}</h4>
           <Badge className={`${active.risk === 'ALTO' ? 'bg-red-200 text-red-800' : active.risk === 'MÉDIO' ? 'bg-amber-200 text-amber-800' : 'bg-blue-200 text-blue-800'} border-0 text-[10px]`}>Risco: {active.risk}</Badge>
         </div>
-        <p className="text-xs text-[#002443]/60">
+        <p className="text-xs text-[#0A0A0A]/60">
           {active.id === 'merchant' && 'Venda Direta ao Consumidor Final (E-commerce, Link de Pagamento, Plataformas). Seções A–K + Declarações. Limiares: Auto-Aprovar > 80 | Revisão Manual 30–80 | Auto-Rejeitar < 30.'}
           {active.id === 'gateway' && 'Gateways de Pagamento (Infoprodutos, Dropshipping, E-commerce, Cursos). Seções A–J + K expandida (Due Diligence Sub-Merchants + Segurança Cartão + Transacional) + Declarações. Limiares: Auto-Aprovar > 85 | Revisão Manual 40–85 | Auto-Rejeitar < 40.'}
           {active.id === 'marketplace' && 'Plataformas Marketplace com Sellers Cadastrados. Seções A–J + K/M expandida (Onboarding Sellers + Contratos + Monitoramento + Transacional) + Declarações. Limiares: Auto-Aprovar > 80 | Revisão Manual 35–80 | Auto-Rejeitar < 35.'}
@@ -341,12 +341,12 @@ export default function QuestionnaireSection() {
       {/* Sections */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-bold text-[#002443]">Todas as Seções e Perguntas</h4>
+          <h4 className="text-sm font-bold text-[#0A0A0A]">Todas as Seções e Perguntas</h4>
           <button onClick={() => {
             const allOpen = {};
             active.sections.forEach(s => allOpen[s.id] = true);
             setOpenSections(allOpen);
-          }} className="text-[10px] text-[#2bc196] font-bold hover:underline">Expandir todas</button>
+          }} className="text-[10px] text-[#1356E2] font-bold hover:underline">Expandir todas</button>
         </div>
         {active.sections.map(section => (
           <SectionBlock key={section.id} section={section} isOpen={openSections[section.id]} onToggle={() => toggle(section.id)} />

@@ -18,8 +18,8 @@ export default function ModuleBInternacional({ formData, handleChange }) {
           <Globe className="w-5 h-5 text-sky-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Módulo Internacional</h2>
-          <p className="text-sm text-[var(--pagsmile-blue)]/60">Operações cross-border</p>
+          <h2 className="text-xl font-bold text-[var(--pinbank-blue)]">Módulo Internacional</h2>
+          <p className="text-sm text-[var(--pinbank-blue)]/60">Operações cross-border</p>
         </div>
       </div>
 
