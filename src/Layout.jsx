@@ -87,6 +87,12 @@ export default function Layout({ children, currentPageName }) {
   const isAuthenticated = isPublicRoute ? false : !!authData?.isAuthenticated;
   const isAdmin = user?.role === 'admin';
 
+  // Pin Bank brand colors
+  const PB_BLUE = '#1356E2';
+  const PB_SUNSET = '#E84B1C';
+  const PB_DARK = '#0A0A0A';
+  const PB_LIGHT = '#F1EFE9';
+
   const publicPages = [
     'IntroducerLandingPage','ContratoPublico','PropostaPadraoPublica','PropostaPixPublica',
     'OnboardingCompletion','PropostaPublica',
@@ -312,34 +318,31 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen font-sans antialiased bg-[#f4f4f4]">
         <style>{`
           :root {
-            --pagsmile-green: #2bc196; --pagsmile-green-light: #5cf7cf;
-            --pagsmile-blue: #002443; --pagsmile-blue-light: #003366;
-            --pagsmile-green-dark: #36706c;
-            --pagsmile-gray: #f4f4f4; --pagsmile-text: #282828;
-            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --pinbank-blue: #1356E2; --pinbank-sunset: #E84B1C;
+            --pinbank-dark: #0A0A0A; --pinbank-light: #F1EFE9;
+            --font-sans: 'Funnel Sans', system-ui, -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-            --foreground: #002443; --primary: #2bc196; --primary-foreground: #ffffff;
-            --secondary: #002443; --secondary-foreground: #ffffff;
-            --muted: #f4f4f4; --muted-foreground: #002443;
-            --accent: #2bc196; --accent-foreground: #ffffff;
-            --card: #ffffff; --card-foreground: #002443;
-            --popover: #ffffff; --popover-foreground: #002443;
-            --border: #e2e8f0; --input: #e2e8f0; --ring: #2bc196;
+            --foreground: #0A0A0A; --primary: #1356E2; --primary-foreground: #ffffff;
+            --secondary: #E84B1C; --secondary-foreground: #ffffff;
+            --muted: #F1EFE9; --muted-foreground: #0A0A0A;
+            --accent: #1356E2; --accent-foreground: #ffffff;
+            --card: #ffffff; --card-foreground: #0A0A0A;
+            --popover: #ffffff; --popover-foreground: #0A0A0A;
+            --border: rgba(10,10,10,0.1); --input: rgba(10,10,10,0.1); --ring: #1356E2;
           }
-          body { font-family: var(--font-sans); color: #002443; }
+          body { font-family: var(--font-sans); color: #0A0A0A; background: #F7F5F0; }
           * { color: inherit; }
-          h1,h2,h3,h4,h5,h6,p,span,label,div { color: #002443; }
-          .text-muted-foreground { color: #002443 !important; opacity: 0.7; }
-          .text-foreground { color: #002443 !important; }
-          .text-primary { color: #2bc196 !important; }
-          .bg-primary { background-color: #2bc196 !important; }
-          .text-black,.text-gray-900,.text-gray-800,.text-gray-700,.text-gray-600,.text-gray-500,.text-slate-900,.text-slate-800,.text-slate-700,.text-slate-600,.text-slate-500 { color: #002443 !important; }
-          .modern-shadow { box-shadow: 0 4px 20px rgba(0,36,67,0.05); }
-          .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+          h1,h2,h3,h4,h5,h6,p,span,label,div { color: #0A0A0A; }
+          .text-muted-foreground { color: #0A0A0A !important; opacity: 0.6; }
+          .text-foreground { color: #0A0A0A !important; }
+          .text-primary { color: #1356E2 !important; }
+          .bg-primary { background-color: #1356E2 !important; }
+          .text-black,.text-gray-900,.text-gray-800,.text-gray-700,.text-gray-600,.text-gray-500,.text-slate-900,.text-slate-800,.text-slate-700,.text-slate-600,.text-slate-500 { color: #0A0A0A !important; }
+          .modern-shadow { box-shadow: 0 4px 20px rgba(10,10,10,0.06); }
+          .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(10,10,10,0.08); }
         `}</style>
-        <div className="fixed top-0 left-0 w-full h-2 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
-        <div className="fixed left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
-        <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
+        <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#0A0A0A] via-[#1356E2] to-[#E84B1C] z-[60]" />
+        <div className="fixed left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#1356E2] to-[#E84B1C] z-[60]" />
         <div className="fixed top-4 right-4 z-[70]">
           <LanguageSelector />
         </div>
@@ -375,19 +378,19 @@ export default function Layout({ children, currentPageName }) {
         className={`group flex items-center gap-3 rounded-lg transition-all duration-200 text-[13px] font-medium relative
           ${isCollapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2'}
           ${isActive
-            ? 'bg-[#2bc196]/15 text-[#5cf7cf] font-semibold'
+            ? 'bg-[#1356E2]/20 text-white font-semibold'
             : item.highlight && !isActive
-            ? 'text-[#2bc196] hover:bg-white/5'
+            ? 'text-[#E84B1C] hover:bg-white/5'
             : 'text-white/55 hover:text-white/90 hover:bg-white/5'
           }`}
       >
         {isActive && (
-          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-[#2bc196] rounded-r-full" />
+          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-[#1356E2] rounded-r-full" />
         )}
-        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-[#2bc196]' : item.highlight ? 'text-[#2bc196]' : 'text-white/35 group-hover:text-white/60'}`} />
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-[#1356E2]' : item.highlight ? 'text-[#E84B1C]' : 'text-white/35 group-hover:text-white/60'}`} />
         {!isCollapsed && <span className="flex-1 truncate">{item.label}</span>}
         {!isCollapsed && item.highlight && !isActive && (
-          <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#E84B1C] animate-pulse" />
         )}
       </Link>
     );
@@ -396,7 +399,7 @@ export default function Layout({ children, currentPageName }) {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="bg-[#002443] text-white border-white/10 text-xs font-medium">
+          <TooltipContent side="right" className="bg-[#0A0A0A] text-white border-white/10 text-xs font-medium">
             {item.label}
           </TooltipContent>
         </Tooltip>
@@ -420,12 +423,12 @@ export default function Layout({ children, currentPageName }) {
             <button
               onClick={() => toggleSection(section.id)}
               className={`flex items-center justify-center w-full py-2.5 rounded-lg transition-all duration-200
-                ${hasActive ? 'bg-[#2bc196]/10 text-[#2bc196]' : 'text-white/40 hover:text-white/70 hover:bg-white/5'}`}
+                ${hasActive ? 'bg-[#1356E2]/15 text-[#1356E2]' : 'text-white/40 hover:text-white/70 hover:bg-white/5'}`}
             >
-              <SectionIcon className={`w-5 h-5 ${hasActive ? 'text-[#2bc196]' : 'text-white/35'}`} />
+              <SectionIcon className={`w-5 h-5 ${hasActive ? 'text-[#1356E2]' : 'text-white/35'}`} />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="right" className="bg-[#002443] text-white border-white/10 text-xs font-medium">
+          <TooltipContent side="right" className="bg-[#0A0A0A] text-white border-white/10 text-xs font-medium">
             {section.label}
           </TooltipContent>
         </Tooltip>
@@ -439,24 +442,24 @@ export default function Layout({ children, currentPageName }) {
           onClick={() => toggleSection(section.id)}
           className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-200 rounded-lg
             ${isExpanded 
-              ? 'text-[#2bc196] bg-[#2bc196]/8' 
+              ? 'text-[#1356E2] bg-[#1356E2]/10' 
               : hasActive
-              ? 'text-[#2bc196]/70 hover:bg-white/5'
+              ? 'text-[#1356E2]/70 hover:bg-white/5'
               : 'text-white/40 hover:text-white/60 hover:bg-white/5'
             }`}
         >
-          <SectionIcon className={`w-[18px] h-[18px] flex-shrink-0 ${isExpanded ? 'text-[#2bc196]' : hasActive ? 'text-[#2bc196]/60' : 'text-white/25'}`} />
+          <SectionIcon className={`w-[18px] h-[18px] flex-shrink-0 ${isExpanded ? 'text-[#1356E2]' : hasActive ? 'text-[#1356E2]/60' : 'text-white/25'}`} />
           <span className="flex-1 text-left">{section.label}</span>
-          {hasActive && !isExpanded && <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196]" />}
+          {hasActive && !isExpanded && <span className="w-1.5 h-1.5 rounded-full bg-[#1356E2]" />}
           {isExpanded 
-            ? <ChevronDown className="w-3.5 h-3.5 text-[#2bc196]/50" /> 
+            ? <ChevronDown className="w-3.5 h-3.5 text-[#1356E2]/50" /> 
             : <ChevronRight className="w-3.5 h-3.5 text-white/20" />
           }
         </button>
 
         {/* Sub Items */}
         {isExpanded && (
-          <div className="mt-1 ml-3 pl-3 border-l-2 border-[#2bc196]/20 space-y-0.5 pb-1">
+          <div className="mt-1 ml-3 pl-3 border-l-2 border-[#1356E2]/20 space-y-0.5 pb-1">
             {visibleItems.map(item => (
               <NavItem 
                 key={item.path} 
@@ -500,25 +503,23 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen bg-[#f4f4f4] flex font-sans">
         <style>{`
           :root {
-            --pagsmile-green: #2bc196; --pagsmile-green-light: #5cf7cf;
-            --pagsmile-blue: #002443; --pagsmile-blue-light: #003366;
-            --pagsmile-green-dark: #36706c;
-            --pagsmile-gray: #f4f4f4; --pagsmile-text: #282828;
-            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --pinbank-blue: #1356E2; --pinbank-sunset: #E84B1C;
+            --pinbank-dark: #0A0A0A; --pinbank-light: #F1EFE9;
+            --font-sans: 'Funnel Sans', system-ui, -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
           }
-          body { font-family: var(--font-sans); color: var(--pagsmile-blue); }
+          body { font-family: var(--font-sans); color: #0A0A0A; background: #F7F5F0; }
         `}</style>
 
         {/* ═══════ Desktop Sidebar ═══════ */}
         {isAuthenticated && (
-          <aside className={`hidden lg:flex flex-col ${sidebarWidth} bg-[#002443] h-screen fixed left-0 top-0 z-20 transition-all duration-300 ease-in-out`}>
+          <aside className={`hidden lg:flex flex-col ${sidebarWidth} bg-[#0A0A0A] h-screen fixed left-0 top-0 z-20 transition-all duration-300 ease-in-out`}>
             
             {/* Logo + Language */}
             <div className={`border-b border-white/8 ${collapsed ? 'px-3 py-4 flex flex-col items-center gap-3' : 'px-5 py-4'}`}>
               {collapsed ? (
                 <>
-                  <div className="w-8 h-8 rounded-lg bg-[#2bc196] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-[#1356E2] flex items-center justify-center">
                     <span className="text-white font-bold text-sm">P</span>
                   </div>
                   <LanguageSelector variant="sidebar-collapsed" />
@@ -526,8 +527,8 @@ export default function Layout({ children, currentPageName }) {
               ) : (
                 <div className="flex items-center justify-between">
                   <img 
-                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
-                    alt="Pagsmile" 
+                    src="https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/c0c42c436_01-pinbank-logo-sunset.png" 
+                    alt="Pin Bank" 
                     className="h-7 w-auto"
                   />
                   <LanguageSelector variant="sidebar" />
@@ -692,7 +693,7 @@ export default function Layout({ children, currentPageName }) {
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <div className="flex justify-center">
-                      <div className="w-9 h-9 rounded-full bg-[#2bc196] flex items-center justify-center text-white cursor-default">
+                      <div className="w-9 h-9 rounded-full bg-[#1356E2] flex items-center justify-center text-white cursor-default">
                         <span className="text-sm font-semibold">{user?.full_name?.charAt(0) || 'U'}</span>
                       </div>
                     </div>
@@ -705,7 +706,7 @@ export default function Layout({ children, currentPageName }) {
               ) : (
                 <>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-[#2bc196] flex items-center justify-center text-white flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[#1356E2] flex items-center justify-center text-white flex-shrink-0">
                       <span className="text-xs font-semibold">{user?.full_name?.charAt(0) || 'U'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -730,15 +731,15 @@ export default function Layout({ children, currentPageName }) {
 
         {/* ═══════ Mobile Header ═══════ */}
         {isAuthenticated && (
-          <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#002443] z-50">
+          <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#0A0A0A] z-50">
             <div className="flex items-center justify-between px-4 py-3">
               <div className="flex items-center gap-3">
                 <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white/80">
                   {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
                 <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
-                  alt="Pagsmile" className="h-6"
+                  src="https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/c0c42c436_01-pinbank-logo-sunset.png" 
+                  alt="Pin Bank" className="h-6"
                 />
               </div>
               <Button variant="ghost" size="sm" onClick={() => base44.auth.logout()} className="text-white/60 hover:text-white hover:bg-white/10">
@@ -751,7 +752,7 @@ export default function Layout({ children, currentPageName }) {
         {/* ═══════ Mobile Sidebar ═══════ */}
         {isAuthenticated && mobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 bg-black/60 z-40" onClick={() => setMobileMenuOpen(false)}>
-            <aside className="w-72 bg-[#002443] h-full pt-16 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <aside className="w-72 bg-[#0A0A0A] h-full pt-16 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <nav className="px-3 py-4">
                 <div className="mb-1">
                   <NavItem 
@@ -866,7 +867,7 @@ export default function Layout({ children, currentPageName }) {
         )}
 
         {/* ═══════ Main Content ═══════ */}
-        <main className={`flex-1 ${isAuthenticated ? mainMargin : ''} bg-[#f4f4f4] min-h-screen transition-all duration-300 ease-in-out`}>
+        <main className={`flex-1 ${isAuthenticated ? mainMargin : ''} bg-[#F7F5F0] min-h-screen transition-all duration-300 ease-in-out`}>
           <div className={`p-4 lg:p-8 ${isAuthenticated ? 'pt-20 lg:pt-8' : ''}`}>
             {children}
           </div>

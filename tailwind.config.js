@@ -17,8 +17,9 @@ module.exports = {
   theme: {
   	extend: {
   		fontFamily: {
-  			sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+  			sans: ['"Funnel Sans"', 'system-ui', '-apple-system', 'sans-serif'],
   			mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+  			display: ['"Funnel Sans"', 'system-ui', 'sans-serif'],
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

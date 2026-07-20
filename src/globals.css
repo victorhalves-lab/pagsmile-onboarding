@@ -2,63 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap');
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 210 100% 13%;
+    --foreground: 0 0% 4%;
     --card: 0 0% 100%;
-    --card-foreground: 210 100% 13%;
+    --card-foreground: 0 0% 4%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 100% 13%;
-    --primary: 160 62% 45%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 219 83% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 100% 13%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 210 100% 13%;
-    --accent: 160 62% 45%;
+    --secondary: 17 80% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 0 0% 4%;
+    --accent: 219 83% 48%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 160 62% 45%;
+    --border: 40 10% 88%;
+    --input: 40 10% 88%;
+    --ring: 219 83% 48%;
     --radius: 0.75rem;
+
+    /* Pin Bank brand tokens */
+    --pinbank-blue: #1356E2;
+    --pinbank-sunset: #E84B1C;
+    --pinbank-dark: #0A0A0A;
+    --pinbank-light: #F1EFE9;
+    --pinbank-light-bg: #F7F5F0;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Funnel Sans', system-ui, -apple-system, sans-serif;
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #002443;
+    font-family: 'Funnel Sans', system-ui, -apple-system, sans-serif;
+    color: #0A0A0A;
+    background-color: #F7F5F0;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
-  /* JetBrains Mono only when explicitly requested via .font-mono */
   .font-mono, code, kbd, pre, samp {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
     font-variant-ligatures: none;
   }
 }
 
-/* ===== FORÇA GLOBAL - SOBRESCREVE TUDO ===== */
+/* ===== PIN BANK BRAND OVERRIDES ===== */
 
-/* Todos os textos devem ser azul Pagsmile */
 * {
-  color: #002443;
+  color: #0A0A0A;
 }
 
-/* Exceções: textos brancos em fundos coloridos */
-.bg-\[\#2bc196\],
-.bg-\[\#2bc196\] *,
-.bg-\[\#002443\],
-.bg-\[\#002443\] *,
+/* White text on dark/colored backgrounds */
+.bg-\[\#1356E2\],
+.bg-\[\#1356E2\] *,
+.bg-\[\#0A0A0A\],
+.bg-\[\#0A0A0A\] *,
+.bg-\[\#E84B1C\],
+.bg-\[\#E84B1C\] *,
 [data-state="checked"],
 .bg-red-500,
 .bg-red-500 *,
@@ -67,32 +75,28 @@
   color: #ffffff !important;
 }
 
-/* Ícones herdam a cor do pai */
 svg {
   color: inherit;
 }
 
-/* Placeholder */
 ::placeholder {
-  color: #002443 !important;
-  opacity: 0.5;
+  color: #0A0A0A !important;
+  opacity: 0.4;
 }
 
-/* Links */
 a {
-  color: #002443;
+  color: #0A0A0A;
 }
 
 a:hover {
-  color: #2bc196;
+  color: #1356E2;
 }
 
-/* Bordas padrão */
 .border {
-  border-color: #e2e8f0;
+  border-color: rgba(10, 10, 10, 0.1);
 }
 
-/* Remove qualquer cor preta/cinza residual */
+/* Override all gray/slate text to dark */
 .text-black,
 .text-gray-900,
 .text-gray-800,
@@ -106,104 +110,84 @@ a:hover {
 .text-slate-600,
 .text-slate-500,
 .text-slate-400 {
-  color: #002443 !important;
+  color: #0A0A0A !important;
 }
 
-/* Force brand backgrounds - remove any slate/gray backgrounds */
+/* Override old Pagsmile green backgrounds to Pin Bank blue */
+.bg-\[\#2bc196\] { background-color: #1356E2 !important; }
+.bg-\[\#2bc196\]\/90 { background-color: rgba(19,86,226,0.9) !important; }
+.bg-\[\#2bc196\]\/15 { background-color: rgba(19,86,226,0.15) !important; }
+.bg-\[\#2bc196\]\/8 { background-color: rgba(19,86,226,0.08) !important; }
+
+/* Override old Pagsmile blue sidebar to Pin Bank dark */
+.bg-\[\#002443\] { background-color: #0A0A0A !important; }
+
+/* Override app backgrounds */
 .bg-slate-50,
 .bg-slate-100,
 .bg-gray-50,
 .bg-gray-100 {
-  background-color: #f4f4f4 !important;
+  background-color: #F7F5F0 !important;
 }
+
+.bg-\[\#f4f4f4\] { background-color: #F7F5F0 !important; }
 
 .border-slate-200,
 .border-slate-100,
 .border-gray-200,
 .border-gray-100 {
-  border-color: rgba(0, 36, 67, 0.08) !important;
+  border-color: rgba(10, 10, 10, 0.08) !important;
 }
 
 .hover\:bg-slate-50:hover,
 .hover\:bg-gray-50:hover {
-  background-color: rgba(43, 193, 150, 0.05) !important;
+  background-color: rgba(19, 86, 226, 0.04) !important;
 }
 
-/* Cores muted sempre em azul */
 .text-muted-foreground {
-  color: #002443 !important;
-  opacity: 0.7;
+  color: #0A0A0A !important;
+  opacity: 0.6;
 }
 
-/* Botões primários */
-.bg-primary {
-  background-color: #2bc196 !important;
-}
+.text-foreground { color: #0A0A0A !important; }
 
-.text-primary {
-  color: #2bc196 !important;
-}
+/* Primary color overrides */
+.bg-primary { background-color: #1356E2 !important; }
+.text-primary { color: #1356E2 !important; }
+.text-primary-foreground { color: #ffffff !important; }
 
-.text-primary-foreground {
-  color: #ffffff !important;
-}
+/* Old green color overrides */
+.text-\[\#2bc196\] { color: #1356E2 !important; }
+.border-\[\#2bc196\] { border-color: #1356E2 !important; }
+.ring-\[\#2bc196\] { --tw-ring-color: #1356E2 !important; }
 
-/* Estados de foco */
+/* Focus */
 .focus\:ring-ring:focus,
 .focus-visible\:ring-ring:focus-visible {
-  --tw-ring-color: #2bc196;
+  --tw-ring-color: #1356E2;
 }
 
 /* Dark Sidebar Scrollbar */
-.sidebar-nav::-webkit-scrollbar {
-  width: 4px;
-}
-.sidebar-nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-.sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-/* Recharts (gráficos) */
-.recharts-text {
-  fill: #002443 !important;
-}
-
-.recharts-cartesian-axis-tick-value {
-  fill: #002443 !important;
-}
-
-.recharts-legend-item-text {
-  color: #002443 !important;
-}
-
-.recharts-tooltip-label,
-.recharts-tooltip-item {
-  color: #002443 !important;
-}
+/* Recharts */
+.recharts-text { fill: #0A0A0A !important; }
+.recharts-cartesian-axis-tick-value { fill: #0A0A0A !important; }
+.recharts-legend-item-text { color: #0A0A0A !important; }
+.recharts-tooltip-label, .recharts-tooltip-item { color: #0A0A0A !important; }
 
 /* Sonner toasts */
 [data-sonner-toast] {
   background-color: #ffffff !important;
-  color: #002443 !important;
-  border-color: #e2e8f0 !important;
+  color: #0A0A0A !important;
+  border-color: rgba(10,10,10,0.1) !important;
 }
-
 [data-sonner-toast] [data-title],
-[data-sonner-toast] [data-description] {
-  color: #002443 !important;
-}
+[data-sonner-toast] [data-description] { color: #0A0A0A !important; }
 
-/* Forçar cor em elementos específicos do Radix */
-[data-radix-popper-content-wrapper] * {
-  color: #002443;
-}
-
-[data-radix-popper-content-wrapper] [data-state="checked"] {
-  color: #ffffff !important;
-}
+/* Radix */
+[data-radix-popper-content-wrapper] * { color: #0A0A0A; }
+[data-radix-popper-content-wrapper] [data-state="checked"] { color: #ffffff !important; }
