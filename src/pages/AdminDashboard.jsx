@@ -418,11 +418,11 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A0A0A] to-[#1356E2] rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10">
-              <Shield className="w-6 h-6 text-[#5cf7cf]" />
+              <Shield className="w-6 h-6 text-[#E84B1C]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('admin_dash.title')}</h1>
@@ -435,7 +435,7 @@ export default function AdminDashboard() {
               {t('admin_dash.refresh')}
             </Button>
             <Link to={createPageUrl('GerarLinkOnboarding')}>
-              <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl shadow-md">
+              <Button className="bg-[#1356E2] hover:bg-[#1356E2]/90 text-white rounded-xl shadow-md">
                 <LinkIcon className="w-4 h-4 mr-2" />
                 {t('admin_dash.generate_link')}
               </Button>
@@ -452,7 +452,7 @@ export default function AdminDashboard() {
           subtitle={t('admin_dash.pending_count', { count: stats.pendente + stats.processando })}
           icon={Users}
           iconBg="bg-slate-100"
-          iconColor="text-[var(--pagsmile-blue)]/80"
+          iconColor="text-[#1356E2]/80"
           trend={undefined}
           trendValue={undefined}
           trendLabel={undefined}
@@ -529,7 +529,7 @@ export default function AdminDashboard() {
 
       {/* Score Overview */}
       <div className="mb-6">
-        <h2 className="text-lg font-bold text-[#002443] mb-3">{t('admin_dash.score_analysis')}</h2>
+        <h2 className="text-lg font-bold text-[#0A0A0A] mb-3">{t('admin_dash.score_analysis')}</h2>
         <ComplianceScoresOverview scores={stats.scoreStats} />
       </div>
 
