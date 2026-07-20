@@ -43,14 +43,14 @@ export default function CommercialAlerts({ stats }) {
 
   if (visible.length === 0) {
     return (
-      <div className="bg-gradient-to-r from-[#2bc196]/10 to-[#36706c]/10 rounded-2xl border border-[#2bc196]/20 p-5">
+      <div className="bg-gradient-to-r from-[#1356E2]/10 to-[#E84B1C]/10 rounded-2xl border border-[#1356E2]/20 p-5">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-[#2bc196]/10">
-            <Zap className="w-5 h-5 text-[#2bc196]" />
+          <div className="p-2 rounded-xl bg-[#1356E2]/10">
+            <Zap className="w-5 h-5 text-[#1356E2]" />
           </div>
           <div>
-            <h3 className="font-bold text-[#002443] text-sm">Tudo em dia!</h3>
-            <p className="text-xs text-[#002443]/50">Nenhum alerta pendente no funil comercial.</p>
+            <h3 className="font-bold text-[#0A0A0A] text-sm">Tudo em dia!</h3>
+            <p className="text-xs text-[#0A0A0A]/50">Nenhum alerta pendente no funil comercial.</p>
           </div>
         </div>
       </div>
@@ -58,10 +58,10 @@ export default function CommercialAlerts({ stats }) {
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-5 shadow-lg">
+    <div className="bg-gradient-to-r from-[#0A0A0A] to-[#1356E2] rounded-2xl p-5 shadow-lg">
       <div className="flex items-center gap-3 mb-4">
         <div className="p-2 rounded-xl bg-white/10">
-          <Zap className="w-5 h-5 text-[#5cf7cf]" />
+          <Zap className="w-5 h-5 text-[#E84B1C]" />
         </div>
         <div>
           <h3 className="font-bold text-white text-sm">Ações Necessárias</h3>
@@ -79,12 +79,12 @@ export default function CommercialAlerts({ stats }) {
               className="flex items-center gap-3 p-3 rounded-xl bg-white/10 border border-white/5 hover:bg-white/20 transition-all group"
             >
               <div className="p-1.5 rounded-lg bg-white/10">
-                <Icon className="w-4 h-4 text-[#5cf7cf]" />
+                <Icon className="w-4 h-4 text-[#E84B1C]" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-white/80 font-medium truncate">{insight.message}</p>
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-[#5cf7cf] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#E84B1C] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
             </Link>
           );
         })}

@@ -13,8 +13,8 @@ function ScoreCard({ title, value, subtext, icon: Icon, color }) {
           <span className={`text-2xl font-bold ${color.text}`}>{value}</span>
         )}
       </div>
-      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)]">{title}</h3>
-      <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium mt-1">{subtext}</p>
+      <h3 className="text-sm font-semibold text-[#1356E2]">{title}</h3>
+      <p className="text-xs text-[#0A0A0A]/60 font-medium mt-1">{subtext}</p>
     </div>
   );
 }
@@ -23,9 +23,9 @@ export default function ComplianceScoresOverview({ scores }) {
   const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <ScoreCard title={t('chart.avg_sq')} value={scores.avgSQ} subtext={t('chart.sq_desc')} icon={Activity} color={{ bg: 'bg-blue-50', text: 'text-blue-600' }} />
-      <ScoreCard title={t('chart.avg_sve')} value={scores.avgSVE} subtext={t('chart.sve_desc')} icon={ShieldCheck} color={{ bg: 'bg-purple-50', text: 'text-purple-600' }} />
-      <ScoreCard title={t('chart.avg_sgc')} value={scores.avgSGC} subtext={t('chart.sgc_desc')} icon={ShieldAlert} color={{ bg: 'bg-slate-100', text: 'text-slate-800' }} />
+      <ScoreCard title={t('chart.avg_sq')} value={scores.avgSQ} subtext={t('chart.sq_desc')} icon={Activity} color={{ bg: 'bg-[#1356E2]/10', text: 'text-[#1356E2]' }} />
+      <ScoreCard title={t('chart.avg_sve')} value={scores.avgSVE} subtext={t('chart.sve_desc')} icon={ShieldCheck} color={{ bg: 'bg-[#E84B1C]/10', text: 'text-[#E84B1C]' }} />
+      <ScoreCard title={t('chart.avg_sgc')} value={scores.avgSGC} subtext={t('chart.sgc_desc')} icon={ShieldAlert} color={{ bg: 'bg-[#0A0A0A]/10', text: 'text-[#0A0A0A]' }} />
     </div>
   );
 }

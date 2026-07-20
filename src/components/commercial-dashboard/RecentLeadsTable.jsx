@@ -101,7 +101,7 @@ export default function RecentLeadsTable({ leads, isLoading }) {
             </Select>
           </div>
           <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0A0A0A]/40" />
             <Input placeholder="Buscar por nome, CNPJ, e-mail..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-9" />
           </div>
         </div>
@@ -111,13 +111,13 @@ export default function RecentLeadsTable({ leads, isLoading }) {
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#1356E2]" />
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12">
-            <FileText className="w-12 h-12 mx-auto text-[#002443]/30 mb-4" />
-            <p className="text-[#002443]/60 font-medium">Nenhum lead encontrado</p>
-            <p className="text-sm text-[#002443]/40 mt-1">Ajuste os filtros</p>
+            <FileText className="w-12 h-12 mx-auto text-[#0A0A0A]/30 mb-4" />
+            <p className="text-[#0A0A0A]/60 font-medium">Nenhum lead encontrado</p>
+            <p className="text-sm text-[#0A0A0A]/40 mt-1">Ajuste os filtros</p>
           </div>
         ) : (
           <Table>
@@ -141,8 +141,8 @@ export default function RecentLeadsTable({ leads, isLoading }) {
                   <TableRow key={lead.id} className="hover:bg-slate-50">
                     <TableCell>
                       <div>
-                        <p className="font-semibold text-[#002443] text-sm">{lead.fullName || lead.companyName || 'N/A'}</p>
-                        <p className="text-xs text-[#002443]/50">{lead.cpfCnpj || lead.email || '-'}</p>
+                        <p className="font-semibold text-[#0A0A0A] text-sm">{lead.fullName || lead.companyName || 'N/A'}</p>
+                        <p className="text-xs text-[#0A0A0A]/50">{lead.cpfCnpj || lead.email || '-'}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -152,23 +152,23 @@ export default function RecentLeadsTable({ leads, isLoading }) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <span className="text-xs text-[#002443]/70">{SUBCATEGORY_LABELS[lead.businessSubCategory] || '-'}</span>
+                      <span className="text-xs text-[#0A0A0A]/70">{SUBCATEGORY_LABELS[lead.businessSubCategory] || '-'}</span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm font-medium text-[#002443]">{formatCompact(lead.tpvMensal)}</span>
+                      <span className="text-sm font-medium text-[#0A0A0A]">{formatCompact(lead.tpvMensal)}</span>
                     </TableCell>
                     <TableCell>
                       {lead.leadQualifierScore ? (
                         <span className={`text-sm font-bold ${lead.leadQualifierScore >= 70 ? 'text-green-600' : lead.leadQualifierScore >= 40 ? 'text-amber-600' : 'text-red-600'}`}>
                           {lead.leadQualifierScore}
                         </span>
-                      ) : <span className="text-[#002443]/30">-</span>}
+                      ) : <span className="text-[#0A0A0A]/30">-</span>}
                     </TableCell>
                     <TableCell>
-                      <span className="text-xs text-[#002443]/60">{lead.introducerName || '-'}</span>
+                      <span className="text-xs text-[#0A0A0A]/60">{lead.introducerName || '-'}</span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-xs text-[#002443]/60">
+                      <span className="text-xs text-[#0A0A0A]/60">
                         {lead.created_date ? new Date(lead.created_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '-'}
                       </span>
                     </TableCell>
@@ -187,11 +187,11 @@ export default function RecentLeadsTable({ leads, isLoading }) {
         )}
         {filtered.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-[#002443]/50 font-medium">
+            <p className="text-sm text-[#0A0A0A]/50 font-medium">
               Exibindo {Math.min(filtered.length, 25)} de {filtered.length}
             </p>
             <Link to={createPageUrl('PipelineComercial')}>
-              <Button variant="ghost" size="sm" className="text-xs text-[#2bc196] font-semibold">Ver todos →</Button>
+              <Button variant="ghost" size="sm" className="text-xs text-[#1356E2] font-semibold">Ver todos →</Button>
             </Link>
           </div>
         )}

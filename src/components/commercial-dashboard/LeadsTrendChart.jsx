@@ -3,8 +3,8 @@ import TrendLineChart from '../dashboard/TrendLineChart';
 
 export default function LeadsTrendChart({ data }) {
   const lines = [
-    { dataKey: 'novos', name: 'Novos Leads', color: '#002443' },
-    { dataKey: 'convertidos', name: 'Convertidos', color: '#22c55e' },
+    { dataKey: 'novos', name: 'Novos Leads', color: '#0A0A0A' },
+    { dataKey: 'convertidos', name: 'Convertidos', color: '#1356E2' },
     { dataKey: 'perdidos', name: 'Perdidos', color: '#ef4444' }
   ];
 

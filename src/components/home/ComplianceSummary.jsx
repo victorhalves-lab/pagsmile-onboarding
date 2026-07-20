@@ -8,12 +8,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_COLORS = {
-  'Pendente': '#002443',
-  'Em Processamento': '#36706c',
-  'Aprovado': '#2bc196',
+  'Pendente': '#0A0A0A',
+  'Em Processamento': '#E84B1C',
+  'Aprovado': '#1356E2',
   'Manual': '#F59E0B',
   'Recusado': '#EF4444',
-  'Docs Solicitados': '#5cf7cf',
+  'Docs Solicitados': '#1356E2',
 };
 
 export default function ComplianceSummary({ cases, helenaAnalyses }) {
@@ -44,17 +44,17 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
   }, [cases, helenaAnalyses]);
 
   return (
-    <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+    <Card className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#002443]">
-            <div className="p-1.5 rounded-lg bg-[#36706c]/10">
-              <Shield className="w-3.5 h-3.5 text-[#36706c]" />
+          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#0A0A0A]">
+            <div className="p-1.5 rounded-lg bg-[#E84B1C]/10">
+              <Shield className="w-3.5 h-3.5 text-[#E84B1C]" />
             </div>
             {t('compliance.title')}
           </CardTitle>
           <Link to={createPageUrl('AdminDashboard')}>
-            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
+            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#1356E2] hover:text-[#0A0A0A] font-semibold">
               {t('compliance.dashboard')} <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
@@ -63,23 +63,23 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
       <CardContent className="space-y-4">
         {/* Summary stats */}
         <div className="grid grid-cols-4 gap-2">
-          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
-            <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.total')}</p>
+          <div className="text-center p-2 rounded-xl bg-[#F7F5F0]">
+            <p className="text-lg font-bold text-[#0A0A0A]">{metrics.total}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('compliance.total')}</p>
           </div>
-          <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
-            <p className="text-lg font-bold text-[#2bc196]">{metrics.approved}</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.approved')}</p>
+          <div className="text-center p-2 rounded-xl bg-[#1356E2]/5">
+            <p className="text-lg font-bold text-[#1356E2]">{metrics.approved}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('compliance.approved')}</p>
           </div>
-          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
-            <p className={`text-lg font-bold ${metrics.pendingManual > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
+          <div className="text-center p-2 rounded-xl bg-[#F7F5F0]">
+            <p className={`text-lg font-bold ${metrics.pendingManual > 0 ? 'text-amber-600' : 'text-[#0A0A0A]'}`}>
               {metrics.pendingManual}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.pending')}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('compliance.pending')}</p>
           </div>
-          <div className="text-center p-2 rounded-xl bg-[#36706c]/5">
-            <p className="text-lg font-bold text-[#36706c]">{metrics.autoApprovalRate}%</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.ia_auto')}</p>
+          <div className="text-center p-2 rounded-xl bg-[#E84B1C]/5">
+            <p className="text-lg font-bold text-[#E84B1C]">{metrics.autoApprovalRate}%</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('compliance.ia_auto')}</p>
           </div>
         </div>
 
@@ -115,9 +115,9 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
                 <div key={item.name} className="flex items-center justify-between text-[11px]">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-[#282828]/60 font-medium">{item.name}</span>
+                    <span className="text-[#0A0A0A]/60 font-medium">{item.name}</span>
                   </div>
-                  <span className="font-bold text-[#002443]">{item.value}</span>
+                  <span className="font-bold text-[#0A0A0A]">{item.value}</span>
                 </div>
               ))}
             </div>

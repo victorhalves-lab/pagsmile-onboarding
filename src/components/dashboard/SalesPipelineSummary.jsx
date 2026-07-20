@@ -17,12 +17,12 @@ export default function SalesPipelineSummary({ leads, proposals = [] }) {
   const { t } = useTranslation();
 
   const FUNNEL_STAGES = [
-    { key: 'leads', label: t('pipeline.leads'), statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#002443' },
-    { key: 'contato', label: t('pipeline.contact'), statuses: ['em_contato_comercial'], color: '#36706c' },
-    { key: 'proposta', label: t('pipeline.proposal'), statuses: ['proposta_enviada'], color: '#3B82F6' },
-    { key: 'aceita', label: t('pipeline.accepted'), statuses: ['proposta_aceita'], color: '#8B5CF6' },
-    { key: 'compliance', label: t('pipeline.compliance'), statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#10B981' },
-    { key: 'fechado', label: t('pipeline.closed'), statuses: ['ativado'], color: '#059669' },
+    { key: 'leads', label: t('pipeline.leads'), statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#0A0A0A' },
+    { key: 'contato', label: t('pipeline.contact'), statuses: ['em_contato_comercial'], color: '#E84B1C' },
+    { key: 'proposta', label: t('pipeline.proposal'), statuses: ['proposta_enviada'], color: '#1356E2' },
+    { key: 'aceita', label: t('pipeline.accepted'), statuses: ['proposta_aceita'], color: '#1356E2' },
+    { key: 'compliance', label: t('pipeline.compliance'), statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#E84B1C' },
+    { key: 'fechado', label: t('pipeline.closed'), statuses: ['ativado'], color: '#0A0A0A' },
   ];
 
   const metrics = useMemo(() => {
@@ -99,17 +99,17 @@ export default function SalesPipelineSummary({ leads, proposals = [] }) {
   const maxCount = Math.max(...metrics.stages.map(s => s.count), 1);
 
   return (
-    <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
+    <Card className="rounded-2xl border-[#0A0A0A]/5 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#002443]">
-            <div className="p-1.5 rounded-lg bg-[#002443]/10">
-              <DollarSign className="w-3.5 h-3.5 text-[#002443]" />
+          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#0A0A0A]">
+            <div className="p-1.5 rounded-lg bg-[#0A0A0A]/10">
+              <DollarSign className="w-3.5 h-3.5 text-[#0A0A0A]" />
             </div>
             {t('pipeline.title')}
           </CardTitle>
           <Link to={createPageUrl('PipelineComercial')}>
-            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
+            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#1356E2] hover:text-[#0A0A0A] font-semibold">
               {t('pipeline.view')} <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
@@ -118,41 +118,41 @@ export default function SalesPipelineSummary({ leads, proposals = [] }) {
       <CardContent className="space-y-4">
         {/* Summary stats */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
-            <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.leads')}</p>
+          <div className="text-center p-2 rounded-xl bg-[#F7F5F0]">
+            <p className="text-lg font-bold text-[#0A0A0A]">{metrics.total}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('pipeline.leads')}</p>
           </div>
-          <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
-            <p className="text-lg font-bold text-[#2bc196]">
+          <div className="text-center p-2 rounded-xl bg-[#1356E2]/5">
+            <p className="text-lg font-bold text-[#1356E2]">
               {formatCompact(metrics.totalTPV)}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">TPV {t('pipeline.total_label')}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">TPV {t('pipeline.total_label')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-emerald-50">
             <p className="text-lg font-bold text-emerald-600">
               {formatCompact(metrics.closedRevenue)}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.closed_revenue')}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('pipeline.closed_revenue')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-blue-50">
             <p className="text-lg font-bold text-blue-600">
               {formatCompact(metrics.pipelineRevenue)}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.pipeline_revenue')}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('pipeline.pipeline_revenue')}</p>
           </div>
         </div>
 
         {/* Conversion + Stale */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
-            <p className="text-lg font-bold text-[#36706c]">{metrics.conversionRate}%</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.conversion')}</p>
+          <div className="text-center p-2 rounded-xl bg-[#F7F5F0]">
+            <p className="text-lg font-bold text-[#E84B1C]">{metrics.conversionRate}%</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('pipeline.conversion')}</p>
           </div>
-          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
-            <p className={`text-lg font-bold ${metrics.staleLeads > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
+          <div className="text-center p-2 rounded-xl bg-[#F7F5F0]">
+            <p className={`text-lg font-bold ${metrics.staleLeads > 0 ? 'text-amber-600' : 'text-[#0A0A0A]'}`}>
               {metrics.staleLeads}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.stale')}</p>
+            <p className="text-[10px] text-[#0A0A0A]/40 font-medium">{t('pipeline.stale')}</p>
           </div>
         </div>
 
@@ -160,8 +160,8 @@ export default function SalesPipelineSummary({ leads, proposals = [] }) {
         <div className="space-y-2.5">
           {metrics.stages.map(stage => (
             <div key={stage.key} className="flex items-center gap-2.5">
-              <span className="text-[10px] w-14 text-right text-[#282828]/40 shrink-0 font-medium">{stage.label}</span>
-              <div className="flex-1 bg-[#f4f4f4] rounded-full h-5 relative overflow-hidden">
+              <span className="text-[10px] w-14 text-right text-[#0A0A0A]/40 shrink-0 font-medium">{stage.label}</span>
+              <div className="flex-1 bg-[#F7F5F0] rounded-full h-5 relative overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
@@ -170,7 +170,7 @@ export default function SalesPipelineSummary({ leads, proposals = [] }) {
                   }}
                 />
               </div>
-              <span className="text-xs font-bold w-6 text-[#002443]">{stage.count}</span>
+              <span className="text-xs font-bold w-6 text-[#0A0A0A]">{stage.count}</span>
             </div>
           ))}
         </div>

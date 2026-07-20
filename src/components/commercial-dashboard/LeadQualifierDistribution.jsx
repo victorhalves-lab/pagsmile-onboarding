@@ -15,19 +15,19 @@ export default function LeadQualifierDistribution({ data, avgScore, avgPriscila 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <Brain className="w-4 h-4 text-[#002443]/70" />
-        <h3 className="font-bold text-[#002443]">Análise IA dos Leads</h3>
+        <Brain className="w-4 h-4 text-[#0A0A0A]/70" />
+        <h3 className="font-bold text-[#0A0A0A]">Análise IA dos Leads</h3>
       </div>
 
       {/* Score averages */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="text-center p-3 rounded-xl bg-[#2bc196]/5">
-          <p className="text-2xl font-bold text-[#2bc196]">{avgScore}</p>
-          <p className="text-[10px] text-[#002443]/40 font-medium">Score Médio Qualifier</p>
+        <div className="text-center p-3 rounded-xl bg-[#1356E2]/5">
+          <p className="text-2xl font-bold text-[#1356E2]">{avgScore}</p>
+          <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Score Médio Qualifier</p>
         </div>
-        <div className="text-center p-3 rounded-xl bg-[#002443]/5">
-          <p className="text-2xl font-bold text-[#002443]">{avgPriscila}</p>
-          <p className="text-[10px] text-[#002443]/40 font-medium">Score Médio PRISCILA</p>
+        <div className="text-center p-3 rounded-xl bg-[#0A0A0A]/5">
+          <p className="text-2xl font-bold text-[#0A0A0A]">{avgPriscila}</p>
+          <p className="text-[10px] text-[#0A0A0A]/40 font-medium">Score Médio PRISCILA</p>
         </div>
       </div>
 

@@ -10,13 +10,13 @@ export default function TrendLineChart({
 }) {
   const { t } = useTranslation();
   const defaultLines = [
-    { dataKey: 'ia', name: t('chart.trend_ia'), color: '#22c55e' },
-    { dataKey: 'manual', name: t('chart.trend_manual'), color: '#f97316' }
+    { dataKey: 'ia', name: t('chart.trend_ia'), color: '#1356E2' },
+    { dataKey: 'manual', name: t('chart.trend_manual'), color: '#E84B1C' }
   ];
   const resolvedLines = lines || defaultLines;
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="font-bold text-[var(--pagsmile-blue)] mb-4">{title}</h3>
+      <h3 className="font-bold text-[#1356E2] mb-4">{title}</h3>
 
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>

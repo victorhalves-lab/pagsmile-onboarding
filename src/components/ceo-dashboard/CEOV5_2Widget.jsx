@@ -17,11 +17,11 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, PieCha
  */
 
 const CATEGORIA_CONFIG = {
-  cat_1_auto_approve:        { label: 'Auto-Aprovado',     color: '#10b981', Icon: CheckCircle2 },
+  cat_1_auto_approve:        { label: 'Auto-Aprovado',     color: '#1356E2', Icon: CheckCircle2 },
   cat_2_conditional:         { label: 'C/ Condições',       color: '#3b82f6', Icon: AlertTriangle },
   cat_3_manual_review:       { label: 'Revisão Manual',     color: '#f59e0b', Icon: Eye },
   cat_4_block:               { label: 'Recusado',           color: '#ef4444', Icon: XCircle },
-  cat_5_intensive_monitoring:{ label: 'Monit. Intensivo',  color: '#a855f7', Icon: ShieldAlert },
+  cat_5_intensive_monitoring:{ label: 'Monit. Intensivo',  color: '#E84B1C', Icon: ShieldAlert },
 };
 
 const TIER_LABELS = {
@@ -80,25 +80,25 @@ function buildStats(cases) {
 function AdoptionBanner({ stats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <div className="rounded-xl bg-[#2bc196]/10 border border-[#2bc196]/30 p-3">
-        <p className="text-[10px] uppercase font-bold text-[#2bc196] tracking-wide">Adoção V5.2</p>
-        <p className="text-2xl font-bold font-mono text-[#002443] mt-1">{stats.adoptionPct.toFixed(1)}%</p>
-        <p className="text-[10px] text-[#002443]/50">{stats.v52Total} de {stats.totalCases} casos</p>
+      <div className="rounded-xl bg-[#1356E2]/10 border border-[#1356E2]/30 p-3">
+        <p className="text-[10px] uppercase font-bold text-[#1356E2] tracking-wide">Adoção V5.2</p>
+        <p className="text-2xl font-bold font-mono text-[#0A0A0A] mt-1">{stats.adoptionPct.toFixed(1)}%</p>
+        <p className="text-[10px] text-[#0A0A0A]/50">{stats.v52Total} de {stats.totalCases} casos</p>
       </div>
       <div className="rounded-xl bg-purple-50 border border-purple-200 p-3">
         <p className="text-[10px] uppercase font-bold text-purple-700 tracking-wide">Monit. Intensivo</p>
-        <p className="text-2xl font-bold font-mono text-[#002443] mt-1">{stats.monitIntensivo}</p>
-        <p className="text-[10px] text-[#002443]/50">Cat 5 ativos</p>
+        <p className="text-2xl font-bold font-mono text-[#0A0A0A] mt-1">{stats.monitIntensivo}</p>
+        <p className="text-[10px] text-[#0A0A0A]/50">Cat 5 ativos</p>
       </div>
       <div className="rounded-xl bg-red-50 border border-red-200 p-3">
         <p className="text-[10px] uppercase font-bold text-red-700 tracking-wide">Com Bloqueios</p>
-        <p className="text-2xl font-bold font-mono text-[#002443] mt-1">{stats.bloqueiosAtivos}</p>
-        <p className="text-[10px] text-[#002443]/50">Casos V5.2</p>
+        <p className="text-2xl font-bold font-mono text-[#0A0A0A] mt-1">{stats.bloqueiosAtivos}</p>
+        <p className="text-[10px] text-[#0A0A0A]/50">Casos V5.2</p>
       </div>
       <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
         <p className="text-[10px] uppercase font-bold text-amber-700 tracking-wide">Transicionais</p>
-        <p className="text-2xl font-bold font-mono text-[#002443] mt-1">{stats.transitionals}</p>
-        <p className="text-[10px] text-[#002443]/50">Mudaram de framework</p>
+        <p className="text-2xl font-bold font-mono text-[#0A0A0A] mt-1">{stats.transitionals}</p>
+        <p className="text-[10px] text-[#0A0A0A]/50">Mudaram de framework</p>
       </div>
     </div>
   );
@@ -118,12 +118,12 @@ function CategoriaPie({ byCategoria }) {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
-            <Shield className="w-4 h-4 text-[#2bc196]" />
+            <Shield className="w-4 h-4 text-[#1356E2]" />
             Distribuição por Categoria V5.2
           </CardTitle>
         </CardHeader>
         <CardContent className="py-8 text-center">
-          <p className="text-xs text-[#002443]/50 italic">Sem casos V5.2 decididos ainda.</p>
+          <p className="text-xs text-[#0A0A0A]/50 italic">Sem casos V5.2 decididos ainda.</p>
         </CardContent>
       </Card>
     );
@@ -133,7 +133,7 @@ function CategoriaPie({ byCategoria }) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          <Shield className="w-4 h-4 text-[#2bc196]" />
+          <Shield className="w-4 h-4 text-[#1356E2]" />
           Distribuição por Categoria V5.2
         </CardTitle>
       </CardHeader>
@@ -193,7 +193,7 @@ function TierApprovalChart({ tierStats }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="py-8 text-center">
-          <p className="text-xs text-[#002443]/50 italic">Sem casos V5.2 com tier definido ainda.</p>
+          <p className="text-xs text-[#0A0A0A]/50 italic">Sem casos V5.2 com tier definido ainda.</p>
         </CardContent>
       </Card>
     );
@@ -210,8 +210,8 @@ function TierApprovalChart({ tierStats }) {
       <CardContent>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-            <XAxis dataKey="tier" tick={{ fontSize: 10, fill: '#002443' }} />
-            <YAxis tick={{ fontSize: 10, fill: '#002443' }} />
+            <XAxis dataKey="tier" tick={{ fontSize: 10, fill: '#0A0A0A' }} />
+            <YAxis tick={{ fontSize: 10, fill: '#0A0A0A' }} />
             <Tooltip
               contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 12 }}
               formatter={(value, name) => {
@@ -219,17 +219,17 @@ function TierApprovalChart({ tierStats }) {
                 return [value, name];
               }}
             />
-            <Bar dataKey="aprovados" stackId="a" fill="#10b981" name="Aprovados" />
+            <Bar dataKey="aprovados" stackId="a" fill="#1356E2" name="Aprovados" />
             <Bar dataKey="manual" stackId="a" fill="#f59e0b" name="Revisão Manual" />
             <Bar dataKey="recusados" stackId="a" fill="#ef4444" name="Recusados" />
           </BarChart>
         </ResponsiveContainer>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3 pt-3 border-t border-[#002443]/8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3 pt-3 border-t border-[#0A0A0A]/8">
           {data.map((d) => (
             <div key={d.tier} className="text-center">
-              <p className="text-[9px] uppercase text-[#002443]/50 font-bold">{d.tier}</p>
+              <p className="text-[9px] uppercase text-[#0A0A0A]/50 font-bold">{d.tier}</p>
               <p className="text-sm font-bold font-mono text-emerald-600">{d.taxa}%</p>
-              <p className="text-[9px] text-[#002443]/40">{d.total} casos</p>
+              <p className="text-[9px] text-[#0A0A0A]/40">{d.total} casos</p>
             </div>
           ))}
         </div>
@@ -245,20 +245,20 @@ function FrameworkAdoptionBar({ byFramework, total }) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          <Rocket className="w-4 h-4 text-[#2bc196]" />
+          <Rocket className="w-4 h-4 text-[#1356E2]" />
           Coexistência de Frameworks
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex h-4 rounded-full overflow-hidden bg-slate-100">
-          {byFramework.v52 > 0 && <div className="bg-[#2bc196]" style={{ width: `${pct(byFramework.v52)}%` }} />}
+          {byFramework.v52 > 0 && <div className="bg-[#1356E2]" style={{ width: `${pct(byFramework.v52)}%` }} />}
           {byFramework.v51 > 0 && <div className="bg-blue-400" style={{ width: `${pct(byFramework.v51)}%` }} />}
           {byFramework.v4 > 0 && <div className="bg-slate-400" style={{ width: `${pct(byFramework.v4)}%` }} />}
           {byFramework.unknown > 0 && <div className="bg-slate-200" style={{ width: `${pct(byFramework.unknown)}%` }} />}
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2bc196]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#1356E2]" />
             <div>
               <p className="text-[10px] text-[#002443]/50 uppercase font-bold">V5.2</p>
               <p className="text-xs font-mono text-[#002443]">{byFramework.v52} ({pct(byFramework.v52).toFixed(1)}%)</p>
@@ -299,16 +299,16 @@ export default function CEOV5_2Widget({ cases = [] }) {
   // Não esconder o widget — sempre exibir para dar visibilidade da adoção (mesmo zero).
 
   return (
-    <Card className="border border-[#2bc196]/30 bg-gradient-to-br from-[#2bc196]/[0.03] to-transparent">
+    <Card className="border border-[#1356E2]/30 bg-gradient-to-br from-[#1356E2]/[0.03] to-transparent">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <CardTitle className="text-base font-bold flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-[#2bc196]/15">
-              <Rocket className="w-4 h-4 text-[#2bc196]" />
+            <div className="p-1.5 rounded-lg bg-[#1356E2]/15">
+              <Rocket className="w-4 h-4 text-[#1356E2]" />
             </div>
             Framework V5.2 — Adoção & Decisões
           </CardTitle>
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border border-[#2bc196]/30 text-[10px]">
+          <Badge className="bg-[#1356E2]/10 text-[#1356E2] border border-[#1356E2]/30 text-[10px]">
             BETA
           </Badge>
         </div>

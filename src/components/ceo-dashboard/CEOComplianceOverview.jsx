@@ -12,21 +12,21 @@ export default function CEOComplianceOverview({ cases }) {
   const autoRate = total > 0 ? ((autoDecision / total) * 100).toFixed(0) : 0;
 
   const items = [
-    { label: 'Aprovados', value: approved, icon: CheckCircle2, color: 'text-[#2bc196]', bg: 'bg-[#2bc196]/10' },
+    { label: 'Aprovados', value: approved, icon: CheckCircle2, color: 'text-[#1356E2]', bg: 'bg-[#1356E2]/10' },
     { label: 'Revisão Manual', value: manual, icon: AlertTriangle, color: 'text-yellow-600', bg: 'bg-yellow-50' },
     { label: 'Recusados', value: rejected, icon: XCircle, color: 'text-red-500', bg: 'bg-red-50' },
-    { label: 'Pendentes', value: pending, icon: Clock, color: 'text-[#002443]/60', bg: 'bg-[#002443]/5' },
+    { label: 'Pendentes', value: pending, icon: Clock, color: 'text-[#0A0A0A]/60', bg: 'bg-[#0A0A0A]/5' },
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 p-5">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center">
-          <Shield className="w-4 h-4 text-[#002443]" />
+        <div className="w-8 h-8 rounded-xl bg-[#0A0A0A]/5 flex items-center justify-center">
+          <Shield className="w-4 h-4 text-[#0A0A0A]" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[#002443]">Compliance / KYC</h3>
-          <p className="text-[10px] text-[#002443]/40">{total} casos • {autoRate}% automáticos</p>
+          <h3 className="text-sm font-bold text-[#0A0A0A]">Compliance / KYC</h3>
+          <p className="text-[10px] text-[#0A0A0A]/40">{total} casos • {autoRate}% automáticos</p>
         </div>
       </div>
 
@@ -35,8 +35,8 @@ export default function CEOComplianceOverview({ cases }) {
           <div key={item.label} className={`${item.bg} rounded-xl p-3 flex items-center gap-3`}>
             <item.icon className={`w-5 h-5 ${item.color}`} />
             <div>
-              <p className="text-lg font-extrabold text-[#002443]">{item.value}</p>
-              <p className="text-[10px] text-[#002443]/40 font-bold">{item.label}</p>
+              <p className="text-lg font-extrabold text-[#0A0A0A]">{item.value}</p>
+              <p className="text-[10px] text-[#0A0A0A]/40 font-bold">{item.label}</p>
             </div>
           </div>
         ))}

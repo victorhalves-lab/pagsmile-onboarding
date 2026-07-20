@@ -7,7 +7,7 @@ import {
   XCircle, Shield, Stamp, Eye, Target
 } from 'lucide-react';
 
-const RANK_COLORS = ['#2bc196', '#36706c', '#002443', '#64748b', '#94a3b8'];
+const RANK_COLORS = ['#1356E2', '#E84B1C', '#0A0A0A', '#64748b', '#94a3b8'];
 const formatCompact = (v) => {
   if (!v) return 'R$ 0';
   if (v >= 1000000) return `R$ ${(v / 1000000).toFixed(1)}M`;
@@ -18,7 +18,7 @@ const formatCompact = (v) => {
 function MetricCell({ value, color, warn, suffix = '' }) {
   return (
     <td className="text-center px-1.5 py-2">
-      <span className={`text-[11px] font-bold ${color || 'text-[#002443]'} ${warn ? 'text-red-500' : ''}`}>
+      <span className={`text-[11px] font-bold ${color || 'text-[#0A0A0A]'} ${warn ? 'text-red-500' : ''}`}>
         {value}{suffix}
       </span>
     </td>
@@ -277,39 +277,39 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
   const detail = selectedSeller ? productivity.find(p => p.id === selectedSeller) : null;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#0A0A0A]/5 overflow-hidden">
       {/* Header */}
-      <div className="p-5 border-b border-[#002443]/5">
+      <div className="p-5 border-b border-[#0A0A0A]/5">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#1356E2] to-[#0A0A0A] flex items-center justify-center">
             <Activity className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#002443]">Produtividade Completa do Time</h3>
-            <p className="text-[10px] text-[#002443]/40">Funil granular, links, propostas, compliance, contratos — por pessoa</p>
+            <h3 className="text-sm font-bold text-[#0A0A0A]">Produtividade Completa do Time</h3>
+            <p className="text-[10px] text-[#0A0A0A]/40">Funil granular, links, propostas, compliance, contratos — por pessoa</p>
           </div>
         </div>
       </div>
 
       {/* Team Summary Cards */}
       {teamTotals && (
-        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-px bg-[#002443]/5">
+        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-px bg-[#0A0A0A]/5">
           {[
-            { label: 'Leads', value: teamTotals.leads, icon: Users, color: '#002443' },
-            { label: 'Links', value: teamTotals.links, icon: Link2, color: '#36706c' },
+            { label: 'Leads', value: teamTotals.leads, icon: Users, color: '#0A0A0A' },
+            { label: 'Links', value: teamTotals.links, icon: Link2, color: '#E84B1C' },
             { label: 'Cliques', value: teamTotals.clicks, icon: MousePointer, color: '#6366f1' },
             { label: 'Preench.', value: teamTotals.submissions, icon: FileCheck, color: '#8b5cf6' },
             { label: 'Prop. Env.', value: teamTotals.sent, icon: Send, color: '#eab308' },
             { label: 'Prop. Aceitas', value: teamTotals.accepted, icon: CheckCircle, color: '#22c55e' },
             { label: 'Compliance', value: teamTotals.cases, icon: Shield, color: '#3b82f6' },
-            { label: 'Contratos', value: teamTotals.contracts, icon: Stamp, color: '#002443' },
-            { label: 'Ativados', value: teamTotals.activated, icon: Target, color: '#2bc196' },
+            { label: 'Contratos', value: teamTotals.contracts, icon: Stamp, color: '#0A0A0A' },
+            { label: 'Ativados', value: teamTotals.activated, icon: Target, color: '#1356E2' },
             { label: 'Parados', value: teamTotals.stale, icon: AlertTriangle, color: '#ef4444' },
           ].map(item => (
             <div key={item.label} className="bg-white p-2.5 text-center">
               <item.icon className="w-3 h-3 mx-auto mb-0.5" style={{ color: item.color }} />
-              <p className="text-base font-extrabold text-[#002443]">{item.value}</p>
-              <p className="text-[8px] text-[#002443]/30 font-bold uppercase tracking-wider leading-tight">{item.label}</p>
+              <p className="text-base font-extrabold text-[#0A0A0A]">{item.value}</p>
+              <p className="text-[8px] text-[#0A0A0A]/30 font-bold uppercase tracking-wider leading-tight">{item.label}</p>
             </div>
           ))}
         </div>
@@ -317,20 +317,20 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
 
       {/* Chart */}
       {chartData.length > 0 && (
-        <div className="p-5 border-b border-[#002443]/5">
-          <p className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-wider mb-3">Funil Comparativo por Vendedor</p>
+        <div className="p-5 border-b border-[#0A0A0A]/5">
+          <p className="text-[10px] font-bold text-[#0A0A0A]/30 uppercase tracking-wider mb-3">Funil Comparativo por Vendedor</p>
           <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ left: -15, right: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#002443" strokeOpacity={0.05} />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} />
-                <YAxis tick={{ fontSize: 10, fill: '#002443' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#0A0A0A" strokeOpacity={0.05} />
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#0A0A0A' }} />
+                <YAxis tick={{ fontSize: 10, fill: '#0A0A0A' }} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,36,67,0.1)', fontSize: 11 }} />
                 <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="leads" name="Leads" fill="#002443" radius={[3, 3, 0, 0]} barSize={10} />
+                <Bar dataKey="leads" name="Leads" fill="#0A0A0A" radius={[3, 3, 0, 0]} barSize={10} />
                 <Bar dataKey="propostas" name="Prop. Env." fill="#eab308" radius={[3, 3, 0, 0]} barSize={10} />
                 <Bar dataKey="aceitas" name="Aceitas" fill="#22c55e" radius={[3, 3, 0, 0]} barSize={10} />
-                <Bar dataKey="ativados" name="Ativados" fill="#2bc196" radius={[3, 3, 0, 0]} barSize={10} />
+                <Bar dataKey="ativados" name="Ativados" fill="#1356E2" radius={[3, 3, 0, 0]} barSize={10} />
                 <Bar dataKey="contratos" name="Contratos" fill="#6366f1" radius={[3, 3, 0, 0]} barSize={10} />
               </BarChart>
             </ResponsiveContainer>
@@ -342,57 +342,57 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
       <div className="overflow-x-auto">
         <table className="w-full text-center">
           <thead>
-            <tr className="bg-[#002443]/[0.03]">
-              <th className="text-left px-4 py-2 text-[8px] font-bold text-[#002443]/40 uppercase tracking-wider sticky left-0 bg-[#f9fafb] z-10">Vendedor</th>
+            <tr className="bg-[#0A0A0A]/[0.03]">
+              <th className="text-left px-4 py-2 text-[8px] font-bold text-[#0A0A0A]/40 uppercase tracking-wider sticky left-0 bg-[#f9fafb] z-10">Vendedor</th>
               {/* Links */}
-              <th colSpan={4} className="px-1 py-1 text-[8px] font-bold text-indigo-400 uppercase tracking-wider border-l border-[#002443]/5">Links & Captação</th>
+              <th colSpan={4} className="px-1 py-1 text-[8px] font-bold text-indigo-400 uppercase tracking-wider border-l border-[#0A0A0A]/5">Links & Captação</th>
               {/* Propostas */}
-              <th colSpan={5} className="px-1 py-1 text-[8px] font-bold text-yellow-600 uppercase tracking-wider border-l border-[#002443]/5">Propostas</th>
+              <th colSpan={5} className="px-1 py-1 text-[8px] font-bold text-yellow-600 uppercase tracking-wider border-l border-[#0A0A0A]/5">Propostas</th>
               {/* Compliance */}
-              <th colSpan={3} className="px-1 py-1 text-[8px] font-bold text-blue-500 uppercase tracking-wider border-l border-[#002443]/5">Compliance</th>
+              <th colSpan={3} className="px-1 py-1 text-[8px] font-bold text-blue-500 uppercase tracking-wider border-l border-[#0A0A0A]/5">Compliance</th>
               {/* Contratos */}
-              <th colSpan={2} className="px-1 py-1 text-[8px] font-bold text-[#002443]/50 uppercase tracking-wider border-l border-[#002443]/5">Contratos</th>
+              <th colSpan={2} className="px-1 py-1 text-[8px] font-bold text-[#0A0A0A]/50 uppercase tracking-wider border-l border-[#0A0A0A]/5">Contratos</th>
               {/* Resultado */}
-              <th colSpan={4} className="px-1 py-1 text-[8px] font-bold text-[#2bc196] uppercase tracking-wider border-l border-[#002443]/5">Resultado</th>
+              <th colSpan={4} className="px-1 py-1 text-[8px] font-bold text-[#1356E2] uppercase tracking-wider border-l border-[#0A0A0A]/5">Resultado</th>
               {/* Timing */}
-              <th colSpan={3} className="px-1 py-1 text-[8px] font-bold text-red-400 uppercase tracking-wider border-l border-[#002443]/5">Velocidade</th>
+              <th colSpan={3} className="px-1 py-1 text-[8px] font-bold text-red-400 uppercase tracking-wider border-l border-[#0A0A0A]/5">Velocidade</th>
             </tr>
-            <tr className="bg-[#f4f4f4]/50 border-t border-[#002443]/5">
-              <th className="text-left px-4 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase sticky left-0 bg-[#f9fafb] z-10"></th>
+            <tr className="bg-[#f4f4f4]/50 border-t border-[#0A0A0A]/5">
+              <th className="text-left px-4 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase sticky left-0 bg-[#f9fafb] z-10"></th>
               {/* Links */}
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase border-l border-[#002443]/5">Links</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Cliques</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Preench.</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Complet.</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase border-l border-[#0A0A0A]/5">Links</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Cliques</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Preench.</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Complet.</th>
               {/* Propostas */}
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase border-l border-[#002443]/5">Criadas</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Enviadas</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Visualiz.</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Aceitas</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">% Aceite</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase border-l border-[#0A0A0A]/5">Criadas</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Enviadas</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Visualiz.</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Aceitas</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">% Aceite</th>
               {/* Compliance */}
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase border-l border-[#002443]/5">Cases</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Aprovados</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Pendentes</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase border-l border-[#0A0A0A]/5">Cases</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Aprovados</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Pendentes</th>
               {/* Contratos */}
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase border-l border-[#002443]/5">Criados</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Assinados</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase border-l border-[#0A0A0A]/5">Criados</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Assinados</th>
               {/* Resultado */}
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase border-l border-[#002443]/5">Ativados</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Perdidos</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">% Conv.</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">TPV Pipe</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase border-l border-[#0A0A0A]/5">Ativados</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Perdidos</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">% Conv.</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">TPV Pipe</th>
               {/* Timing */}
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase border-l border-[#002443]/5">→ Prop.</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">→ Ativ.</th>
-              <th className="px-1 py-1.5 text-[8px] font-bold text-[#002443]/30 uppercase">Parados</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase border-l border-[#0A0A0A]/5">→ Prop.</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">→ Ativ.</th>
+              <th className="px-1 py-1.5 text-[8px] font-bold text-[#0A0A0A]/30 uppercase">Parados</th>
             </tr>
           </thead>
           <tbody>
             {displayList.map((p, idx) => (
               <tr
                 key={p.id}
-                className={`border-t border-[#002443]/5 hover:bg-[#2bc196]/[0.02] transition-colors cursor-pointer ${selectedSeller === p.id ? 'bg-[#2bc196]/5' : ''}`}
+                className={`border-t border-[#0A0A0A]/5 hover:bg-[#1356E2]/[0.02] transition-colors cursor-pointer ${selectedSeller === p.id ? 'bg-[#1356E2]/5' : ''}`}
                 onClick={() => setSelectedSeller(selectedSeller === p.id ? null : p.id)}
               >
                 <td className="text-left px-4 py-2 sticky left-0 bg-white z-10">
@@ -401,8 +401,8 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
                       {idx + 1}
                     </div>
                     <div>
-                      <span className="text-[11px] font-semibold text-[#002443] truncate block max-w-[90px]">{p.name}</span>
-                      <span className={`text-[8px] font-bold ${p.growthPct > 0 ? 'text-[#2bc196]' : p.growthPct < 0 ? 'text-red-500' : 'text-[#002443]/20'}`}>
+                      <span className="text-[11px] font-semibold text-[#0A0A0A] truncate block max-w-[90px]">{p.name}</span>
+                      <span className={`text-[8px] font-bold ${p.growthPct > 0 ? 'text-[#1356E2]' : p.growthPct < 0 ? 'text-red-500' : 'text-[#0A0A0A]/20'}`}>
                         {p.growthPct > 0 ? '↑' : p.growthPct < 0 ? '↓' : '='}{Math.abs(p.growthPct)}% MoM
                       </span>
                     </div>
@@ -429,13 +429,13 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
                 {/* Compliance */}
                 <MetricCell value={p.casesTotal} color="text-blue-600" />
                 <MetricCell value={p.casesApproved} color="text-green-600" />
-                <MetricCell value={p.casesPending} color={p.casesPending > 0 ? 'text-amber-600' : 'text-[#002443]/30'} />
+                <MetricCell value={p.casesPending} color={p.casesPending > 0 ? 'text-amber-600' : 'text-[#0A0A0A]/30'} />
                 {/* Contracts */}
                 <MetricCell value={p.contractsCreated} />
-                <MetricCell value={p.contractsSigned} color="text-[#2bc196]" />
+                <MetricCell value={p.contractsSigned} color="text-[#1356E2]" />
                 {/* Result */}
-                <MetricCell value={p.leadsAtivado} color="text-[#2bc196]" />
-                <MetricCell value={p.leadsPerdido} color={p.leadsPerdido > 0 ? 'text-red-500' : 'text-[#002443]/30'} />
+                <MetricCell value={p.leadsAtivado} color="text-[#1356E2]" />
+                <MetricCell value={p.leadsPerdido} color={p.leadsPerdido > 0 ? 'text-red-500' : 'text-[#0A0A0A]/30'} />
                 <BadgeCell
                   value={p.conversionRate !== null ? `${p.conversionRate}%` : '-'}
                   thresholds={[
@@ -445,7 +445,7 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
                   ]}
                 />
                 <td className="text-center px-1.5 py-2">
-                  <span className="text-[10px] font-bold text-[#002443]">{formatCompact(p.tpvPipeline)}</span>
+                  <span className="text-[10px] font-bold text-[#0A0A0A]">{formatCompact(p.tpvPipeline)}</span>
                 </td>
                 {/* Timing */}
                 <BadgeCell
@@ -469,7 +469,7 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
                     <span className="text-[11px] font-bold text-red-500 flex items-center justify-center gap-0.5">
                       <AlertTriangle className="w-2.5 h-2.5" /> {p.staleLeads}
                     </span>
-                  ) : <span className="text-[11px] text-[#2bc196]">0</span>}
+                  ) : <span className="text-[11px] text-[#1356E2]">0</span>}
                 </td>
               </tr>
             ))}
@@ -479,14 +479,14 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
 
       {/* Expanded Detail Card */}
       {detail && (
-        <div className="border-t border-[#002443]/5 p-5 bg-[#f4f4f4]/50">
+        <div className="border-t border-[#0A0A0A]/5 p-5 bg-[#f4f4f4]/50">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-7 h-7 rounded-full bg-[#2bc196] flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-7 h-7 rounded-full bg-[#1356E2] flex items-center justify-center text-white text-xs font-bold">
               {(detail.name || '?')[0]?.toUpperCase()}
             </div>
             <div>
-              <p className="text-sm font-bold text-[#002443]">{detail.name}</p>
-              <p className="text-[10px] text-[#002443]/40">Detalhe completo do funil individual</p>
+              <p className="text-sm font-bold text-[#0A0A0A]">{detail.name}</p>
+              <p className="text-[10px] text-[#0A0A0A]/40">Detalhe completo do funil individual</p>
             </div>
           </div>
 
@@ -499,45 +499,45 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
               { label: 'Prop. Enviada', value: detail.leadsPropostaEnviada, color: '#eab308' },
               { label: 'Prop. Aceita', value: detail.leadsPropostaAceita, color: '#22c55e' },
               { label: 'KYC', value: detail.leadsKYC, color: '#8b5cf6' },
-              { label: 'Ativado', value: detail.leadsAtivado, color: '#2bc196' },
+              { label: 'Ativado', value: detail.leadsAtivado, color: '#1356E2' },
               { label: 'Perdido', value: detail.leadsPerdido, color: '#ef4444' },
             ].map(item => (
-              <div key={item.label} className="bg-white rounded-xl p-2.5 text-center border border-[#002443]/5">
+              <div key={item.label} className="bg-white rounded-xl p-2.5 text-center border border-[#0A0A0A]/5">
                 <div className="w-2 h-2 rounded-full mx-auto mb-1" style={{ backgroundColor: item.color }} />
-                <p className="text-lg font-extrabold text-[#002443]">{item.value}</p>
-                <p className="text-[8px] text-[#002443]/30 font-bold uppercase">{item.label}</p>
+                <p className="text-lg font-extrabold text-[#0A0A0A]">{item.value}</p>
+                <p className="text-[8px] text-[#0A0A0A]/30 font-bold uppercase">{item.label}</p>
               </div>
             ))}
           </div>
 
           {/* Extra details */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-xl p-3 border border-[#002443]/5">
-              <p className="text-[9px] text-[#002443]/30 font-bold uppercase mb-1">Propostas</p>
-              <p className="text-xs"><span className="text-[#002443]/50">Rascunho:</span> <span className="font-bold">{detail.proposalsDraft}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Contrapropostas:</span> <span className="font-bold">{detail.proposalsCounterOffer}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Recusadas:</span> <span className="font-bold text-red-500">{detail.proposalsRejected}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Padrão:</span> <span className="font-bold">{detail.stdProposalsCount}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Pix:</span> <span className="font-bold">{detail.pixProposalsCount}</span></p>
-              <p className="text-xs mt-1"><span className="text-[#002443]/50">% Visualiz.:</span> <span className="font-bold">{detail.proposalViewRate || '-'}%</span></p>
+            <div className="bg-white rounded-xl p-3 border border-[#0A0A0A]/5">
+              <p className="text-[9px] text-[#0A0A0A]/30 font-bold uppercase mb-1">Propostas</p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Rascunho:</span> <span className="font-bold">{detail.proposalsDraft}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Contrapropostas:</span> <span className="font-bold">{detail.proposalsCounterOffer}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Recusadas:</span> <span className="font-bold text-red-500">{detail.proposalsRejected}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Padrão:</span> <span className="font-bold">{detail.stdProposalsCount}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Pix:</span> <span className="font-bold">{detail.pixProposalsCount}</span></p>
+              <p className="text-xs mt-1"><span className="text-[#0A0A0A]/50">% Visualiz.:</span> <span className="font-bold">{detail.proposalViewRate || '-'}%</span></p>
             </div>
-            <div className="bg-white rounded-xl p-3 border border-[#002443]/5">
-              <p className="text-[9px] text-[#002443]/30 font-bold uppercase mb-1">Compliance</p>
-              <p className="text-xs"><span className="text-[#002443]/50">Manual:</span> <span className="font-bold text-amber-600">{detail.casesManual}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Recusados:</span> <span className="font-bold text-red-500">{detail.casesRejected}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Aprovados:</span> <span className="font-bold text-green-600">{detail.casesApproved}</span></p>
+            <div className="bg-white rounded-xl p-3 border border-[#0A0A0A]/5">
+              <p className="text-[9px] text-[#0A0A0A]/30 font-bold uppercase mb-1">Compliance</p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Manual:</span> <span className="font-bold text-amber-600">{detail.casesManual}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Recusados:</span> <span className="font-bold text-red-500">{detail.casesRejected}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Aprovados:</span> <span className="font-bold text-green-600">{detail.casesApproved}</span></p>
             </div>
-            <div className="bg-white rounded-xl p-3 border border-[#002443]/5">
-              <p className="text-[9px] text-[#002443]/30 font-bold uppercase mb-1">Contratos</p>
-              <p className="text-xs"><span className="text-[#002443]/50">Enviados:</span> <span className="font-bold">{detail.contractsSent}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Assinados:</span> <span className="font-bold text-[#2bc196]">{detail.contractsSigned}</span></p>
+            <div className="bg-white rounded-xl p-3 border border-[#0A0A0A]/5">
+              <p className="text-[9px] text-[#0A0A0A]/30 font-bold uppercase mb-1">Contratos</p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Enviados:</span> <span className="font-bold">{detail.contractsSent}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Assinados:</span> <span className="font-bold text-[#1356E2]">{detail.contractsSigned}</span></p>
             </div>
-            <div className="bg-white rounded-xl p-3 border border-[#002443]/5">
-              <p className="text-[9px] text-[#002443]/30 font-bold uppercase mb-1">Qualidade</p>
-              <p className="text-xs"><span className="text-[#002443]/50">Score Médio IA:</span> <span className="font-bold">{detail.avgQualScore || '-'}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Follow-up:</span> <span className="font-bold">{detail.followUpRate}%</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">Ticket Médio:</span> <span className="font-bold">{formatCompact(detail.avgTicket)}</span></p>
-              <p className="text-xs"><span className="text-[#002443]/50">% Perda:</span> <span className="font-bold text-red-500">{detail.lossRate || '-'}%</span></p>
+            <div className="bg-white rounded-xl p-3 border border-[#0A0A0A]/5">
+              <p className="text-[9px] text-[#0A0A0A]/30 font-bold uppercase mb-1">Qualidade</p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Score Médio IA:</span> <span className="font-bold">{detail.avgQualScore || '-'}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Follow-up:</span> <span className="font-bold">{detail.followUpRate}%</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">Ticket Médio:</span> <span className="font-bold">{formatCompact(detail.avgTicket)}</span></p>
+              <p className="text-xs"><span className="text-[#0A0A0A]/50">% Perda:</span> <span className="font-bold text-red-500">{detail.lossRate || '-'}%</span></p>
             </div>
           </div>
         </div>
@@ -547,7 +547,7 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
       {productivity.length > 5 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full py-2.5 text-xs font-bold text-[#002443]/40 hover:text-[#2bc196] transition-colors flex items-center justify-center gap-1 border-t border-[#002443]/5"
+          className="w-full py-2.5 text-xs font-bold text-[#0A0A0A]/40 hover:text-[#1356E2] transition-colors flex items-center justify-center gap-1 border-t border-[#0A0A0A]/5"
         >
           {expanded ? <><ChevronUp className="w-3.5 h-3.5" /> Mostrar menos</> : <><ChevronDown className="w-3.5 h-3.5" /> Mostrar todos ({productivity.length})</>}
         </button>

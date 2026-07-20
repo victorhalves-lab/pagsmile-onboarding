@@ -15,13 +15,13 @@ export default function HelenaStatusPieChart({
     { 
       name: t('chart.helena_approved'), 
       value: approvedIA, 
-      color: '#22c55e',
+      color: '#1356E2',
       percentage: total > 0 ? Math.round((approvedIA / total) * 100) : 0
     },
     { 
       name: t('chart.helena_manual'), 
       value: manualReview, 
-      color: '#f97316',
+      color: '#E84B1C',
       percentage: total > 0 ? Math.round((manualReview / total) * 100) : 0
     },
     { 
@@ -56,8 +56,8 @@ export default function HelenaStatusPieChart({
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <Clock className="w-4 h-4 text-slate-500" />
-        <h3 className="font-semibold text-slate-800">{t('chart.helena_status')}</h3>
+        <Clock className="w-4 h-4 text-[#0A0A0A]/60" />
+        <h3 className="font-semibold text-[#0A0A0A]">{t('chart.helena_status')}</h3>
       </div>
 
       <ResponsiveContainer width="100%" height={280}>

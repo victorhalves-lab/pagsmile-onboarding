@@ -4,13 +4,13 @@ import { FileText } from 'lucide-react';
 
 const STATUS_COLORS = {
   rascunho: '#94a3b8',
-  enviada: '#3B82F6',
+  enviada: '#1356E2',
   visualizada: '#8B5CF6',
-  aceita: '#22c55e',
+  aceita: '#1356E2',
   recusada: '#ef4444',
   contraproposta: '#F59E0B',
   expirada: '#6b7280',
-  cancelada: '#374151',
+  cancelada: '#0A0A0A',
 };
 
 const STATUS_LABELS = {
@@ -43,8 +43,8 @@ export default function ProposalStatusPieChart({ proposals }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <FileText className="w-4 h-4 text-[#002443]/70" />
-        <h3 className="font-bold text-[#002443]">Status das Propostas</h3>
+        <FileText className="w-4 h-4 text-[#0A0A0A]/70" />
+        <h3 className="font-bold text-[#0A0A0A]">Status das Propostas</h3>
       </div>
       <ResponsiveContainer width="100%" height={280}>
         <PieChart>

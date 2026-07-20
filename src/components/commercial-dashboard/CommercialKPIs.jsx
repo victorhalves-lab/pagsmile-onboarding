@@ -12,8 +12,8 @@ export default function CommercialKPIs({ stats }) {
           value={stats.totalLeads.toLocaleString('pt-BR')}
           subtitle={`${stats.leadsThisWeek} novos esta semana`}
           icon={Users}
-          iconBg="bg-slate-100"
-          iconColor="text-[#002443]"
+          iconBg="bg-[#0A0A0A]/10"
+          iconColor="text-[#0A0A0A]"
           trend={stats.leadsWeekTrend > 0 ? 'up' : stats.leadsWeekTrend < 0 ? 'down' : undefined}
           trendValue={stats.leadsWeekTrend !== 0 ? `${stats.leadsWeekTrend > 0 ? '+' : ''}${stats.leadsWeekTrend}` : undefined}
           trendLabel="vs semana anterior"
@@ -23,16 +23,16 @@ export default function CommercialKPIs({ stats }) {
           value={stats.proposalsSent.toLocaleString('pt-BR')}
           subtitle={`${stats.proposalsPending} aguardando resposta`}
           icon={FileText}
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
+          iconBg="bg-[#1356E2]/10"
+          iconColor="text-[#1356E2]"
         />
         <KPICard
           title="Propostas Aceitas"
           value={stats.proposalsAccepted.toLocaleString('pt-BR')}
           subtitle={`Conversão: ${stats.proposalConversionRate}%`}
           icon={CheckCircle2}
-          iconBg="bg-green-100"
-          iconColor="text-green-600"
+          iconBg="bg-[#1356E2]/10"
+          iconColor="text-[#1356E2]"
         />
         <KPICard
           title="Leads Perdidos"

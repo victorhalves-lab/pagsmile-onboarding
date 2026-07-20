@@ -10,8 +10,8 @@ export default function ScoreDistributionChart({ data }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <BarChart3 className="w-4 h-4 text-slate-500" />
-        <h3 className="font-semibold text-slate-800">{t('chart.score_distribution')}</h3>
+        <BarChart3 className="w-4 h-4 text-[#0A0A0A]/60" />
+        <h3 className="font-semibold text-[#0A0A0A]">{t('chart.score_distribution')}</h3>
       </div>
 
       <ResponsiveContainer width="100%" height={280}>

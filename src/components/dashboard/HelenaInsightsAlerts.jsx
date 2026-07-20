@@ -19,8 +19,8 @@ export default function HelenaInsightsAlerts({
   const alerts = [
     {
       icon: Clock,
-      iconBg: 'bg-[#2bc196]/10',
-      iconColor: 'text-[#2bc196]',
+      iconBg: 'bg-[#1356E2]/10',
+      iconColor: 'text-[#1356E2]',
       message: t('helena.stale_leads', { count: staleLeads }),
       action: t('helena.view_pipeline'),
       actionLink: 'PipelineComercial',
@@ -28,8 +28,8 @@ export default function HelenaInsightsAlerts({
     },
     {
       icon: Clock,
-      iconBg: 'bg-[#002443]/10',
-      iconColor: 'text-[#002443]',
+      iconBg: 'bg-[#0A0A0A]/10',
+      iconColor: 'text-[#0A0A0A]',
       message: t('helena.pending_manual', { count: pendingManualOver24h }),
       action: t('helena.view_queue'),
       actionLink: 'QuestionariosRecebidos',
@@ -37,8 +37,8 @@ export default function HelenaInsightsAlerts({
     },
     {
       icon: Target,
-      iconBg: 'bg-[#2bc196]/10',
-      iconColor: 'text-[#2bc196]',
+      iconBg: 'bg-[#1356E2]/10',
+      iconColor: 'text-[#1356E2]',
       message: approvalRateTrend >= 0 
         ? t('helena.approval_rate_up', { value: Math.abs(approvalRateTrend) })
         : t('helena.approval_rate_down', { value: Math.abs(approvalRateTrend) }),
@@ -57,8 +57,8 @@ export default function HelenaInsightsAlerts({
     },
     {
       icon: Activity,
-      iconBg: 'bg-[#36706c]/10',
-      iconColor: 'text-[#36706c]',
+      iconBg: 'bg-[#E84B1C]/10',
+      iconColor: 'text-[#E84B1C]',
       message: manualTimeTrend >= 0
         ? t('helena.manual_time_down', { value: Math.abs(manualTimeTrend) })
         : t('helena.manual_time_up', { value: Math.abs(manualTimeTrend) }),
@@ -75,10 +75,10 @@ export default function HelenaInsightsAlerts({
   }
 
   return (
-    <div className="bg-[#36706c] rounded-2xl p-6 shadow-lg">
+    <div className="bg-[#0A0A0A] rounded-2xl p-6 shadow-lg">
       <div className="flex items-center gap-3 mb-5">
         <div className="p-2.5 rounded-xl bg-white/10">
-          <Brain className="w-5 h-5 text-[#5cf7cf]" />
+          <Brain className="w-5 h-5 text-[#E84B1C]" />
         </div>
         <div>
           <h3 className="font-bold text-white text-sm">{t('helena.title')}</h3>
@@ -96,13 +96,13 @@ export default function HelenaInsightsAlerts({
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-white/10">
-                  <Icon className="w-4 h-4 text-[#5cf7cf]" />
+                  <Icon className="w-4 h-4 text-[#E84B1C]" />
                 </div>
                 <p className="text-sm text-white/80 font-medium">{alert.message}</p>
               </div>
               <Link 
                 to={createPageUrl(alert.actionLink)}
-                className="flex items-center gap-1 text-sm text-[#5cf7cf] hover:text-white font-semibold whitespace-nowrap ml-3"
+                className="flex items-center gap-1 text-sm text-[#E84B1C] hover:text-white font-semibold whitespace-nowrap ml-3"
               >
                 {alert.action}
                 <ArrowRight className="w-3 h-3" />

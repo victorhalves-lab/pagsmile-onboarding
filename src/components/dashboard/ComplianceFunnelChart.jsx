@@ -6,15 +6,15 @@ import { useTranslation } from '@/lib/i18n/LanguageContext';
 export default function ComplianceFunnelChart({ data }) {
   const { t } = useTranslation();
   // Colors mapped by index position since names are now translated
-  const colorList = ['#3b82f6', '#8b5cf6', '#f97316', '#eab308', '#22c55e'];
+  const colorList = ['#1356E2', '#E84B1C', '#0A0A0A', '#3b82f6', '#f97316'];
 
   const chartData = data || [];
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <BarChart3 className="w-4 h-4 text-[var(--pagsmile-blue)]/70" />
-        <h3 className="font-bold text-[var(--pagsmile-blue)]">{t('chart.compliance_funnel')}</h3>
+        <BarChart3 className="w-4 h-4 text-[#1356E2]/70" />
+        <h3 className="font-bold text-[#1356E2]">{t('chart.compliance_funnel')}</h3>
       </div>
 
       <ResponsiveContainer width="100%" height={280}>

@@ -5,16 +5,16 @@ export default function CommercialQuickMetrics({ stats }) {
   const metrics = [
     {
       icon: TrendingUp,
-      iconBg: 'bg-[#2bc196]/10',
-      iconColor: 'text-[#2bc196]',
+      iconBg: 'bg-[#1356E2]/10',
+      iconColor: 'text-[#1356E2]',
       label: 'Leads esta semana',
       value: stats.leadsThisWeek,
       sub: stats.leadsWeekTrend > 0 ? `+${stats.leadsWeekTrend} vs anterior` : stats.leadsWeekTrend < 0 ? `${stats.leadsWeekTrend} vs anterior` : 'mesmo que anterior'
     },
     {
       icon: FileText,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-[#1356E2]/10',
+      iconColor: 'text-[#1356E2]',
       label: 'Propostas este mês',
       value: stats.proposalsThisMonth
     },
@@ -41,15 +41,15 @@ export default function CommercialQuickMetrics({ stats }) {
       {metrics.map((metric, index) => {
         const Icon = metric.icon;
         return (
-          <div key={index} className={`bg-white rounded-2xl border ${metric.alert ? 'border-amber-200' : 'border-[#002443]/5'} p-4 hover:shadow-md transition-shadow`}>
+          <div key={index} className={`bg-white rounded-2xl border ${metric.alert ? 'border-amber-200' : 'border-[#0A0A0A]/5'} p-4 hover:shadow-md transition-shadow`}>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${metric.iconBg}`}>
                 <Icon className={`w-4 h-4 ${metric.iconColor}`} />
               </div>
               <div>
-                <p className="text-xs text-[#002443]/60 font-semibold">{metric.label}</p>
-                <p className={`text-xl font-bold ${metric.alert ? 'text-amber-600' : 'text-[#002443]'}`}>{metric.value}</p>
-                {metric.sub && <p className="text-[10px] text-[#002443]/40">{metric.sub}</p>}
+                <p className="text-xs text-[#0A0A0A]/60 font-semibold">{metric.label}</p>
+                <p className={`text-xl font-bold ${metric.alert ? 'text-amber-600' : 'text-[#0A0A0A]'}`}>{metric.value}</p>
+                {metric.sub && <p className="text-[10px] text-[#0A0A0A]/40">{metric.sub}</p>}
               </div>
             </div>
           </div>

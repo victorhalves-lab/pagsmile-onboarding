@@ -17,7 +17,7 @@ export default function TopRejectionReasonsChart({ data }) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="font-bold text-[var(--pagsmile-blue)] mb-4">{t('chart.top_rejections')}</h3>
+      <h3 className="font-bold text-[#1356E2] mb-4">{t('chart.top_rejections')}</h3>
 
       <ResponsiveContainer width="100%" height={250}>
         <BarChart

@@ -74,10 +74,10 @@ export default function CommercialInsights({ stats, leads }) {
   if (visibleAlerts.length === 0) return null;
 
   return (
-    <div className="bg-[#36706c] rounded-2xl p-6 shadow-lg">
+    <div className="bg-[#0A0A0A] rounded-2xl p-6 shadow-lg">
       <div className="flex items-center gap-3 mb-5">
         <div className="p-2.5 rounded-xl bg-white/10">
-          <Brain className="w-5 h-5 text-[#5cf7cf]" />
+          <Brain className="w-5 h-5 text-[#E84B1C]" />
         </div>
         <div>
           <h3 className="font-bold text-white text-sm">Insights Comerciais IA</h3>
@@ -95,13 +95,13 @@ export default function CommercialInsights({ stats, leads }) {
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-white/10">
-                  <Icon className="w-4 h-4 text-[#5cf7cf]" />
+                  <Icon className="w-4 h-4 text-[#E84B1C]" />
                 </div>
                 <p className="text-sm text-white/80 font-medium">{alert.message}</p>
               </div>
               <Link
                 to={createPageUrl(alert.actionLink)}
-                className="flex items-center gap-1 text-sm text-[#5cf7cf] hover:text-white font-semibold whitespace-nowrap ml-3"
+                className="flex items-center gap-1 text-sm text-[#E84B1C] hover:text-white font-semibold whitespace-nowrap ml-3"
               >
                 {alert.action}
                 <ArrowRight className="w-3 h-3" />

@@ -2,14 +2,14 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { BarChart3 } from 'lucide-react';
 
-const FUNNEL_COLORS = ['#002443', '#36706c', '#3B82F6', '#8B5CF6', '#F59E0B', '#10B981', '#059669'];
+const FUNNEL_COLORS = ['#0A0A0A', '#E84B1C', '#1356E2', '#8B5CF6', '#F59E0B', '#1356E2', '#E84B1C'];
 
 export default function SalesFunnelChart({ data }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <BarChart3 className="w-4 h-4 text-[#002443]/70" />
-        <h3 className="font-bold text-[#002443]">Funil de Vendas</h3>
+        <BarChart3 className="w-4 h-4 text-[#0A0A0A]/70" />
+        <h3 className="font-bold text-[#0A0A0A]">Funil de Vendas</h3>
       </div>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart layout="vertical" data={data} margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
