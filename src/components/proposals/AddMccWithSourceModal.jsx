@@ -156,7 +156,7 @@ export default function AddMccWithSourceModal({ isOpen, onClose, onConfirm }) {
             />
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#1356E2]" />
+                <Sparkles className="w-4 h-4 text-[#E84B1C]" />
                 <span className="text-sm font-bold text-[#0A0A0A]">Usar taxas padrão de um segmento</span>
               </div>
               <p className="text-xs text-[#0A0A0A]/60 mt-1">

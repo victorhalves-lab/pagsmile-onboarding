@@ -81,7 +81,7 @@ export default function CardTaxasMaquininha({
     toast.success('Taxas de maquininha copiadas para todas as bandeiras!');
   };
 
-  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#E84B1C]/70 font-semibold uppercase tracking-wider";
   const inputCls = "bg-white/5 border-white/10 text-white h-12 text-lg font-semibold text-center rounded-xl placeholder:text-white/15 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
 
   return (
@@ -90,7 +90,7 @@ export default function CardTaxasMaquininha({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
-            <Smartphone className="w-3.5 h-3.5 text-[#1356E2]" />
+            <Smartphone className="w-3.5 h-3.5 text-[#E84B1C]" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-white">Processamento com maquininha?</h2>
@@ -117,7 +117,7 @@ export default function CardTaxasMaquininha({
                     : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
                 }`}>
                 <BrandLogo brand={b} isActive={selectedBrand === b.id} />
-                <span className={`text-[10px] font-bold tracking-wide ${selectedBrand === b.id ? 'text-[#1356E2]' : 'text-white/30'}`}>{b.label}</span>
+                <span className={`text-[10px] font-bold tracking-wide ${selectedBrand === b.id ? 'text-[#E84B1C]' : 'text-white/30'}`}>{b.label}</span>
               </button>
             ))}
           </div>
@@ -129,7 +129,7 @@ export default function CardTaxasMaquininha({
               {FAIXAS_CREDITO.map(f => (
                 <div key={f.id} className="space-y-2">
                   <div className="text-center">
-                    <p className="text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider">{f.label}</p>
+                    <p className="text-[10px] text-[#E84B1C]/70 font-semibold uppercase tracking-wider">{f.label}</p>
                     <p className="text-[9px] text-white/20">{f.sub}</p>
                   </div>
                   <TaxaInput
@@ -151,7 +151,7 @@ export default function CardTaxasMaquininha({
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
                 <div className="text-center">
-                  <p className="text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider">Débito</p>
+                  <p className="text-[10px] text-[#E84B1C]/70 font-semibold uppercase tracking-wider">Débito</p>
                   <p className="text-[9px] text-white/20">à vista</p>
                 </div>
                 <TaxaInput
@@ -181,7 +181,7 @@ export default function CardTaxasMaquininha({
                   className="border-white/20 data-[state=checked]:bg-[#1356E2] data-[state=checked]:border-[#1356E2]" />
                 <Label htmlFor="sync-all-maq" className="text-[10px] text-white/30 cursor-pointer select-none">Sincronizar bandeiras</Label>
               </div>
-              <Button variant="ghost" size="sm" onClick={copyToAll} className="text-[10px] text-white/30 hover:text-[#1356E2] hover:bg-[#1356E2]/5 h-7 rounded-lg">
+              <Button variant="ghost" size="sm" onClick={copyToAll} className="text-[10px] text-white/30 hover:text-[#E84B1C] hover:bg-[#1356E2]/5 h-7 rounded-lg">
                 <Copy className="w-3 h-3 mr-1.5" /> Copiar para todas
               </Button>
             </div>

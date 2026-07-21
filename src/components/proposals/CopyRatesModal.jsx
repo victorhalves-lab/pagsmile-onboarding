@@ -64,7 +64,7 @@ export default function CopyRatesModal({ isOpen, onClose, onSelect, currentPropo
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#1356E2]" />
+            <FileText className="w-5 h-5 text-[#E84B1C]" />
             Copiar Taxas de Outra Proposta
           </DialogTitle>
           <DialogDescription>
@@ -85,7 +85,7 @@ export default function CopyRatesModal({ isOpen, onClose, onSelect, currentPropo
         <ScrollArea className="h-[340px] -mx-2 px-2">
           {isLoading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-[#1356E2]" />
+              <Loader2 className="w-6 h-6 animate-spin text-[#E84B1C]" />
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-12 text-sm text-[#0A0A0A]/40">
@@ -101,7 +101,7 @@ export default function CopyRatesModal({ isOpen, onClose, onSelect, currentPropo
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-[#1356E2] font-semibold">{p.codigo || '-'}</span>
+                      <span className="font-mono text-xs text-[#E84B1C] font-semibold">{p.codigo || '-'}</span>
                       <Badge className="text-[9px] bg-slate-100 text-slate-600 border-0">
                         {p.status}
                       </Badge>

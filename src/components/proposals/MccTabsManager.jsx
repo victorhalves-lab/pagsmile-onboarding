@@ -133,7 +133,7 @@ export default function MccTabsManager({
       <div className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
-            <Layers className="w-3.5 h-3.5 text-[#1356E2]" />
+            <Layers className="w-3.5 h-3.5 text-[#E84B1C]" />
           </div>
           <div>
             <p className="text-xs font-bold text-white">Propor para múltiplos MCCs</p>
@@ -175,7 +175,7 @@ export default function MccTabsManager({
               variant="ghost"
               size="sm"
               onClick={() => setSearchOpen(true)}
-              className="h-8 text-[11px] text-[#1356E2] hover:bg-[#1356E2]/10 rounded-xl"
+              className="h-8 text-[11px] text-[#E84B1C] hover:bg-[#1356E2]/10 rounded-xl"
             >
               <Plus className="w-3.5 h-3.5 mr-1" /> Adicionar MCC
             </Button>
@@ -191,7 +191,7 @@ export default function MccTabsManager({
                   <button
                     key={`copy-${idx}`}
                     onClick={() => copyFromActive(idx)}
-                    className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[#1356E2] hover:bg-[#1356E2]/5 px-2 py-1 rounded-md transition-all"
+                    className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[#E84B1C] hover:bg-[#1356E2]/5 px-2 py-1 rounded-md transition-all"
                   >
                     <Copy className="w-3 h-3" /> {entry.mcc}
                   </button>

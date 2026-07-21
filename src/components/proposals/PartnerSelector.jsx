@@ -72,14 +72,14 @@ Responda em português do Brasil.`;
     setAiLoading(false);
   };
 
-  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#E84B1C]/70 font-semibold uppercase tracking-wider";
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
-            <Handshake className="w-3.5 h-3.5 text-[#1356E2]" />
+            <Handshake className="w-3.5 h-3.5 text-[#E84B1C]" />
           </div>
           <h2 className="text-sm font-bold text-white">Parceiro / Adquirente</h2>
         </div>
@@ -87,7 +87,7 @@ Responda em português do Brasil.`;
           variant="ghost" size="sm"
           onClick={handleAISuggest}
           disabled={aiLoading || (!leadMcc && !leadBusinessType)}
-          className="text-[10px] text-[#E84B1C] hover:text-[#1356E2] hover:bg-[#1356E2]/5 h-7 rounded-lg gap-1"
+          className="text-[10px] text-[#E84B1C] hover:text-[#E84B1C] hover:bg-[#1356E2]/5 h-7 rounded-lg gap-1"
         >
           {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Brain className="w-3 h-3" />}
           Sugestão IA
@@ -98,15 +98,15 @@ Responda em português do Brasil.`;
       {aiSuggestion && (
         <div className="rounded-xl bg-[#1356E2]/5 border border-[#1356E2]/20 p-3 space-y-2">
           <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#1356E2]" />
-            <span className="text-[10px] font-bold text-[#1356E2] uppercase tracking-wider">Recomendação da IA</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#E84B1C]" />
+            <span className="text-[10px] font-bold text-[#E84B1C] uppercase tracking-wider">Recomendação da IA</span>
           </div>
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
             <span className="text-sm font-bold text-white">{aiSuggestion.recommendedPartnerName}</span>
             <Button variant="ghost" size="sm"
               onClick={() => onSelectPartner(aiSuggestion.recommendedPartnerId)}
-              className="ml-auto text-[10px] h-6 bg-[#1356E2]/10 text-[#1356E2] hover:bg-[#1356E2]/20 rounded-lg px-2">
+              className="ml-auto text-[10px] h-6 bg-[#1356E2]/10 text-[#E84B1C] hover:bg-[#1356E2]/20 rounded-lg px-2">
               Usar este
             </Button>
           </div>
@@ -120,7 +120,7 @@ Responda em português do Brasil.`;
                   <span className="text-[9px] text-white/30">— {alt.note}</span>
                   <Button variant="ghost" size="sm"
                     onClick={() => onSelectPartner(alt.partnerId)}
-                    className="ml-auto text-[9px] h-5 text-white/40 hover:text-[#1356E2] rounded px-1.5">
+                    className="ml-auto text-[9px] h-5 text-white/40 hover:text-[#E84B1C] rounded px-1.5">
                     Selecionar
                   </Button>
                 </div>

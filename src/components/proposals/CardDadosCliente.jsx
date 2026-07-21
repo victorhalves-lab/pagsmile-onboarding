@@ -28,13 +28,13 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
   };
 
   const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/20 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
-  const labelCls = "text-[10px] text-[#1356E2]/70 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#E84B1C]/70 font-semibold uppercase tracking-wider";
   const errorCls = "text-[10px] text-red-400";
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
       <div className="flex items-center gap-2 mb-1">
-        <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#1356E2]" /></div>
+        <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#E84B1C]" /></div>
         <h2 className="text-sm font-bold text-white">Dados do Cliente</h2>
       </div>
 

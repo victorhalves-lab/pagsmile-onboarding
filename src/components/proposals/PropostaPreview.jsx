@@ -55,7 +55,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       {/* Title */}
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-bold text-white">Preview</h2>
-        <span className="text-[10px] text-[#1356E2]/50 font-mono">{form.clienteNome || '—'}</span>
+        <span className="text-[10px] text-[#E84B1C]/50 font-mono">{form.clienteNome || '—'}</span>
       </div>
 
       {/* Brand Selector */}
@@ -83,7 +83,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
             <div className="text-[10px] text-right font-mono">
               {row.taxaAntecipacao > 0 ? <span className="text-[#E84B1C]">+{fmtPct(row.taxaAntecipacao)}</span> : <span className="text-white/30">—</span>}
             </div>
-            <div className={`text-[11px] text-right font-bold ${row.hasOverride ? 'text-amber-400' : 'text-[#1356E2]'}`}>{fmtPct(row.taxaFinal)}</div>
+            <div className={`text-[11px] text-right font-bold ${row.hasOverride ? 'text-amber-400' : 'text-[#E84B1C]'}`}>{fmtPct(row.taxaFinal)}</div>
           </div>
         ))}
       </div>
@@ -92,7 +92,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       {usaMaquininha && (
         <div className="rounded-xl bg-[#1356E2]/[0.04] border border-[#1356E2]/10 overflow-hidden mb-4">
           <div className="px-2 py-1.5 bg-[#1356E2]/[0.06] flex items-center justify-between">
-            <span className="text-[9px] text-[#1356E2] font-bold uppercase tracking-widest">📱 Maquininha (Presencial)</span>
+            <span className="text-[9px] text-[#E84B1C] font-bold uppercase tracking-widest">📱 Maquininha (Presencial)</span>
             <span className="text-[8px] text-white/40 font-mono">{selectedBrand.toUpperCase()}</span>
           </div>
           <div className="grid grid-cols-4 text-[8px] text-white font-bold uppercase tracking-wider py-1.5 px-2 bg-white/[0.02]">
@@ -102,10 +102,10 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
             <div className="text-center">Débito</div>
           </div>
           <div className="grid grid-cols-4 items-center px-2 py-1.5 border-t border-white/[0.03]">
-            <div className="text-[11px] text-center font-bold text-[#1356E2]">{fmtPct(mqCredito.avista)}</div>
-            <div className="text-[11px] text-center font-bold text-[#1356E2]">{fmtPct(mqCredito.de2a6x)}</div>
-            <div className="text-[11px] text-center font-bold text-[#1356E2]">{fmtPct(mqCredito.de7a12x)}</div>
-            <div className="text-[11px] text-center font-bold text-[#1356E2]">{fmtPct(mqDebito)}</div>
+            <div className="text-[11px] text-center font-bold text-[#E84B1C]">{fmtPct(mqCredito.avista)}</div>
+            <div className="text-[11px] text-center font-bold text-[#E84B1C]">{fmtPct(mqCredito.de2a6x)}</div>
+            <div className="text-[11px] text-center font-bold text-[#E84B1C]">{fmtPct(mqCredito.de7a12x)}</div>
+            <div className="text-[11px] text-center font-bold text-[#E84B1C]">{fmtPct(mqDebito)}</div>
           </div>
         </div>
       )}
@@ -122,9 +122,9 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2">
           {[
-            { label: 'Prazo', value: prazo, color: 'text-[#1356E2]' },
+            { label: 'Prazo', value: prazo, color: 'text-[#E84B1C]' },
             { label: 'Antecipação', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-white' },
-            { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : fmtPct(rates.pix?.valor), color: 'text-[#1356E2]' },
+            { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : fmtPct(rates.pix?.valor), color: 'text-[#E84B1C]' },
             { label: '3DS', value: `R$ ${parseVal(rates.taxa3ds).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, color: 'text-white' },
             { label: 'Setup', value: `R$ ${parseVal(rates.setup).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, color: 'text-white' },
           ].map((s, i) => (
@@ -136,13 +136,13 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
         </div>
 
         <div className="bg-white/[0.03] border border-white/5 rounded-xl p-2">
-          <p className="text-[8px] text-[#1356E2] font-bold uppercase tracking-widest text-center mb-1">TPV Mínimo Mensal Garantido</p>
+          <p className="text-[8px] text-[#E84B1C] font-bold uppercase tracking-widest text-center mb-1">TPV Mínimo Mensal Garantido</p>
           <div className="flex items-center justify-center gap-2 text-[9px]">
             <span className="text-white">Mês 1: <span className="font-bold text-white">R$ {parseVal(rates.minimoGarantido?.mes1).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></span>
             <span className="text-white/40">→</span>
             <span className="text-white">Mês 2: <span className="font-bold text-white">R$ {parseVal(rates.minimoGarantido?.mes2).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></span>
             <span className="text-white/40">→</span>
-            <span className="text-[#1356E2] font-bold">Mês 3 em diante: R$ {parseVal(rates.minimoGarantido?.mes3).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+            <span className="text-[#E84B1C] font-bold">Mês 3 em diante: R$ {parseVal(rates.minimoGarantido?.mes3).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
           </div>
         </div>
       </div>
