@@ -66,7 +66,7 @@ export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compa
             {taxaRAV > 0 && prazo !== 'FLUXO' && (
               <th className="text-right py-1.5 px-2 font-semibold text-[#0A0A0A]/70">Antecipação</th>
             )}
-            <th className="text-right py-1.5 px-2 font-semibold text-[#E84B1C]">Final</th>
+            <th className="text-right py-1.5 px-2 font-semibold text-[#FEA500]">Final</th>
           </tr>
         </thead>
         <tbody>

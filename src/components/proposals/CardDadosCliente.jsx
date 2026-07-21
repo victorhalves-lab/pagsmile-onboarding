@@ -28,7 +28,7 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
   };
 
   const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/20 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
-  const labelCls = "text-[10px] text-[#E84B1C]/70 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#FEA500]/80 font-semibold uppercase tracking-wider";
   const errorCls = "text-[10px] text-red-400";
 
   return (

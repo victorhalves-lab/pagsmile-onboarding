@@ -73,7 +73,7 @@ export default function SegmentRatesLoader({ onApply }) {
     <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-5 space-y-3">
       <div className="flex items-center gap-2">
         <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
-          <LayoutGrid className="w-3.5 h-3.5 text-[#E84B1C]" />
+          <LayoutGrid className="w-3.5 h-3.5 text-[#FEA500]" />
         </div>
         <div>
           <h2 className="text-sm font-bold text-white/80">Taxas Padrão por Segmento</h2>
@@ -101,7 +101,7 @@ export default function SegmentRatesLoader({ onApply }) {
       </div>
 
       {selected && (
-        <p className="text-[10px] text-[#E84B1C]/50 flex items-center gap-1">
+        <p className="text-[10px] text-[#FEA500]/50 flex items-center gap-1">
           <Info className="w-3 h-3" />
           Taxas do segmento "{selected}" aplicadas. Você pode editar livremente abaixo.
         </p>
