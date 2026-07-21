@@ -2,12 +2,12 @@ import { jsPDF } from 'jspdf';
 import { PROCESSOS } from './processosData';
 
 const COLORS = {
-  blue: [0, 36, 67],
-  green: [43, 193, 150],
+  blue: [19, 86, 226],
+  green: [232, 75, 28],
   white: [255, 255, 255],
   gray: [100, 116, 139],
   lightGray: [241, 245, 249],
-  black: [0, 0, 0],
+  black: [10, 10, 10],
 };
 
 const PAGE_W = 210;

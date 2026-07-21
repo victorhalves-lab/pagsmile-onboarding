@@ -13,12 +13,12 @@ import { callPublicFunction } from '@/lib/publicApi';
 
 // ─── Brand tokens ───
 const BRAND = {
-  blue: [0, 36, 67], green: [43, 193, 150], greenLight: [92, 247, 207],
-  text: [40, 40, 40], muted: [100, 116, 139], hairline: [226, 232, 240],
-  bg: [244, 244, 244], white: [255, 255, 255], amber: [217, 119, 6],
+  blue: [19, 86, 226], green: [232, 75, 28], greenLight: [255, 184, 28],
+  text: [10, 10, 10], muted: [100, 116, 139], hairline: [226, 232, 240],
+  bg: [247, 245, 240], white: [255, 255, 255], amber: [217, 119, 6],
 };
 
-const LOGO_URL = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/df6449845_Logo-modo-escuro.png';
+const LOGO_URL = 'https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/c0c42c436_01-pinbank-logo-sunset.png';
 
 // ─── Utilities ───
 const money = (v) => `R$ ${(parseFloat(v) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -65,7 +65,7 @@ function drawHeaderBand(doc, logoB64) {
     doc.setTextColor(...BRAND.white);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
-    doc.text('Pagsmile', 14, 14);
+    doc.text('Pin Bank', 14, 14);
   }
 }
 
@@ -77,7 +77,7 @@ function drawFooter(doc, pageNum, totalPages, codigo) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(...BRAND.muted);
-  doc.text(`Pagsmile  •  ${codigo || ''}`, 14, h - 7);
+  doc.text(`Pin Bank  •  ${codigo || ''}`, 14, h - 7);
   const right = `Página ${pageNum} de ${totalPages}`;
   doc.text(right, 196 - doc.getTextWidth(right), h - 7);
   doc.setFontSize(7);
@@ -437,7 +437,7 @@ function pixHero(state, rates) {
   const sub = rates.pix?.tipo === 'fixo' ? 'Por transação processada' : 'Sobre o valor da transação';
   ensureSpace(state, 40);
   const { doc } = state;
-  doc.setFillColor(240, 253, 248);
+  doc.setFillColor(237, 242, 253);
   doc.setDrawColor(...BRAND.green);
   doc.roundedRect(14, state.y, 182, 35, 3, 3, 'FD');
   doc.setFont('helvetica', 'bold');
@@ -486,7 +486,7 @@ function mcc8999Disclaimer(state, mccEsperado, gatewayRates) {
   const mccTxt = mccEsperado
     ? `As taxas desta proposta foram dimensionadas para o MCC ${mccEsperado} do seu segmento.`
     : 'As taxas desta proposta foram dimensionadas para o MCC contratado do seu segmento.';
-  const body = `${mccTxt} Caso a Pagsmile identifique transações operadas em MCCs incompatíveis com o segmento contratado, essas transações específicas serão reclassificadas automaticamente para o MCC 8999 e cobradas com as taxas padrão abaixo:`;
+  const body = `${mccTxt} Caso a Pin Bank identifique transações operadas em MCCs incompatíveis com o segmento contratado, essas transações específicas serão reclassificadas automaticamente para o MCC 8999 e cobradas com as taxas padrão abaixo:`;
   const bodyLines = doc.splitTextToSize(body, w - 10);
   doc.text(bodyLines, x + 5, state.y + 11);
   let cy = state.y + 11 + bodyLines.length * 3.5 + 2;
@@ -508,7 +508,7 @@ function acceptanceFooter(state, p) {
   ensureSpace(state, 22);
   const { doc } = state;
   doc.setDrawColor(...BRAND.green);
-  doc.setFillColor(240, 253, 248);
+  doc.setFillColor(237, 242, 253);
   doc.roundedRect(14, state.y, 182, 18, 2, 2, 'FD');
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
@@ -587,7 +587,7 @@ async function buildPixProposalPdf(p) {
   clientCard(state, p);
   validityCard(state, p);
 
-  sectionTitle(state, 'Taxa PIX Acordada', 'Tarifa única aplicada em todas as transações PIX recebidas via Pagsmile.');
+  sectionTitle(state, 'Taxa PIX Acordada', 'Tarifa única aplicada em todas as transações PIX recebidas via Pin Bank.');
   pixHero(state, p.rates || {});
   condicoesGeraisCard(state, p.rates || {});
   acceptanceFooter(state, p);
@@ -700,6 +700,6 @@ export async function downloadProposalPdf({ type, proposalId, token, slug, codig
     doc = await buildCustomProposalPdf(proposal, gatewayRates);
   }
 
-  const filename = `Pagsmile-${(codigo || proposal.codigo || 'proposta').replace(/[^A-Za-z0-9_-]/g, '_')}.pdf`;
+  const filename = `PinBank-${(codigo || proposal.codigo || 'proposta').replace(/[^A-Za-z0-9_-]/g, '_')}.pdf`;
   doc.save(filename);
 }

@@ -26,7 +26,7 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
       setup: 'Setup Fee', refund: 'Refund Fee', chargeback: 'Chargeback Fee', risk: 'Risk Control',
       mccs: 'Merchant Categories', markets: 'Target Markets',
       valid_until: 'This proposal is valid until',
-      footer: 'Pin Bank · Global Payments · pagsmile.com',
+      footer: 'Pin Bank · Global Payments · www.pinbank.com.br',
     },
     pt: {
       title: 'Proposta Comercial Pin Bank Global',
@@ -43,7 +43,7 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
       setup: 'Setup', refund: 'Refund', chargeback: 'Chargeback', risk: 'Controle de Risco',
       mccs: 'Categorias MCC', markets: 'Mercados-alvo',
       valid_until: 'Esta proposta é válida até',
-      footer: 'Pin Bank · Global Payments · pagsmile.com',
+      footer: 'Pin Bank · Global Payments · www.pinbank.com.br',
     },
     zh: {
       title: 'Pin Bank Global 商户提案',
@@ -60,7 +60,7 @@ export default function ProposalDownloadContent({ proposal, lang = 'en' }) {
       setup: '开通费', refund: '退款费', chargeback: '拒付费', risk: '风险控制',
       mccs: 'MCC 类别', markets: '目标市场',
       valid_until: '本提案有效期至',
-      footer: 'Pin Bank · Global Payments · pagsmile.com',
+      footer: 'Pin Bank · Global Payments · www.pinbank.com.br',
     },
   };
   const t = i18n[lang] || i18n.en;

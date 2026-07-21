@@ -24,7 +24,7 @@ export default function ConteudoContrato({ contract }) {
         textAlign: 'center', position: 'relative', overflow: 'hidden',
       }}>
         <div style={{ position: 'absolute', top: 0, right: 0, width: '200px', height: '200px',
-          background: 'radial-gradient(circle, rgba(43,193,150,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+          background: 'radial-gradient(circle, rgba(232,75,28,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
         <img src={LOGO_URL} alt="Pin Bank" style={{ height: '48px', marginBottom: '20px' }} />
         <h1 style={{ color: '#ffffff', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', 
           letterSpacing: '2px', marginBottom: '8px', position: 'relative' }}>
@@ -54,7 +54,7 @@ export default function ConteudoContrato({ contract }) {
         ['CONTRATADA', 'PIN BANK INSTITUICAO DE PAGAMENTO LTDA'],
         ['CNPJ da CONTRATADA', '37.753.531/0001-65'],
         ['Endereço da CONTRATADA', 'Alameda Santos, 1940 - Cerqueira Cesar, São Paulo - SP, 01.418-102'],
-        ['E-mail da CONTRATADA', 'juridico@pagsmile.com'],
+        ['E-mail da CONTRATADA', 'juridico@pinbank.com.br'],
         ['Telefone da CONTRATADA', '011996863004'],
         ['MÓDULOS ATIVOS', (
           <div style={{ lineHeight: 2 }}>

@@ -17,8 +17,8 @@
 
 import { jsPDF } from 'jspdf';
 
-const COLOR_PRIMARY = [0, 36, 67]; // #0A0A0A
-const COLOR_ACCENT = [43, 193, 150]; // #1356E2
+const COLOR_PRIMARY = [10, 10, 10]; // #0A0A0A Pin Bank Dark
+const COLOR_ACCENT = [19, 86, 226]; // #1356E2 Pin Bank Blue
 const COLOR_MUTED = [100, 116, 139];
 const COLOR_DANGER = [220, 38, 38];
 

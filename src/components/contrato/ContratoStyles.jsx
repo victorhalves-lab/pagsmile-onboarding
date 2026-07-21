@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LOGO_URL = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/aec69033a_Logo-modo-claro.png";
+const LOGO_URL = "https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/c0c42c436_01-pinbank-logo-sunset.png";
 
 export { LOGO_URL };
 
@@ -47,7 +47,7 @@ export const SectionHeading = ({ children, level = 1 }) => {
   return (
     <h3 data-pdf-block="section-heading" style={{ 
       color: '#1356E2', fontSize: '11px', fontWeight: 700, marginBottom: '8px', marginTop: '20px',
-      paddingBottom: '4px', borderBottom: '1px solid rgba(43,193,150,0.2)',
+      paddingBottom: '4px', borderBottom: '1px solid rgba(19,86,226,0.2)',
     }}>{children}</h3>
   );
 };
@@ -55,7 +55,7 @@ export const SectionHeading = ({ children, level = 1 }) => {
 export const ClauseTitle = ({ children }) => (
   <h3 data-pdf-block="clause-title" style={{
     color: '#0A0A0A', fontSize: '11px', fontWeight: 700, marginTop: '28px', marginBottom: '12px',
-    paddingBottom: '6px', borderBottom: '2px solid rgba(43,193,150,0.2)', textTransform: 'uppercase', letterSpacing: '0.5px',
+    paddingBottom: '6px',     borderBottom: '2px solid rgba(19,86,226,0.2)', textTransform: 'uppercase', letterSpacing: '0.5px',
   }}>{children}</h3>
 );
 
@@ -74,7 +74,7 @@ export const P = ({ children, style = {} }) => (
 export const BrandTable = ({ headers, rows, compact = false }) => (
   <table data-pdf-block="table" style={{ 
     width: '100%', borderCollapse: 'collapse', marginBottom: '20px', fontSize: compact ? '9.5px' : '10.5px',
-    border: '1px solid rgba(0,36,67,0.12)', borderRadius: '8px', overflow: 'hidden',
+    border: '1px solid rgba(10,10,10,0.12)', borderRadius: '8px', overflow: 'hidden',
   }}>
     {headers && (
       <thead>
@@ -90,11 +90,11 @@ export const BrandTable = ({ headers, rows, compact = false }) => (
     )}
     <tbody>
       {rows.map((row, i) => (
-        <tr key={i} style={{ borderBottom: '1px solid rgba(0,36,67,0.06)', backgroundColor: i % 2 === 0 ? '#ffffff' : '#f8fafb' }}>
+        <tr key={i} style={{ borderBottom: '1px solid rgba(10,10,10,0.06)', backgroundColor: i % 2 === 0 ? '#ffffff' : '#f8fafb' }}>
           {row.map((cell, j) => (
             <td key={j} style={{ 
               padding: compact ? '6px 8px' : '10px 12px', textAlign: j === 0 ? 'left' : 'center',
-              fontWeight: j === 0 ? 600 : 400, color: '#0A0A0A', borderRight: j < row.length - 1 ? '1px solid rgba(0,36,67,0.06)' : 'none',
+              fontWeight: j === 0 ? 600 : 400, color: '#0A0A0A', borderRight: j < row.length - 1 ? '1px solid rgba(10,10,10,0.06)' : 'none',
             }}>{cell}</td>
           ))}
         </tr>
@@ -106,14 +106,14 @@ export const BrandTable = ({ headers, rows, compact = false }) => (
 export const KVTable = ({ items }) => (
   <table data-pdf-block="table" style={{ 
     width: '100%', borderCollapse: 'collapse', marginBottom: '20px', fontSize: '10.5px',
-    border: '1px solid rgba(0,36,67,0.12)', borderRadius: '8px', overflow: 'hidden',
+    border: '1px solid rgba(10,10,10,0.12)', borderRadius: '8px', overflow: 'hidden',
   }}>
     <tbody>
       {items.map(([label, value], i) => (
-        <tr key={i} style={{ borderBottom: '1px solid rgba(0,36,67,0.06)', backgroundColor: i % 2 === 0 ? '#ffffff' : '#f8fafb' }}>
+        <tr key={i} style={{ borderBottom: '1px solid rgba(10,10,10,0.06)', backgroundColor: i % 2 === 0 ? '#ffffff' : '#f8fafb' }}>
           <td style={{ 
             padding: '10px 14px', fontWeight: 700, color: '#0A0A0A', width: '40%',
-            backgroundColor: 'rgba(0,36,67,0.02)', borderRight: '2px solid #1356E2', verticalAlign: 'top',
+            backgroundColor: 'rgba(10,10,10,0.02)', borderRight: '2px solid #1356E2', verticalAlign: 'top',
           }}>{label}</td>
           <td style={{ padding: '10px 14px', color: '#0A0A0A' }}>{value}</td>
         </tr>

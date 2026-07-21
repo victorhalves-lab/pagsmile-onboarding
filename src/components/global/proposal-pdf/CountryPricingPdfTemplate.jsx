@@ -17,7 +17,7 @@ export default function CountryPricingPdfTemplate({ proposal, lang = 'en' }) {
       intl_settlement: 'International Settlement',
       intl_settlement_text: 'After deducting the fees from the payments processed for merchant\'s website, PIN BANK will transfer the money internationally to merchant\'s bank account. The sums received will be withheld the related fees.',
       intl_settlement_freq: 'PIN BANK will settle ONCE per each {days} calendar days in {currency} the sums received, with the related fees deducted.',
-      valid_until: 'Valid until', footer: 'Pin Bank Limited · www.pagsmile.com · Unit 8B, Wing Hang Insurance Building, 11 Wing Kut Street, Central, Hong Kong',
+      valid_until: 'Valid until', footer: 'Pin Bank · www.pinbank.com.br',
     },
     pt: {
       proposal_for: 'Proposta para', contact: 'Contato',
@@ -28,7 +28,7 @@ export default function CountryPricingPdfTemplate({ proposal, lang = 'en' }) {
       intl_settlement: 'Settlement Internacional',
       intl_settlement_text: 'Após deduzir as taxas dos pagamentos processados pelo site do merchant, a PIN BANK transferirá o dinheiro internacionalmente para a conta bancária do merchant. Os valores recebidos terão as taxas relacionadas deduzidas.',
       intl_settlement_freq: 'A PIN BANK liquidará UMA vez a cada {days} dias corridos em {currency} os valores recebidos, com as taxas relacionadas deduzidas.',
-      valid_until: 'Válida até', footer: 'Pin Bank Limited · www.pagsmile.com · Unit 8B, Wing Hang Insurance Building, 11 Wing Kut Street, Central, Hong Kong',
+      valid_until: 'Válida até', footer: 'Pin Bank · www.pinbank.com.br',
     },
     zh: {
       proposal_for: '提案给', contact: '联系人',
@@ -39,7 +39,7 @@ export default function CountryPricingPdfTemplate({ proposal, lang = 'en' }) {
       intl_settlement: '国际结算',
       intl_settlement_text: '从商户网站处理的付款中扣除费用后,PIN BANK 将把资金国际转账到商户的银行账户。收到的金额将扣除相关费用。',
       intl_settlement_freq: 'PIN BANK 将每 {days} 个日历日以 {currency} 结算一次收到的金额(扣除相关费用)。',
-      valid_until: '有效期至', footer: 'Pin Bank Limited · www.pagsmile.com · Unit 8B, Wing Hang Insurance Building, 11 Wing Kut Street, Central, Hong Kong',
+      valid_until: '有效期至', footer: 'Pin Bank · www.pinbank.com.br',
     },
   };
   const t = i18n[lang] || i18n.en;

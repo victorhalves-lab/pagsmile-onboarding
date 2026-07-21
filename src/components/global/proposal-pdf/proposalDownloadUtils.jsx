@@ -13,7 +13,7 @@ async function renderToCanvas(element) {
   });
 }
 
-export async function downloadProposalAsPNG(element, filename = 'pagsmile-proposal.png') {
+export async function downloadProposalAsPNG(element, filename = 'pinbank-proposal.png') {
   const canvas = await renderToCanvas(element);
   const link = document.createElement('a');
   link.download = filename;
@@ -21,7 +21,7 @@ export async function downloadProposalAsPNG(element, filename = 'pagsmile-propos
   link.click();
 }
 
-export async function downloadProposalAsPDF(element, filename = 'pagsmile-proposal.pdf') {
+export async function downloadProposalAsPDF(element, filename = 'pinbank-proposal.pdf') {
   const canvas = await renderToCanvas(element);
   const imgData = canvas.toDataURL('image/png');
 
