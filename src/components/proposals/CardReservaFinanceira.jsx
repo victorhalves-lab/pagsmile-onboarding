@@ -86,7 +86,7 @@ export default function CardReservaFinanceira({ rates, onUpdateRates, readOnly =
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-[#1356E2]/10 flex items-center justify-center">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#FEA500]" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#FFB81C]" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-white">Reserva Financeira</h2>
@@ -97,7 +97,7 @@ export default function CardReservaFinanceira({ rates, onUpdateRates, readOnly =
           <button
             type="button"
             onClick={restoreDefault}
-            className="flex items-center gap-1.5 text-[10px] text-[#FEA500]/70 hover:text-[#FEA500] font-semibold uppercase tracking-wider"
+            className="flex items-center gap-1.5 text-[10px] text-[#FFB81C]/70 hover:text-[#FFB81C] font-semibold uppercase tracking-wider"
           >
             <RotateCcw className="w-3 h-3" /> Padrão Pin Bank
           </button>

@@ -72,7 +72,7 @@ Responda em português do Brasil.`;
     setAiLoading(false);
   };
 
-  const labelCls = "text-[10px] text-[#FEA500]/80 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#FFB81C]/80 font-semibold uppercase tracking-wider";
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
@@ -99,7 +99,7 @@ Responda em português do Brasil.`;
         <div className="rounded-xl bg-[#1356E2]/5 border border-[#1356E2]/20 p-3 space-y-2">
           <div className="flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-[#E84B1C]" />
-            <span className="text-[10px] font-bold text-[#FEA500] uppercase tracking-wider">Recomendação da IA</span>
+            <span className="text-[10px] font-bold text-[#FFB81C] uppercase tracking-wider">Recomendação da IA</span>
           </div>
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-amber-400 fill-amber-400" />

@@ -73,7 +73,7 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                         Antecipação{isSimulating ? ` (${simulatedPrazo})` : ''}
                       </th>
                     )}
-                    <th className="text-right py-2 px-3 font-semibold text-[#FEA500]">Taxa</th>
+                    <th className="text-right py-2 px-3 font-semibold text-[#FFB81C]">Taxa</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -92,7 +92,7 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                         const applyOverride = (b.id === 'mastercard' || b.id === 'visa') && prazoOverrides[String(r.parcela)] != null;
                         const val = applyOverride ? prazoOverrides[String(r.parcela)] : r.taxaFinal;
                         return (
-                          <td className={`py-2 px-3 text-right font-bold ${applyOverride ? 'text-amber-500' : 'text-[#FEA500]'}`}>
+                          <td className={`py-2 px-3 text-right font-bold ${applyOverride ? 'text-amber-500' : 'text-[#FFB81C]'}`}>
                             {val.toFixed(2)}%
                           </td>
                         );

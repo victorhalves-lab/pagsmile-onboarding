@@ -16,7 +16,7 @@ const PRAZOS = [
 const PCT_ANTECIPACAO_OPCOES = [0, 20, 40, 60, 80, 100];
 
 export default function CardAntecipacao({ form, onUpdate, readOnly = false }) {
-  const labelCls = "text-[10px] text-[#FEA500]/80 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#FFB81C]/80 font-semibold uppercase tracking-wider";
   const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/15 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
 
   return (

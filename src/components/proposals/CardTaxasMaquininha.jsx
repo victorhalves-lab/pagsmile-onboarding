@@ -81,7 +81,7 @@ export default function CardTaxasMaquininha({
     toast.success('Taxas de maquininha copiadas para todas as bandeiras!');
   };
 
-  const labelCls = "text-[10px] text-[#FEA500]/80 font-semibold uppercase tracking-wider";
+  const labelCls = "text-[10px] text-[#FFB81C]/80 font-semibold uppercase tracking-wider";
   const inputCls = "bg-white/5 border-white/10 text-white h-12 text-lg font-semibold text-center rounded-xl placeholder:text-white/15 focus:border-[#1356E2] focus:ring-1 focus:ring-[#1356E2]";
 
   return (
@@ -117,7 +117,7 @@ export default function CardTaxasMaquininha({
                     : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
                 }`}>
                 <BrandLogo brand={b} isActive={selectedBrand === b.id} />
-                <span className={`text-[10px] font-bold tracking-wide ${selectedBrand === b.id ? 'text-[#FEA500]' : 'text-white/30'}`}>{b.label}</span>
+                <span className={`text-[10px] font-bold tracking-wide ${selectedBrand === b.id ? 'text-[#FFB81C]' : 'text-white/30'}`}>{b.label}</span>
               </button>
             ))}
           </div>
@@ -129,7 +129,7 @@ export default function CardTaxasMaquininha({
               {FAIXAS_CREDITO.map(f => (
                 <div key={f.id} className="space-y-2">
                   <div className="text-center">
-                    <p className="text-[10px] text-[#FEA500]/80 font-semibold uppercase tracking-wider">{f.label}</p>
+                    <p className="text-[10px] text-[#FFB81C]/80 font-semibold uppercase tracking-wider">{f.label}</p>
                     <p className="text-[9px] text-white/20">{f.sub}</p>
                   </div>
                   <TaxaInput
@@ -151,7 +151,7 @@ export default function CardTaxasMaquininha({
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
                 <div className="text-center">
-                  <p className="text-[10px] text-[#FEA500]/80 font-semibold uppercase tracking-wider">Débito</p>
+                  <p className="text-[10px] text-[#FFB81C]/80 font-semibold uppercase tracking-wider">Débito</p>
                   <p className="text-[9px] text-white/20">à vista</p>
                 </div>
                 <TaxaInput

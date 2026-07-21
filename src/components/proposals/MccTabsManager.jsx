@@ -175,7 +175,7 @@ export default function MccTabsManager({
               variant="ghost"
               size="sm"
               onClick={() => setSearchOpen(true)}
-              className="h-8 text-[11px] text-[#FEA500] hover:bg-[#1356E2]/10 rounded-xl"
+              className="h-8 text-[11px] text-[#FFB81C] hover:bg-[#1356E2]/10 rounded-xl"
             >
               <Plus className="w-3.5 h-3.5 mr-1" /> Adicionar MCC
             </Button>
@@ -191,7 +191,7 @@ export default function MccTabsManager({
                   <button
                     key={`copy-${idx}`}
                     onClick={() => copyFromActive(idx)}
-                    className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[#FEA500] hover:bg-[#1356E2]/5 px-2 py-1 rounded-md transition-all"
+                    className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[#FFB81C] hover:bg-[#1356E2]/5 px-2 py-1 rounded-md transition-all"
                   >
                     <Copy className="w-3 h-3" /> {entry.mcc}
                   </button>

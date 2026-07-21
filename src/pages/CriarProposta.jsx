@@ -454,7 +454,7 @@ export default function CriarProposta() {
           </Button>
           <div>
             <h1 className="text-lg font-bold text-white">{editId ? t('criar_prop.edit_title') : t('criar_prop.new_title')}</h1>
-            <p className="text-xs text-[#FEA500]/70">{t('criar_prop.subtitle')}</p>
+            <p className="text-xs text-[#FFB81C]/70">{t('criar_prop.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

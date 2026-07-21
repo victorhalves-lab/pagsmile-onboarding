@@ -74,7 +74,7 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
                 : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
             }`}>
             <BrandLogo brand={b} isActive={selectedBrand === b.id} />
-            <span className={`text-[10px] font-bold tracking-wide ${selectedBrand === b.id ? 'text-[#FEA500]' : 'text-white/30'}`}>{b.label}</span>
+            <span className={`text-[10px] font-bold tracking-wide ${selectedBrand === b.id ? 'text-[#FFB81C]' : 'text-white/30'}`}>{b.label}</span>
           </button>
         ))}
       </div>
@@ -102,7 +102,7 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
           return (
             <div key={f.id} className="space-y-2">
               <div className="text-center">
-                <p className="text-[10px] text-[#FEA500]/80 font-semibold uppercase tracking-wider">{f.label}</p>
+                <p className="text-[10px] text-[#FFB81C]/80 font-semibold uppercase tracking-wider">{f.label}</p>
                 <p className="text-[9px] text-white/20">{f.sub}</p>
               </div>
               <TaxaInput

@@ -164,7 +164,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
                 <div className="divide-y divide-white/[0.03]">
                   {items.map(o => (
                     <div key={`${o.parcela}-${o.prazo}`} className="flex items-center gap-3 px-3 py-2 group hover:bg-white/[0.02]">
-                      <span className="text-[10px] font-semibold text-[#FEA500] bg-[#1356E2]/10 px-2 py-0.5 rounded-md w-14 text-center">{o.prazo}</span>
+                      <span className="text-[10px] font-semibold text-[#FFB81C] bg-[#1356E2]/10 px-2 py-0.5 rounded-md w-14 text-center">{o.prazo}</span>
                       <span className="text-xs text-white/50">→</span>
                       <span className="text-xs font-bold text-amber-400 flex-1">{o.taxa.toFixed(2).replace('.', ',')}%</span>
                       <button
@@ -196,7 +196,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
             type="checkbox"
             checked={hideCalculationColumns}
             onChange={(e) => onToggleHideColumns(e.target.checked)}
-            className="w-4 h-4 rounded border-white/20 text-[#FEA500] focus:ring-[#1356E2] bg-white/5"
+            className="w-4 h-4 rounded border-white/20 text-[#FFB81C] focus:ring-[#1356E2] bg-white/5"
           />
           <div>
             <span className="text-xs font-medium text-white">Ocultar cálculo na proposta</span>
