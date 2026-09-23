@@ -1,0 +1,37 @@
+{
+  "name": "Email: Subseller Aprovado/Recusado \u2192 Seller Principal",
+  "description": "Notifica seller principal por e-mail quando subseller \u00e9 aprovado ou recusado",
+  "trigger": {
+    "condition": "${ ((.trigger.data.isSubsellerCase == true) and (.trigger.changed_fields | index(\"status\") != null)) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "OnboardingCase"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "email_subseller_aprovado_recusado_seller_principal",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "emailSubsellerNotify",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "emailSubsellerNotify"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Pr\u00e9-gerar Contrato ao Aprovar Compliance",
+  "description": "Quando um OnboardingCase muda para status Aprovado, pr\u00e9-gera automaticamente o contrato com dados do Lead, Proposta e Compliance, e notifica no Slack.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "OnboardingCase"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "pr_gerar_contrato_ao_aprovar_compliance",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "preGenerateContract",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "preGenerateContract"
+  }
+}

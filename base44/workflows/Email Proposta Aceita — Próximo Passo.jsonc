@@ -1,0 +1,37 @@
+{
+  "name": "Email: Proposta Aceita \u2014 Pr\u00f3ximo Passo",
+  "description": "Envia e-mail ao cliente quando proposta \u00e9 aceita, orientando sobre compliance",
+  "trigger": {
+    "condition": "${ (.trigger.data.status == \"aceita\") }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "Proposal"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "email_proposta_aceita_pr_ximo_passo",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "emailProposalAccepted",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "emailProposalAccepted"
+  }
+}

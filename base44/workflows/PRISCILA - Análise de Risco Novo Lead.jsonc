@@ -1,0 +1,37 @@
+{
+  "name": "PRISCILA - An\u00e1lise de Risco Novo Lead",
+  "description": "Executa automaticamente a an\u00e1lise de risco PRISCILA quando um novo lead \u00e9 criado",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Lead"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "priscila_an_lise_de_risco_novo_lead",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "analyzePriscila",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "analyzePriscila"
+  }
+}

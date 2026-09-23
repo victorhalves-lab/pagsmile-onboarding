@@ -1,0 +1,37 @@
+{
+  "name": "Enriquecer Lead v5 ao criar",
+  "description": "Executa enriquecimento autom\u00e1tico (CGU, DNS MX, WHOIS, OFAC/ONU) quando um novo Lead \u00e9 criado pelo question\u00e1rio v5 PagSmile",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Lead"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "enriquecer_lead_v5_ao_criar",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "onLeadCreatedEnrich",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "onLeadCreatedEnrich"
+  }
+}
